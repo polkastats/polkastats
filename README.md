@@ -24,8 +24,16 @@ That will start a dev frontend with hot reload.
 
 You will need `nodejs`, `docker` and `docker-compose`:
 
+Polkadot:
+
 ```
-yarn workspace backend docker
+yarn workspace backend docker:polkadot
+```
+
+Kusama:
+
+```
+yarn workspace backend docker:kusama
 ```
 
 That will build and start all the required dockers automagically:
