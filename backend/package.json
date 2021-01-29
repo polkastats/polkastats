@@ -1,0 +1,33 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "PolkaStats Next Gen Backend",
+  "author": "Mario Pino Uceda",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "docker": "docker-compose -f docker/backend/docker-compose-kusama.yml up -d",
+    "docker:build": "docker-compose -f docker/backend/docker-compose-kusama.yml build",
+    "docker:clean": "bash docker/backend/scripts/clean-dockers.sh",
+    "docker:stop": "docker stop backend_crawler_1 backend_graphql-engine_1 backend_postgres_1 backend_substrate-node_1 backend_phragmen_1",
+    "docker:postgres:backup": "docker exec -t backend_postgres_1 pg_dump polkastats -c -U polkastats > polkastats_dump.sql",
+    "docker:rebuild:graphql": "docker-compose -f docker/backend/docker-compose-kusama.yml up -d graphql-engine"
+  },
+  "dependencies": {
+    "@polkadot/api": "^3.5.1",
+    "axios": "^0.21.1",
+    "bignumber.js": "^9.0.1",
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.20",
+    "pg": "^8.4.2",
+    "pg-format": "^1.0.4",
+    "pg-native": "^3.0.0",
+    "pino": "^6.7.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.18.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
+  }
+}

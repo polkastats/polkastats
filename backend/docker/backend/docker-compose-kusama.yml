@@ -1,0 +1,75 @@
+version: '3.7'
+
+services:
+  #
+  # Blockchain archive node
+  #
+  substrate-node:
+    image: substrate-client:kusama-latest
+    hostname: substrate-node
+    build: ./substrate-client
+    volumes:
+      - 'substrate-data:/data'
+    ports:
+      - '30333:30333'
+      - '9933:9933'
+      - '9944:9944'
+    command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'PolkaStats Next Gen' --chain kusama
+    restart: on-failure
+  #
+  # SQL data base
+  #
+  postgres:
+    image: postgres
+    restart: always
+    volumes:
+      - 'db-data:/var/lib/postgresql/data'
+      - './sql/backend.sql:/docker-entrypoint-initdb.d/backend.sql'
+    environment:
+      POSTGRES_USER: 'polkastats'
+      POSTGRES_PASSWORD: 'polkastats'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U polkastats']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  #
+  # Hasura
+  #
+  graphql-engine:
+    image: hasura/graphql-engine:v1.3.3
+    ports:
+      - '8082:8080'
+    depends_on:
+      - 'postgres'
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://polkastats:polkastats@postgres:5432/polkastats
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to "false" to disable console
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      ## uncomment next line to set an admin secret
+      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+  #
+  # Block crawler
+  #
+  crawler:
+    image: crawler:latest
+    build:
+      context: ../../
+      dockerfile: ./docker/backend/crawler/Dockerfile
+    depends_on:
+      - 'postgres'
+      - 'substrate-node'
+    restart: on-failure
+    environment:
+      - NODE_ENV=production
+      - WS_PROVIDER_URL=ws://substrate-node:9944
+      - SUBSTRATE_NETWORK=kusama
+      # - CRAWLER_BLOCK_LISTENER_DISABLE=true
+      # - CRAWLER_BLOCK_HARVESTER_DISABLE=true
+#
+# Persisten volumes
+#
+volumes:
+  db-data: {}
+  substrate-data: {}
