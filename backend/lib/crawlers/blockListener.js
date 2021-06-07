@@ -10,6 +10,8 @@ const logger = pino();
 const loggerOptions = {
   crawler: 'blockListener',
 };
+
+logger.info(loggerOptions, `isActiveAccountsCrawlerEnabled: ${JSON.stringify(crawlers)}`);
 const isActiveAccountsCrawlerEnabled = crawlers.find((crawler) => crawler.name === 'activeAccounts').enabled;
 
 module.exports = {
