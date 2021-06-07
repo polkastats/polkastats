@@ -105,7 +105,7 @@ services:
       - WS_PROVIDER_URL=ws://substrate-node:9944
       - SUBSTRATE_NETWORK=kusama
       - CRAWLER_RANKING_DISABLE=true
-      - CRAWLER_ACCOUNTS_DISABLE=true
+      - CRAWLER_ACTIVE_ACCOUNTS_DISABLE=true
       # - CRAWLER_BLOCK_LISTENER_DISABLE=true
       # - CRAWLER_BLOCK_HARVESTER_DISABLE=true
 #
