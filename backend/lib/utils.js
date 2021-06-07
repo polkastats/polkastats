@@ -1,5 +1,8 @@
 // @ts-check
 const pino = require('pino');
+const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
+const { hexToU8a, isHex } = require('@polkadot/util');
+const _ = require('lodash');
 
 const logger = pino();
 
@@ -22,6 +25,71 @@ module.exports = {
     } catch (error) {
       logger.error(loggerOptions, `SQL: ${sql} Error: ${JSON.stringify(error)}`);
     }
+  },
+  isValidAddressPolkadotAddress: (address) => {
+    try {
+      encodeAddress(
+        isHex(address)
+          ? hexToU8a(address.toString())
+          : decodeAddress(address),
+      );
+      return true;
+    } catch (error) {
+      return false;
+    }
+  },
+  updateBalances: async (api, pool, blockNumber, timestamp, loggerOptions, blockEvents) => {
+    const involvedAddresses = [];
+    blockEvents
+      .forEach(({ event }) => {
+        event.data.forEach((arg) => {
+          if (module.exports.isValidAddressPolkadotAddress(arg)) {
+            involvedAddresses.push(arg);
+          }
+        });
+      });
+    const uniqueAddresses = _.uniq(involvedAddresses);
+    logger.info(loggerOptions, `Block #${blockNumber} involved addresses: ${uniqueAddresses.join(', ')}`);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const address of uniqueAddresses) {
+      // eslint-disable-next-line no-await-in-loop
+      const [balances, { identity }] = await Promise.all([
+        api.derive.balances.all(address),
+        api.derive.accounts.info(address),
+      ]);
+      const availableBalance = balances.availableBalance.toString();
+      const freeBalance = balances.freeBalance.toString();
+      const lockedBalance = balances.lockedBalance.toString();
+      const identityDisplay = identity.display ? identity.display.toString() : '';
+      const identityDisplayParent = identity.displayParent ? identity.displayParent.toString() : '';
+      const JSONIdentity = identity.display ? JSON.stringify(identity) : '';
+      const JSONbalances = JSON.stringify(balances);
+      const nonce = balances.accountNonce.toString();
+      const sql = `
+        INSERT INTO   account (account_id, identity, identity_display, identity_display_parent, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height)
+        VALUES        ('${address}', '${JSONIdentity}', '${identityDisplay}', '${identityDisplayParent}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}', '${timestamp}', '${blockNumber}')
+        ON CONFLICT   (account_id)
+        DO UPDATE
+        SET           identity = EXCLUDED.identity,
+                      identity_display = EXCLUDED.identity_display,
+                      identity_display_parent = EXCLUDED.identity_display_parent,
+                      balances = EXCLUDED.balances,
+                      available_balance = EXCLUDED.available_balance,
+                      free_balance = EXCLUDED.free_balance,
+                      locked_balance = EXCLUDED.locked_balance,
+                      nonce = EXCLUDED.nonce,
+                      timestamp = EXCLUDED.timestamp,
+                      block_height = EXCLUDED.block_height;
+      `;
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await pool.query(sql);
+        logger.error(loggerOptions, `New balances for address ${address}: available: ${availableBalance}, free: ${freeBalance}, locked: ${lockedBalance}`);
+      } catch (error) {
+        logger.error(loggerOptions, `Error updating balances for involved address: ${JSON.stringify(error)}`);
+      }
+    }
+    logger.info(loggerOptions, `Updated balances of addresses: ${uniqueAddresses.join(', ')}`);
   },
   storeExtrinsics: async (pool, blockNumber, extrinsics, blockEvents, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();

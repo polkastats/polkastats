@@ -2,7 +2,7 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const pino = require('pino');
 const {
-  shortHash, storeExtrinsics, getDisplayName, updateTotals,
+  shortHash, storeExtrinsics, getDisplayName, updateTotals, updateBalances
 } = require('../utils.js');
 
 const logger = pino();
@@ -117,6 +117,16 @@ module.exports = {
           blockEvents,
           timestamp,
           loggerOptions,
+        );
+
+        // Get involved addresses from block events and update its balances
+        await updateBalances(
+          api,
+          pool,
+          blockNumber,
+          timestamp,
+          loggerOptions,
+          blockEvents,
         );
 
         // Loop through the Vec<EventRecord>

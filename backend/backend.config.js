@@ -42,5 +42,16 @@ module.exports = {
         featuredTimespan: 60 * 60 * 24 * 7 * 2 * 1000, // 2 weeks
       },
     },
+    {
+      enabled: !process.env.CRAWLER_ACTIVE_ACCOUNTS_DISABLE,
+      // eslint-disable-next-line global-require
+      module: require('./lib/crawlers/activeAccounts'),
+      config: {
+        startDelay: 30 * 1000,
+        pollingTime:
+          parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10)
+          || 30 * 60 * 1000,
+      },
+    },
   ],
 };

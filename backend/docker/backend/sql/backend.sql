@@ -166,6 +166,21 @@ CREATE TABLE IF NOT EXISTS featured (
   PRIMARY KEY ( stash_address )
 );
 
+CREATE TABLE IF NOT EXISTS account  (  
+  account_id TEXT NOT NULL,
+  identity TEXT NOT NULL,
+  identity_display TEXT NOT NULL,
+  identity_display_parent TEXT NOT NULL,
+  balances TEXT NOT NULL,
+  available_balance TEXT NOT NULL,
+  free_balance TEXT NOT NULL,
+  locked_balance TEXT NOT NULL,
+  nonce BIGINT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  block_height BIGINT NOT NULL,
+  PRIMARY KEY ( account_id )  
+);
+
 CREATE TABLE IF NOT EXISTS total (  
   name TEXT,
   count BIGINT NOT NULL,
@@ -207,4 +222,5 @@ GRANT ALL PRIVILEGES ON TABLE era_relative_performance_avg TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE era_points TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE era_points_avg TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE featured TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE total TO polkastats;
