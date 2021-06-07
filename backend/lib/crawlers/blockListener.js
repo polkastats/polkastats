@@ -4,11 +4,13 @@ const pino = require('pino');
 const {
   shortHash, storeExtrinsics, getDisplayName, updateTotals, updateBalances,
 } = require('../utils.js');
+const config = require('../../backend.config.js');
 
 const logger = pino();
 const loggerOptions = {
   crawler: 'blockListener',
 };
+const isActiveAccountsCrawlerEnabled = config.crawlers.find((crawler) => crawler.name === 'activeAccounts').enabled;
 
 module.exports = {
   start: async (wsProviderUrl, pool) => {
@@ -120,14 +122,16 @@ module.exports = {
         );
 
         // Get involved addresses from block events and update its balances
-        await updateBalances(
-          api,
-          pool,
-          blockNumber,
-          timestamp,
-          loggerOptions,
-          blockEvents,
-        );
+        if (isActiveAccountsCrawlerEnabled) {
+          await updateBalances(
+            api,
+            pool,
+            blockNumber,
+            timestamp,
+            loggerOptions,
+            blockEvents,
+          );
+        }
 
         // Loop through the Vec<EventRecord>
         await blockEvents.forEach(async (record, index) => {

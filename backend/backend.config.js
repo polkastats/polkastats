@@ -13,11 +13,13 @@ module.exports = {
   },
   crawlers: [
     {
+      name: 'blockListener',
       enabled: !process.env.CRAWLER_BLOCK_LISTENER_DISABLE,
       // eslint-disable-next-line global-require
       module: require('./lib/crawlers/blockListener'),
     },
     {
+      name: 'blockHarvester',
       enabled: !process.env.CRAWLER_BLOCK_HARVESTER_DISABLE,
       // eslint-disable-next-line global-require
       module: require('./lib/crawlers/blockHarvester'),
@@ -29,6 +31,7 @@ module.exports = {
       },
     },
     {
+      name: 'ranking',
       enabled: !process.env.CRAWLER_RANKING_DISABLE,
       // eslint-disable-next-line global-require
       module: require('./lib/crawlers/ranking'),
@@ -44,6 +47,7 @@ module.exports = {
       },
     },
     {
+      name: 'activeAccounts',
       enabled: !process.env.CRAWLER_ACTIVE_ACCOUNTS_DISABLE,
       // eslint-disable-next-line global-require
       module: require('./lib/crawlers/activeAccounts'),
