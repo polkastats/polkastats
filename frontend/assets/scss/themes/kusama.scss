@@ -1,0 +1,368 @@
+// base grayscale colors definitions
+$white: #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #6c757d !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black: #000 !default;
+
+// base colors definitions
+$blue: #007bff !default;
+$indigo: #6610f2 !default;
+$purple: #6f42c1 !default;
+$pink: #e83e8c !default;
+$red: #dc3545 !default;
+$orange: #fd7e14 !default;
+$yellow: #ffc107 !default;
+$green: #28a745 !default;
+$teal: #20c997 !default;
+$cyan: #17a2b8 !default;
+
+// theme colors
+$body-bg: #000;
+$body-color: #fff;
+$primary: #fff;
+$primary2: #e6007a;
+$secondary: #aaafb3;
+$success: #0dff7e;
+$info: $cyan !default;
+$warning: $yellow !default;
+$danger: $red !default;
+$light: $gray-500 !default;
+$dark: #000;
+
+// set theme colors (variant names)
+$theme-colors: () !default;
+$theme-colors: map-merge(
+  (
+    'primary': $primary,
+    'primary2': $primary2,
+    'secondary': $secondary,
+    'success': $success,
+    'info': $info,
+    'warning': $warning,
+    'danger': $danger,
+    'light': $light,
+    'dark': $dark,
+  ),
+  $theme-colors
+);
+
+// bootstrap variable overrides
+$border-radius: 0 !default;
+$border-radius-lg: 0 !default;
+$border-radius-sm: 0 !default;
+$pagination-color: $body-color !default;
+$pagination-bg: $dark !default;
+$pagination-border-color: $secondary !default;
+$pagination-hover-color: $primary !default;
+$pagination-hover-bg: $dark !default;
+$pagination-hover-border-color: $secondary !default;
+$pagination-active-color: $secondary !default;
+$pagination-active-bg: $dark !default;
+$pagination-active-border-color: $secondary !default;
+$pagination-disabled-color: $secondary !default;
+$pagination-disabled-bg: $dark !default;
+$pagination-disabled-border-color: $secondary !default;
+$table-dark-bg: $body-bg !default;
+$table-dark-border-color: rgba(255, 255, 255, 0.2) !default;
+$alert-bg-level: 10;
+$alert-border-level: 1;
+$alert-color-level: -10;
+$nav-tabs-link-active-color: $body-color !default;
+$hr-border-color: rgba(255, 255, 255, 0.2) !default;
+$custom-control-indicator-checked-bg: $primary2 !default;
+$custom-control-indicator-bg: $white !default;
+$navbar-dark-color: $light !default;
+$navbar-dark-hover-color: $white !default;
+$navbar-dark-disabled-color: $white !default;
+$h1-font-size: 2.1rem !default;
+
+// import bootstrap scss
+@import 'bootstrap/scss/bootstrap.scss';
+@import 'bootstrap-vue/src/index.scss';
+
+// global styles
+@font-face {
+  font-family: 'Visuelt';
+  src: url('../../fonts/Visuelt/Visuelt.ttf') format('truetype');
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  font-family: 'Space Mono', monospace;
+  margin-bottom: 60px;
+  font-size: 0.9rem;
+}
+body::-webkit-scrollbar {
+  width: 10px;
+}
+body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+body::-webkit-scrollbar-thumb {
+  background-color: $primary2;
+  outline: none;
+}
+.logo {
+  height: 2.2rem;
+}
+.identicon {
+  display: inline-block;
+}
+.custom-switch .custom-control-label {
+  cursor: pointer;
+}
+.hr {
+  color: gray;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  font-size: 0.8rem;
+}
+.footer a {
+  color: $body-color;
+}
+.close:hover {
+  color: #d1ecf1;
+}
+.toast-body {
+  word-break: break-all;
+}
+pre {
+  font-size: initial;
+  color: $light;
+}
+.nav-tabs .nav-item a {
+  color: $light;
+}
+.text-selected {
+  color: #00effc;
+}
+.btn-selected {
+  color: $primary2 !important;
+  border-color: $primary2;
+}
+.selected-validators .dropdown-menu {
+  width: 400px;
+  padding: 1rem;
+  color: gray;
+}
+.selected-validators .dropdown-menu a span {
+  color: gray;
+}
+@media (max-width: 576px) {
+  .selected-validators .dropdown-menu {
+    width: 350px;
+  }
+}
+
+// sidebar
+#wrapper {
+  overflow-x: hidden;
+}
+#sidebar-wrapper {
+  z-index: 10;
+  min-height: 100vh;
+  margin-left: -15rem;
+  -webkit-transition: margin 0.25s ease-out;
+  -moz-transition: margin 0.25s ease-out;
+  -o-transition: margin 0.25s ease-out;
+  transition: margin 0.25s ease-out;
+}
+#sidebar-wrapper .sidebar-heading {
+  padding: 0.875rem 1.25rem;
+  font-size: 1.2rem;
+}
+#sidebar-wrapper .list-group {
+  width: 15rem;
+}
+#page-content-wrapper {
+  min-width: 100vw;
+}
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: 0;
+}
+@media (min-width: 768px) {
+  #sidebar-wrapper {
+    margin-left: 0;
+  }
+  #page-content-wrapper {
+    min-width: 0;
+    width: 100%;
+  }
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: -15rem;
+  }
+}
+
+// wallet modal
+#wallet-modal .modal-footer {
+  display: none;
+}
+#wallet-modal .modal-header {
+  display: none;
+}
+
+// additional component
+.additional-info p {
+  color: $light;
+}
+
+// identicon component
+.identicon {
+  cursor: pointer;
+}
+
+// loading component
+.loading {
+  margin-top: calc(30vh);
+  font-family: 'Visuelt', sans-serif;
+  font-size: 2rem;
+}
+
+// ranking component
+.elected-icon {
+  color: $black;
+  font-size: 1.6rem;
+  border: 2px solid rgb(128 128 128 / 49%);
+  border-radius: 50%;
+}
+.not-elected-icon {
+  color: $black;
+  font-size: 1.6rem;
+  border: 2px solid rgb(128 128 128 / 49%);
+  border-radius: 50%;
+}
+.custom-switch.b-custom-control-lg .custom-control-label,
+.input-group-lg .custom-switch .custom-control-label {
+  font-size: 0.9rem;
+}
+.exclude {
+  padding: 1rem 1rem 0.5rem 1rem;
+  border: 1px solid $primary2;
+}
+.exclude-title {
+  font-size: 0.9rem;
+  color: $light;
+  margin-bottom: 0;
+}
+.select {
+  cursor: pointer;
+}
+.ranking .select .selected,
+.ranking .select .unselected {
+  font-size: 1.2rem;
+}
+.selected-per-page {
+  color: $primary;
+}
+.progress-bar {
+  color: $gray-700;
+  background-color: #00effc;
+}
+.xl-switch {
+  -ms-transform: scale(2);
+  -moz-transform: scale(2);
+  -webkit-transform: scale(2);
+  -o-transform: scale(2);
+  transform: scale(2);
+  padding: 10px;
+}
+.collapsed > .when-open,
+.not-collapsed > .when-closed {
+  display: none;
+}
+
+// rating component
+.rating {
+  font-size: 1rem;
+}
+
+// selectedValidators component
+.addresses {
+  cursor: pointer;
+}
+.remove,
+.remove:hover,
+.remove:active {
+  color: rgba(255, 0, 0, 0.5);
+}
+.selected-validators .selected-validator {
+  font-size: 0.8rem;
+}
+
+// verifiedIcon component
+.verified .circle {
+  color: #0fccd6;
+}
+.verified .fa-check {
+  color: white;
+}
+
+// wallet selector
+.wallet-selector {
+  color: gray;
+}
+.account-table {
+  color: gray;
+}
+
+// dashboard
+.dashboard-global-stats .stat {
+  font-size: 2rem;
+  font-weight: 200;
+}
+.dashboard-global-stats .box {
+  padding: 1rem 0.5rem;
+  border: 1px solid gray;
+}
+
+// metrics page
+.metrics-page p {
+  color: gray;
+}
+
+// nominate page
+.controller-address-validation p {
+  font-size: 0.75rem;
+}
+
+// validator page
+.validator-page .metric {
+  min-height: 10rem;
+}
+.validator-page .card-body {
+  position: relative;
+}
+.validator-page .verified {
+  font-size: 2rem;
+  cursor: pointer;
+}
+.metric {
+  border: 1px solid gray;
+  padding: 1rem;
+}
+.metric .description {
+  color: $light;
+}
+.csv-export {
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .btn {
+    font-size: 0.8rem !important;
+  }
+}

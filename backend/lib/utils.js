@@ -9,6 +9,20 @@ module.exports = {
   wait: async (ms) => new Promise((resolve) => {
     setTimeout(resolve, ms);
   }),
+  dbQuery: async (pool, sql, loggerOptions) => {
+    try {
+      await pool.query(sql);
+    } catch (error) {
+      logger.error(loggerOptions, `SQL: ${sql} Error: ${JSON.stringify(error)}`);
+    }
+  },
+  dbParamInsert: async (pool, sql, data, loggerOptions) => {
+    try {
+      await pool.query(sql, data);
+    } catch (error) {
+      logger.error(loggerOptions, `SQL: ${sql} Error: ${JSON.stringify(error)}`);
+    }
+  },
   storeExtrinsics: async (pool, blockNumber, extrinsics, blockEvents, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     extrinsics.forEach(async (extrinsic, index) => {
@@ -89,4 +103,17 @@ module.exports = {
     }
     return identity.display || '';
   },
+  updateTotals: async (pool, loggerOptions) => {
+    const sql = `
+        UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks';
+        UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
+        UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers';
+        UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events';
+      `;
+    try {
+      await pool.query(sql);
+    } catch (error) {
+      logger.error(loggerOptions, `Error updating total harvested blocks, extrinsics and events: ${error}`);
+    }
+  }
 };

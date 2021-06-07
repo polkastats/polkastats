@@ -1,7 +1,9 @@
 // @ts-check
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const pino = require('pino');
-const { shortHash, storeExtrinsics, getDisplayName, wait } = require('../utils.js');
+const {
+  shortHash, storeExtrinsics, getDisplayName, wait,
+} = require('../utils.js');
 
 const logger = pino();
 const loggerOptions = {
@@ -15,6 +17,7 @@ module.exports = {
     const startTime = new Date().getTime();
     const wsProvider = new WsProvider(wsProviderUrl);
     const api = await ApiPromise.create({ provider: wsProvider });
+    await api.isReady;
 
     // Get gaps from block table
     const sqlSelect = `
@@ -43,10 +46,12 @@ module.exports = {
     `;
     const res = await pool.query(sqlSelect);
 
-    res.rows.forEach(async (row) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const row of res.rows) {
       // Quick fix for gap 0-0 error
       if (!(row.gap_start === 0 && row.gap_end === 0)) {
         logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
+        // eslint-disable-next-line no-await-in-loop
         await module.exports.harvestBlocks(
           api,
           pool,
@@ -54,14 +59,16 @@ module.exports = {
           parseInt(row.gap_end, 10),
         );
       }
-    });
+    }
+    logger.info(loggerOptions, 'Disconnecting from API');
+    await api.disconnect().catch((error) => logger.error(loggerOptions, `Disconnect error: ${JSON.stringify(error)}`));
     // Log execution time
     const endTime = new Date().getTime();
     logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
 
     logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
     setTimeout(
-      () => module.exports.start(pool, config),
+      () => module.exports.start(wsProviderUrl, pool, config),
       config.pollingTime,
     );
   },
@@ -77,28 +84,18 @@ module.exports = {
           blockEvents,
           blockHeader,
           timestampMs,
-          ChainCurrentIndex,
-          ChainActiveEra,
-          electionStatus,
         ] = await Promise.all([
           api.rpc.chain.getBlock(blockHash),
           api.query.system.events.at(blockHash),
           api.derive.chain.getHeader(blockHash),
           api.query.timestamp.now.at(blockHash),
-          api.query.session.currentIndex.at(blockHash),
-          api.query.staking.activeEra.at(blockHash),
-          api.query.staking.eraElectionStatus.at(blockHash),
         ]);
 
-        const activeEra = ChainActiveEra.toJSON().index;
-        const sessionIndex = ChainCurrentIndex.toString();
+        const blockAuthor = blockHeader.author || '';
         const blockAuthorIdentity = await api.derive.accounts.info(blockHeader.author);
         const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
         const timestamp = Math.floor(timestampMs / 1000);
         const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
-
-        // Get election status
-        const isElection = electionStatus.toString() !== 'Close';
 
         // Store block events
         try {
@@ -166,29 +163,25 @@ module.exports = {
 
         const sqlInsert = `INSERT INTO block (
             block_number,
+            finalized,
             block_author,
             block_author_name,
             block_hash,
             parent_hash,
             extrinsics_root,
             state_root,
-            active_era,
-            session_index,
-            is_election,
             total_events,
             total_extrinsics,
             timestamp
           ) VALUES (
             '${endBlock}',
-            '${blockHeader.author}',
+            false,
+            '${blockAuthor}',
             '${blockAuthorName}',
             '${blockHash}',
             '${parentHash}',
             '${extrinsicsRoot}',
             '${stateRoot}',
-            '${activeEra}',
-            '${sessionIndex}',
-            '${isElection}',
             '${totalEvents}',
             '${totalExtrinsics}',
             '${timestamp}'

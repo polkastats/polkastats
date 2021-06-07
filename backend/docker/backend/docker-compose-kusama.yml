@@ -5,7 +5,7 @@ services:
   # Blockchain archive node
   #
   substrate-node:
-    image: substrate-client:polkadot-latest
+    image: substrate-client:kusama-latest
     hostname: substrate-node
     build: ./substrate-client
     volumes:
@@ -14,8 +14,8 @@ services:
       - '30333:30333'
       - '9933:9933'
       - '9944:9944'
-    command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'PolkaStats Next Gen' --chain polkadot
-    restart: on-failure
+    command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'Kusama Validator Resource Center V2' --chain kusama
+    restart: always
   #
   # SQL data base
   #
@@ -33,6 +33,45 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    #
+    # Optimized for hexacore CPU and 64Gb RAM
+    # 
+    # https://pgtune.leopard.in.ua/#/
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=16GB"
+      - "-c"
+      - "effective_cache_size=48GB"
+      - "-c"
+      - "maintenance_work_mem=2GB"
+      - "-c"
+      - "checkpoint_completion_target=0.7"
+      - "-c"
+      - "wal_buffers=16MB"
+      - "-c"
+      - "default_statistics_target=100"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "effective_io_concurrency=200"
+      - "-c"
+      - "work_mem=27962kB"
+      - "-c"
+      - "min_wal_size=1GB"
+      - "-c"
+      - "max_wal_size=4GB"
+      - "-c"
+      - "max_worker_processes=6"
+      - "-c"
+      - "max_parallel_workers_per_gather=3"
+      - "-c"
+      - "max_parallel_workers=6"
+      - "-c"
+      - "max_parallel_maintenance_workers=3"
+
   #
   # Hasura
   #
@@ -45,7 +84,7 @@ services:
     restart: always
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://polkastats:polkastats@postgres:5432/polkastats
-      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to "false" to disable console
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'false' # set to "false" to disable console
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
@@ -60,11 +99,12 @@ services:
     depends_on:
       - 'postgres'
       - 'substrate-node'
-    restart: on-failure
+    restart: always
     environment:
       - NODE_ENV=production
       - WS_PROVIDER_URL=ws://substrate-node:9944
-      - SUBSTRATE_NETWORK=polkadot
+      - SUBSTRATE_NETWORK=kusama
+      # - CRAWLER_RANKING_DISABLE=true
       # - CRAWLER_BLOCK_LISTENER_DISABLE=true
       # - CRAWLER_BLOCK_HARVESTER_DISABLE=true
 #

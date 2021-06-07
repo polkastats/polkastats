@@ -27,5 +27,20 @@ module.exports = {
           || 60 * 60 * 1000,
       },
     },
+    {
+      enabled: !process.env.CRAWLER_RANKING_DISABLE,
+      // eslint-disable-next-line global-require
+      module: require('./lib/crawlers/ranking'),
+      config: {
+        startDelay: 30 * 1000,
+        pollingTime:
+          parseInt(process.env.CRAWLER_RANKING_POLLING_TIME_MS, 10)
+          || 5 * 60 * 1000,
+        historySize: 84,
+        erasPerDay: 4,
+        tokenDecimals: 12,
+        featuredTimespan: 60 * 60 * 24 * 7 * 2 * 1000, // 2 weeks
+      },
+    },
   ],
 };
