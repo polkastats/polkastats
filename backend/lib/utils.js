@@ -49,7 +49,9 @@ module.exports = {
         });
       });
     const uniqueAddresses = _.uniq(involvedAddresses);
-    logger.info(loggerOptions, `Block #${blockNumber} involved addresses: ${uniqueAddresses.join(', ')}`);
+    if (uniqueAddresses.length > 0) {
+      logger.info(loggerOptions, `Block #${blockNumber} involved addresses: ${uniqueAddresses.join(', ')}`);
+    }
     // eslint-disable-next-line no-restricted-syntax
     for (const address of uniqueAddresses) {
       // eslint-disable-next-line no-await-in-loop
@@ -89,7 +91,6 @@ module.exports = {
         logger.error(loggerOptions, `Error updating balances for involved address: ${JSON.stringify(error)}`);
       }
     }
-    logger.info(loggerOptions, `Updated balances of addresses: ${uniqueAddresses.join(', ')}`);
   },
   storeExtrinsics: async (pool, blockNumber, extrinsics, blockEvents, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
