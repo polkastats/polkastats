@@ -11,12 +11,13 @@ const loggerOptions = {
   crawler: 'blockListener',
 };
 
-logger.info(loggerOptions, `config: ${JSON.stringify(config)}`);
-const isActiveAccountsCrawlerEnabled = crawlers.find((crawler) => crawler.name === 'activeAccounts').enabled;
-
 module.exports = {
   start: async (wsProviderUrl, pool) => {
     logger.info(loggerOptions, 'Starting block listener...');
+
+    logger.info(loggerOptions, `config: ${JSON.stringify(config)}`);
+    const isActiveAccountsCrawlerEnabled = config.crawlers.find((crawler) => crawler.name === 'activeAccounts').enabled;
+
     const wsProvider = new WsProvider(wsProviderUrl);
     const api = await ApiPromise.create({ provider: wsProvider });
     await api.isReady;
