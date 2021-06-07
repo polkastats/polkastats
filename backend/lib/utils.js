@@ -183,5 +183,5 @@ module.exports = {
     } catch (error) {
       logger.error(loggerOptions, `Error updating total harvested blocks, extrinsics and events: ${error}`);
     }
-  }
+  },
 };

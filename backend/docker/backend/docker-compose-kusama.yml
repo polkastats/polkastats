@@ -109,7 +109,7 @@ services:
       # - CRAWLER_BLOCK_LISTENER_DISABLE=true
       # - CRAWLER_BLOCK_HARVESTER_DISABLE=true
 #
-# Persisten volumes
+# Persistent volumes
 #
 volumes:
   db-data: {}

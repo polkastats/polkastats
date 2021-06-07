@@ -2,7 +2,7 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const pino = require('pino');
 const {
-  shortHash, storeExtrinsics, getDisplayName, updateTotals, updateBalances
+  shortHash, storeExtrinsics, getDisplayName, updateTotals, updateBalances,
 } = require('../utils.js');
 
 const logger = pino();

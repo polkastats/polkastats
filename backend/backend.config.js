@@ -1,3 +1,4 @@
+// @ts-check
 require('dotenv').config();
 
 module.exports = {
@@ -8,7 +9,7 @@ module.exports = {
     host: process.env.POSTGRES_HOST || 'postgres',
     database: process.env.POSTGRES_DATABASE || 'polkastats',
     password: process.env.POSTGRES_PASSWORD || 'polkastats',
-    port: process.env.POSTGRES_PORT || 5432,
+    port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
   },
   crawlers: [
     {
