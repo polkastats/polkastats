@@ -4,13 +4,13 @@ const pino = require('pino');
 const {
   shortHash, storeExtrinsics, getDisplayName, updateTotals, updateBalances,
 } = require('../utils.js');
-const config = require('../../backend.config.js');
+const { crawlers } = require('../../backend.config.js');
 
 const logger = pino();
 const loggerOptions = {
   crawler: 'blockListener',
 };
-const isActiveAccountsCrawlerEnabled = config.crawlers.find((crawler) => crawler.name === 'activeAccounts').enabled;
+const isActiveAccountsCrawlerEnabled = crawlers.find((crawler) => crawler.name === 'activeAccounts').enabled;
 
 module.exports = {
   start: async (wsProviderUrl, pool) => {
