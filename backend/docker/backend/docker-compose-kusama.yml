@@ -14,7 +14,7 @@ services:
       - '30333:30333'
       - '9933:9933'
       - '9944:9944'
-    command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'Kusama Validator Resource Center V2' --chain kusama
+    command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'PolkaStats NG Kusama' --chain kusama
     restart: always
   #
   # SQL data base
@@ -84,7 +84,7 @@ services:
     restart: always
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://polkastats:polkastats@postgres:5432/polkastats
-      HASURA_GRAPHQL_ENABLE_CONSOLE: 'false' # set to "false" to disable console
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to "false" to disable console
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
@@ -104,7 +104,8 @@ services:
       - NODE_ENV=production
       - WS_PROVIDER_URL=ws://substrate-node:9944
       - SUBSTRATE_NETWORK=kusama
-      # - CRAWLER_RANKING_DISABLE=true
+      - CRAWLER_RANKING_DISABLE=true
+      - CRAWLER_ACCOUNTS_DISABLE=true
       # - CRAWLER_BLOCK_LISTENER_DISABLE=true
       # - CRAWLER_BLOCK_HARVESTER_DISABLE=true
 #
