@@ -164,8 +164,10 @@ const start = async (wsProviderUrl, pool, config) => {
   const api = await ApiPromise.create({ provider: wsProvider });
 
   (async function run() {
+    const startTime = new Date().getTime();
     await exec(api, pool).catch((err) => logger.error(loggerOptions, `Error running crawler: ${err}`));
-
+    const endTime = new Date().getTime();
+    logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
     setTimeout(() => run(), pollingTime);
   }());
 };
