@@ -86,7 +86,7 @@ module.exports = {
       try {
         // eslint-disable-next-line no-await-in-loop
         await pool.query(sql);
-        logger.error(loggerOptions, `Updated balances for address ${address}: available: ${availableBalance}, free: ${freeBalance}, locked: ${lockedBalance}`);
+        logger.error(loggerOptions, `Updated balances for address ${address}`);
       } catch (error) {
         logger.error(loggerOptions, `Error updating balances for involved address: ${JSON.stringify(error)}`);
       }
