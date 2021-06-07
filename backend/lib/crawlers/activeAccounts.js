@@ -160,12 +160,13 @@ const start = async (wsProviderUrl, pool, config) => {
 
   await wait(config.startDelay);
   logger.info(loggerOptions, 'Starting active accounts crawler...');
-  const wsProvider = new WsProvider(wsProviderUrl);
-  const api = await ApiPromise.create({ provider: wsProvider });
 
   (async function run() {
+    const wsProvider = new WsProvider(wsProviderUrl);
+    const api = await ApiPromise.create({ provider: wsProvider });
     const startTime = new Date().getTime();
     await exec(api, pool).catch((err) => logger.error(loggerOptions, `Error running crawler: ${err}`));
+    await api.disconnect();
     const endTime = new Date().getTime();
     logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
     setTimeout(() => run(), pollingTime);
