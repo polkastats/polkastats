@@ -16,7 +16,7 @@
     "docker:rebuild:graphql": "docker-compose -f docker/backend/docker-compose-kusama.yml up -d graphql-engine"
   },
   "dependencies": {
-    "@polkadot/api": "^4.3.1",
+    "@polkadot/api": "^4.13.1",
     "@polkadot/keyring": "^6.7.1",
     "@polkadot/util": "^6.7.1",
     "axios": "^0.21.1",

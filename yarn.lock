@@ -2593,7 +2593,7 @@
     "@polkadot/x-rxjs" "^6.7.1"
     bn.js "^4.11.9"
 
-"@polkadot/api@4.13.1", "@polkadot/api@^4.3.1":
+"@polkadot/api@4.13.1", "@polkadot/api@^4.13.1", "@polkadot/api@^4.3.1":
   version "4.13.1"
   resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-4.13.1.tgz#0cde3533dd3e8a78cf5fab9e71c3c58c96b6bc3d"
   integrity sha512-/1RNNDlKpCW5AaEfxDMpXX0RbdYvvG1UM+ykWTOjhmwLn22D8uUFc7CU7fJ364MknJHIjeE2VIs48BqAewPxaQ==
