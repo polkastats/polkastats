@@ -4,14 +4,14 @@ const pino = require('pino');
 const {
   shortHash, storeExtrinsics, getDisplayName, updateTotals, updateBalances,
 } = require('../utils.js');
-const { crawlers } = require('../../backend.config.js');
+const config = require('../../backend.config.js');
 
 const logger = pino();
 const loggerOptions = {
   crawler: 'blockListener',
 };
 
-logger.info(loggerOptions, `isActiveAccountsCrawlerEnabled: ${JSON.stringify(crawlers)}`);
+logger.info(loggerOptions, `config: ${JSON.stringify(config)}`);
 const isActiveAccountsCrawlerEnabled = crawlers.find((crawler) => crawler.name === 'activeAccounts').enabled;
 
 module.exports = {
