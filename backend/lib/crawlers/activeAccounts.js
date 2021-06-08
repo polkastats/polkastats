@@ -102,7 +102,7 @@ const start = async (wsProviderUrl, pool) => {
     await dbParamInsert(pool, query, data, loggerOptions);
     processed += 1;
     const loopEndTime = new Date().getTime();
-    logger.info(loggerOptions, `Processed account ${processed} of ${accountIds} (${accountId}) in ${((loopEndTime - loopEndTime) / 1000).toFixed(3)}s`);
+    logger.info(loggerOptions, `Processed account ${processed} of ${accountIds.length} (${accountId}) in ${((loopEndTime - loopEndTime) / 1000).toFixed(3)}s`);
   }
 
   await api.disconnect();
