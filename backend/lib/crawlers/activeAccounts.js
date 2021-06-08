@@ -85,7 +85,7 @@ const start = async (wsProviderUrl, pool) => {
         $10,
         $11
       )
-      ON CONFLICT (account_id) WHERE EXCLUDED.block_height > block_height
+      ON CONFLICT (account_id)
       DO UPDATE SET
         identity = EXCLUDED.identity,
         identity_display = EXCLUDED.identity_display,
