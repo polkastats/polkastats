@@ -24,7 +24,7 @@ module.exports = {
       // eslint-disable-next-line global-require
       module: require('./lib/crawlers/blockHarvester'),
       config: {
-        startDelay: 60 * 1000,
+        startDelay: 30 * 1000,
         pollingTime:
           parseInt(process.env.CRAWLER_BLOCK_LISTENER_POLLING_TIME_MS, 10)
           || 60 * 60 * 1000,
@@ -52,7 +52,7 @@ module.exports = {
       // eslint-disable-next-line global-require
       module: require('./lib/crawlers/activeAccounts'),
       config: {
-        startDelay: 1 * 60 * 1000,
+        startDelay: 60 * 1000,
         pollingTime:
           parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10)
           || 6 * 60 * 60 * 1000, // 6 hours
