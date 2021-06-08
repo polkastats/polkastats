@@ -134,14 +134,20 @@ const exec = async (wsProviderUrl, pool) => {
   const timestamp = Date.now();
   const block = await fetchBlockNumber(api);
   const accountIds = await fetchAccountIds(api);
+
+  logger.info(loggerOptions, 'got accountids');
+
   const accountsIdentity = await Promise.all(
     accountIds.map((id) => fetchAccountIdentity(id, api)),
   );
+
+  logger.info(loggerOptions, 'got identities');
+
   const accountsBalances = await Promise.all(
     accountIds.map((id) => fetchAccountBalance(id, api)),
   );
 
-  logger.info(loggerOptions, 'blockchain data collected!');
+  logger.info(loggerOptions, 'got balances');
 
   await Promise.all(
     makeState([accountIds, accountsIdentity, accountsBalances])
