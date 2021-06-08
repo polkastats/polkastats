@@ -108,7 +108,7 @@ const start = async (wsProviderUrl, pool) => {
 
   await api.disconnect();
   const endTime = new Date().getTime();
-  logger.info(loggerOptions, `Processed ${accountIds.length} active accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+  logger.info(loggerOptions, `Processed ${accountIds.length} active accounts in ${((endTime - startTime) / 1000).toFixed(6)}s`);
 };
 
 module.exports = { start };
