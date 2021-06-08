@@ -1,7 +1,7 @@
 // @ts-check
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const pino = require('pino');
-const { dbParamInsert } = require('../utils.js');
+const { wait, dbParamInsert } = require('../utils.js');
 
 const logger = pino();
 const loggerOptions = {
@@ -97,7 +97,8 @@ const processChunk = async (api, pool, accountId) => {
  * @param {*} wsProviderUrl     Substrate node WS
  * @param {*} pool              Postgres connection pool
  */
-const start = async (wsProviderUrl, pool) => {
+const start = async (wsProviderUrl, pool, config) => {
+  await wait(config.startDelay);
   logger.info(loggerOptions, 'Running active accounts crawler...');
   const chunkSize = 200;
   const wsProvider = new WsProvider(wsProviderUrl);
@@ -124,6 +125,12 @@ const start = async (wsProviderUrl, pool) => {
   await api.disconnect();
   const endTime = new Date().getTime();
   logger.info(loggerOptions, `Processed ${accountIds.length} active accounts in ${((endTime - startTime) / 1000).toFixed(0)}s`);
+
+  logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
+  setTimeout(
+    () => module.exports.start(wsProviderUrl, pool, config),
+    config.pollingTime,
+  );
 };
 
 module.exports = { start };
