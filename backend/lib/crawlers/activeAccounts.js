@@ -99,7 +99,7 @@ const processChunk = async (api, pool, accountId) => {
  */
 const start = async (wsProviderUrl, pool) => {
   logger.info(loggerOptions, 'Running active accounts crawler...');
-  const chunkSize = 100;
+  const chunkSize = 500;
   const wsProvider = new WsProvider(wsProviderUrl);
   const api = await ApiPromise.create({ provider: wsProvider });
   const startTime = new Date().getTime();
