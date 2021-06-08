@@ -97,7 +97,7 @@ const start = async (wsProviderUrl, pool) => {
         nonce = EXCLUDED.nonce,
         timestamp = EXCLUDED.timestamp,
         block_height = EXCLUDED.block_height
-      WHERE EXCLUDED.block_height > block_height
+      WHERE EXCLUDED.block_height > account.block_height
     ;`;
     // eslint-disable-next-line no-await-in-loop
     await dbParamInsert(pool, query, data, loggerOptions);
