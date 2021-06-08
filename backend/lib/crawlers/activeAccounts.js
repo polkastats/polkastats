@@ -135,7 +135,7 @@ const exec = async (wsProviderUrl, pool) => {
   const block = await fetchBlockNumber(api);
   const accountIds = await fetchAccountIds(api);
 
-  logger.info(loggerOptions, 'got accountids');
+  logger.info(loggerOptions, `got ${accountIds.length} accountids`);
 
   const accountsIdentity = await Promise.all(
     accountIds.map((id) => fetchAccountIdentity(id, api)),
