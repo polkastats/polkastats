@@ -88,6 +88,7 @@ services:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+  
   #
   # Block crawler
   #
@@ -105,10 +106,11 @@ services:
       NODE_OPTIONS: --max-old-space-size=8192
       WS_PROVIDER_URL: ws://substrate-node:9944
       SUBSTRATE_NETWORK: kusama
-      # CRAWLER_RANKING_DISABLE=true
+      CRAWLER_RANKING_DISABLE=true
       # CRAWLER_ACTIVE_ACCOUNTS_DISABLE=true
-      # CRAWLER_BLOCK_LISTENER_DISABLE=true
-      # CRAWLER_BLOCK_HARVESTER_DISABLE=true
+      CRAWLER_BLOCK_LISTENER_DISABLE=true
+      CRAWLER_BLOCK_HARVESTER_DISABLE=true
+
 #
 # Persistent volumes
 #

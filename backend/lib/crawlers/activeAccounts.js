@@ -122,11 +122,15 @@ const execQuery = (state, pool) => {
  * Runs every iteration. Fetchs some data from the blockchain, constructs a
  * SQL query an executes the query.
  *
- * @param {*} api   Polkadot API object
- * @param {*} pool  Postgres connection pool
+ * @param {*} wsProviderUrl   Substrate node WS
+ * @param {*} pool            Postgres connection pool
  */
-const exec = async (api, pool) => {
+const exec = async (wsProviderUrl, pool) => {
   logger.info(loggerOptions, 'Running active accounts crawler...');
+  const wsProvider = new WsProvider(wsProviderUrl);
+  const api = await ApiPromise.create({ provider: wsProvider });
+  const startTime = new Date().getTime();
+
   const timestamp = Date.now();
   const block = await fetchBlockNumber(api);
   const accountIds = await fetchAccountIds(api);
@@ -137,6 +141,8 @@ const exec = async (api, pool) => {
     accountIds.map((id) => fetchAccountBalance(id, api)),
   );
 
+  logger.info(loggerOptions, 'blockchain data collected!');
+
   await Promise.all(
     makeState([accountIds, accountsIdentity, accountsBalances])
       .map((state) => makeQuery(state, block, timestamp))
@@ -144,7 +150,9 @@ const exec = async (api, pool) => {
       .map((state) => state.queryResult), // Pick the promise to await
   );
 
-  logger.info(loggerOptions, `Processed ${accountIds.length} active accounts`);
+  await api.disconnect();
+  const endTime = new Date().getTime();
+  logger.info(loggerOptions, `Processed ${accountIds.length} active accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 
 /**
@@ -162,13 +170,7 @@ const start = async (wsProviderUrl, pool, config) => {
   logger.info(loggerOptions, 'Starting active accounts crawler...');
 
   (async function run() {
-    const wsProvider = new WsProvider(wsProviderUrl);
-    const api = await ApiPromise.create({ provider: wsProvider });
-    const startTime = new Date().getTime();
-    await exec(api, pool).catch((err) => logger.error(loggerOptions, `Error running crawler: ${err}`));
-    await api.disconnect();
-    const endTime = new Date().getTime();
-    logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    await exec(wsProviderUrl, pool).catch((err) => logger.error(loggerOptions, `Error running crawler: ${err}`));
     setTimeout(() => run(), pollingTime);
   }());
 };

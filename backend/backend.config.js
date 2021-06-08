@@ -52,7 +52,8 @@ module.exports = {
       // eslint-disable-next-line global-require
       module: require('./lib/crawlers/activeAccounts'),
       config: {
-        startDelay: 5 * 60 * 1000,
+        // startDelay: 5 * 60 * 1000,
+        startDelay: 0,
         pollingTime:
           parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10)
           || 180 * 60 * 1000,
