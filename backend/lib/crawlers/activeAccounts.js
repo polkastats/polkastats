@@ -21,7 +21,7 @@ const chunker = (a, n) => Array.from(
 );
 
 const processChunk = async (api, pool, accountId) => {
-  const timestamp = Date.now();
+  const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
   const [block, identity, balances] = await Promise.all([
     api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
     api.derive.accounts.identity(accountId),
