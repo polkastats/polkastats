@@ -99,19 +99,18 @@ const processChunk = async (api, pool, accountId) => {
  */
 const start = async (wsProviderUrl, pool) => {
   logger.info(loggerOptions, 'Running active accounts crawler...');
-  const chunkSize = 500;
+  const chunkSize = 200;
   const wsProvider = new WsProvider(wsProviderUrl);
   const api = await ApiPromise.create({ provider: wsProvider });
   const startTime = new Date().getTime();
   const accountIds = await fetchAccountIds(api);
   logger.info(loggerOptions, `Got ${accountIds.length} active accounts`);
   const chunks = chunker(accountIds, chunkSize);
-  logger.info(loggerOptions, 'Processing chunks');
+  logger.info(loggerOptions, `Processing chunks of ${chunkSize} accounts`);
 
   // eslint-disable-next-line no-restricted-syntax
   for (const chunk of chunks) {
     const chunkStartTime = Date.now();
-    logger.info(loggerOptions, `Processing chunk ${chunks.indexOf(chunk) + 1} of ${chunks.length}`);
     // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       chunk.map(
@@ -119,7 +118,7 @@ const start = async (wsProviderUrl, pool) => {
       ),
     );
     const chunkEndTime = new Date().getTime();
-    logger.info(loggerOptions, `Processed chunk in ${((chunkEndTime - chunkStartTime) / 1000).toFixed(3)}s`);
+    logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) / 1000).toFixed(3)}s`);
   }
 
   await api.disconnect();
