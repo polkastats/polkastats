@@ -14,17 +14,26 @@ module.exports = {
   }),
   dbQuery: async (pool, sql, loggerOptions) => {
     try {
-      await pool.query(sql);
+      return await pool.query(sql);
     } catch (error) {
-      logger.error(loggerOptions, `SQL: ${sql} Error: ${JSON.stringify(error)}`);
+      logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`);
     }
+    return null;
   },
   dbParamInsert: async (pool, sql, data, loggerOptions) => {
     try {
       await pool.query(sql, data);
     } catch (error) {
-      logger.error(loggerOptions, `SQL: ${sql} Error: ${JSON.stringify(error)}`);
+      logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
     }
+  },
+  dbParamSelect: async (pool, sql, data, loggerOptions) => {
+    try {
+      return await pool.query(sql, data);
+    } catch (error) {
+      logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
+    }
+    return null;
   },
   isValidAddressPolkadotAddress: (address) => {
     try {
