@@ -10,6 +10,7 @@ const {
   storeEvents,
   getDisplayName,
   updateTotals,
+  updateFinalized,
   updateAccountsInfo,
 } = require('../lib/utils.js');
 
@@ -156,6 +157,9 @@ const crawler = async () => {
           loggerOptions,
         ),
       ]);
+
+      // Update finalized blocks
+      await updateFinalized(client, finalizedBlock, loggerOptions);
 
       // Update totals
       // await updateTotals(client, finalizedBlock, loggerOptions);

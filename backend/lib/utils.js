@@ -270,14 +270,23 @@ module.exports = {
     }
     return identity.display || '';
   },
-  updateTotals: async (client, finalizedBlock, loggerOptions) => {
+  updateTotals: async (client, loggerOptions) => {
     const sql = `
-        UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock};
         UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks';
         UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
         UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers';
         UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events';
       `;
+    try {
+      await client.query(sql);
+    } catch (error) {
+      logger.error(loggerOptions, `Error updating totals: ${error}`);
+    }
+  },
+  updateFinalized: async (client, finalizedBlock, loggerOptions) => {
+    const sql = `
+      UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock};
+    `;
     try {
       await client.query(sql);
     } catch (error) {
