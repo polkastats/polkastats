@@ -9,7 +9,7 @@ const logger = pino();
 const runCrawler = async (crawler) => {
   const child = spawn('node', [`${crawler}`]);
   child.on('close', (exitCode) => {
-    logger.info(`Crawler exit with code: ${exitCode}`);
+    logger.info(`Crawler ${crawler} exit with code: ${exitCode}`);
     return -1;
   });
 };
