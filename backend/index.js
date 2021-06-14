@@ -8,9 +8,11 @@ const logger = pino();
 
 const runCrawler = async (crawler) => {
   const child = spawn('node', [`${crawler}`]);
-  child.stdout.on('data', (data) => {
-    console.log(child.pid, data);
-  });
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const data of child.stdout) {
+    // eslint-disable-next-line no-console
+    console.log(data);
+  }
   child.on('close', (exitCode) => {
     logger.info(`Crawler ${crawler} exit with code: ${exitCode}`);
     return -1;
