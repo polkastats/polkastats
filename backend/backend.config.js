@@ -15,14 +15,12 @@ module.exports = {
     {
       name: 'blockListener',
       enabled: !process.env.CRAWLER_BLOCK_LISTENER_DISABLE,
-      // eslint-disable-next-line global-require
-      module: require('./lib/crawlers/blockListener'),
+      crawler: './lib/crawlers/blockListener.js',
     },
     {
       name: 'blockHarvester',
       enabled: !process.env.CRAWLER_BLOCK_HARVESTER_DISABLE,
-      // eslint-disable-next-line global-require
-      module: require('./lib/crawlers/blockHarvester'),
+      crawler: './lib/crawlers/blockHarvester.js',
       config: {
         startDelay: 30 * 1000,
         pollingTime:
@@ -33,8 +31,7 @@ module.exports = {
     {
       name: 'ranking',
       enabled: !process.env.CRAWLER_RANKING_DISABLE,
-      // eslint-disable-next-line global-require
-      module: require('./lib/crawlers/ranking'),
+      crawler: './lib/crawlers/ranking.js',
       config: {
         startDelay: 15 * 60 * 1000,
         pollingTime:
@@ -49,8 +46,7 @@ module.exports = {
     {
       name: 'activeAccounts',
       enabled: !process.env.CRAWLER_ACTIVE_ACCOUNTS_DISABLE,
-      // eslint-disable-next-line global-require
-      module: require('./lib/crawlers/activeAccounts'),
+      crawler: './lib/crawlers/activeAccounts.js',
       config: {
         startDelay: 60 * 1000,
         pollingTime:

@@ -1,12 +1,50 @@
 // @ts-check
 const pino = require('pino');
+const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
 const { hexToU8a, isHex } = require('@polkadot/util');
+const { Pool, Client } = require('pg');
 const _ = require('lodash');
 
 const logger = pino();
 
 module.exports = {
+
+  getPolkadotAPI: async () => {
+    logger.info(`Connecting to ${this.config.wsProviderUrl}`);
+    const provider = new WsProvider(this.config.wsProviderUrl);
+    const api = await ApiPromise.create({ provider });
+    await api.isReady;
+    return api;
+  },
+
+  getPool: async () => {
+    const pool = new Pool(this.config.postgresConnParams);
+    await pool.connect();
+    return pool;
+  },
+
+  getClient: async () => {
+    const client = new Client(this.config.postgresConnParams);
+    await client.connect();
+    return client;
+  },
+
+  isNodeSynced: async (api) => {
+    let node;
+    try {
+      node = await api.rpc.system.health();
+    } catch {
+      logger.error("Can't query node status");
+    }
+    if (node && node.isSyncing.eq(false)) {
+      logger.error('Node is synced!');
+      return true;
+    }
+    logger.error('Node is NOT synced!');
+    return false;
+  },
+
   formatNumber: (number) => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'),
   shortHash: (hash) => `${hash.substr(0, 6)}…${hash.substr(hash.length - 5, 4)}`,
   wait: async (ms) => new Promise((resolve) => {

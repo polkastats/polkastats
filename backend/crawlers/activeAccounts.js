@@ -1,12 +1,23 @@
 // @ts-check
-const { ApiPromise, WsProvider } = require('@polkadot/api');
 const pino = require('pino');
-const { wait, dbParamInsert } = require('../utils.js');
+const {
+  wait,
+  getClient,
+  getPolkadotAPI,
+  isNodeSynced,
+  dbParamInsert,
+} = require('../lib/utils.js');
+const backendConfig = require('../backend.config.js');
 
+const crawlerName = 'activeAccounts';
 const logger = pino();
 const loggerOptions = {
-  crawler: 'activeAccounts',
+  crawler: crawlerName,
 };
+const config = backendConfig.crawlers.find(
+  ({ name }) => name === crawlerName,
+);
+const chunkSize = 200;
 
 const getAccountId = (account) => account
   .map((e) => e.args)
@@ -20,7 +31,7 @@ const chunker = (a, n) => Array.from(
   (_, i) => a.slice(i * n, i * n + n),
 );
 
-const processChunk = async (api, pool, accountId) => {
+const processChunk = async (api, client, accountId) => {
   const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
   const [block, identity, balances] = await Promise.all([
     api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
@@ -89,20 +100,32 @@ const processChunk = async (api, pool, accountId) => {
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
   // eslint-disable-next-line no-await-in-loop
-  await dbParamInsert(pool, query, data, loggerOptions);
+  await dbParamInsert(client, query, data, loggerOptions);
 };
 
-/**
- *
- * @param {*} wsProviderUrl     Substrate node WS
- * @param {*} pool              Postgres connection pool
- */
-const start = async (wsProviderUrl, pool, config) => {
+const crawler = async () => {
+  logger.info(loggerOptions, `Delaying active accounts crawler start for ${config.startDelay / 1000}s`);
   await wait(config.startDelay);
+
   logger.info(loggerOptions, 'Running active accounts crawler...');
-  const chunkSize = 200;
-  const wsProvider = new WsProvider(wsProviderUrl);
-  const api = await ApiPromise.create({ provider: wsProvider });
+
+  const client = await getClient();
+  let api = await getPolkadotAPI();
+  while (!api) {
+    // eslint-disable-next-line no-await-in-loop
+    await wait(10000);
+    // eslint-disable-next-line no-await-in-loop
+    api = await getPolkadotAPI();
+  }
+
+  let synced = await isNodeSynced(api);
+  while (!synced) {
+    // eslint-disable-next-line no-await-in-loop
+    await wait(10000);
+    // eslint-disable-next-line no-await-in-loop
+    synced = await isNodeSynced(api);
+  }
+
   const startTime = new Date().getTime();
   const accountIds = await fetchAccountIds(api);
   logger.info(loggerOptions, `Got ${accountIds.length} active accounts`);
@@ -115,7 +138,7 @@ const start = async (wsProviderUrl, pool, config) => {
     // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       chunk.map(
-        (accountId) => processChunk(api, pool, accountId),
+        (accountId) => processChunk(api, client, accountId),
       ),
     );
     const chunkEndTime = new Date().getTime();
@@ -128,9 +151,13 @@ const start = async (wsProviderUrl, pool, config) => {
 
   logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
   setTimeout(
-    () => module.exports.start(wsProviderUrl, pool, config),
+    () => crawler(),
     config.pollingTime,
   );
 };
 
-module.exports = { start };
+crawler().catch((error) => {
+  // eslint-disable-next-line no-console
+  console.error(error);
+  process.exit(-1);
+});
