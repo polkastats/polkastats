@@ -78,6 +78,7 @@ module.exports = {
     }
   },
   updateAccountsInfo: async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
+    const startTime = new Date().getTime();
     const involvedAddresses = [];
     blockEvents
       .forEach(({ event }) => {
@@ -95,6 +96,9 @@ module.exports = {
         ),
       ),
     );
+    // Log execution time
+    const endTime = new Date().getTime();
+    logger.info(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
   updateAccountInfo: async (api, client, blockNumber, timestamp, address, loggerOptions) => {
     const [balances, { identity }] = await Promise.all([
