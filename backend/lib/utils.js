@@ -137,54 +137,60 @@ module.exports = {
     client, blockNumber, extrinsics, blockEvents, timestamp, loggerOptions,
   ) => {
     const startTime = new Date().getTime();
-    extrinsics.forEach(async (extrinsic, index) => {
-      const { isSigned } = extrinsic;
-      const signer = isSigned ? extrinsic.signer.toString() : '';
-      const { section } = extrinsic.toHuman().method;
-      const { method } = extrinsic.toHuman().method;
-      const args = JSON.stringify(extrinsic.args);
-      const hash = extrinsic.hash.toHex();
-      const doc = extrinsic.meta.documentation.toString().replace(/'/g, "''");
-      const success = module.exports.getExtrinsicSuccess(index, blockEvents);
-      const sql = `INSERT INTO extrinsic (
-          block_number,
-          extrinsic_index,
-          is_signed,
-          signer,
-          section,
-          method,
-          args,
-          hash,
-          doc,
-          success,
-          timestamp
-        ) VALUES (
-          '${blockNumber}',
-          '${index}',
-          '${isSigned}',
-          '${signer}',
-          '${section}',
-          '${method}',
-          '${args}',
-          '${hash}',
-          '${doc}',
-          '${success}',
-          '${timestamp}'
-        )
-        ON CONFLICT ON CONSTRAINT extrinsic_pkey 
-        DO NOTHING;
-        ;`;
-      try {
-        await client.query(sql);
-        logger.info(loggerOptions, `Added extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
-      } catch (error) {
-        logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
-      }
-    });
-
+    await Promise.all(
+      extrinsics.map((extrinsic, index) => module.exports.storeExtrinsic(
+        client, blockNumber, extrinsic, index, blockEvents, timestamp, loggerOptions,
+      )),
+    );
     // Log execution time
     const endTime = new Date().getTime();
     logger.info(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+  },
+  storeExtrinsic: async (
+    client, blockNumber, extrinsic, index, blockEvents, timestamp, loggerOptions,
+  ) => {
+    const { isSigned } = extrinsic;
+    const signer = isSigned ? extrinsic.signer.toString() : '';
+    const { section } = extrinsic.toHuman().method;
+    const { method } = extrinsic.toHuman().method;
+    const args = JSON.stringify(extrinsic.args);
+    const hash = extrinsic.hash.toHex();
+    const doc = extrinsic.meta.documentation.toString().replace(/'/g, "''");
+    const success = module.exports.getExtrinsicSuccess(index, blockEvents);
+    const sql = `INSERT INTO extrinsic (
+        block_number,
+        extrinsic_index,
+        is_signed,
+        signer,
+        section,
+        method,
+        args,
+        hash,
+        doc,
+        success,
+        timestamp
+      ) VALUES (
+        '${blockNumber}',
+        '${index}',
+        '${isSigned}',
+        '${signer}',
+        '${section}',
+        '${method}',
+        '${args}',
+        '${hash}',
+        '${doc}',
+        '${success}',
+        '${timestamp}'
+      )
+      ON CONFLICT ON CONSTRAINT extrinsic_pkey 
+      DO NOTHING;
+      ;`;
+    try {
+      await client.query(sql);
+      logger.info(loggerOptions, `Added extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+    } catch (error) {
+      logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+    }
   },
   storeEvents: async (
     client, blockNumber, blockEvents, timestamp, loggerOptions,
@@ -199,7 +205,6 @@ module.exports = {
     const endTime = new Date().getTime();
     logger.info(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
-
   storeEvent: async (
     client, blockNumber, record, index, timestamp, loggerOptions,
   ) => {
