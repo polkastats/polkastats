@@ -191,7 +191,7 @@ module.exports = {
   ) => {
     const startTime = new Date().getTime();
     await Promise.all(
-      blockEvents.map((record, index) => this.storeEvent(
+      blockEvents.map((record, index) => module.exports.storeEvent(
         client, blockNumber, record, index, timestamp, loggerOptions,
       )),
     );
