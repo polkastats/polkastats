@@ -199,6 +199,8 @@ INSERT INTO total (name, count) VALUES
   ('active_era', 0),
   ('minimum_stake', 0);
 
+CREATE INDEX IF NOT EXISTS block_finalized_idx ON block (finalized);
+
 CREATE INDEX IF NOT EXISTS extrinsic_section_idx ON extrinsic (section);
 CREATE INDEX IF NOT EXISTS extrinsic_method_idx ON extrinsic (method);
 CREATE INDEX IF NOT EXISTS extrinsic_signer_idx ON extrinsic (signer);

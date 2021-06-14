@@ -285,7 +285,7 @@ module.exports = {
   },
   updateFinalized: async (client, finalizedBlock, loggerOptions) => {
     const sql = `
-      UPDATE block SET finalized = true WHERE block_number <= ${finalizedBlock};
+      UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock};
     `;
     try {
       await client.query(sql);
