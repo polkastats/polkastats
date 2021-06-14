@@ -11,7 +11,7 @@ const runCrawler = async (crawler) => {
   // eslint-disable-next-line no-restricted-syntax
   for await (const data of child.stdout) {
     // eslint-disable-next-line no-console
-    console.log(data);
+    console.log(data.toString());
   }
   child.on('close', (exitCode) => {
     logger.info(`Crawler ${crawler} exit with code: ${exitCode}`);
