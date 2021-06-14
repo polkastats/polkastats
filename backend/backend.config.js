@@ -15,12 +15,12 @@ module.exports = {
     {
       name: 'blockListener',
       enabled: !process.env.CRAWLER_BLOCK_LISTENER_DISABLE,
-      crawler: './lib/crawlers/blockListener.js',
+      crawler: './crawlers/blockListener.js',
     },
     {
       name: 'blockHarvester',
       enabled: !process.env.CRAWLER_BLOCK_HARVESTER_DISABLE,
-      crawler: './lib/crawlers/blockHarvester.js',
+      crawler: './crawlers/blockHarvester.js',
       config: {
         startDelay: 30 * 1000,
         pollingTime:
@@ -31,7 +31,7 @@ module.exports = {
     {
       name: 'ranking',
       enabled: !process.env.CRAWLER_RANKING_DISABLE,
-      crawler: './lib/crawlers/ranking.js',
+      crawler: './crawlers/ranking.js',
       config: {
         startDelay: 15 * 60 * 1000,
         pollingTime:
@@ -46,7 +46,7 @@ module.exports = {
     {
       name: 'activeAccounts',
       enabled: !process.env.CRAWLER_ACTIVE_ACCOUNTS_DISABLE,
-      crawler: './lib/crawlers/activeAccounts.js',
+      crawler: './crawlers/activeAccounts.js',
       config: {
         startDelay: 60 * 1000,
         pollingTime:
