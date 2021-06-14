@@ -164,20 +164,20 @@ const crawler = async () => {
 
   logger.info(loggerOptions, 'Starting block harvester...');
   const startTime = new Date().getTime();
-  const client = await getClient();
-  let api = await getPolkadotAPI();
+  const client = await getClient(loggerOptions);
+  let api = await getPolkadotAPI(loggerOptions);
   while (!api) {
     // eslint-disable-next-line no-await-in-loop
     await wait(10000);
     // eslint-disable-next-line no-await-in-loop
-    api = await getPolkadotAPI();
+    api = await getPolkadotAPI(loggerOptions);
   }
-  let synced = await isNodeSynced(api);
+  let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {
     // eslint-disable-next-line no-await-in-loop
     await wait(10000);
     // eslint-disable-next-line no-await-in-loop
-    synced = await isNodeSynced(api);
+    synced = await isNodeSynced(api, loggerOptions);
   }
   // Get gaps from block table
   const sqlSelect = `

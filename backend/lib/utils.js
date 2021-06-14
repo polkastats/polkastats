@@ -3,40 +3,40 @@ const pino = require('pino');
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
 const { hexToU8a, isHex } = require('@polkadot/util');
-const { Pool, Client } = require('pg');
+const { Client } = require('pg');
 const _ = require('lodash');
 const config = require('../backend.config.js');
 
 const logger = pino();
 
 module.exports = {
-  getPolkadotAPI: async () => {
-    logger.info(`Connecting to ${config.wsProviderUrl}`);
+  getPolkadotAPI: async (loggerOptions) => {
+    logger.info(loggerOptions, `Connecting to ${config.wsProviderUrl}`);
     const provider = new WsProvider(config.wsProviderUrl);
     const api = await ApiPromise.create({ provider });
     await api.isReady;
     return api;
   },
-  getClient: async () => {
+  getClient: async (loggerOptions) => {
+    logger.info(loggerOptions, `Connecting to DB ${config.postgresConnParams.database} at ${config.postgresConnParams.host}:${config.postgresConnParams.port}`);
     const client = new Client(config.postgresConnParams);
     await client.connect();
     return client;
   },
-  isNodeSynced: async (api) => {
+  isNodeSynced: async (api, loggerOptions) => {
     let node;
     try {
       node = await api.rpc.system.health();
     } catch {
-      logger.error("Can't query node status");
+      logger.error(loggerOptions, "Can't query node status");
     }
     if (node && node.isSyncing.eq(false)) {
-      logger.error('Node is synced!');
+      logger.error(loggerOptions, 'Node is synced!');
       return true;
     }
-    logger.error('Node is NOT synced!');
+    logger.error(loggerOptions, 'Node is NOT synced!');
     return false;
   },
-
   formatNumber: (number) => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'),
   shortHash: (hash) => `${hash.substr(0, 6)}…${hash.substr(hash.length - 5, 4)}`,
   wait: async (ms) => new Promise((resolve) => {
