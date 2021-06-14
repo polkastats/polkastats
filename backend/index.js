@@ -8,11 +8,11 @@ const logger = pino();
 
 const runCrawler = async (crawler) => {
   const child = spawn('node', [`${crawler}`]);
-  // eslint-disable-next-line no-restricted-syntax
-  for await (const data of child.stdout) {
-    // eslint-disable-next-line no-console
-    console.log(data.toString());
-  }
+  // // eslint-disable-next-line no-restricted-syntax
+  // for await (const data of child.stdout) {
+  //   process.stdout.write(data.toString());
+  // }
+  child.stdout.pipe(process.stdout);
   child.on('close', (exitCode) => {
     logger.info(`Crawler ${crawler} exit with code: ${exitCode}`);
     return -1;
