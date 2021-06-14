@@ -39,6 +39,8 @@ const crawler = async () => {
 
   // Subscribe to new blocks
   await api.rpc.chain.subscribeNewHeads(async (blockHeader) => {
+    const startTime = new Date().getTime();
+
     // Get block hash
     const blockNumber = blockHeader.number.toNumber();
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
@@ -200,6 +202,9 @@ const crawler = async () => {
 
       // update totals
       updateTotals(client, loggerOptions);
+
+      const endTime = new Date().getTime();
+      logger.info(loggerOptions, `Block #${blockNumber} processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
     }
   });
 };
