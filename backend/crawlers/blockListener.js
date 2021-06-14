@@ -158,7 +158,7 @@ const crawler = async () => {
       ]);
 
       // Update totals
-      await updateTotals(client, finalizedBlock, loggerOptions);
+      // await updateTotals(client, finalizedBlock, loggerOptions);
 
       const endTime = new Date().getTime();
       logger.info(loggerOptions, `Block #${blockNumber} processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
