@@ -7,6 +7,7 @@ const {
   wait,
   shortHash,
   storeExtrinsics,
+  storeEvents,
   getDisplayName,
   updateTotals,
   updateAccountsInfo,
@@ -50,23 +51,17 @@ const crawler = async () => {
       { block },
       extendedHeader,
       finalizedBlockHash,
+      timestampMs,
     ] = await Promise.all([
       api.rpc.chain.getBlock(blockHash),
       api.derive.chain.getHeader(blockHash),
       api.rpc.chain.getFinalizedHead(),
+      api.query.timestamp.now.at(blockHash),
     ]);
 
     const finalizedBlockHeader = await api.rpc.chain.getHeader(finalizedBlockHash);
     const finalizedBlock = finalizedBlockHeader.number.toNumber();
-
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
-
-    // Get block author
-    const blockAuthor = extendedHeader.author || '';
-
-    // Get block author identity display name
-    const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
-    const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
 
     // Handle chain reorganizations
     let sql = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
@@ -74,19 +69,21 @@ const crawler = async () => {
     if (res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
       logger.info(loggerOptions, `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
-
-      // eslint-disable-next-line
       const blockAuthor = extendedHeader.author;
-      // eslint-disable-next-line
       const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
-      // eslint-disable-next-line
-      const blockAuthorName = blockAuthorIdentity.identity.display || '';
-
+      const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
       sql = `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
       res = await client.query(sql);
     } else {
-      // Get block events
-      const blockEvents = await api.query.system.events.at(blockHash);
+      const blockAuthor = extendedHeader.author || '';
+      const [
+        blockAuthorIdentity,
+        blockEvents,
+      ] = await Promise.all([
+        api.derive.accounts.info(blockAuthor),
+        api.query.system.events.at(blockHash),
+      ]);
+      const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
 
       // Totals
       const totalEvents = blockEvents.length || 0;
@@ -94,7 +91,6 @@ const crawler = async () => {
 
       // Store new block
       logger.info(loggerOptions, `Adding block #${blockNumber} (${shortHash(blockHash.toString())})`);
-      const timestampMs = await api.query.timestamp.now.at(blockHash);
       const timestamp = Math.floor(parseInt(timestampMs.toString(), 10) / 1000);
 
       sql = `INSERT INTO block (
@@ -152,51 +148,17 @@ const crawler = async () => {
         blockEvents,
       );
 
-      // eslint-disable-next-line no-restricted-syntax
-      for (const record of blockEvents) {
-        const index = blockEvents.indexOf(record);
-        // Extract the phase and event
-        const { event, phase } = record;
-        sql = `INSERT INTO event (
-          block_number,
-          event_index,
-          section,
-          method,
-          phase,
-          data,
-          timestamp
-        ) VALUES (
-          '${blockNumber}',
-          '${index}',
-          '${event.section}',
-          '${event.method}',
-          '${phase.toString()}',
-          '${JSON.stringify(event.data)}',
-          '${timestamp}'
-        )
-        ON CONFLICT ON CONSTRAINT event_pkey 
-        DO NOTHING
-        ;`;
-        try {
-          // eslint-disable-next-line no-await-in-loop
-          await client.query(sql);
-          logger.info(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
-        } catch (error) {
-          logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
-        }
-      }
+      // Store module events
+      await storeEvents(
+        client,
+        blockNumber,
+        blockEvents,
+        timestamp,
+        loggerOptions,
+      );
 
-      // update finalized blocks
-      sql = `UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock}`;
-      try {
-        await client.query(sql);
-        logger.info(loggerOptions, `Last finalized block updated to #${finalizedBlock}`);
-      } catch (error) {
-        logger.error(loggerOptions, `Error updating finalized block: ${error}, sql: ${sql}`);
-      }
-
-      // update totals
-      updateTotals(client, loggerOptions);
+      // Update totals
+      updateTotals(client, finalizedBlock, loggerOptions);
 
       const endTime = new Date().getTime();
       logger.info(loggerOptions, `Block #${blockNumber} processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);

@@ -133,7 +133,9 @@ module.exports = {
       logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
     }
   },
-  storeExtrinsics: async (client, blockNumber, extrinsics, blockEvents, timestamp, loggerOptions) => {
+  storeExtrinsics: async (
+    client, blockNumber, extrinsics, blockEvents, timestamp, loggerOptions,
+  ) => {
     const startTime = new Date().getTime();
     extrinsics.forEach(async (extrinsic, index) => {
       const { isSigned } = extrinsic;
@@ -184,6 +186,47 @@ module.exports = {
     const endTime = new Date().getTime();
     logger.info(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
+  storeEvents: async (
+    client, blockNumber, blockEvents, timestamp, loggerOptions,
+  ) => {
+    const startTime = new Date().getTime();
+    // eslint-disable-next-line no-restricted-syntax
+    for (const record of blockEvents) {
+      const index = blockEvents.indexOf(record);
+      // Extract the phase and event
+      const { event, phase } = record;
+      const sql = `INSERT INTO event (
+        block_number,
+        event_index,
+        section,
+        method,
+        phase,
+        data,
+        timestamp
+      ) VALUES (
+        '${blockNumber}',
+        '${index}',
+        '${event.section}',
+        '${event.method}',
+        '${phase.toString()}',
+        '${JSON.stringify(event.data)}',
+        '${timestamp}'
+      )
+      ON CONFLICT ON CONSTRAINT event_pkey 
+      DO NOTHING
+      ;`;
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await client.query(sql);
+        logger.info(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
+      } catch (error) {
+        logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+      }
+    }
+    // Log execution time
+    const endTime = new Date().getTime();
+    logger.info(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+  },
   getExtrinsicSuccess: (index, blockEvents) => {
     // assume success if no events were extracted
     if (blockEvents.length === 0) {
@@ -213,8 +256,9 @@ module.exports = {
     }
     return identity.display || '';
   },
-  updateTotals: async (client, loggerOptions) => {
+  updateTotals: async (client, finalizedBlock, loggerOptions) => {
     const sql = `
+        UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock};
         UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks';
         UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
         UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers';
@@ -223,7 +267,7 @@ module.exports = {
     try {
       await client.query(sql);
     } catch (error) {
-      logger.error(loggerOptions, `Error updating total harvested blocks, extrinsics and events: ${error}`);
+      logger.error(loggerOptions, `Error updating totals: ${error}`);
     }
   },
 };
