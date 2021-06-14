@@ -21,38 +21,32 @@ module.exports = {
       name: 'blockHarvester',
       enabled: !process.env.CRAWLER_BLOCK_HARVESTER_DISABLE,
       crawler: './crawlers/blockHarvester.js',
-      config: {
-        startDelay: 30 * 1000,
-        pollingTime:
-          parseInt(process.env.CRAWLER_BLOCK_LISTENER_POLLING_TIME_MS, 10)
-          || 60 * 60 * 1000,
-      },
+      startDelay: 30 * 1000,
+      pollingTime:
+        parseInt(process.env.CRAWLER_BLOCK_LISTENER_POLLING_TIME_MS, 10)
+        || 60 * 60 * 1000,
     },
     {
       name: 'ranking',
       enabled: !process.env.CRAWLER_RANKING_DISABLE,
       crawler: './crawlers/ranking.js',
-      config: {
-        startDelay: 15 * 60 * 1000,
-        pollingTime:
-          parseInt(process.env.CRAWLER_RANKING_POLLING_TIME_MS, 10)
-          || 5 * 60 * 1000,
-        historySize: 84,
-        erasPerDay: 4,
-        tokenDecimals: 12,
-        featuredTimespan: 60 * 60 * 24 * 7 * 2 * 1000, // 2 weeks
-      },
+      startDelay: 15 * 60 * 1000,
+      pollingTime:
+        parseInt(process.env.CRAWLER_RANKING_POLLING_TIME_MS, 10)
+        || 5 * 60 * 1000,
+      historySize: 84,
+      erasPerDay: 4,
+      tokenDecimals: 12,
+      featuredTimespan: 60 * 60 * 24 * 7 * 2 * 1000, // 2 weeks
     },
     {
       name: 'activeAccounts',
       enabled: !process.env.CRAWLER_ACTIVE_ACCOUNTS_DISABLE,
       crawler: './crawlers/activeAccounts.js',
-      config: {
-        startDelay: 60 * 1000,
-        pollingTime:
-          parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10)
-          || 6 * 60 * 60 * 1000, // 6 hours
-      },
+      startDelay: 60 * 1000,
+      pollingTime:
+        parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10)
+        || 6 * 60 * 60 * 1000, // 6 hours
     },
   ],
 };

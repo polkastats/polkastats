@@ -10,7 +10,6 @@ const config = require('../backend.config.js');
 const logger = pino();
 
 module.exports = {
-
   getPolkadotAPI: async () => {
     logger.info(`Connecting to ${config.wsProviderUrl}`);
     const provider = new WsProvider(config.wsProviderUrl);
@@ -18,19 +17,11 @@ module.exports = {
     await api.isReady;
     return api;
   },
-
-  getPool: async () => {
-    const pool = new Pool(config.postgresConnParams);
-    await pool.connect();
-    return pool;
-  },
-
   getClient: async () => {
     const client = new Client(config.postgresConnParams);
     await client.connect();
     return client;
   },
-
   isNodeSynced: async (api) => {
     let node;
     try {
