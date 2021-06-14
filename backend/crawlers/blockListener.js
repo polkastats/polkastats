@@ -128,34 +128,34 @@ const crawler = async () => {
         logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
       }
 
-      // Store block extrinsics
-      await storeExtrinsics(
-        client,
-        blockNumber,
-        block.extrinsics,
-        blockEvents,
-        timestamp,
-        loggerOptions,
-      );
-
-      // Get involved addresses from block events and update its balances
-      await updateAccountsInfo(
-        api,
-        client,
-        blockNumber,
-        timestamp,
-        loggerOptions,
-        blockEvents,
-      );
-
-      // Store module events
-      await storeEvents(
-        client,
-        blockNumber,
-        blockEvents,
-        timestamp,
-        loggerOptions,
-      );
+      await Promise.all([
+        // Store block extrinsics
+        await storeExtrinsics(
+          client,
+          blockNumber,
+          block.extrinsics,
+          blockEvents,
+          timestamp,
+          loggerOptions,
+        ),
+        // Get involved addresses from block events and update its balances
+        await updateAccountsInfo(
+          api,
+          client,
+          blockNumber,
+          timestamp,
+          loggerOptions,
+          blockEvents,
+        ),
+        // Store module events
+        await storeEvents(
+          client,
+          blockNumber,
+          blockEvents,
+          timestamp,
+          loggerOptions,
+        ),
+      ]);
 
       // Update totals
       await updateTotals(client, finalizedBlock, loggerOptions);
