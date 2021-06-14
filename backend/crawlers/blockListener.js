@@ -9,7 +9,7 @@ const {
   storeExtrinsics,
   getDisplayName,
   updateTotals,
-  updateBalances,
+  updateAccountsInfo,
 } = require('../lib/utils.js');
 
 const logger = pino();
@@ -143,7 +143,7 @@ const crawler = async () => {
       );
 
       // Get involved addresses from block events and update its balances
-      await updateBalances(
+      await updateAccountsInfo(
         api,
         client,
         blockNumber,
@@ -152,44 +152,39 @@ const crawler = async () => {
         blockEvents,
       );
 
-      // Loop through the Vec<EventRecord>
-      await blockEvents.forEach(async (record, index) => {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const record of blockEvents) {
+        const index = blockEvents.indexOf(record);
         // Extract the phase and event
         const { event, phase } = record;
-        // eslint-disable-next-line
-        let sql = `SELECT FROM event WHERE block_number = '${blockNumber}' AND event_index = '${index}';`;
-        // eslint-disable-next-line
-        let res = await client.query(sql);
-
-        if (res.rows.length === 0) {
-          sql = `INSERT INTO event (
-              block_number,
-              event_index,
-              section,
-              method,
-              phase,
-              data,
-              timestamp
-            ) VALUES (
-              '${blockNumber}',
-              '${index}',
-              '${event.section}',
-              '${event.method}',
-              '${phase.toString()}',
-              '${JSON.stringify(event.data)}',
-              '${timestamp}'
-            )
-            ON CONFLICT ON CONSTRAINT event_pkey 
-            DO NOTHING
-            ;`;
-          try {
-            await client.query(sql);
-            logger.info(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
-          } catch (error) {
-            logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
-          }
+        sql = `INSERT INTO event (
+          block_number,
+          event_index,
+          section,
+          method,
+          phase,
+          data,
+          timestamp
+        ) VALUES (
+          '${blockNumber}',
+          '${index}',
+          '${event.section}',
+          '${event.method}',
+          '${phase.toString()}',
+          '${JSON.stringify(event.data)}',
+          '${timestamp}'
+        )
+        ON CONFLICT ON CONSTRAINT event_pkey 
+        DO NOTHING
+        ;`;
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          await client.query(sql);
+          logger.info(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
+        } catch (error) {
+          logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
         }
-      });
+      }
 
       // update finalized blocks
       sql = `UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock}`;

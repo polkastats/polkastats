@@ -42,24 +42,24 @@ module.exports = {
   wait: async (ms) => new Promise((resolve) => {
     setTimeout(resolve, ms);
   }),
-  dbQuery: async (pool, sql, loggerOptions) => {
+  dbQuery: async (client, sql, loggerOptions) => {
     try {
-      return await pool.query(sql);
+      return await client.query(sql);
     } catch (error) {
       logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`);
     }
     return null;
   },
-  dbParamInsert: async (pool, sql, data, loggerOptions) => {
+  dbParamInsert: async (client, sql, data, loggerOptions) => {
     try {
-      await pool.query(sql, data);
+      await client.query(sql, data);
     } catch (error) {
       logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
     }
   },
-  dbParamSelect: async (pool, sql, data, loggerOptions) => {
+  dbParamSelect: async (client, sql, data, loggerOptions) => {
     try {
-      return await pool.query(sql, data);
+      return await client.query(sql, data);
     } catch (error) {
       logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
     }
@@ -77,7 +77,7 @@ module.exports = {
       return false;
     }
   },
-  updateBalances: async (api, pool, blockNumber, timestamp, loggerOptions, blockEvents) => {
+  updateAccountsInfo: async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
     const involvedAddresses = [];
     blockEvents
       .forEach(({ event }) => {
@@ -88,50 +88,52 @@ module.exports = {
         });
       });
     const uniqueAddresses = _.uniq(involvedAddresses);
-    if (uniqueAddresses.length > 0) {
-      logger.info(loggerOptions, `Block #${blockNumber} involved addresses: ${uniqueAddresses.join(', ')}`);
-    }
-    // eslint-disable-next-line no-restricted-syntax
-    for (const address of uniqueAddresses) {
+    await Promise.all(
+      uniqueAddresses.map(
+        (address) => module.exports.updateAccountInfo(
+          api, client, blockNumber, timestamp, address, loggerOptions,
+        ),
+      ),
+    );
+  },
+  updateAccountInfo: async (api, client, blockNumber, timestamp, address, loggerOptions) => {
+    const [balances, { identity }] = await Promise.all([
+      api.derive.balances.all(address),
+      api.derive.accounts.info(address),
+    ]);
+    const availableBalance = balances.availableBalance.toString();
+    const freeBalance = balances.freeBalance.toString();
+    const lockedBalance = balances.lockedBalance.toString();
+    const identityDisplay = identity.display ? identity.display.toString() : '';
+    const identityDisplayParent = identity.displayParent ? identity.displayParent.toString() : '';
+    const JSONIdentity = identity.display ? JSON.stringify(identity) : '';
+    const JSONbalances = JSON.stringify(balances);
+    const nonce = balances.accountNonce.toString();
+    const sql = `
+      INSERT INTO   account (account_id, identity, identity_display, identity_display_parent, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height)
+      VALUES        ('${address}', '${JSONIdentity}', '${identityDisplay}', '${identityDisplayParent}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}', '${timestamp}', '${blockNumber}')
+      ON CONFLICT   (account_id)
+      DO UPDATE
+      SET           identity = EXCLUDED.identity,
+                    identity_display = EXCLUDED.identity_display,
+                    identity_display_parent = EXCLUDED.identity_display_parent,
+                    balances = EXCLUDED.balances,
+                    available_balance = EXCLUDED.available_balance,
+                    free_balance = EXCLUDED.free_balance,
+                    locked_balance = EXCLUDED.locked_balance,
+                    nonce = EXCLUDED.nonce,
+                    timestamp = EXCLUDED.timestamp,
+                    block_height = EXCLUDED.block_height;
+    `;
+    try {
       // eslint-disable-next-line no-await-in-loop
-      const [balances, { identity }] = await Promise.all([
-        api.derive.balances.all(address),
-        api.derive.accounts.info(address),
-      ]);
-      const availableBalance = balances.availableBalance.toString();
-      const freeBalance = balances.freeBalance.toString();
-      const lockedBalance = balances.lockedBalance.toString();
-      const identityDisplay = identity.display ? identity.display.toString() : '';
-      const identityDisplayParent = identity.displayParent ? identity.displayParent.toString() : '';
-      const JSONIdentity = identity.display ? JSON.stringify(identity) : '';
-      const JSONbalances = JSON.stringify(balances);
-      const nonce = balances.accountNonce.toString();
-      const sql = `
-        INSERT INTO   account (account_id, identity, identity_display, identity_display_parent, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height)
-        VALUES        ('${address}', '${JSONIdentity}', '${identityDisplay}', '${identityDisplayParent}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}', '${timestamp}', '${blockNumber}')
-        ON CONFLICT   (account_id)
-        DO UPDATE
-        SET           identity = EXCLUDED.identity,
-                      identity_display = EXCLUDED.identity_display,
-                      identity_display_parent = EXCLUDED.identity_display_parent,
-                      balances = EXCLUDED.balances,
-                      available_balance = EXCLUDED.available_balance,
-                      free_balance = EXCLUDED.free_balance,
-                      locked_balance = EXCLUDED.locked_balance,
-                      nonce = EXCLUDED.nonce,
-                      timestamp = EXCLUDED.timestamp,
-                      block_height = EXCLUDED.block_height;
-      `;
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        await pool.query(sql);
-        logger.error(loggerOptions, `Updated balances for address ${address}`);
-      } catch (error) {
-        logger.error(loggerOptions, `Error updating balances for involved address: ${JSON.stringify(error)}`);
-      }
+      await client.query(sql);
+      logger.error(loggerOptions, `Updated account info for event/s involved address ${address}`);
+    } catch (error) {
+      logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
     }
   },
-  storeExtrinsics: async (pool, blockNumber, extrinsics, blockEvents, timestamp, loggerOptions) => {
+  storeExtrinsics: async (client, blockNumber, extrinsics, blockEvents, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     extrinsics.forEach(async (extrinsic, index) => {
       const { isSigned } = extrinsic;
@@ -171,7 +173,7 @@ module.exports = {
         DO NOTHING;
         ;`;
       try {
-        await pool.query(sql);
+        await client.query(sql);
         logger.info(loggerOptions, `Added extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
       } catch (error) {
         logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
@@ -211,7 +213,7 @@ module.exports = {
     }
     return identity.display || '';
   },
-  updateTotals: async (pool, loggerOptions) => {
+  updateTotals: async (client, loggerOptions) => {
     const sql = `
         UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks';
         UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
@@ -219,7 +221,7 @@ module.exports = {
         UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events';
       `;
     try {
-      await pool.query(sql);
+      await client.query(sql);
     } catch (error) {
       logger.error(loggerOptions, `Error updating total harvested blocks, extrinsics and events: ${error}`);
     }
