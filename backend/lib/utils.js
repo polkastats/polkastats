@@ -5,27 +5,28 @@ const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
 const { hexToU8a, isHex } = require('@polkadot/util');
 const { Pool, Client } = require('pg');
 const _ = require('lodash');
+const config = require('../backend.config.js');
 
 const logger = pino();
 
 module.exports = {
 
   getPolkadotAPI: async () => {
-    logger.info(`Connecting to ${this.config.wsProviderUrl}`);
-    const provider = new WsProvider(this.config.wsProviderUrl);
+    logger.info(`Connecting to ${config.wsProviderUrl}`);
+    const provider = new WsProvider(config.wsProviderUrl);
     const api = await ApiPromise.create({ provider });
     await api.isReady;
     return api;
   },
 
   getPool: async () => {
-    const pool = new Pool(this.config.postgresConnParams);
+    const pool = new Pool(config.postgresConnParams);
     await pool.connect();
     return pool;
   },
 
   getClient: async () => {
-    const client = new Client(this.config.postgresConnParams);
+    const client = new Client(config.postgresConnParams);
     await client.connect();
     return client;
   },
