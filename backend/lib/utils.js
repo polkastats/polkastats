@@ -190,42 +190,47 @@ module.exports = {
     client, blockNumber, blockEvents, timestamp, loggerOptions,
   ) => {
     const startTime = new Date().getTime();
-    // eslint-disable-next-line no-restricted-syntax
-    for (const record of blockEvents) {
-      const index = blockEvents.indexOf(record);
-      // Extract the phase and event
-      const { event, phase } = record;
-      const sql = `INSERT INTO event (
-        block_number,
-        event_index,
-        section,
-        method,
-        phase,
-        data,
-        timestamp
-      ) VALUES (
-        '${blockNumber}',
-        '${index}',
-        '${event.section}',
-        '${event.method}',
-        '${phase.toString()}',
-        '${JSON.stringify(event.data)}',
-        '${timestamp}'
-      )
-      ON CONFLICT ON CONSTRAINT event_pkey 
-      DO NOTHING
-      ;`;
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        await client.query(sql);
-        logger.info(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
-      } catch (error) {
-        logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
-      }
-    }
+    await Promise.all(
+      blockEvents.map((record, index) => this.storeEvent(
+        client, blockNumber, record, index, timestamp, loggerOptions,
+      )),
+    );
     // Log execution time
     const endTime = new Date().getTime();
     logger.info(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+  },
+
+  storeEvent: async (
+    client, blockNumber, record, index, timestamp, loggerOptions,
+  ) => {
+    const { event, phase } = record;
+    const sql = `INSERT INTO event (
+      block_number,
+      event_index,
+      section,
+      method,
+      phase,
+      data,
+      timestamp
+    ) VALUES (
+      '${blockNumber}',
+      '${index}',
+      '${event.section}',
+      '${event.method}',
+      '${phase.toString()}',
+      '${JSON.stringify(event.data)}',
+      '${timestamp}'
+    )
+    ON CONFLICT ON CONSTRAINT event_pkey 
+    DO NOTHING
+    ;`;
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await client.query(sql);
+      logger.info(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
+    } catch (error) {
+      logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+    }
   },
   getExtrinsicSuccess: (index, blockEvents) => {
     // assume success if no events were extracted
