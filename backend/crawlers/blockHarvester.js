@@ -7,6 +7,7 @@ const {
   isNodeSynced,
   shortHash,
   storeExtrinsics,
+  storeEvents,
   storeLogs,
   getDisplayName,
   wait,
@@ -79,52 +80,11 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
       const eraLength = epochDuration.multipliedBy(sessionsPerEra);
       const epochStartSlot = epochIndex.multipliedBy(epochDuration).plus(genesisSlot);
       const sessionProgress = currentSlot.minus(epochStartSlot);
-      // We don't calculate eraProgress for harvested blocks
+      // Don't calculate eraProgress for harvested blocks
       const eraProgress = 0;
 
-      // Store block events
-      try {
-        // eslint-disable-next-line no-loop-func
-        blockEvents.forEach(async (record, index) => {
-          const { event, phase } = record;
-          const sql = `INSERT INTO event (
-              block_number,
-              event_index,
-              section,
-              method,
-              phase,
-              data,
-              timestamp
-            ) VALUES (
-              '${endBlock}',
-              '${index}',
-              '${event.section}',
-              '${event.method}',
-              '${phase.toString()}',
-              '${JSON.stringify(event.data)}',
-              '${timestamp}'
-            )
-            ON CONFLICT ON CONSTRAINT event_pkey 
-            DO NOTHING
-            ;`;
-          try {
-            await client.query(sql);
-            logger.info(loggerOptions, `Added event #${endBlock}-${index} ${event.section} ➡ ${event.method}`);
-          } catch (error) {
-            logger.error(loggerOptions, `Error adding event #${endBlock}-${index}: ${error}, sql: ${sql}`);
-          }
-        });
-      } catch (error) {
-        logger.error(loggerOptions, `Error getting events for block ${endBlock} (${blockHash}): ${error}`);
-        const errorString = error.toString().replace(/'/g, "''");
-        const sql = `INSERT INTO harvester_error (block_number, error, timestamp)
-            VALUES ('${endBlock}', '${errorString}', '${timestamp}');
-        `;
-        await client.query(sql);
-      }
-
-      // Store block extrinsics
-      try {
+      await Promise.all([
+        // Store block extrinsics
         await storeExtrinsics(
           api,
           client,
@@ -134,18 +94,24 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
           blockEvents,
           timestamp,
           loggerOptions,
-        );
-      } catch (error) {
-        logger.error(loggerOptions, `Error getting extrinsics for block ${endBlock} (${blockHash}): ${error}`);
-        const errorString = error.toString().replace(/'/g, "''");
-        const sql = `INSERT INTO harvester_error (block_number, error, timestamp)
-          VALUES ('${endBlock}', '${errorString}', '${timestamp}');
-        `;
-        await client.query(sql);
-      }
-
-      // Store block logs
-      await storeLogs(client, endBlock, blockHeader.digest.logs, timestamp, loggerOptions);
+        ),
+        // Store module events
+        await storeEvents(
+          client,
+          endBlock,
+          blockEvents,
+          timestamp,
+          loggerOptions,
+        ),
+        // Store block logs
+        storeLogs(
+          client,
+          endBlock,
+          blockHeader.digest.logs,
+          timestamp,
+          loggerOptions,
+        ),
+      ]);
 
       // Totals
       const totalEvents = blockEvents.length;
