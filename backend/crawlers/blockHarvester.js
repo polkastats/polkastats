@@ -88,7 +88,7 @@ const harvestBlock = async (api, client, blockNumber) => {
 
     await Promise.all([
       // Store block extrinsics
-      await storeExtrinsics(
+      storeExtrinsics(
         api,
         client,
         blockNumber,
@@ -99,7 +99,7 @@ const harvestBlock = async (api, client, blockNumber) => {
         loggerOptions,
       ),
       // Store module events
-      await storeEvents(
+      storeEvents(
         client,
         blockNumber,
         blockEvents,
