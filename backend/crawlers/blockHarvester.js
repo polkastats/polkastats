@@ -22,7 +22,7 @@ const loggerOptions = {
 const config = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
-const chunkSize = 50;
+const chunkSize = 30;
 
 const chunker = (a, n) => Array.from(
   { length: Math.ceil(a.length / n) },
