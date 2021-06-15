@@ -111,16 +111,16 @@ const crawler = async () => {
       const [
         blockAuthorIdentity,
         blockEvents,
-        eraElectionStatus,
+        chainElectionStatus,
       ] = await Promise.all([
         api.derive.accounts.info(blockAuthor),
         api.query.system.events.at(blockHash),
-        api.query.staking.eraElectionStatus(),
+        api.query.electionProviderMultiPhase.currentPhase(),
       ]);
       const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
 
       // Get election status
-      const isElection = eraElectionStatus.toString() !== 'Close';
+      const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
 
       // Get epoch duration
       const { epochDuration } = api.consts.babe;
