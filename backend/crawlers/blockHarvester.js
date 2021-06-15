@@ -192,6 +192,7 @@ const harvestBlock = async (api, client, blockNumber) => {
   }
 };
 
+// Return a reverse ordered array from range
 const range = (start, stop, step) => Array
   .from({ length: (stop - start) / step + 1 }, (_, i) => stop - (i * step));
 
@@ -200,6 +201,12 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
 
   const chunks = chunker(blocks, chunkSize);
   logger.info(loggerOptions, `Processing chunks of ${chunkSize} blocks`);
+
+  const chunkProcessingTimes = [];
+  let maxTimeMs = 0;
+  let minTimeMs = 1000000;
+  let avgTimeMs = 0;
+  let avgBlocksPerSecond = 0;
 
   // eslint-disable-next-line no-restricted-syntax
   for (const chunk of chunks) {
@@ -210,8 +217,22 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
         (blockNumber) => harvestBlock(api, client, blockNumber),
       ),
     );
+
     const chunkEndTime = new Date().getTime();
-    logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) / 1000).toFixed(3)}s`);
+    const chunkProcessingTimeMs = chunkEndTime - chunkStartTime;
+    if (chunkProcessingTimeMs < minTimeMs) {
+      minTimeMs = chunkProcessingTimeMs;
+    }
+    if (chunkProcessingTimeMs > maxTimeMs) {
+      maxTimeMs = chunkProcessingTimeMs;
+    }
+    chunkProcessingTimes.push(chunkProcessingTimeMs);
+    avgTimeMs = chunkProcessingTimes.reduce(
+      (sum, chunkProcessingTime) => sum + chunkProcessingTime, 0,
+    ) / chunkProcessingTimes.length;
+    avgBlocksPerSecond = (avgTimeMs * chunkSize) / 1000;
+
+    logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkProcessingTimeMs) / 1000).toFixed(3)}s  max/min/avg: ${(maxTimeMs / 1000).toFixed(3)}/${(minTimeMs / 1000).toFixed(3)}/${(avgTimeMs / 1000).toFixed(3)} avg block/s: ${avgBlocksPerSecond}`);
   }
 };
 

@@ -199,17 +199,6 @@ module.exports = {
       ]);
     }
 
-    // const feeInfo = isSigned
-    //   ? JSON.stringify(
-    //     (await api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)).toJSON(),
-    //   )
-    //   : '';
-    // const feeDetails = isSigned
-    //   ? JSON.stringify(
-    //     (await api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)).toJSON(),
-    //   )
-    //   : '';
-
     const sql = `INSERT INTO extrinsic (
         block_number,
         extrinsic_index,
