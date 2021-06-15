@@ -232,7 +232,7 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
     ) / chunkProcessingTimes.length;
     avgBlocksPerSecond = (avgTimeMs / chunkSize) / 1000;
 
-    logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkProcessingTimeMs) / 1000).toFixed(3)}s  max/min/avg: ${(maxTimeMs / 1000).toFixed(3)}/${(minTimeMs / 1000).toFixed(3)}/${(avgTimeMs / 1000).toFixed(3)} avg block/s: ${avgBlocksPerSecond.toFixed(3)}`);
+    logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkProcessingTimeMs) / 1000).toFixed(3)}s max/min/avg: ${(maxTimeMs / 1000).toFixed(3)}/${(minTimeMs / 1000).toFixed(3)}/${(avgTimeMs / 1000).toFixed(3)} avg block/s: ${avgBlocksPerSecond.toFixed(3)}`);
   }
 };
 
