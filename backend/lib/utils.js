@@ -11,14 +11,14 @@ const logger = pino();
 
 module.exports = {
   getPolkadotAPI: async (loggerOptions) => {
-    logger.info(loggerOptions, `Connecting to ${config.wsProviderUrl}`);
+    logger.debug(loggerOptions, `Connecting to ${config.wsProviderUrl}`);
     const provider = new WsProvider(config.wsProviderUrl);
     const api = await ApiPromise.create({ provider });
     await api.isReady;
     return api;
   },
   getClient: async (loggerOptions) => {
-    logger.info(loggerOptions, `Connecting to DB ${config.postgresConnParams.database} at ${config.postgresConnParams.host}:${config.postgresConnParams.port}`);
+    logger.debug(loggerOptions, `Connecting to DB ${config.postgresConnParams.database} at ${config.postgresConnParams.host}:${config.postgresConnParams.port}`);
     const client = new Client(config.postgresConnParams);
     await client.connect();
     return client;
@@ -98,7 +98,7 @@ module.exports = {
     );
     // Log execution time
     const endTime = new Date().getTime();
-    logger.info(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
   updateAccountInfo: async (api, client, blockNumber, timestamp, address, loggerOptions) => {
     const [balances, { identity }] = await Promise.all([
@@ -163,7 +163,7 @@ module.exports = {
     );
     // Log execution time
     const endTime = new Date().getTime();
-    logger.info(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
   storeExtrinsic: async (
     api,
@@ -233,7 +233,7 @@ module.exports = {
       ;`;
     try {
       await client.query(sql);
-      logger.info(loggerOptions, `Added extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+      logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
     }
@@ -249,7 +249,7 @@ module.exports = {
     );
     // Log execution time
     const endTime = new Date().getTime();
-    logger.info(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
   storeEvent: async (
     client, blockNumber, record, index, timestamp, loggerOptions,
@@ -278,7 +278,7 @@ module.exports = {
     try {
       // eslint-disable-next-line no-await-in-loop
       await client.query(sql);
-      logger.info(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
+      logger.debug(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
     }
@@ -292,7 +292,7 @@ module.exports = {
     );
     // Log execution time
     const endTime = new Date().getTime();
-    logger.info(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
   storeLog: async (client, blockNumber, log, index, timestamp, loggerOptions) => {
     const { type } = log;
@@ -317,7 +317,7 @@ module.exports = {
       ;`;
     try {
       await client.query(sql);
-      logger.info(loggerOptions, `Added log ${blockNumber}-${index}`);
+      logger.debug(loggerOptions, `Added log ${blockNumber}-${index}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
     }

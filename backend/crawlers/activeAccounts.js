@@ -10,7 +10,9 @@ const {
 const backendConfig = require('../backend.config');
 
 const crawlerName = 'activeAccounts';
-const logger = pino();
+const logger = pino({
+  level: backendConfig.logLevel,
+});
 const loggerOptions = {
   crawler: crawlerName,
 };
@@ -104,10 +106,10 @@ const processChunk = async (api, client, accountId) => {
 };
 
 const crawler = async () => {
-  logger.info(loggerOptions, `Delaying active accounts crawler start for ${config.startDelay / 1000}s`);
+  logger.debug(loggerOptions, `Delaying active accounts crawler start for ${config.startDelay / 1000}s`);
   await wait(config.startDelay);
 
-  logger.info(loggerOptions, 'Running active accounts crawler...');
+  logger.debug(loggerOptions, 'Running active accounts crawler...');
 
   const client = await getClient(loggerOptions);
   let api = await getPolkadotAPI(loggerOptions);

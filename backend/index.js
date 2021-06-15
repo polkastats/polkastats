@@ -11,16 +11,16 @@ const runCrawler = async (crawler) => {
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
   child.on('close', (exitCode) => {
-    logger.info(`Crawler ${crawler} exit with code: ${exitCode}`);
+    logger.debug(`Crawler ${crawler} exit with code: ${exitCode}`);
     return -1;
   });
 };
 
 const runCrawlers = async () => {
-  logger.info('Starting backend, waiting 10s...');
+  logger.debug('Starting backend, waiting 10s...');
   await wait(10000);
 
-  logger.info('Running crawlers');
+  logger.debug('Running crawlers');
   await Promise.all(
     config.crawlers
       .filter((crawler) => crawler.enabled)

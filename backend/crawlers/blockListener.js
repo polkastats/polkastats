@@ -15,8 +15,11 @@ const {
   updateFinalized,
   updateAccountsInfo,
 } = require('../lib/utils');
+const backendConfig = require('../backend.config');
 
-const logger = pino();
+const logger = pino({
+  level: backendConfig.logLevel,
+});
 const loggerOptions = {
   crawler: 'blockListener',
 };
@@ -101,7 +104,7 @@ const crawler = async () => {
 
     if (res && res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      logger.info(loggerOptions, `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
+      logger.debug(loggerOptions, `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
       const blockAuthor = extendedHeader.author;
       const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
       const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
@@ -131,7 +134,7 @@ const crawler = async () => {
       const totalExtrinsics = block.extrinsics.length;
 
       // Store new block
-      logger.info(loggerOptions, `Adding block #${blockNumber} (${shortHash(blockHash.toString())})`);
+      logger.debug(loggerOptions, `Adding block #${blockNumber} (${shortHash(blockHash.toString())})`);
       const timestamp = Math.floor(parseInt(timestampMs.toString(), 10) / 1000);
 
       sql = `INSERT INTO block (
