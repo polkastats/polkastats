@@ -9,6 +9,7 @@ const {
   shortHash,
   storeExtrinsics,
   storeEvents,
+  storeLogs,
   getDisplayName,
   updateTotals,
   updateFinalized,
@@ -96,7 +97,7 @@ const crawler = async () => {
 
     // Handle chain reorganizations
     let sql = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
-    let res = await dbQuery(sql);
+    let res = await dbQuery(sql, loggerOptions);
 
     if (res && res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
@@ -220,6 +221,14 @@ const crawler = async () => {
           client,
           blockNumber,
           blockEvents,
+          timestamp,
+          loggerOptions,
+        ),
+        // Store block logs
+        storeLogs(
+          client,
+          blockNumber,
+          blockHeader.digest.logs,
           timestamp,
           loggerOptions,
         ),
