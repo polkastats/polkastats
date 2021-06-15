@@ -235,10 +235,10 @@ const crawler = async () => {
       ]);
 
       // Update finalized blocks
-      await updateFinalized(client, finalizedBlock, loggerOptions);
+      // await updateFinalized(client, finalizedBlock, loggerOptions);
 
       // Update totals (async)
-      updateTotals(client, loggerOptions);
+      // updateTotals(client, loggerOptions);
 
       const endTime = new Date().getTime();
       logger.info(loggerOptions, `Block #${blockNumber} processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
