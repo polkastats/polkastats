@@ -197,7 +197,7 @@ const crawler = async () => {
 
       await Promise.all([
         // Store block extrinsics
-        await storeExtrinsics(
+        storeExtrinsics(
           api,
           client,
           blockNumber,
@@ -208,7 +208,7 @@ const crawler = async () => {
           loggerOptions,
         ),
         // Get involved addresses from block events and update its balances
-        await updateAccountsInfo(
+        updateAccountsInfo(
           api,
           client,
           blockNumber,
@@ -217,7 +217,7 @@ const crawler = async () => {
           blockEvents,
         ),
         // Store module events
-        await storeEvents(
+        storeEvents(
           client,
           blockNumber,
           blockEvents,
@@ -232,13 +232,12 @@ const crawler = async () => {
           timestamp,
           loggerOptions,
         ),
+        // Update finalized blocks
+        updateFinalized(client, finalizedBlock, loggerOptions),
       ]);
 
-      // Update finalized blocks
-      // await updateFinalized(client, finalizedBlock, loggerOptions);
-
       // Update totals (async)
-      // updateTotals(client, loggerOptions);
+      updateTotals(client, loggerOptions);
 
       const endTime = new Date().getTime();
       logger.info(loggerOptions, `Block #${blockNumber} processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);

@@ -245,8 +245,9 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
         (blockNumber) => harvestBlock(api, client, blockNumber),
       ),
     );
-
     const chunkEndTime = new Date().getTime();
+
+    // Cook some stats
     const chunkProcessingTimeMs = chunkEndTime - chunkStartTime;
     if (chunkProcessingTimeMs < minTimeMs) {
       minTimeMs = chunkProcessingTimeMs;
@@ -259,8 +260,10 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
       (sum, chunkProcessingTime) => sum + chunkProcessingTime, 0,
     ) / chunkProcessingTimes.length;
     avgBlocksPerSecond = 1 / ((avgTimeMs / 1000) / chunkSize);
+    const currentBlocksPerSecond = 1 / ((chunkProcessingTimeMs / 1000) / chunkSize);
+    const completed = ((chunks.indexOf(chunk) + 1) * 100) / chunks.length;
 
-    logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkProcessingTimeMs) / 1000).toFixed(3)}s max/min/avg: ${(maxTimeMs / 1000).toFixed(3)}/${(minTimeMs / 1000).toFixed(3)}/${(avgTimeMs / 1000).toFixed(3)} avg block/s: ${avgBlocksPerSecond.toFixed(3)}`);
+    logger.info(loggerOptions, `[${completed.toFixed(3)}%] Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkProcessingTimeMs) / 1000).toFixed(3)}s max/min/avg: ${(maxTimeMs / 1000).toFixed(3)}/${(minTimeMs / 1000).toFixed(3)}/${(avgTimeMs / 1000).toFixed(3)} current/avg block/s: ${currentBlocksPerSecond.toFixed(3)}/${avgBlocksPerSecond.toFixed(3)}`);
   }
 };
 
