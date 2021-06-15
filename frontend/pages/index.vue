@@ -1,88 +1,101 @@
 <template>
-  <div class="page container-fluid pt-3">
-    <div>
-      <b-alert
-        show
-        dismissible
-        variant="warning"
-        class="text-center py-3 glitch"
-      >
-        <p>
-          The {{ config.title }} for {{ capitalize(config.name) }} aims to
-          provide quantitative and qualitative data about validators performance
-          and help nominators to choose their best nomination set.
-        </p>
-        <p>
-          The size of the
-          <strong
-            >history is {{ config.historySize }} eras ({{
-              config.historySize / config.erasPerDay
-            }}
-            days)</strong
-          >
-        </p>
-        <p>
-          This platform is currently under development and the metrics are
-          subject to change. Please do your own research before nominating your
-          validator set.
-        </p>
-      </b-alert>
-
-      <Stats />
-      <Suggestions :validators="chainValidatorAddresses" />
-      <DashboardVRCScore />
-      <div class="row">
-        <div class="col-md-6">
-          <DashboardCommission />
+  <div>
+    <section>
+      <b-container class="main py-5 dashboard">
+        <Chain />
+        <Search />
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <h3>
+              <nuxt-link
+                v-b-tooltip.hover
+                :to="`/blocks`"
+                title="Click to see last blocks"
+              >
+                Last blocks
+              </nuxt-link>
+            </h3>
+            <LastBlocks />
+          </div>
+          <div class="col-md-6 mb-4">
+            <h3>
+              <nuxt-link
+                v-b-tooltip.hover
+                :to="`/transfers`"
+                title="Click to see last transfers"
+              >
+                Last transfers
+              </nuxt-link>
+            </h3>
+            <LastTransfers />
+          </div>
         </div>
-        <div class="col-md-6">
-          <DashboardSelfStake />
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <h3>
+              <nuxt-link
+                v-b-tooltip.hover
+                :to="`/extrinsics`"
+                title="Click to see last extrinsics"
+              >
+                Last extrinsics
+              </nuxt-link>
+            </h3>
+            <LastExtrinsics />
+          </div>
+          <div class="col-md-6 mb-4">
+            <h3>
+              <nuxt-link
+                v-b-tooltip.hover
+                :to="`/events`"
+                title="Click to see last events"
+              >
+                Last events
+              </nuxt-link>
+            </h3>
+            <LastEvents />
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <DashboardPerformance />
-        </div>
-        <div class="col-md-6">
-          <DashboardEraPoints />
-        </div>
-      </div>
-    </div>
+      </b-container>
+    </section>
   </div>
 </template>
-
 <script>
-import { config } from '@/config.js'
-import commonMixin from '@/mixins/commonMixin.js'
+import LastBlocks from '@/components/LastBlocks.vue'
+import LastTransfers from '@/components/LastTransfers.vue'
+import LastExtrinsics from '@/components/LastExtrinsics.vue'
+import LastEvents from '@/components/LastEvents.vue'
+import Chain from '@/components/Chain.vue'
+import Search from '@/components/Search.vue'
+// import Top10Rich from '@/components/Top10Rich.vue'
+import { network } from '@/frontend.config.js'
+
 export default {
-  mixins: [commonMixin],
-  data() {
+  components: {
+    LastBlocks,
+    LastTransfers,
+    LastExtrinsics,
+    LastEvents,
+    Chain,
+    Search,
+    // Top10Rich,
+  },
+  data: () => {
     return {
-      config,
+      network,
     }
   },
   head() {
     return {
-      title: `${config.title} for ${this.capitalize(config.name)}`,
+      title: 'Explorer | Reef Network',
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: `${config.title} for ${this.capitalize(config.name)}`,
+          content: 'Reef Chain is an EVM compatible chain for DeFi',
         },
       ],
     }
-  },
-  computed: {
-    eras() {
-      return this.rows.map((row) => row.era)
-    },
-    selectedValidatorAddresses() {
-      return this.$store.state.ranking.selectedAddresses
-    },
-    chainValidatorAddresses() {
-      return this.$store.state.ranking.chainValidatorAddresses
-    },
   },
 }
 </script>

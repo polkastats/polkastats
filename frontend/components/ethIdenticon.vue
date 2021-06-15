@@ -5,37 +5,33 @@
     class="d-inline-block"
     @click="showToast"
   >
-    <Identicon
+    <img
       :key="address"
       v-clipboard:copy="address"
-      :size="size"
-      :theme="'polkadot'"
-      :value="address"
-      class="identicon"
+      :src="getIdenticon(address)"
+      class="eth-identicon"
+      :width="size"
+      :height="size"
     />
   </div>
 </template>
 <script>
-import Identicon from '@polkadot/vue-identicon'
+import makeBlockie from 'ethereum-blockies-base64'
 export default {
-  components: {
-    Identicon,
-  },
   props: {
     address: {
       type: String,
       default: () => '',
     },
-    theme: {
-      type: String,
-      default: () => 'polkadot',
-    },
     size: {
       type: Number,
-      default: () => 20,
+      default: 32,
     },
   },
   methods: {
+    getIdenticon(address) {
+      return makeBlockie(address)
+    },
     showToast() {
       this.$bvToast.toast(this.address, {
         title: 'Address copied to clipboard!',

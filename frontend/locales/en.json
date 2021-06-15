@@ -1,0 +1,268 @@
+{
+  "components": {
+    "identicon": {
+      "copy_address": "Copy address ",
+      "to_clipboard": " to clipboard",
+      "address": "Address ",
+      "copied_to_the_clipboard": " copied to the clipboard"
+    },
+    "network": {
+      "last_block": "Last block",
+      "last_block_finalized": "Last finalized",
+      "validator_count": "Validator count",
+      "current_session": "Current session",
+      "epoch": "Epoch",
+      "current_era": "Current era",
+      "era": "Era",
+      "accounts": "Accounts",
+      "contracts": "Smart Contracts",
+      "total_issuance": "Total issuance",
+      "transfers": "Transfers"
+    },
+    "chain": {
+      "last_block": "Last block",
+      "last_block_finalized": "Finalized",
+      "validators": "Validators",
+      "validator_count": "Current active validators",
+      "validator_ideal_number": "Ideal number of validators",
+      "current_session": "Session",
+      "epoch": "Epoch",
+      "current_era": "Era",
+      "era": "Era",
+      "total_issuance": "Total issuance",
+      "staked": "Staked",
+      "waiting_validators": "Waiting",
+      "nominators": "Nominators" ,
+      "progress": "Progress"
+    },
+    "transfers": {
+      "search": "Search transfer by block number, hash or source address",
+      "no_transfer_found": "No transfer found"
+    },
+    "loading": {
+      "loading_data": "Loading data, please be patient..."
+    }
+  },
+  "layout": {
+    "default": {
+      "system_message": "using polkadot v",
+      "validators": "Validators",
+      "intentions": "Intentions",
+      "favorites": "Favorites",
+      "targets": "Targets",
+      "election-prediction": "Election prediction",
+      "nominators": "Nominators",
+      "account": "Accounts",
+      "get_in_contact": "Get in contact",
+      "about_us": "About us",
+      "support_polkastats": "Support Polkastats",
+      "how_to": "How to include your validator info",
+      "built_for": "Built for",
+      "the_wild_cousin_of": "the wild cousin of",
+      "made_by": "Made by PolkaStats Team in Colmena Labs",
+      "built_with": "Built with",
+      "view_source_code_on_github": "View source code on GitHub",
+      "dashboard": "Dashboard",
+      "blockchain": "Blockchain",
+      "blocks": "Blocks",
+      "extrinsics": "Extrinsics",
+      "transfers": "Transfers",
+      "events": "Events",
+      "validator": "Validator",
+      "how_to_stake": "How to stake",
+      "economics": "Economics"
+    },
+    "error": {
+      "page_not_found": "Page not found!",
+      "an_error_occurred": "An error occurred"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Home"
+    },
+    "accounts": {
+      "active_accounts": "Active accounts",
+      "search_placeholder": "Search account by address or identity",
+      "sort": "Sort",
+      "account_details": "Account details",
+      "rank": "Rank",
+      "free_balance": "Free Balance",
+      "available_balance": "Available Balance",
+      "locked_balance": "Locked Balance",
+      "remove_from_favorites": "Remove from Favorites",
+      "add_to_favorites": "Add to Favorites",
+      "identity": "Identity",
+      "head_title": "PolkaStats - {networkName} active accounts",
+      "head_content": "{networkName} active accounts",
+      "loading_data": "Loading data, it can take a long time. Be patient, please",
+      "download_csv": "Download in CSV format"
+    },
+    "account": {
+      "head_title": "PolkaStats - {networkName} account {address}",
+      "head_content": "{networkName} account {address}",
+      "sent_transfers": "Sent transfers",
+      "received_transfers": "Received transfers"
+    },
+    "favorites": {
+      "hi_there": "Hi there!",
+      "you_can_click_TEXT": "You can click on the star icon",
+      "of_a_validator_TEXT": "of a validator or intention to track it on this page",
+      "elected_for_next_session": "Elected for next session",
+      "not_elected_for_next_session": "Not elected for next session",
+      "unset_as_favorite": "Unset as Favorite",
+      "set_as_favorite": "Set as Favorite",
+      "rank": "rank",
+      "active_validator": "Active validator",
+      "total_bonded": "Total bonded",
+      "self_bonded": "Self bonded",
+      "active_bonded": "Active bonded",
+      "bonded_by_nominators": "Bonded by nominator",
+      "percentage_over_total_bonded_stake": "Percentage over total bonded stake",
+      "of_total_stake": "of total stake",
+      "era_points": "era points",
+      "produced_blocks": "produced blocks",
+      "validator_details": "Validator details",
+      "stash": "Stash",
+      "controller": "Controller",
+      "session_id": "Session id",
+      "next_session_id": "Next session id",
+      "commission": "Commission",
+      "reward_destination": "Reward destination",
+      "nominators": "nominators",
+      "intention": "Intention",
+      "head_title": "PolkaStats - {networkName} favorite validators and intentions",
+      "head_content": "{networkName} favorite validators and intentions"
+    },
+    "index": {
+      "we_have_a_new_TEXT": "We have a new awesome dedicated server graciously sponsored by",
+      "thanks": "Thanks!",
+      "total_issuance_is": "Total issuance is",
+      "total_stake_bonded_is": "total stake bonded is",
+      "of_total": "of total",
+      "currently_there_are": "Currently there are",
+      "active_validators_of": "active validators of",
+      "available_slots_and": "available slots and",
+      "waiting": "waiting",
+      "search_placeholder": "Search validator by account or identity display name",
+      "sort": "Sort",
+      "rank": "Rank",
+      "elected_for_next_session": "Elected for next session",
+      "not_elected_for_next_session": "Not elected for next session",
+      "remove_from_favorites": "Remove from Favorites",
+      "add_to_favorites": "Add to Favorites",
+      "validator_details": "Validator details",
+      "total_bonded": "Total bonded",
+      "percentage_over_total_bonded_stake": "Percentage over total bonded stake",
+      "validator": "Validator",
+      "stakers": "Stakers",
+      "total_stake": "Total stake",
+      "stake": "Stake",
+      "commission": "Commission",
+      "era_points": "Era points",
+      "loading_data": "Loading data"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "recent_blocks": "Last blocks",
+      "top_rich": "Top 10 rich accounts",
+      "recent_extrinsics": "Last extrinsics",
+      "recent_events": "Last events",
+      "recent_transfers": "Last transfers"
+    },
+    "blocks": {
+      "title": "Blocks",
+      "search_placeholder": "Search by block number"
+    },
+    "extrinsics": {
+      "title": "Extrinsics"
+    },
+    "transfers": {
+      "title": "Transfers",
+      "search_placeholder": "Search transfer by block number, hash or source address"
+    },
+    "activity": {
+      "title": "Activity",
+      "search_placeholder": "Search activity by block number, hash or source address"
+    },
+    "events": {
+      "title": "Events",
+      "search_placeholder": "Search by block number"
+    },
+    "contracts": {
+      "title": "Contracts",
+      "search_placeholder": "Search by contract address or block number"
+    },
+    "verifyContract": {
+      "title": "Verify & publish contract source code"
+    }
+  },
+  "details": {
+    "account": {
+      "account": "Account",
+      "free_balance": "Free Balance",
+      "account_id": "Account ID",
+      "account_nonce": "Account Nonce",
+      "total_balance": "Total Balance",
+      "available_balance": "Available Balance",
+      "locked_balance": "Locked Balance",
+      "reserved_balance": "Reserved Balance",
+      "is_vesting": "Is Vesting?",
+      "vested_balance": "Vested Balance",
+      "vesting_total": "Vesting Total",
+      "voting_balance": "Voting Balance"
+    },
+    "block": {
+      "block": "block",
+      "block_author": "Block author",
+      "block_hash": "Block hash",
+      "finalized": "Finalized",
+      "extrinsic_root": "Extrinsic root",
+      "parent_hash": "Parent hash",
+      "state_root": "State root",
+      "spec_name": "Spec name",
+      "spec_version": "Spec version",
+      "current_session_index": "Current session index",
+      "session_length": "Session length",
+      "session_per_era": "Session per era",
+      "session_progress": "Session progress",
+      "current_era_index": "Era index",
+      "era_length": "Era length",
+      "era_progress": "Era progress",
+      "system_events": "System events",
+      "extrinsics": "Extrinsics",
+      "section": "Section",
+      "method": "Method",
+      "hash": "Hash",
+      "signer": "Signer",
+      "args": "Arguments",
+      "phase": "Phase",
+      "data": "Data",
+      "account_details": "Account details",
+      "timestamp": "Timestamp",
+      "genesis": "🎁 Genesis block",
+      "success": "Success",
+      "logs": "Logs",
+      "index": "Index",
+      "engine": "Engine",
+      "total_issuance": "Total issuance"
+    },
+    "extrinsic": {
+      "extrinsic_details": "Extrinsic details"
+    },
+    "contract": {
+      "signer": "Signer",
+      "value": "Value",
+      "gas_limit": "Gas limit",
+      "storage_limit": "Storage limit",
+      "bytecode": "Bytecode",
+      "verified": "Verified",
+      "abi": "ABI",
+      "compiler_version": "Compiler version",
+      "optimization": "Optimization enabled",
+      "runs": "Runs (optimization)",
+      "target": "EVM target (optimization)",
+      "license": "Open source license"
+    }
+  }
+}

@@ -1,95 +1,71 @@
 <template>
-  <b-navbar type="dark" variant="dark">
-    <b-container fluid>
-      <span v-if="collapsed" v-b-tooltip.hover title="Show sidebar">
-        <font-awesome-icon
-          icon="chevron-right"
-          style="cursor: pointer; font-size: 1.2rem; margin-left: -0.5rem"
-          @click="toggleSidebar()"
-        />
-      </span>
-      <span v-else v-b-tooltip.hover title="Collapse sidebar">
-        <font-awesome-icon
-          icon="chevron-left"
-          style="cursor: pointer; font-size: 1.2rem; margin-left: -0.5rem"
-          @click="toggleSidebar()"
-        />
-      </span>
-      <b-navbar-nav>
-        <button
-          v-b-modal.wallet-modal
-          type="button"
-          class="btn btn-outline-info mr-4"
-        >
-          <span v-if="selectedAddress">
-            <Identicon :address="selectedAddress" :size="22" />
-            {{ shortAddress(selectedAddress) }}
-          </span>
-          <span v-else>Connect wallet</span>
-        </button>
-        <b-nav-item-dropdown
-          id="selected-validators"
-          ref="selectedValidators"
-          class="selected-validators"
-          toggle-class="btn btn-selected"
-          right
-        >
+  <b-navbar toggleable="xl">
+    <b-container class="px-sm-3">
+      <b-navbar-brand>
+        <nuxt-link to="/" class="navbar-brand" title="Reef block explorer">
+          <img class="logo" src="/img/polkastats_logo_dark@2x.png" />
+        </nuxt-link>
+      </b-navbar-brand>
+      <a
+        v-if="network.coinGeckoDenom && USDConversion && USD24hChange"
+        :href="`https://www.coingecko.com/en/coins/${network.coinGeckoDenom}`"
+        target="_blank"
+        class="fiat mh-2"
+      >
+        <strong>{{ network.tokenSymbol }}</strong> ${{ USDConversion }} ({{
+          USD24hChange
+        }}%)
+      </a>
+      <b-navbar-toggle target="nav-collapse" />
+      <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav class="ml-auto">
+          <b-nav-item right to="/blocks">Blocks</b-nav-item>
+          <b-nav-item right to="/transfers">Transfers</b-nav-item>
+          <b-nav-item right to="/extrinsics">Extrinsics</b-nav-item>
+          <b-nav-item right to="/events">Events</b-nav-item>
+          <b-nav-item right to="/accounts">Accounts</b-nav-item>
+        </b-navbar-nav>
+        <b-dropdown class="my-md-2 ml-md-2 network" variant="primary2">
           <template #button-content>
-            <span v-if="loading">Selected</span>
-            <span v-else>
-              {{ selectedValidatorAddresses.length }}/16 selected
-            </span>
-            <font-awesome-icon icon="hand-paper" />
+            <font-awesome-icon icon="plug" />
+            {{ network.name }}
           </template>
-          <SelectedValidators />
-        </b-nav-item-dropdown>
-      </b-navbar-nav>
+          <b-dropdown-item href="https://dev.kusama.polkastats.io"
+            >KUSAMA</b-dropdown-item
+          >
+          <b-dropdown-item href="https://dev.polkadot.polkastats.io"
+            >POLKADOT</b-dropdown-item
+          >
+        </b-dropdown>
+      </b-collapse>
     </b-container>
-    <b-modal id="wallet-modal" size="lg">
-      <template #modal-header></template>
-      <template #default="{ hide }">
-        <WalletSelector @close="hide()" />
-        <p class="text-right mt-4 mb-0">
-          <b-button class="btn-sm" @click="hide()">Close</b-button>
-        </p>
-      </template>
-      <template #modal-footer></template>
-    </b-modal>
   </b-navbar>
 </template>
 
 <script>
-import { config } from '@/config.js'
-import commonMixin from '@/mixins/commonMixin.js'
+import { network } from '@/frontend.config.js'
 export default {
-  mixins: [commonMixin],
   data() {
     return {
-      config,
-      collapsed: false,
+      network,
     }
   },
   computed: {
-    loading() {
-      return this.$store.state.ranking.loading
+    USDConversion() {
+      return parseFloat(this.$store.state.fiat.usd).toFixed(3)
     },
-    selectedValidatorAddresses() {
-      return this.$store.state.ranking.selectedAddresses
-    },
-    selectedAddress() {
-      return this.$store.state.ranking.selectedAddress
+    USD24hChange() {
+      return parseFloat(this.$store.state.fiat.usd_24h_change).toFixed(2)
     },
   },
-  watch: {
-    $route(to, from) {
-      this.$refs.selectedValidators.hide(true)
-    },
-  },
-  methods: {
-    toggleSidebar() {
-      this.collapsed = !this.collapsed
-      this.$emit('toggle')
-    },
+  created() {
+    // Refresh fiat conversion values every minute
+    if (this.network.coinGeckoDenom) {
+      this.$store.dispatch('fiat/update')
+      setInterval(() => {
+        this.$store.dispatch('fiat/update')
+      }, 60000)
+    }
   },
 }
 </script>
