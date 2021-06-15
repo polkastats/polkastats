@@ -9,8 +9,21 @@ CREATE TABLE IF NOT EXISTS block (
   parent_hash TEXT NOT NULL,
   extrinsics_root TEXT NOT NULL,
   state_root TEXT NOT NULL,
+  current_era BIGINT NOT NULL,
+  current_index BIGINT NOT NULL,
+  era_length BIGINT NOT NULL,
+  era_progress BIGINT NOT NULL,
+  is_epoch BOOLEAN NOT NULL,
+  is_election BOOLEAN NOT NULL,
+  session_length BIGINT NOT NULL,
+  session_per_era INT NOT NULL,
+  session_progress BIGINT NOT NULL,
+  validator_count INT NOT NULL,
+  spec_name TEXT NOT NULL,
+  spec_version INT NOT NULL,
   total_events INT NOT NULL,
   total_extrinsics INT NOT NULL,
+  total_issuance TEXT NOT NULL, -- overflows BIGINT
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number )  
 );
@@ -42,9 +55,21 @@ CREATE TABLE IF NOT EXISTS extrinsic (
   args TEXT NOT NULL,
   hash TEXT NOT NULL,
   doc TEXT NOT NULL,
+  fee_info TEXT NOT NULL,
+  fee_details TEXT NOT NULL,
   success BOOLEAN NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ) 
+);
+
+CREATE TABLE IF NOT EXISTS log  (  
+  block_number BIGINT NOT NULL,
+  log_index INT NOT NULL,
+  type TEXT,
+  engine TEXT NOT NULL,
+  data TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, log_index ) 
 );
 
 CREATE TABLE IF NOT EXISTS ranking (

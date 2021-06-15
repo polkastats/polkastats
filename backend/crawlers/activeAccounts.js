@@ -6,8 +6,8 @@ const {
   getPolkadotAPI,
   isNodeSynced,
   dbParamInsert,
-} = require('../lib/utils.js');
-const backendConfig = require('../backend.config.js');
+} = require('../lib/utils');
+const backendConfig = require('../backend.config');
 
 const crawlerName = 'activeAccounts';
 const logger = pino();

@@ -8,8 +8,8 @@ const {
   storeExtrinsics,
   getDisplayName,
   wait,
-} = require('../lib/utils.js');
-const backendConfig = require('../backend.config.js');
+} = require('../lib/utils');
+const backendConfig = require('../backend.config');
 
 const crawlerName = 'blockHarvester';
 const logger = pino();
@@ -31,11 +31,13 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
         { block },
         blockEvents,
         blockHeader,
+        totalIssuance,
         timestampMs,
       ] = await Promise.all([
         api.rpc.chain.getBlock(blockHash),
         api.query.system.events.at(blockHash),
         api.derive.chain.getHeader(blockHash),
+        api.query.balances.totalIssuance.at(blockHash),
         api.query.timestamp.now.at(blockHash),
       ]);
 
@@ -89,8 +91,10 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
       // Store block extrinsics
       try {
         await storeExtrinsics(
+          api,
           client,
           endBlock,
+          blockHash,
           block.extrinsics,
           blockEvents,
           timestamp,
@@ -120,6 +124,7 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
           state_root,
           total_events,
           total_extrinsics,
+          total_issuance,
           timestamp
         ) VALUES (
           '${endBlock}',
@@ -132,6 +137,7 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
           '${stateRoot}',
           '${totalEvents}',
           '${totalExtrinsics}',
+          '${totalIssuance.toString()}',
           '${timestamp}'
         )
         ON CONFLICT ON CONSTRAINT block_pkey 

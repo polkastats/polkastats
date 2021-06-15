@@ -10,8 +10,8 @@ const {
   dbQuery,
   dbParamInsert,
   dbParamSelect,
-} = require('../lib/utils.js');
-const backendConfig = require('../backend.config.js');
+} = require('../lib/utils');
+const backendConfig = require('../backend.config');
 
 const crawlerName = 'ranking';
 const logger = pino();

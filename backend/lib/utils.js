@@ -138,12 +138,27 @@ module.exports = {
     }
   },
   storeExtrinsics: async (
-    client, blockNumber, extrinsics, blockEvents, timestamp, loggerOptions,
+    api,
+    client,
+    blockNumber,
+    blockHash,
+    extrinsics,
+    blockEvents,
+    timestamp,
+    loggerOptions,
   ) => {
     const startTime = new Date().getTime();
     await Promise.all(
       extrinsics.map((extrinsic, index) => module.exports.storeExtrinsic(
-        client, blockNumber, extrinsic, index, blockEvents, timestamp, loggerOptions,
+        api,
+        client,
+        blockNumber,
+        blockHash,
+        extrinsic,
+        index,
+        blockEvents,
+        timestamp,
+        loggerOptions,
       )),
     );
     // Log execution time
@@ -151,7 +166,15 @@ module.exports = {
     logger.info(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
   storeExtrinsic: async (
-    client, blockNumber, extrinsic, index, blockEvents, timestamp, loggerOptions,
+    api,
+    client,
+    blockNumber,
+    blockHash,
+    extrinsic,
+    index,
+    blockEvents,
+    timestamp,
+    loggerOptions,
   ) => {
     const { isSigned } = extrinsic;
     const signer = isSigned ? extrinsic.signer.toString() : '';
@@ -161,6 +184,32 @@ module.exports = {
     const hash = extrinsic.hash.toHex();
     const doc = extrinsic.meta.documentation.toString().replace(/'/g, "''");
     const success = module.exports.getExtrinsicSuccess(index, blockEvents);
+
+    // Fees
+    let feeInfo = '';
+    let feeDetails = '';
+    if (isSigned) {
+      [feeInfo, feeDetails] = await Promise.all([
+        api.rpc.payment.queryInfo(
+          extrinsic.toHex(), blockHash,
+        ).then((result) => JSON.stringify(result.toJSON())),
+        api.rpc.payment.queryFeeDetails(
+          extrinsic.toHex(), blockHash,
+        ).then((result) => JSON.stringify(result.toJSON())),
+      ]);
+    }
+
+    // const feeInfo = isSigned
+    //   ? JSON.stringify(
+    //     (await api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)).toJSON(),
+    //   )
+    //   : '';
+    // const feeDetails = isSigned
+    //   ? JSON.stringify(
+    //     (await api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)).toJSON(),
+    //   )
+    //   : '';
+
     const sql = `INSERT INTO extrinsic (
         block_number,
         extrinsic_index,
@@ -171,6 +220,8 @@ module.exports = {
         args,
         hash,
         doc,
+        fee_info,
+        fee_details,
         success,
         timestamp
       ) VALUES (
@@ -183,6 +234,8 @@ module.exports = {
         '${args}',
         '${hash}',
         '${doc}',
+        '${feeInfo}',
+        '${feeDetails}',
         '${success}',
         '${timestamp}'
       )
@@ -239,6 +292,45 @@ module.exports = {
       logger.info(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+    }
+  },
+  storeLogs: async (client, blockNumber, logs, timestamp, loggerOptions) => {
+    const startTime = new Date().getTime();
+    await Promise.all(
+      logs.map((log, index) => module.exports.storeLog(
+        client, blockNumber, log, index, timestamp, loggerOptions,
+      )),
+    );
+    // Log execution time
+    const endTime = new Date().getTime();
+    logger.info(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+  },
+  storeLog: async (pool, blockNumber, log, index, timestamp, loggerOptions) => {
+    const { type } = log;
+    const [[engine, data]] = Object.values(log.toJSON());
+    const sql = `INSERT INTO log (
+        block_number,
+        log_index,
+        type,
+        engine,
+        data,
+        timestamp
+      ) VALUES (
+        '${blockNumber}',
+        '${index}',
+        '${type}',
+        '${engine}',
+        '${data}',
+        '${timestamp}'
+      )
+      ON CONFLICT ON CONSTRAINT log_pkey 
+      DO NOTHING;
+      ;`;
+    try {
+      await pool.query(sql);
+      logger.info(loggerOptions, `Added log ${blockNumber}-${index}`);
+    } catch (error) {
+      logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
     }
   },
   getExtrinsicSuccess: (index, blockEvents) => {

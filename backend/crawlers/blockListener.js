@@ -12,7 +12,7 @@ const {
   updateTotals,
   updateFinalized,
   updateAccountsInfo,
-} = require('../lib/utils.js');
+} = require('../lib/utils');
 
 const logger = pino();
 const loggerOptions = {
@@ -47,16 +47,45 @@ const crawler = async () => {
     const blockNumber = blockHeader.number.toNumber();
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
 
+    // {
+    //   "activeEra": "0x00000948",
+    //   "activeEraStart": 1623734874003,
+    //   "currentEra": "0x00000949",
+    //   "currentIndex": "0x000034f1",
+    //   "validatorCount": "0x00000384",
+    //   "eraLength": "0x00000e10",
+    //   "isEpoch": true,
+    //   "sessionLength": "0x0000000000000258",
+    //   "sessionsPerEra": "0x00000006",
+    //   "eraProgress": "0x00000ce5",
+    //   "sessionProgress": "0x0000012d"
+    // }
+
     // Parallelize
     const [
+      {
+        currentEra,
+        currentIndex,
+        eraLength,
+        isEpoch,
+        sessionsPerEra,
+        validatorCount,
+        eraProgress,
+        sessionProgress,
+      },
       { block },
       extendedHeader,
+      runtimeVersion,
       finalizedBlockHash,
+      totalIssuance,
       timestampMs,
     ] = await Promise.all([
+      api.derive.session.progress(),
       api.rpc.chain.getBlock(blockHash),
       api.derive.chain.getHeader(blockHash),
+      api.rpc.state.getRuntimeVersion(blockHash),
       api.rpc.chain.getFinalizedHead(),
+      api.query.balances.totalIssuance.at(blockHash),
       api.query.timestamp.now.at(blockHash),
     ]);
 
@@ -80,11 +109,19 @@ const crawler = async () => {
       const [
         blockAuthorIdentity,
         blockEvents,
+        eraElectionStatus,
       ] = await Promise.all([
         api.derive.accounts.info(blockAuthor),
         api.query.system.events.at(blockHash),
+        api.query.staking.eraElectionStatus(),
       ]);
       const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
+
+      // Get election status
+      const isElection = eraElectionStatus.toString() !== 'Close';
+
+      // Get epoch duration
+      const { epochDuration } = api.consts.babe;
 
       // Totals
       const totalEvents = blockEvents.length || 0;
@@ -103,8 +140,21 @@ const crawler = async () => {
           parent_hash,
           extrinsics_root,
           state_root,
+          current_era,
+          current_index,
+          era_length,
+          era_progress,
+          is_epoch,
+          is_election,
+          session_length,
+          session_per_era,
+          session_progress,
+          validator_count,
+          spec_name,
+          spec_version,
           total_events,
           total_extrinsics,
+          total_issuance,
           timestamp
         ) VALUES (
           '${blockNumber}',
@@ -115,8 +165,21 @@ const crawler = async () => {
           '${parentHash}',
           '${extrinsicsRoot}',
           '${stateRoot}',
+          '${currentEra.toString()}',
+          '${currentIndex.toString()}',
+          '${eraLength.toString()}',
+          '${eraProgress.toString()}',
+          '${isEpoch}',
+          '${isElection}',
+          '${epochDuration.toString()}',
+          '${sessionsPerEra.toString()}',
+          '${sessionProgress.toString()}',
+          '${validatorCount}',
+          '${runtimeVersion.specName}',
+          '${runtimeVersion.specVersion}',
           '${totalEvents}',
           '${totalExtrinsics}',
+          '${totalIssuance.toString()}',
           '${timestamp}'
         )
         ON CONFLICT ON CONSTRAINT block_pkey 
@@ -132,8 +195,10 @@ const crawler = async () => {
       await Promise.all([
         // Store block extrinsics
         await storeExtrinsics(
+          api,
           client,
           blockNumber,
+          blockHash,
           block.extrinsics,
           blockEvents,
           timestamp,
