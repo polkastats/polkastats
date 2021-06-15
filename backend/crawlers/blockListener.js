@@ -97,7 +97,7 @@ const crawler = async () => {
 
     // Handle chain reorganizations
     let sql = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
-    let res = await dbQuery(sql, loggerOptions);
+    let res = await dbQuery(client, sql, loggerOptions);
 
     if (res && res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
