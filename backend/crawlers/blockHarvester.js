@@ -234,7 +234,7 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
     const currentBlocksPerSecond = 1 / ((chunkProcessingTimeMs / 1000) / chunkSize);
     const completed = ((chunks.indexOf(chunk) + 1) * 100) / chunks.length;
 
-    logger.info(loggerOptions, `[${completed.toFixed(statsPrecision)}%] Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkProcessingTimeMs) / 1000).toFixed(statsPrecision)}s max/min/avg: ${(maxTimeMs / 1000).toFixed(statsPrecision)}/${(minTimeMs / 1000).toFixed(statsPrecision)}/${(avgTimeMs / 1000).toFixed(statsPrecision)} current/avg block/s: ${currentBlocksPerSecond.toFixed(statsPrecision)}/${avgBlocksPerSecond.toFixed(statsPrecision)}`);
+    logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} [${completed.toFixed(statsPrecision)}%] in ${((chunkProcessingTimeMs) / 1000).toFixed(statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(statsPrecision)}/${(maxTimeMs / 1000).toFixed(statsPrecision)}/${(avgTimeMs / 1000).toFixed(statsPrecision)} cur/avg block/s: ${currentBlocksPerSecond.toFixed(statsPrecision)}/${avgBlocksPerSecond.toFixed(statsPrecision)}`);
   }
 };
 
