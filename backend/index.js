@@ -17,8 +17,8 @@ const runCrawler = async (crawler) => {
 };
 
 const runCrawlers = async () => {
-  logger.info('Starting backend, waiting 15s...');
-  await wait(15000);
+  logger.info('Starting backend, waiting 10s...');
+  await wait(10000);
 
   logger.info('Running crawlers');
   await Promise.all(
