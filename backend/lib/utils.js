@@ -305,7 +305,7 @@ module.exports = {
     const endTime = new Date().getTime();
     logger.info(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
-  storeLog: async (pool, blockNumber, log, index, timestamp, loggerOptions) => {
+  storeLog: async (client, blockNumber, log, index, timestamp, loggerOptions) => {
     const { type } = log;
     const [[engine, data]] = Object.values(log.toJSON());
     const sql = `INSERT INTO log (
@@ -327,7 +327,7 @@ module.exports = {
       DO NOTHING;
       ;`;
     try {
-      await pool.query(sql);
+      await client.query(sql);
       logger.info(loggerOptions, `Added log ${blockNumber}-${index}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
