@@ -17,8 +17,7 @@ const loggerOptions = {
 const config = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
-const chunkSize = 100;
-const delay = 100; // ms delay to wait after chunks
+const chunkSize = 200;
 
 const getAccountId = (account) => account
   .map((e) => e.args)
@@ -102,7 +101,6 @@ const processChunk = async (api, client, accountId) => {
   ;`;
   // eslint-disable-next-line no-await-in-loop
   await dbParamInsert(client, query, data, loggerOptions);
-  await wait(delay);
 };
 
 const crawler = async () => {
