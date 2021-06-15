@@ -86,35 +86,63 @@ const harvestBlock = async (api, client, blockNumber) => {
     // Don't calculate eraProgress for harvested blocks
     const eraProgress = 0;
 
-    await Promise.all([
-      // Store block extrinsics
-      storeExtrinsics(
-        api,
-        client,
-        blockNumber,
-        blockHash,
-        block.extrinsics,
-        blockEvents,
-        timestamp,
-        loggerOptions,
-      ),
-      // Store module events
-      storeEvents(
-        client,
-        blockNumber,
-        blockEvents,
-        timestamp,
-        loggerOptions,
-      ),
-      // Store block logs
-      storeLogs(
-        client,
-        blockNumber,
-        blockHeader.digest.logs,
-        timestamp,
-        loggerOptions,
-      ),
-    ]);
+    // await Promise.all([
+    //   // Store block extrinsics
+    //   storeExtrinsics(
+    //     api,
+    //     client,
+    //     blockNumber,
+    //     blockHash,
+    //     block.extrinsics,
+    //     blockEvents,
+    //     timestamp,
+    //     loggerOptions,
+    //   ),
+    //   // Store module events
+    //   storeEvents(
+    //     client,
+    //     blockNumber,
+    //     blockEvents,
+    //     timestamp,
+    //     loggerOptions,
+    //   ),
+    //   // Store block logs
+    //   storeLogs(
+    //     client,
+    //     blockNumber,
+    //     blockHeader.digest.logs,
+    //     timestamp,
+    //     loggerOptions,
+    //   ),
+    // ]);
+
+    // Store block extrinsics (async)
+    storeExtrinsics(
+      api,
+      client,
+      blockNumber,
+      blockHash,
+      block.extrinsics,
+      blockEvents,
+      timestamp,
+      loggerOptions,
+    );
+    // Store module events (async)
+    storeEvents(
+      client,
+      blockNumber,
+      blockEvents,
+      timestamp,
+      loggerOptions,
+    );
+    // Store block logs (async)
+    storeLogs(
+      client,
+      blockNumber,
+      blockHeader.digest.logs,
+      timestamp,
+      loggerOptions,
+    );
 
     // Totals
     const totalEvents = blockEvents.length;
