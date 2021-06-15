@@ -40,12 +40,12 @@ export default {
   },
   head() {
     return {
-      title: 'Explorer | Reef Network',
+      title: 'PolkaStats NG block explorer',
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: 'Reef Chain is an EVM compatible chain for DeFi',
+          content: 'PolkaStats block explorer',
         },
       ],
     }
