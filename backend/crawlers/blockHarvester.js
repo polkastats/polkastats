@@ -145,7 +145,7 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
       }
 
       // Store block logs
-      await storeLogs(client, endBlock, blockHeader.digest.logs, loggerOptions);
+      await storeLogs(client, endBlock, blockHeader.digest.logs, timestamp, loggerOptions);
 
       // Totals
       const totalEvents = blockEvents.length;
