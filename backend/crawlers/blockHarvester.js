@@ -23,6 +23,7 @@ const config = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
 const chunkSize = 20;
+const statsPrecision = 2;
 
 const chunker = (a, n) => Array.from(
   { length: Math.ceil(a.length / n) },
@@ -85,36 +86,6 @@ const harvestBlock = async (api, client, blockNumber) => {
     const sessionProgress = currentSlot.minus(epochStartSlot);
     // Don't calculate eraProgress for harvested blocks
     const eraProgress = 0;
-
-    // await Promise.all([
-    //   // Store block extrinsics
-    //   storeExtrinsics(
-    //     api,
-    //     client,
-    //     blockNumber,
-    //     blockHash,
-    //     block.extrinsics,
-    //     blockEvents,
-    //     timestamp,
-    //     loggerOptions,
-    //   ),
-    //   // Store module events
-    //   storeEvents(
-    //     client,
-    //     blockNumber,
-    //     blockEvents,
-    //     timestamp,
-    //     loggerOptions,
-    //   ),
-    //   // Store block logs
-    //   storeLogs(
-    //     client,
-    //     blockNumber,
-    //     blockHeader.digest.logs,
-    //     timestamp,
-    //     loggerOptions,
-    //   ),
-    // ]);
 
     // Store block extrinsics (async)
     storeExtrinsics(
@@ -205,7 +176,7 @@ const harvestBlock = async (api, client, blockNumber) => {
     try {
       await client.query(sqlInsert);
       const endTime = new Date().getTime();
-      logger.info(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+      logger.info(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(statsPrecision)}s`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
     }
@@ -263,7 +234,7 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
     const currentBlocksPerSecond = 1 / ((chunkProcessingTimeMs / 1000) / chunkSize);
     const completed = ((chunks.indexOf(chunk) + 1) * 100) / chunks.length;
 
-    logger.info(loggerOptions, `[${completed.toFixed(3)}%] Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkProcessingTimeMs) / 1000).toFixed(3)}s max/min/avg: ${(maxTimeMs / 1000).toFixed(3)}/${(minTimeMs / 1000).toFixed(3)}/${(avgTimeMs / 1000).toFixed(3)} current/avg block/s: ${currentBlocksPerSecond.toFixed(3)}/${avgBlocksPerSecond.toFixed(3)}`);
+    logger.info(loggerOptions, `[${completed.toFixed(statsPrecision)}%] Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkProcessingTimeMs) / 1000).toFixed(statsPrecision)}s max/min/avg: ${(maxTimeMs / 1000).toFixed(statsPrecision)}/${(minTimeMs / 1000).toFixed(statsPrecision)}/${(avgTimeMs / 1000).toFixed(statsPrecision)} current/avg block/s: ${currentBlocksPerSecond.toFixed(statsPrecision)}/${avgBlocksPerSecond.toFixed(statsPrecision)}`);
   }
 };
 
