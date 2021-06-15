@@ -1,11 +1,13 @@
 // @ts-check
 const pino = require('pino');
+const { BigNumber } = require('bignumber.js');
 const {
   getClient,
   getPolkadotAPI,
   isNodeSynced,
   shortHash,
   storeExtrinsics,
+  storeLogs,
   getDisplayName,
   wait,
 } = require('../lib/utils');
@@ -32,12 +34,28 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
         blockEvents,
         blockHeader,
         totalIssuance,
+        runtimeVersion,
+        validatorCount,
+        ChainCurrentIndex,
+        ChainCurrentSlot,
+        ChainEpochIndex,
+        ChainGenesisSlot,
+        ChainCurrentEra,
+        chainElectionStatus,
         timestampMs,
       ] = await Promise.all([
         api.rpc.chain.getBlock(blockHash),
         api.query.system.events.at(blockHash),
         api.derive.chain.getHeader(blockHash),
         api.query.balances.totalIssuance.at(blockHash),
+        api.rpc.state.getRuntimeVersion(blockHash),
+        api.query.staking.validatorCount.at(blockHash),
+        api.query.session.currentIndex.at(blockHash),
+        api.query.babe.currentSlot.at(blockHash),
+        api.query.babe.epochIndex.at(blockHash),
+        api.query.babe.genesisSlot.at(blockHash),
+        api.query.staking.currentEra.at(blockHash),
+        api.query.electionProviderMultiPhase.currentPhase.at(blockHash),
         api.query.timestamp.now.at(blockHash),
       ]);
 
@@ -46,6 +64,23 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
       const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
       const timestamp = Math.floor(timestampMs / 1000);
       const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
+
+      // Get election status
+      const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
+
+      // progress
+      const currentEra = new BigNumber(ChainCurrentEra);
+      const currentIndex = new BigNumber(ChainCurrentIndex);
+      const currentSlot = new BigNumber(ChainCurrentSlot);
+      const epochIndex = new BigNumber(ChainEpochIndex);
+      const genesisSlot = new BigNumber(ChainGenesisSlot);
+      const epochDuration = new BigNumber(api.consts.babe.epochDuration);
+      const sessionsPerEra = new BigNumber(api.consts.staking.sessionsPerEra);
+      const eraLength = epochDuration.multipliedBy(sessionsPerEra);
+      const epochStartSlot = epochIndex.multipliedBy(epochDuration).plus(genesisSlot);
+      const sessionProgress = currentSlot.minus(epochStartSlot);
+      // We don't calculate eraProgress for harvested blocks
+      const eraProgress = 0;
 
       // Store block events
       try {
@@ -109,6 +144,9 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
         await client.query(sql);
       }
 
+      // Store block logs
+      await storeLogs(client, endBlock, blockHeader.digest.logs, loggerOptions);
+
       // Totals
       const totalEvents = blockEvents.length;
       const totalExtrinsics = block.extrinsics.length;
@@ -122,6 +160,18 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
           parent_hash,
           extrinsics_root,
           state_root,
+          current_era,
+          current_index,
+          era_length,
+          era_progress,
+          is_epoch,
+          is_election,
+          session_length,
+          session_per_era,
+          session_progress,
+          validator_count,
+          spec_name,
+          spec_version,
           total_events,
           total_extrinsics,
           total_issuance,
@@ -135,6 +185,18 @@ const harvestBlocks = async (api, client, startBlock, _endBlock) => {
           '${parentHash}',
           '${extrinsicsRoot}',
           '${stateRoot}',
+          '${currentEra}',
+          '${currentIndex}',
+          '${eraLength}',
+          '${eraProgress}',
+          'true',
+          '${isElection}',
+          '${epochDuration}',
+          '${sessionsPerEra}',
+          '${sessionProgress}',
+          '${validatorCount}',
+          '${runtimeVersion.specName}',
+          '${runtimeVersion.specVersion}',
           '${totalEvents}',
           '${totalExtrinsics}',
           '${totalIssuance.toString()}',
