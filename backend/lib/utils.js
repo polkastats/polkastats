@@ -31,10 +31,10 @@ module.exports = {
       logger.error(loggerOptions, "Can't query node status");
     }
     if (node && node.isSyncing.eq(false)) {
-      logger.error(loggerOptions, 'Node is synced!');
+      logger.debug(loggerOptions, 'Node is synced!');
       return true;
     }
-    logger.error(loggerOptions, 'Node is NOT synced!');
+    logger.debug(loggerOptions, 'Node is NOT synced!');
     return false;
   },
   formatNumber: (number) => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'),
@@ -132,7 +132,7 @@ module.exports = {
     try {
       // eslint-disable-next-line no-await-in-loop
       await client.query(sql);
-      logger.error(loggerOptions, `Updated account info for event/s involved address ${address}`);
+      logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
     } catch (error) {
       logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
     }
