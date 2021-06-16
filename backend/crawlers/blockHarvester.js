@@ -289,10 +289,19 @@ const crawler = async () => {
     )
     ORDER BY gap_start DESC
   `;
-  const res = await dbQuery(pool, query, loggerOptions);
+  let rows = [];
+  (async () => {
+    const client = await pool.connect();
+    try {
+      const res = await client.query(query);
+      rows = res.rows;
+    } finally {
+      client.release();
+    }
+  })().catch((err) => logger.error(`Db error: ${err.stack}`));
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const row of res.rows) {
+  for (const row of rows) {
     // Quick fix for gap 0-0 error
     if (!(row.gap_start === 0 && row.gap_end === 0)) {
       logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
