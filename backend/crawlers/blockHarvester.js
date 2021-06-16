@@ -292,7 +292,7 @@ const crawler = async () => {
   for (const row of res.rows) {
     // Quick fix for gap 0-0 error
     if (!(row.gap_start === 0 && row.gap_end === 0)) {
-      logger.debug(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
+      logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
       // eslint-disable-next-line no-await-in-loop
       await harvestBlocks(
         api,
@@ -306,8 +306,8 @@ const crawler = async () => {
   await api.disconnect().catch((error) => logger.error(loggerOptions, `Disconnect error: ${JSON.stringify(error)}`));
   // Log execution time
   const endTime = new Date().getTime();
-  logger.debug(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
-  logger.debug(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
+  logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
+  logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
   setTimeout(
     () => crawler(),
     config.pollingTime,
