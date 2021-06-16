@@ -74,7 +74,7 @@ module.exports = {
       return false;
     }
   },
-  updateAccountsInfo: async (api, pool, blockNumber, timestamp, loggerOptions, blockEvents) => {
+  updateAccountsInfo: async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
     const startTime = new Date().getTime();
     const involvedAddresses = [];
     blockEvents
@@ -89,7 +89,7 @@ module.exports = {
     await Promise.all(
       uniqueAddresses.map(
         (address) => module.exports.updateAccountInfo(
-          api, pool, blockNumber, timestamp, address, loggerOptions,
+          api, client, blockNumber, timestamp, address, loggerOptions,
         ),
       ),
     );
@@ -136,7 +136,7 @@ module.exports = {
   },
   storeExtrinsics: async (
     api,
-    pool,
+    client,
     blockNumber,
     blockHash,
     extrinsics,
@@ -148,7 +148,7 @@ module.exports = {
     await Promise.all(
       extrinsics.map((extrinsic, index) => module.exports.storeExtrinsic(
         api,
-        pool,
+        client,
         blockNumber,
         blockHash,
         extrinsic,
@@ -280,11 +280,11 @@ module.exports = {
       logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
     }
   },
-  storeLogs: async (pool, blockNumber, logs, timestamp, loggerOptions) => {
+  storeLogs: async (client, blockNumber, logs, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     await Promise.all(
       logs.map((log, index) => module.exports.storeLog(
-        pool, blockNumber, log, index, timestamp, loggerOptions,
+        client, blockNumber, log, index, timestamp, loggerOptions,
       )),
     );
     // Log execution time
@@ -348,12 +348,12 @@ module.exports = {
     }
     return identity.display || '';
   },
-  updateTotals: async (pool, loggerOptions) => {
+  updateTotals: async (client, loggerOptions) => {
     await Promise.all([
-      module.exports.updateTotalBlocks(pool, loggerOptions),
-      module.exports.updateTotalExtrinsics(pool, loggerOptions),
-      module.exports.updateTotalTransfers(pool, loggerOptions),
-      module.exports.updateTotalEvents(pool, loggerOptions),
+      module.exports.updateTotalBlocks(client, loggerOptions),
+      module.exports.updateTotalExtrinsics(client, loggerOptions),
+      module.exports.updateTotalTransfers(client, loggerOptions),
+      module.exports.updateTotalEvents(client, loggerOptions),
     ]);
   },
   updateTotalBlocks: async (pool, loggerOptions) => {
