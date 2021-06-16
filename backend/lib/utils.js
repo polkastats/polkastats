@@ -3,7 +3,7 @@ const pino = require('pino');
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
 const { hexToU8a, isHex } = require('@polkadot/util');
-const { Client } = require('pg');
+const { Pool } = require('pg');
 const _ = require('lodash');
 const config = require('../backend.config.js');
 
@@ -19,9 +19,9 @@ module.exports = {
   },
   getClient: async (loggerOptions) => {
     logger.debug(loggerOptions, `Connecting to DB ${config.postgresConnParams.database} at ${config.postgresConnParams.host}:${config.postgresConnParams.port}`);
-    const client = new Client(config.postgresConnParams);
-    await client.connect();
-    return client;
+    const pool = new Pool(config.postgresConnParams);
+    await pool.connect();
+    return pool;
   },
   isNodeSynced: async (api, loggerOptions) => {
     let node;
