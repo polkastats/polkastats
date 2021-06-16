@@ -262,29 +262,30 @@ const crawler = async () => {
     // eslint-disable-next-line no-await-in-loop
     synced = await isNodeSynced(api, loggerOptions);
   }
-  // Thanks to @miguelmota: https://gist.github.com/miguelmota/6d40be2ecb083507de1d073443154610
+  // Get gaps from block table
   const sqlSelect = `
     SELECT
       gap_start, gap_end FROM (
-        SELECT
-          block_number + 1 AS gap_start,
-          next_nr - 1 AS gap_end
+        SELECT block_number + 1 AS gap_start,
+        next_nr - 1 AS gap_end
         FROM (
           SELECT block_number, lead(block_number) OVER (ORDER BY block_number) AS next_nr
           FROM block
         ) nr
         WHERE nr.block_number + 1 <> nr.next_nr
-    ) AS g UNION ALL (
+      ) AS g
+    UNION ALL (
       SELECT
         0 AS gap_start,
-        block_number AS gap_end
+        block_number - 2 AS gap_end
       FROM
         block
       ORDER BY
-        block_number ASC
-      LIMIT 1
+        block_number
+      ASC LIMIT 1
     )
-    ORDER BY gap_start
+    ORDER BY
+      gap_end DESC
   `;
   const res = await client.query(sqlSelect);
   // eslint-disable-next-line no-restricted-syntax
