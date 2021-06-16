@@ -90,35 +90,33 @@ const harvestBlock = async (api, client, blockNumber) => {
     // Don't calculate eraProgress for harvested blocks
     const eraProgress = 0;
 
-    await Promise.all([
-      // Store block extrinsics (async)
-      storeExtrinsics(
-        api,
-        client,
-        blockNumber,
-        blockHash,
-        block.extrinsics,
-        blockEvents,
-        timestamp,
-        loggerOptions,
-      ),
-      // Store module events (async)
-      storeEvents(
-        client,
-        blockNumber,
-        blockEvents,
-        timestamp,
-        loggerOptions,
-      ),
-      // Store block logs (async)
-      storeLogs(
-        client,
-        blockNumber,
-        blockHeader.digest.logs,
-        timestamp,
-        loggerOptions,
-      ),
-    ]);
+    // Store block extrinsics (async)
+    await storeExtrinsics(
+      api,
+      client,
+      blockNumber,
+      blockHash,
+      block.extrinsics,
+      blockEvents,
+      timestamp,
+      loggerOptions,
+    );
+    // Store module events (async)
+    await storeEvents(
+      client,
+      blockNumber,
+      blockEvents,
+      timestamp,
+      loggerOptions,
+    );
+    // Store block logs (async)
+    await storeLogs(
+      client,
+      blockNumber,
+      blockHeader.digest.logs,
+      timestamp,
+      loggerOptions,
+    );
 
     // Totals
     const totalEvents = blockEvents.length;
@@ -290,7 +288,7 @@ const crawler = async () => {
         block_number ASC
       LIMIT 1
     )
-    ORDER BY gap_start
+    ORDER BY gap_start DESC
   `;
   const res = await client.query(sqlSelect);
   // eslint-disable-next-line no-restricted-syntax
