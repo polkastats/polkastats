@@ -5,7 +5,7 @@ const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
 const { hexToU8a, isHex } = require('@polkadot/util');
 const { Pool } = require('pg');
 const _ = require('lodash');
-const config = require('../backend.config');
+const config = require('../backend.config.js');
 
 const logger = pino();
 
@@ -17,9 +17,11 @@ module.exports = {
     await api.isReady;
     return api;
   },
-  getPool: (loggerOptions) => {
+  getClient: async (loggerOptions) => {
     logger.debug(loggerOptions, `Connecting to DB ${config.postgresConnParams.database} at ${config.postgresConnParams.host}:${config.postgresConnParams.port}`);
-    return new Pool(config.postgresConnParams);
+    const pool = new Pool(config.postgresConnParams);
+    await pool.connect();
+    return pool;
   },
   isNodeSynced: async (api, loggerOptions) => {
     let node;

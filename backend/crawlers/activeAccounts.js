@@ -2,7 +2,7 @@
 const pino = require('pino');
 const {
   wait,
-  getPool,
+  getClient,
   getPolkadotAPI,
   isNodeSynced,
   dbParamInsert,
@@ -111,9 +111,7 @@ const crawler = async () => {
 
   logger.debug(loggerOptions, 'Running active accounts crawler...');
 
-  const pool = getPool(loggerOptions);
-  const client = await pool.connect();
-
+  const client = await getClient(loggerOptions);
   let api = await getPolkadotAPI(loggerOptions);
   while (!api) {
     // eslint-disable-next-line no-await-in-loop

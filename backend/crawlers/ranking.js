@@ -3,7 +3,7 @@ const { BigNumber } = require('bignumber.js');
 const pino = require('pino');
 const axios = require('axios').default;
 const {
-  getPool,
+  getClient,
   getPolkadotAPI,
   isNodeSynced,
   wait,
@@ -525,9 +525,7 @@ const crawler = async () => {
   logger.info(loggerOptions, 'Starting ranking crawler');
   const startTime = new Date().getTime();
 
-  const pool = getPool(loggerOptions);
-  const client = await pool.connect();
-
+  const client = await getClient(loggerOptions);
   let api = await getPolkadotAPI(loggerOptions);
   while (!api) {
     // eslint-disable-next-line no-await-in-loop
