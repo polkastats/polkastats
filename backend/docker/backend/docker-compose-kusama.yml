@@ -37,9 +37,10 @@ services:
     # Optimized for hexacore CPU and 64Gb RAM
     # 
     # https://pgtune.leopard.in.ua/#/
+    #
     # DB Version: 13
     # OS Type: linux
-    # DB Type: oltp
+    # DB Type: dw
     # Total Memory (RAM): 64 GB
     # CPUs num: 6
     # Connections num: 200
@@ -59,17 +60,17 @@ services:
       - "-c"
       - "wal_buffers=16MB"
       - "-c"
-      - "default_statistics_target=100"
+      - "default_statistics_target=500"
       - "-c"
       - "random_page_cost=1.1"
       - "-c"
       - "effective_io_concurrency=200"
       - "-c"
-      - "work_mem=27962kB"
+      - "work_mem=13981kB"
       - "-c"
-      - "min_wal_size=2GB"
+      - "min_wal_size=4GB"
       - "-c"
-      - "max_wal_size=8GB"
+      - "max_wal_size=16GB"
       - "-c"
       - "max_worker_processes=6"
       - "-c"
