@@ -263,36 +263,36 @@ const crawler = async () => {
     synced = await isNodeSynced(api, loggerOptions);
   }
   // Get gaps from block table
+  // Thanks to @miguelmota: https://gist.github.com/miguelmota/6d40be2ecb083507de1d073443154610
   const sqlSelect = `
-    SELECT
-      gap_start, gap_end FROM (
-        SELECT block_number + 1 AS gap_start,
-        next_nr - 1 AS gap_end
-        FROM (
-          SELECT block_number, lead(block_number) OVER (ORDER BY block_number) AS next_nr
-          FROM block
-        ) nr
-        WHERE nr.block_number + 1 <> nr.next_nr
-      ) AS g
-    UNION ALL (
+  SELECT
+    gap_start, gap_end FROM (
       SELECT
-        0 AS gap_start,
-        block_number - 2 AS gap_end
-      FROM
-        block
-      ORDER BY
-        block_number
-      ASC LIMIT 1
-    )
+        block_number + 1 AS gap_start,
+        next_nr - 1 AS gap_end
+      FROM (
+        SELECT block_number, lead(block_number) OVER (ORDER BY block_number) AS next_nr
+        FROM block
+      ) nr
+      WHERE nr.block_number + 1 <> nr.next_nr
+  ) AS g UNION ALL (
+    SELECT
+      0 AS gap_start,
+      block_number AS gap_end
+    FROM
+      block
     ORDER BY
-      gap_end DESC
+      block_number ASC
+    LIMIT 1
+  )
+  ORDER BY gap_start DESC
   `;
   const res = await client.query(sqlSelect);
   // eslint-disable-next-line no-restricted-syntax
   for (const row of res.rows) {
     // Quick fix for gap 0-0 error
     if (!(row.gap_start === 0 && row.gap_end === 0)) {
-      logger.debug(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
+      logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
       // eslint-disable-next-line no-await-in-loop
       await harvestBlocks(
         api,
@@ -306,8 +306,8 @@ const crawler = async () => {
   await api.disconnect().catch((error) => logger.error(loggerOptions, `Disconnect error: ${JSON.stringify(error)}`));
   // Log execution time
   const endTime = new Date().getTime();
-  logger.debug(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
-  logger.debug(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
+  logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
+  logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
   setTimeout(
     () => crawler(),
     config.pollingTime,
