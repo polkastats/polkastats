@@ -3,7 +3,6 @@ const pino = require('pino');
 const { BigNumber } = require('bignumber.js');
 const {
   getPool,
-  dbQuery,
   getPolkadotAPI,
   isNodeSynced,
   shortHash,
@@ -178,9 +177,16 @@ const harvestBlock = async (api, pool, blockNumber) => {
       DO NOTHING
       ;`;
 
-    await dbQuery(pool, query, loggerOptions);
-    const endTime = new Date().getTime();
-    logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(statsPrecision)}s`);
+    (async () => {
+      const client = await pool.connect();
+      try {
+        await client.query(query);
+        const endTime = new Date().getTime();
+        logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(statsPrecision)}s`);
+      } finally {
+        client.release();
+      }
+    })().catch((err) => logger.error(`Db error: ${err.stack}`));
   } catch (error) {
     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
     const timestamp = new Date().getTime();
@@ -188,7 +194,14 @@ const harvestBlock = async (api, pool, blockNumber) => {
     const query = `INSERT INTO harvester_error (block_number, error, timestamp)
       VALUES ('${blockNumber}', '${errorString}', '${timestamp}');
     `;
-    await dbQuery(pool, query, loggerOptions);
+    (async () => {
+      const client = await pool.connect();
+      try {
+        await client.query(query);
+      } finally {
+        client.release();
+      }
+    })().catch((err) => logger.error(`Db error: ${err.stack}`));
   }
 };
 
