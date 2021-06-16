@@ -40,21 +40,27 @@ module.exports = {
   wait: async (ms) => new Promise((resolve) => {
     setTimeout(resolve, ms);
   }),
-  dbQuery: async (pool, sql) => {
-    const client = await pool.connect();
-    try {
-      return await client.query(sql);
-    } finally {
-      client.release();
-    }
+  dbQuery: async (pool, sql, loggerOptions) => {
+    (async () => {
+      const client = await pool.connect();
+      try {
+        return await client.query(sql);
+      } finally {
+        client.release();
+      }
+    })().catch((error) => logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`));
+    return null;
   },
-  dbParamQuery: async (pool, sql, data) => {
-    const client = await pool.connect();
-    try {
-      return await client.query(sql, data);
-    } finally {
-      client.release();
-    }
+  dbParamQuery: async (pool, sql, data, loggerOptions) => {
+    (async () => {
+      const client = await pool.connect();
+      try {
+        return await client.query(sql, data);
+      } finally {
+        client.release();
+      }
+    })().catch((error) => logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`));
+    return null;
   },
   isValidAddressPolkadotAddress: (address) => {
     try {
