@@ -90,35 +90,33 @@ const harvestBlock = async (api, client, blockNumber) => {
     // Don't calculate eraProgress for harvested blocks
     const eraProgress = 0;
 
-    await Promise.all([
-      // Store block extrinsics (async)
-      storeExtrinsics(
-        api,
-        client,
-        blockNumber,
-        blockHash,
-        block.extrinsics,
-        blockEvents,
-        timestamp,
-        loggerOptions,
-      ),
-      // Store module events (async)
-      storeEvents(
-        client,
-        blockNumber,
-        blockEvents,
-        timestamp,
-        loggerOptions,
-      ),
-      // Store block logs (async)
-      storeLogs(
-        client,
-        blockNumber,
-        blockHeader.digest.logs,
-        timestamp,
-        loggerOptions,
-      ),
-    ]);
+    // Store block extrinsics (async)
+    storeExtrinsics(
+      api,
+      client,
+      blockNumber,
+      blockHash,
+      block.extrinsics,
+      blockEvents,
+      timestamp,
+      loggerOptions,
+    );
+    // Store module events (async)
+    storeEvents(
+      client,
+      blockNumber,
+      blockEvents,
+      timestamp,
+      loggerOptions,
+    );
+    // Store block logs (async)
+    storeLogs(
+      client,
+      blockNumber,
+      blockHeader.digest.logs,
+      timestamp,
+      loggerOptions,
+    );
 
     // Totals
     const totalEvents = blockEvents.length;
@@ -201,12 +199,8 @@ const range = (start, stop, step) => Array
   .from({ length: (stop - start) / step + 1 }, (_, i) => stop - (i * step));
 
 const harvestBlocks = async (api, client, startBlock, endBlock) => {
-  if (startBlock === endBlock) {
-    logger.debug(loggerOptions, `Processing block #${startBlock}`);
-    await harvestBlock(api, client, startBlock);
-    return;
-  }
   const blocks = range(startBlock, endBlock, 1);
+
   const chunks = chunker(blocks, chunkSize);
   logger.info(loggerOptions, `Processing chunks of ${chunkSize} blocks`);
 
