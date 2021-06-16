@@ -28,7 +28,6 @@ const crawler = async () => {
   logger.info(loggerOptions, 'Starting block listener crawler...');
 
   const pool = getPool(loggerOptions);
-  const client = await pool.connect();
 
   let api = await getPolkadotAPI(loggerOptions);
   while (!api) {
@@ -102,7 +101,7 @@ const crawler = async () => {
 
     // Handle chain reorganizations
     let sql = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
-    let res = await dbQuery(client, sql, loggerOptions);
+    let res = await dbQuery(pool, sql, loggerOptions);
 
     if (res && res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
@@ -111,7 +110,7 @@ const crawler = async () => {
       const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
       const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
       sql = `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
-      res = await client.query(sql);
+      res = await dbQuery(pool, sql, loggerOptions);
     } else {
       const blockAuthor = extendedHeader.author || '';
       const [
@@ -195,7 +194,7 @@ const crawler = async () => {
         ;`;
 
       try {
-        await client.query(sql);
+        res = await dbQuery(pool, sql, loggerOptions);
       } catch (error) {
         logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
       }
@@ -204,7 +203,7 @@ const crawler = async () => {
         // Store block extrinsics
         storeExtrinsics(
           api,
-          client,
+          pool,
           blockNumber,
           blockHash,
           block.extrinsics,
@@ -215,7 +214,7 @@ const crawler = async () => {
         // Get involved addresses from block events and update its balances
         updateAccountsInfo(
           api,
-          client,
+          pool,
           blockNumber,
           timestamp,
           loggerOptions,
@@ -223,7 +222,7 @@ const crawler = async () => {
         ),
         // Store module events
         storeEvents(
-          client,
+          pool,
           blockNumber,
           blockEvents,
           timestamp,
@@ -231,18 +230,18 @@ const crawler = async () => {
         ),
         // Store block logs
         storeLogs(
-          client,
+          pool,
           blockNumber,
           blockHeader.digest.logs,
           timestamp,
           loggerOptions,
         ),
         // Update finalized blocks
-        updateFinalized(client, finalizedBlock, loggerOptions),
+        updateFinalized(pool, finalizedBlock, loggerOptions),
       ]);
 
       // Update totals (async)
-      updateTotals(client, loggerOptions);
+      updateTotals(pool, loggerOptions);
 
       const endTime = new Date().getTime();
       logger.info(loggerOptions, `Block #${blockNumber} processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);

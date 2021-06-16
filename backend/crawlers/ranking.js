@@ -8,8 +8,7 @@ const {
   isNodeSynced,
   wait,
   dbQuery,
-  dbParamInsert,
-  dbParamSelect,
+  dbParamQuery,
 } = require('../lib/utils');
 const backendConfig = require('../backend.config');
 
@@ -153,7 +152,7 @@ const getPayoutRating = (payoutHistory) => {
 const getClusterInfo = (hasSubIdentity, validators, validatorIdentity) => {
   if (!hasSubIdentity) {
     // string detection
-    // samples: DISC-SOFT-01, BINANCE_KSM_9, SNZclient-1
+    // samples: DISC-SOFT-01, BINANCE_KSM_9, SNZpool-1
     if (validatorIdentity.display) {
       const stringSize = 6;
       const clusterMembers = validators.filter(
@@ -191,7 +190,7 @@ const getRandom = (arr, n) => {
   return shuffled.slice(0, n);
 };
 
-const addNewFeaturedValidator = async (client, ranking) => {
+const addNewFeaturedValidator = async (pool, ranking) => {
   // rules:
   // - maximum commission is 10%
   // - at least 20 KSM own stake
@@ -200,7 +199,7 @@ const addNewFeaturedValidator = async (client, ranking) => {
   // get previously featured
   const alreadyFeatured = [];
   const sql = 'SELECT stash_address, timestamp FROM featured';
-  const res = await client.query(sql);
+  const res = await dbQuery(pool, sql);
   res.rows.forEach((validator) => alreadyFeatured.push(validator.stash_address));
   // get candidates that meet the rules
   const featuredCandidates = ranking
@@ -213,14 +212,14 @@ const addNewFeaturedValidator = async (client, ranking) => {
   const randomRank = shuffled[0];
   const featured = ranking.find((validator) => validator.rank === randomRank);
   await dbQuery(
-    client,
+    pool,
     `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`,
     loggerOptions,
   );
   logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
 };
 
-const insertRankingValidator = async (client, validator, blockHeight, startTime) => {
+const insertRankingValidator = async (pool, validator, blockHeight, startTime) => {
   const sql = `INSERT INTO ranking (
     block_height,
     rank,
@@ -373,10 +372,10 @@ const insertRankingValidator = async (client, validator, blockHeight, startTime)
     `${validator.dominated}`,
     `${startTime}`,
   ];
-  await dbParamInsert(client, sql, data, loggerOptions);
+  await dbParamQuery(pool, sql, data, loggerOptions);
 };
 
-const insertEraValidatorStats = async (client, validator, activeEra) => {
+const insertEraValidatorStats = async (pool, validator, activeEra) => {
   let sql = `INSERT INTO era_vrc_score (
     stash_address,
     era,
@@ -394,7 +393,7 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
     validator.totalRating,
   ];
   // eslint-disable-next-line no-await-in-loop
-  await dbParamInsert(client, sql, data, loggerOptions);
+  await dbParamQuery(pool, sql, data, loggerOptions);
   // eslint-disable-next-line no-restricted-syntax
   for (const commissionHistoryItem of validator.commissionHistory) {
     if (commissionHistoryItem.commission) {
@@ -415,7 +414,7 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
         commissionHistoryItem.commission,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamInsert(client, sql, data, loggerOptions);
+      await dbParamQuery(pool, sql, data, loggerOptions);
     }
   }
   // eslint-disable-next-line no-restricted-syntax
@@ -438,7 +437,7 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
         perfHistoryItem.relativePerformance,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamInsert(client, sql, data, loggerOptions);
+      await dbParamQuery(pool, sql, data, loggerOptions);
     }
   }
   // eslint-disable-next-line no-restricted-syntax
@@ -461,7 +460,7 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
         stakefHistoryItem.self,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamInsert(client, sql, data, loggerOptions);
+      await dbParamQuery(pool, sql, data, loggerOptions);
     }
   }
   // eslint-disable-next-line no-restricted-syntax
@@ -484,14 +483,14 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
         eraPointsHistoryItem.points,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamInsert(client, sql, data, loggerOptions);
+      await dbParamQuery(pool, sql, data, loggerOptions);
     }
   }
 };
 
-const getAddressCreation = async (client, address) => {
+const getAddressCreation = async (pool, address) => {
   const query = "SELECT block_number FROM event WHERE method = 'NewAccount' AND data LIKE $1";
-  const res = await dbParamSelect(client, query, [`%${address}%`], loggerOptions);
+  const res = await dbParamQuery(pool, query, [`%${address}%`], loggerOptions);
   if (res) {
     if (res.rows.length > 0) {
       if (res.rows[0].block_number) {
@@ -503,11 +502,11 @@ const getAddressCreation = async (client, address) => {
   return 0;
 };
 
-const getLastEraInDb = async (client) => {
+const getLastEraInDb = async (pool) => {
   // TODO: check also:
   // era_points_avg, era_relative_performance_avg, era_self_stake_avg
   const query = 'SELECT era FROM era_commission_avg ORDER BY era DESC LIMIT 1';
-  const res = await dbQuery(client, query, loggerOptions);
+  const res = await dbQuery(pool, query, loggerOptions);
   if (res) {
     if (res.rows.length > 0) {
       if (res.rows[0].era) {
@@ -526,7 +525,6 @@ const crawler = async () => {
   const startTime = new Date().getTime();
 
   const pool = getPool(loggerOptions);
-  const client = await pool.connect();
 
   let api = await getPolkadotAPI(loggerOptions);
   while (!api) {
@@ -565,7 +563,7 @@ const crawler = async () => {
   //
 
   try {
-    const lastEraInDb = await getLastEraInDb(client);
+    const lastEraInDb = await getLastEraInDb(pool);
     logger.debug(loggerOptions, `Last era in DB is ${lastEraInDb}`);
 
     // thousand validators program data
@@ -688,32 +686,32 @@ const crawler = async () => {
     logger.debug(loggerOptions, `Active era is ${activeEra}`);
     logger.debug(loggerOptions, `Minimum amount to stake is ${minimumStake}`);
     await dbQuery(
-      client,
+      pool,
       `UPDATE total SET count = '${activeValidatorCount}' WHERE name = 'active_validator_count'`,
       loggerOptions,
     );
     await dbQuery(
-      client,
+      pool,
       `UPDATE total SET count = '${waitingValidatorCount}' WHERE name = 'waiting_validator_count'`,
       loggerOptions,
     );
     await dbQuery(
-      client,
+      pool,
       `UPDATE total SET count = '${nominatorCount}' WHERE name = 'nominator_count'`,
       loggerOptions,
     );
     await dbQuery(
-      client,
+      pool,
       `UPDATE total SET count = '${currentEra}' WHERE name = 'current_era'`,
       loggerOptions,
     );
     await dbQuery(
-      client,
+      pool,
       `UPDATE total SET count = '${activeEra}' WHERE name = 'active_era'`,
       loggerOptions,
     );
     await dbQuery(
-      client,
+      pool,
       `UPDATE total SET count = '${minimumStake}' WHERE name = 'minimum_stake'`,
       loggerOptions,
     );
@@ -753,12 +751,12 @@ const crawler = async () => {
     for (const validator of validators) {
       const stashAddress = validator.stashId.toString();
       // eslint-disable-next-line no-await-in-loop
-      stashAddressesCreation[stashAddress] = await getAddressCreation(client, stashAddress);
+      stashAddressesCreation[stashAddress] = await getAddressCreation(pool, stashAddress);
       if (validator.identity.parent) {
         const stashParentAddress = validator.identity.parent.toString();
         // eslint-disable-next-line no-await-in-loop
         stashAddressesCreation[stashParentAddress] = await getAddressCreation(
-          client, stashParentAddress,
+          pool, stashParentAddress,
         );
       }
     }
@@ -1173,7 +1171,7 @@ const crawler = async () => {
     if (parseInt(activeEra, 10) - 1 > parseInt(lastEraInDb, 10)) {
       logger.debug(loggerOptions, 'Storing era stats in db...');
       await Promise.all(
-        ranking.map((validator) => insertEraValidatorStats(client, validator, activeEra)),
+        ranking.map((validator) => insertEraValidatorStats(pool, validator, activeEra)),
       );
 
       logger.debug(loggerOptions, 'Storing era stats averages in db...');
@@ -1182,43 +1180,43 @@ const crawler = async () => {
         const era = new BigNumber(eraIndex.toString()).toString(10);
         let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = '${era}' AND commission != 100`;
         // eslint-disable-next-line no-await-in-loop
-        let res = await client.query(sql);
+        let res = await dbQuery(pool, sql);
         if (res.rows.length > 0) {
           if (res.rows[0].commission_avg) {
             sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ('${era}', '${res.rows[0].commission_avg}') ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
             // eslint-disable-next-line no-await-in-loop
-            await dbQuery(client, sql, loggerOptions);
+            await dbQuery(pool, sql, loggerOptions);
           }
         }
         sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = '${era}'`;
         // eslint-disable-next-line no-await-in-loop
-        res = await client.query(sql);
+        res = await dbQuery(pool, sql);
         if (res.rows.length > 0) {
           if (res.rows[0].self_stake_avg) {
             const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
             sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ('${era}', '${selfStakeAvg}') ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
             // eslint-disable-next-line no-await-in-loop
-            await dbQuery(client, sql, loggerOptions);
+            await dbQuery(pool, sql, loggerOptions);
           }
         }
         sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = '${era}'`;
         // eslint-disable-next-line no-await-in-loop
-        res = await client.query(sql);
+        res = await dbQuery(pool, sql);
         if (res.rows.length > 0) {
           if (res.rows[0].relative_performance_avg) {
             sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ('${era}', '${res.rows[0].relative_performance_avg}') ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
             // eslint-disable-next-line no-await-in-loop
-            await dbQuery(client, sql, loggerOptions);
+            await dbQuery(pool, sql, loggerOptions);
           }
         }
         sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = '${era}'`;
         // eslint-disable-next-line no-await-in-loop
-        res = await client.query(sql);
+        res = await dbQuery(pool, sql);
         if (res.rows.length > 0) {
           if (res.rows[0].points_avg) {
             sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ('${era}', '${res.rows[0].points_avg}') ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
             // eslint-disable-next-line no-await-in-loop
-            await dbQuery(client, sql, loggerOptions);
+            await dbQuery(pool, sql, loggerOptions);
           }
         }
       }
@@ -1228,27 +1226,27 @@ const crawler = async () => {
 
     logger.debug(loggerOptions, `Storing ${ranking.length} validators in db...`);
     await Promise.all(
-      ranking.map((validator) => insertRankingValidator(client, validator, blockHeight, startTime)),
+      ranking.map((validator) => insertRankingValidator(pool, validator, blockHeight, startTime)),
     );
 
     logger.debug(loggerOptions, 'Cleaning old data');
     await dbQuery(
-      client,
+      pool,
       `DELETE FROM ranking WHERE block_height != '${blockHeight}';`,
       loggerOptions,
     );
 
     // featured validator
     const sql = 'SELECT stash_address, timestamp FROM featured ORDER BY timestamp DESC LIMIT 1';
-    const res = await client.query(sql);
+    const res = await dbQuery(pool, sql);
     if (res.rows.length === 0) {
-      await addNewFeaturedValidator(client, ranking);
+      await addNewFeaturedValidator(pool, ranking);
     } else {
       const currentFeatured = res.rows[0];
       const currentTimestamp = new Date().getTime();
       if (currentTimestamp - currentFeatured.timestamp > config.featuredTimespan) {
         // timespan passed, let's add a new featured validator
-        await addNewFeaturedValidator(client, ranking);
+        await addNewFeaturedValidator(pool, ranking);
       }
     }
 
