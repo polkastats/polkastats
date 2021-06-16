@@ -91,7 +91,7 @@ const harvestBlock = async (api, client, blockNumber) => {
     const eraProgress = 0;
 
     // Store block extrinsics (async)
-    storeExtrinsics(
+    await storeExtrinsics(
       api,
       client,
       blockNumber,
@@ -102,7 +102,7 @@ const harvestBlock = async (api, client, blockNumber) => {
       loggerOptions,
     );
     // Store module events (async)
-    storeEvents(
+    await storeEvents(
       client,
       blockNumber,
       blockEvents,
@@ -110,7 +110,7 @@ const harvestBlock = async (api, client, blockNumber) => {
       loggerOptions,
     );
     // Store block logs (async)
-    storeLogs(
+    await storeLogs(
       client,
       blockNumber,
       blockHeader.digest.logs,
