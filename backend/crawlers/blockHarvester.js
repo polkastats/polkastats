@@ -33,7 +33,7 @@ const chunker = (a, n) => Array.from(
   (_, i) => a.slice(i * n, i * n + n),
 );
 
-const harvestBlock = async (api, pool, blockNumber) => {
+const harvestBlock = async (api, client, blockNumber) => {
   const startTime = new Date().getTime();
   try {
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
@@ -93,7 +93,7 @@ const harvestBlock = async (api, pool, blockNumber) => {
     // Store block extrinsics (async)
     storeExtrinsics(
       api,
-      pool,
+      client,
       blockNumber,
       blockHash,
       block.extrinsics,
@@ -103,7 +103,7 @@ const harvestBlock = async (api, pool, blockNumber) => {
     );
     // Store module events (async)
     storeEvents(
-      pool,
+      client,
       blockNumber,
       blockEvents,
       timestamp,
@@ -111,7 +111,7 @@ const harvestBlock = async (api, pool, blockNumber) => {
     );
     // Store block logs (async)
     storeLogs(
-      pool,
+      client,
       blockNumber,
       blockHeader.digest.logs,
       timestamp,
@@ -122,7 +122,7 @@ const harvestBlock = async (api, pool, blockNumber) => {
     const totalEvents = blockEvents.length;
     const totalExtrinsics = block.extrinsics.length;
 
-    const query = `INSERT INTO block (
+    const sqlInsert = `INSERT INTO block (
         block_number,
         finalized,
         block_author,
@@ -176,32 +176,21 @@ const harvestBlock = async (api, pool, blockNumber) => {
       ON CONFLICT ON CONSTRAINT block_pkey 
       DO NOTHING
       ;`;
-
-    (async () => {
-      const client = await pool.connect();
-      try {
-        await client.query(query);
-        const endTime = new Date().getTime();
-        logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(statsPrecision)}s`);
-      } finally {
-        client.release();
-      }
-    })().catch((err) => logger.error(`Db error: ${err.stack}`));
+    try {
+      await client.query(sqlInsert);
+      const endTime = new Date().getTime();
+      logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(statsPrecision)}s`);
+    } catch (error) {
+      logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
+    }
   } catch (error) {
     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
     const timestamp = new Date().getTime();
     const errorString = error.toString().replace(/'/g, "''");
-    const query = `INSERT INTO harvester_error (block_number, error, timestamp)
+    const sql = `INSERT INTO harvester_error (block_number, error, timestamp)
       VALUES ('${blockNumber}', '${errorString}', '${timestamp}');
     `;
-    (async () => {
-      const client = await pool.connect();
-      try {
-        await client.query(query);
-      } finally {
-        client.release();
-      }
-    })().catch((err) => logger.error(`Db error: ${err.stack}`));
+    await client.query(sql);
   }
 };
 
@@ -209,10 +198,10 @@ const harvestBlock = async (api, pool, blockNumber) => {
 const range = (start, stop, step) => Array
   .from({ length: (stop - start) / step + 1 }, (_, i) => stop - (i * step));
 
-const harvestBlocks = async (api, pool, startBlock, endBlock) => {
+const harvestBlocks = async (api, client, startBlock, endBlock) => {
   if (startBlock === endBlock) {
     logger.debug(loggerOptions, `Processing block #${startBlock}`);
-    await harvestBlock(api, pool, startBlock);
+    await harvestBlock(api, client, startBlock);
     return;
   }
   const blocks = range(startBlock, endBlock, 1);
@@ -231,7 +220,7 @@ const harvestBlocks = async (api, pool, startBlock, endBlock) => {
     // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       chunk.map(
-        (blockNumber) => harvestBlock(api, pool, blockNumber),
+        (blockNumber) => harvestBlock(api, client, blockNumber),
       ),
     );
     const chunkEndTime = new Date().getTime();
@@ -262,7 +251,9 @@ const crawler = async () => {
 
   logger.info(loggerOptions, 'Starting block harvester...');
   const startTime = new Date().getTime();
+
   const pool = getPool(loggerOptions);
+  const client = await pool.connect();
 
   let api = await getPolkadotAPI(loggerOptions);
   while (!api) {
@@ -279,7 +270,7 @@ const crawler = async () => {
     synced = await isNodeSynced(api, loggerOptions);
   }
   // Thanks to @miguelmota: https://gist.github.com/miguelmota/6d40be2ecb083507de1d073443154610
-  const query = `
+  const sqlSelect = `
     SELECT
       gap_start, gap_end FROM (
         SELECT
@@ -302,26 +293,16 @@ const crawler = async () => {
     )
     ORDER BY gap_start DESC
   `;
-  let rows = [];
-  (async () => {
-    const client = await pool.connect();
-    try {
-      const res = await client.query(query);
-      rows = res.rows;
-    } finally {
-      client.release();
-    }
-  })().catch((err) => logger.error(`Db error: ${err.stack}`));
-
+  const res = await client.query(sqlSelect);
   // eslint-disable-next-line no-restricted-syntax
-  for (const row of rows) {
+  for (const row of res.rows) {
     // Quick fix for gap 0-0 error
     if (!(row.gap_start === 0 && row.gap_end === 0)) {
       logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
       // eslint-disable-next-line no-await-in-loop
       await harvestBlocks(
         api,
-        pool,
+        client,
         parseInt(row.gap_start, 10),
         parseInt(row.gap_end, 10),
       );

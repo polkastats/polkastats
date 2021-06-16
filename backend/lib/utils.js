@@ -40,26 +40,27 @@ module.exports = {
   wait: async (ms) => new Promise((resolve) => {
     setTimeout(resolve, ms);
   }),
-  dbQuery: async (pool, sql, loggerOptions) => {
-    (async () => {
-      const client = await pool.connect();
-      try {
-        return await client.query(sql);
-      } finally {
-        client.release();
-      }
-    })().catch((error) => logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`));
+  dbQuery: async (client, sql, loggerOptions) => {
+    try {
+      return await client.query(sql);
+    } catch (error) {
+      logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`);
+    }
     return null;
   },
-  dbParamQuery: async (pool, sql, data, loggerOptions) => {
-    (async () => {
-      const client = await pool.connect();
-      try {
-        return await client.query(sql, data);
-      } finally {
-        client.release();
-      }
-    })().catch((error) => logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`));
+  dbParamInsert: async (client, sql, data, loggerOptions) => {
+    try {
+      await client.query(sql, data);
+    } catch (error) {
+      logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
+    }
+  },
+  dbParamSelect: async (client, sql, data, loggerOptions) => {
+    try {
+      return await client.query(sql, data);
+    } catch (error) {
+      logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
+    }
     return null;
   },
   isValidAddressPolkadotAddress: (address) => {
@@ -97,7 +98,7 @@ module.exports = {
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
-  updateAccountInfo: async (api, pool, blockNumber, timestamp, address, loggerOptions) => {
+  updateAccountInfo: async (api, client, blockNumber, timestamp, address, loggerOptions) => {
     const [balances, { identity }] = await Promise.all([
       api.derive.balances.all(address),
       api.derive.accounts.info(address),
@@ -128,7 +129,7 @@ module.exports = {
     `;
     try {
       // eslint-disable-next-line no-await-in-loop
-      await module.exports.dbQuery(pool, sql);
+      await client.query(sql);
       logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
     } catch (error) {
       logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
@@ -164,7 +165,7 @@ module.exports = {
   },
   storeExtrinsic: async (
     api,
-    pool,
+    client,
     blockNumber,
     blockHash,
     extrinsic,
@@ -229,19 +230,19 @@ module.exports = {
       DO NOTHING;
       ;`;
     try {
-      await module.exports.dbQuery(pool, sql);
+      await client.query(sql);
       logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
     }
   },
   storeEvents: async (
-    pool, blockNumber, blockEvents, timestamp, loggerOptions,
+    client, blockNumber, blockEvents, timestamp, loggerOptions,
   ) => {
     const startTime = new Date().getTime();
     await Promise.all(
       blockEvents.map((record, index) => module.exports.storeEvent(
-        pool, blockNumber, record, index, timestamp, loggerOptions,
+        client, blockNumber, record, index, timestamp, loggerOptions,
       )),
     );
     // Log execution time
@@ -249,7 +250,7 @@ module.exports = {
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
   storeEvent: async (
-    pool, blockNumber, record, index, timestamp, loggerOptions,
+    client, blockNumber, record, index, timestamp, loggerOptions,
   ) => {
     const { event, phase } = record;
     const sql = `INSERT INTO event (
@@ -274,7 +275,7 @@ module.exports = {
     ;`;
     try {
       // eslint-disable-next-line no-await-in-loop
-      await module.exports.dbQuery(pool, sql);
+      await client.query(sql);
       logger.debug(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
@@ -291,7 +292,7 @@ module.exports = {
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
-  storeLog: async (pool, blockNumber, log, index, timestamp, loggerOptions) => {
+  storeLog: async (client, blockNumber, log, index, timestamp, loggerOptions) => {
     const { type } = log;
     const [[engine, data]] = Object.values(log.toJSON());
     const sql = `INSERT INTO log (
@@ -313,7 +314,7 @@ module.exports = {
       DO NOTHING;
       ;`;
     try {
-      await module.exports.dbQuery(pool, sql);
+      await client.query(sql);
       logger.debug(loggerOptions, `Added log ${blockNumber}-${index}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
@@ -356,52 +357,52 @@ module.exports = {
       module.exports.updateTotalEvents(client, loggerOptions),
     ]);
   },
-  updateTotalBlocks: async (pool, loggerOptions) => {
+  updateTotalBlocks: async (client, loggerOptions) => {
     const sql = `
       UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks';
     `;
     try {
-      await module.exports.dbQuery(pool, sql);
+      await client.query(sql);
     } catch (error) {
       logger.error(loggerOptions, `Error updating totals: ${error}`);
     }
   },
-  updateTotalExtrinsics: async (pool, loggerOptions) => {
+  updateTotalExtrinsics: async (client, loggerOptions) => {
     const sql = `
       UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
     `;
     try {
-      await module.exports.dbQuery(pool, sql);
+      await client.query(sql);
     } catch (error) {
       logger.error(loggerOptions, `Error updating total extrinsics: ${error}`);
     }
   },
-  updateTotalTransfers: async (pool, loggerOptions) => {
+  updateTotalTransfers: async (client, loggerOptions) => {
     const sql = `
       UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers';
     `;
     try {
-      await module.exports.dbQuery(pool, sql);
+      await client.query(sql);
     } catch (error) {
       logger.error(loggerOptions, `Error updating totals transfers ${error}`);
     }
   },
-  updateTotalEvents: async (pool, loggerOptions) => {
+  updateTotalEvents: async (client, loggerOptions) => {
     const sql = `
       UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events';
     `;
     try {
-      await module.exports.dbQuery(pool, sql);
+      await client.query(sql);
     } catch (error) {
       logger.error(loggerOptions, `Error updating total events: ${error}`);
     }
   },
-  updateFinalized: async (pool, finalizedBlock, loggerOptions) => {
+  updateFinalized: async (client, finalizedBlock, loggerOptions) => {
     const sql = `
       UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock};
     `;
     try {
-      await module.exports.dbQuery(pool, sql);
+      await client.query(sql);
     } catch (error) {
       logger.error(loggerOptions, `Error updating finalized blocks: ${error}`);
     }

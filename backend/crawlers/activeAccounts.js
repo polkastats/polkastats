@@ -5,7 +5,7 @@ const {
   getPool,
   getPolkadotAPI,
   isNodeSynced,
-  dbParamQuery,
+  dbParamInsert,
 } = require('../lib/utils');
 const backendConfig = require('../backend.config');
 
@@ -33,7 +33,7 @@ const chunker = (a, n) => Array.from(
   (_, i) => a.slice(i * n, i * n + n),
 );
 
-const processChunk = async (api, pool, accountId) => {
+const processChunk = async (api, client, accountId) => {
   const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
   const [block, identity, balances] = await Promise.all([
     api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
@@ -102,7 +102,7 @@ const processChunk = async (api, pool, accountId) => {
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
   // eslint-disable-next-line no-await-in-loop
-  await dbParamQuery(pool, query, data, loggerOptions);
+  await dbParamInsert(client, query, data, loggerOptions);
 };
 
 const crawler = async () => {
@@ -112,6 +112,7 @@ const crawler = async () => {
   logger.debug(loggerOptions, 'Running active accounts crawler...');
 
   const pool = getPool(loggerOptions);
+  const client = await pool.connect();
 
   let api = await getPolkadotAPI(loggerOptions);
   while (!api) {
@@ -141,7 +142,7 @@ const crawler = async () => {
     // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       chunk.map(
-        (accountId) => processChunk(api, pool, accountId),
+        (accountId) => processChunk(api, client, accountId),
       ),
     );
     const chunkEndTime = new Date().getTime();
