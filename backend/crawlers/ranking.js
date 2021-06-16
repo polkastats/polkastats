@@ -214,6 +214,7 @@ const addNewFeaturedValidator = async (pool, ranking) => {
   await dbQuery(
     pool,
     `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`,
+    loggerOptions,
   );
   logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
 };
@@ -371,7 +372,7 @@ const insertRankingValidator = async (pool, validator, blockHeight, startTime) =
     `${validator.dominated}`,
     `${startTime}`,
   ];
-  await dbParamQuery(pool, sql, data);
+  await dbParamQuery(pool, sql, data, loggerOptions);
 };
 
 const insertEraValidatorStats = async (pool, validator, activeEra) => {
@@ -392,7 +393,7 @@ const insertEraValidatorStats = async (pool, validator, activeEra) => {
     validator.totalRating,
   ];
   // eslint-disable-next-line no-await-in-loop
-  await dbParamQuery(pool, sql, data);
+  await dbParamQuery(pool, sql, data, loggerOptions);
   // eslint-disable-next-line no-restricted-syntax
   for (const commissionHistoryItem of validator.commissionHistory) {
     if (commissionHistoryItem.commission) {
@@ -413,7 +414,7 @@ const insertEraValidatorStats = async (pool, validator, activeEra) => {
         commissionHistoryItem.commission,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamQuery(pool, sql, data);
+      await dbParamQuery(pool, sql, data, loggerOptions);
     }
   }
   // eslint-disable-next-line no-restricted-syntax
@@ -436,7 +437,7 @@ const insertEraValidatorStats = async (pool, validator, activeEra) => {
         perfHistoryItem.relativePerformance,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamQuery(pool, sql, data);
+      await dbParamQuery(pool, sql, data, loggerOptions);
     }
   }
   // eslint-disable-next-line no-restricted-syntax
@@ -459,7 +460,7 @@ const insertEraValidatorStats = async (pool, validator, activeEra) => {
         stakefHistoryItem.self,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamQuery(pool, sql, data);
+      await dbParamQuery(pool, sql, data, loggerOptions);
     }
   }
   // eslint-disable-next-line no-restricted-syntax
@@ -482,7 +483,7 @@ const insertEraValidatorStats = async (pool, validator, activeEra) => {
         eraPointsHistoryItem.points,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamQuery(pool, sql, data);
+      await dbParamQuery(pool, sql, data, loggerOptions);
     }
   }
 };
@@ -505,7 +506,7 @@ const getLastEraInDb = async (pool) => {
   // TODO: check also:
   // era_points_avg, era_relative_performance_avg, era_self_stake_avg
   const query = 'SELECT era FROM era_commission_avg ORDER BY era DESC LIMIT 1';
-  const res = await dbQuery(pool, query);
+  const res = await dbQuery(pool, query, loggerOptions);
   if (res) {
     if (res.rows.length > 0) {
       if (res.rows[0].era) {
@@ -1184,7 +1185,7 @@ const crawler = async () => {
           if (res.rows[0].commission_avg) {
             sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ('${era}', '${res.rows[0].commission_avg}') ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
             // eslint-disable-next-line no-await-in-loop
-            await dbQuery(pool, sql);
+            await dbQuery(pool, sql, loggerOptions);
           }
         }
         sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = '${era}'`;
@@ -1195,7 +1196,7 @@ const crawler = async () => {
             const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
             sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ('${era}', '${selfStakeAvg}') ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
             // eslint-disable-next-line no-await-in-loop
-            await dbQuery(pool, sql);
+            await dbQuery(pool, sql, loggerOptions);
           }
         }
         sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = '${era}'`;
@@ -1205,7 +1206,7 @@ const crawler = async () => {
           if (res.rows[0].relative_performance_avg) {
             sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ('${era}', '${res.rows[0].relative_performance_avg}') ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
             // eslint-disable-next-line no-await-in-loop
-            await dbQuery(pool, sql);
+            await dbQuery(pool, sql, loggerOptions);
           }
         }
         sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = '${era}'`;
@@ -1215,7 +1216,7 @@ const crawler = async () => {
           if (res.rows[0].points_avg) {
             sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ('${era}', '${res.rows[0].points_avg}') ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
             // eslint-disable-next-line no-await-in-loop
-            await dbQuery(pool, sql);
+            await dbQuery(pool, sql, loggerOptions);
           }
         }
       }

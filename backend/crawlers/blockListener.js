@@ -101,7 +101,7 @@ const crawler = async () => {
 
     // Handle chain reorganizations
     let sql = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
-    let res = await dbQuery(pool, sql);
+    let res = await dbQuery(pool, sql, loggerOptions);
 
     if (res && res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
@@ -110,7 +110,7 @@ const crawler = async () => {
       const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
       const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
       sql = `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
-      res = await dbQuery(pool, sql);
+      res = await dbQuery(pool, sql, loggerOptions);
     } else {
       const blockAuthor = extendedHeader.author || '';
       const [
@@ -194,7 +194,7 @@ const crawler = async () => {
         ;`;
 
       try {
-        res = await dbQuery(pool, sql);
+        res = await dbQuery(pool, sql, loggerOptions);
       } catch (error) {
         logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
       }
