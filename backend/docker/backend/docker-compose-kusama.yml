@@ -40,15 +40,15 @@ services:
     #
     # DB Version: 13
     # OS Type: linux
-    # DB Type: web
+    # DB Type: dw
     # Total Memory (RAM): 64 GB
     # CPUs num: 6
-    # Connections num: 100
+    # Connections num: 200
     # Data Storage: ssd
     command:
       - "postgres"
       - "-c"
-      - "max_connections=100"
+      - "max_connections=200"
       - "-c"
       - "shared_buffers=16GB"
       - "-c"
@@ -60,17 +60,17 @@ services:
       - "-c"
       - "wal_buffers=16MB"
       - "-c"
-      - "default_statistics_target=100"
+      - "default_statistics_target=500"
       - "-c"
       - "random_page_cost=1.1"
       - "-c"
       - "effective_io_concurrency=200"
       - "-c"
-      - "work_mem=55924kB"
+      - "work_mem=13981kB"
       - "-c"
-      - "min_wal_size=1GB"
+      - "min_wal_size=4GB"
       - "-c"
-      - "max_wal_size=4GB"
+      - "max_wal_size=16GB"
       - "-c"
       - "max_worker_processes=6"
       - "-c"
