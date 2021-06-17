@@ -1,4 +1,4 @@
-FROM node:gallium
+FROM node:16.3.0-alpine3.12
 
 WORKDIR /usr/app/crawler
 
