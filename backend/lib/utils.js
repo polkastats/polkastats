@@ -186,20 +186,18 @@ module.exports = {
     const success = module.exports.getExtrinsicSuccess(index, blockEvents);
 
     // Fees
-    // let feeInfo = '';
-    // let feeDetails = '';
-    // if (isSigned) {
-    //   [feeInfo, feeDetails] = await Promise.all([
-    //     api.rpc.payment.queryInfo(
-    //       extrinsic.toHex(), blockHash,
-    //     ).then((result) => JSON.stringify(result.toJSON())),
-    //     api.rpc.payment.queryFeeDetails(
-    //       extrinsic.toHex(), blockHash,
-    //     ).then((result) => JSON.stringify(result.toJSON())),
-    //   ]);
-    // }
-    const feeInfo = '';
-    const feeDetails = '';
+    let feeInfo = '';
+    let feeDetails = '';
+    if (isSigned) {
+      [feeInfo, feeDetails] = await Promise.all([
+        api.rpc.payment.queryInfo(
+          extrinsic.toHex(), blockHash,
+        ).then((result) => JSON.stringify(result.toJSON())),
+        api.rpc.payment.queryFeeDetails(
+          extrinsic.toHex(), blockHash,
+        ).then((result) => JSON.stringify(result.toJSON())),
+      ]);
+    }
 
     const sql = `INSERT INTO extrinsic (
         block_number,
