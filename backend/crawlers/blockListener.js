@@ -63,16 +63,8 @@ const crawler = async () => {
 
     // Parallelize
     const [
-      {
-        currentEra,
-        currentIndex,
-        eraLength,
-        isEpoch,
-        sessionsPerEra,
-        validatorCount,
-        eraProgress,
-        sessionProgress,
-      },
+      chainActiveEra,
+      currentIndex,
       { block },
       extendedHeader,
       runtimeVersion,
@@ -80,7 +72,8 @@ const crawler = async () => {
       totalIssuance,
       timestampMs,
     ] = await Promise.all([
-      api.derive.session.progress(),
+      api.query.staking.activeEra(),
+      api.query.session.currentIndex(),
       api.rpc.chain.getBlock(blockHash),
       api.derive.chain.getHeader(blockHash),
       api.rpc.state.getRuntimeVersion(blockHash),
@@ -92,6 +85,8 @@ const crawler = async () => {
     const finalizedBlockHeader = await api.rpc.chain.getHeader(finalizedBlockHash);
     const finalizedBlock = finalizedBlockHeader.number.toNumber();
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
+    // @ts-ignore
+    const activeEra = chainActiveEra.toJSON().index.toString();
 
     // Handle chain reorganizations
     let sql = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
@@ -121,9 +116,6 @@ const crawler = async () => {
       // Get election status
       const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
 
-      // Get epoch duration
-      const { epochDuration } = api.consts.babe;
-
       // Totals
       const totalEvents = blockEvents.length || 0;
       const totalExtrinsics = block.extrinsics.length;
@@ -141,16 +133,9 @@ const crawler = async () => {
           parent_hash,
           extrinsics_root,
           state_root,
-          current_era,
+          active_era,
           current_index,
-          era_length,
-          era_progress,
-          is_epoch,
           is_election,
-          session_length,
-          session_per_era,
-          session_progress,
-          validator_count,
           spec_name,
           spec_version,
           total_events,
@@ -166,16 +151,9 @@ const crawler = async () => {
           '${parentHash}',
           '${extrinsicsRoot}',
           '${stateRoot}',
-          '${currentEra.toString()}',
+          '${activeEra.toString()}',
           '${currentIndex.toString()}',
-          '${eraLength.toString()}',
-          '${eraProgress.toString()}',
-          '${isEpoch}',
           '${isElection}',
-          '${epochDuration.toString()}',
-          '${sessionsPerEra.toString()}',
-          '${sessionProgress.toString()}',
-          '${validatorCount}',
           '${runtimeVersion.specName}',
           '${runtimeVersion.specVersion}',
           '${totalEvents}',

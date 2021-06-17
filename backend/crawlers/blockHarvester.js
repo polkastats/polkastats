@@ -1,6 +1,5 @@
 // @ts-check
 const pino = require('pino');
-const { BigNumber } = require('bignumber.js');
 const {
   getClient,
   getPolkadotAPI,
@@ -50,12 +49,8 @@ const harvestBlock = async (api, client, blockNumber) => {
       blockHeader,
       totalIssuance,
       runtimeVersion,
-      validatorCount,
-      ChainCurrentIndex,
-      ChainCurrentSlot,
-      ChainEpochIndex,
-      ChainGenesisSlot,
-      ChainCurrentEra,
+      chainActiveEra,
+      currentIndex,
       chainElectionStatus,
       timestampMs,
     ] = await Promise.all([
@@ -64,12 +59,8 @@ const harvestBlock = async (api, client, blockNumber) => {
       api.derive.chain.getHeader(blockHash),
       api.query.balances.totalIssuance.at(blockHash),
       api.rpc.state.getRuntimeVersion(blockHash),
-      api.query.staking.validatorCount.at(blockHash),
+      api.query.staking.activeEra.at(blockHash),
       api.query.session.currentIndex.at(blockHash),
-      api.query.babe.currentSlot.at(blockHash),
-      api.query.babe.epochIndex.at(blockHash),
-      api.query.babe.genesisSlot.at(blockHash),
-      api.query.staking.currentEra.at(blockHash),
       api.query.electionProviderMultiPhase.currentPhase.at(blockHash),
       api.query.timestamp.now.at(blockHash),
     ]);
@@ -79,23 +70,9 @@ const harvestBlock = async (api, client, blockNumber) => {
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
     const timestamp = Math.floor(timestampMs / 1000);
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
-
     // Get election status
     const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
-
-    // progress
-    const currentEra = new BigNumber(ChainCurrentEra);
-    const currentIndex = new BigNumber(ChainCurrentIndex);
-    const currentSlot = new BigNumber(ChainCurrentSlot);
-    const epochIndex = new BigNumber(ChainEpochIndex);
-    const genesisSlot = new BigNumber(ChainGenesisSlot);
-    const epochDuration = new BigNumber(api.consts.babe.epochDuration);
-    const sessionsPerEra = new BigNumber(api.consts.staking.sessionsPerEra);
-    const eraLength = epochDuration.multipliedBy(sessionsPerEra);
-    const epochStartSlot = epochIndex.multipliedBy(epochDuration).plus(genesisSlot);
-    const sessionProgress = currentSlot.minus(epochStartSlot);
-    // Don't calculate eraProgress for harvested blocks
-    const eraProgress = 0;
+    const activeEra = chainActiveEra.toJSON().index.toString();
 
     // Store block extrinsics (async)
     storeExtrinsics(
@@ -138,16 +115,9 @@ const harvestBlock = async (api, client, blockNumber) => {
         parent_hash,
         extrinsics_root,
         state_root,
-        current_era,
+        active_era,
         current_index,
-        era_length,
-        era_progress,
-        is_epoch,
         is_election,
-        session_length,
-        session_per_era,
-        session_progress,
-        validator_count,
         spec_name,
         spec_version,
         total_events,
@@ -163,16 +133,9 @@ const harvestBlock = async (api, client, blockNumber) => {
         '${parentHash}',
         '${extrinsicsRoot}',
         '${stateRoot}',
-        '${currentEra}',
+        '${activeEra}',
         '${currentIndex}',
-        '${eraLength}',
-        '${eraProgress}',
-        'true',
         '${isElection}',
-        '${epochDuration}',
-        '${sessionsPerEra}',
-        '${sessionProgress}',
-        '${validatorCount}',
         '${runtimeVersion.specName}',
         '${runtimeVersion.specVersion}',
         '${totalEvents}',
