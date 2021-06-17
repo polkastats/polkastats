@@ -89,7 +89,6 @@ services:
       HASURA_GRAPHQL_CORS_DOMAIN: http://localhost:3000, https://dev.kusama.polkastats.io
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
       HASURA_GRAPHQL_ADMIN_SECRET: my_admin_secret_key
-      NODE_PG_FORCE_NATIVE: 'true'
   
   #
   # Block crawler
@@ -112,6 +111,7 @@ services:
       CRAWLER_ACTIVE_ACCOUNTS_DISABLE: 'true'
       # CRAWLER_BLOCK_LISTENER_DISABLE: 'true'
       # CRAWLER_BLOCK_HARVESTER_DISABLE: 'true'
+      NODE_PG_FORCE_NATIVE: 'true'
 
 #
 # Persistent volumes
