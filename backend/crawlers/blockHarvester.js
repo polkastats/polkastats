@@ -43,11 +43,11 @@ const harvestBlock = async (api, client, blockNumber) => {
       blockHeader,
       totalIssuance,
       runtimeVersion,
-      validatorCount,
-      ChainCurrentIndex,
-      ChainCurrentSlot,
-      ChainEpochIndex,
-      ChainGenesisSlot,
+      // validatorCount,
+      // ChainCurrentIndex,
+      // ChainCurrentSlot,
+      // ChainEpochIndex,
+      // ChainGenesisSlot,
       ChainCurrentEra,
       chainElectionStatus,
       timestampMs,
@@ -57,11 +57,11 @@ const harvestBlock = async (api, client, blockNumber) => {
       api.derive.chain.getHeader(blockHash),
       api.query.balances.totalIssuance.at(blockHash),
       api.rpc.state.getRuntimeVersion(blockHash),
-      api.query.staking.validatorCount.at(blockHash),
-      api.query.session.currentIndex.at(blockHash),
-      api.query.babe.currentSlot.at(blockHash),
-      api.query.babe.epochIndex.at(blockHash),
-      api.query.babe.genesisSlot.at(blockHash),
+      // api.query.staking.validatorCount.at(blockHash),
+      // api.query.session.currentIndex.at(blockHash),
+      // api.query.babe.currentSlot.at(blockHash),
+      // api.query.babe.epochIndex.at(blockHash),
+      // api.query.babe.genesisSlot.at(blockHash),
       api.query.staking.currentEra.at(blockHash),
       api.query.electionProviderMultiPhase.currentPhase.at(blockHash),
       api.query.timestamp.now.at(blockHash),
@@ -78,15 +78,22 @@ const harvestBlock = async (api, client, blockNumber) => {
 
     // progress
     const currentEra = new BigNumber(ChainCurrentEra);
-    const currentIndex = new BigNumber(ChainCurrentIndex);
-    const currentSlot = new BigNumber(ChainCurrentSlot);
-    const epochIndex = new BigNumber(ChainEpochIndex);
-    const genesisSlot = new BigNumber(ChainGenesisSlot);
-    const epochDuration = new BigNumber(api.consts.babe.epochDuration);
-    const sessionsPerEra = new BigNumber(api.consts.staking.sessionsPerEra);
-    const eraLength = epochDuration.multipliedBy(sessionsPerEra);
-    const epochStartSlot = epochIndex.multipliedBy(epochDuration).plus(genesisSlot);
-    const sessionProgress = currentSlot.minus(epochStartSlot);
+    // const currentIndex = new BigNumber(ChainCurrentIndex);
+    // const currentSlot = new BigNumber(ChainCurrentSlot);
+    // const epochIndex = new BigNumber(ChainEpochIndex);
+    // const genesisSlot = new BigNumber(ChainGenesisSlot);
+    // const epochDuration = new BigNumber(api.consts.babe.epochDuration);
+    // const sessionsPerEra = new BigNumber(api.consts.staking.sessionsPerEra);
+    // const eraLength = epochDuration.multipliedBy(sessionsPerEra);
+    // const epochStartSlot = epochIndex.multipliedBy(epochDuration).plus(genesisSlot);
+    // const sessionProgress = currentSlot.minus(epochStartSlot);
+
+    const currentIndex = 0;
+    const epochDuration = 0;
+    const sessionsPerEra = 0;
+    const eraLength = 0;
+    const sessionProgress = 0;
+
     // Don't calculate eraProgress for harvested blocks
     const eraProgress = 0;
 
