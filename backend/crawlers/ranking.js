@@ -526,13 +526,8 @@ const crawler = async () => {
   const startTime = new Date().getTime();
 
   const client = await getClient(loggerOptions);
-  let api = await getPolkadotAPI(loggerOptions);
-  while (!api) {
-    // eslint-disable-next-line no-await-in-loop
-    await wait(10000);
-    // eslint-disable-next-line no-await-in-loop
-    api = await getPolkadotAPI(loggerOptions);
-  }
+  const api = await getPolkadotAPI(loggerOptions);
+  await api.isReady;
 
   let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {

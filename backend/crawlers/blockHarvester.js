@@ -14,6 +14,11 @@ const {
 } = require('../lib/utils');
 const backendConfig = require('../backend.config');
 
+// possible values 'chunks' or 'seq'
+const harvestMode = 'chunks';
+const chunkSize = 20;
+const statsPrecision = 2;
+
 const crawlerName = 'blockHarvester';
 const logger = pino({
   level: backendConfig.logLevel,
@@ -25,8 +30,10 @@ const loggerOptions = {
 const config = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
-const chunkSize = 20;
-const statsPrecision = 2;
+
+// Return a reverse ordered array from range
+const range = (start, stop, step) => Array
+  .from({ length: (stop - start) / step + 1 }, (_, i) => stop - (i * step));
 
 const chunker = (a, n) => Array.from(
   { length: Math.ceil(a.length / n) },
@@ -194,9 +201,38 @@ const harvestBlock = async (api, client, blockNumber) => {
   }
 };
 
-// Return a reverse ordered array from range
-const range = (start, stop, step) => Array
-  .from({ length: (stop - start) / step + 1 }, (_, i) => stop - (i * step));
+// eslint-disable-next-line no-unused-vars
+const harvestBlocksSeq = async (api, client, startBlock, endBlock) => {
+  const blocks = range(startBlock, endBlock, 1);
+  const blockProcessingTimes = [];
+  let maxTimeMs = 0;
+  let minTimeMs = 1000000;
+  let avgTimeMs = 0;
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const blockNumber of blocks) {
+    const blockStartTime = Date.now();
+    // eslint-disable-next-line no-await-in-loop
+    await harvestBlock(api, client, blockNumber);
+    const blockEndTime = new Date().getTime();
+
+    // Cook some stats
+    const blockProcessingTimeMs = blockEndTime - blockStartTime;
+    if (blockProcessingTimeMs < minTimeMs) {
+      minTimeMs = blockProcessingTimeMs;
+    }
+    if (blockProcessingTimeMs > maxTimeMs) {
+      maxTimeMs = blockProcessingTimeMs;
+    }
+    blockProcessingTimes.push(blockProcessingTimeMs);
+    avgTimeMs = blockProcessingTimes.reduce(
+      (sum, blockProcessingTime) => sum + blockProcessingTime, 0,
+    ) / blockProcessingTimes.length;
+    const completed = ((blocks.indexOf(blockNumber) + 1) * 100) / blocks.length;
+
+    logger.info(loggerOptions, `Processed block #${blockNumber} ${blocks.indexOf(blockNumber) + 1}/${blocks.length} [${completed.toFixed(statsPrecision)}%] in ${((blockProcessingTimeMs) / 1000).toFixed(statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(statsPrecision)}/${(maxTimeMs / 1000).toFixed(statsPrecision)}/${(avgTimeMs / 1000).toFixed(statsPrecision)}`);
+  }
+};
 
 const harvestBlocks = async (api, client, startBlock, endBlock) => {
   const blocks = range(startBlock, endBlock, 1);
@@ -248,13 +284,8 @@ const crawler = async () => {
   logger.info(loggerOptions, 'Starting block harvester...');
   const startTime = new Date().getTime();
   const client = await getClient(loggerOptions);
-  let api = await getPolkadotAPI(loggerOptions);
-  while (!api) {
-    // eslint-disable-next-line no-await-in-loop
-    await wait(10000);
-    // eslint-disable-next-line no-await-in-loop
-    api = await getPolkadotAPI(loggerOptions);
-  }
+  const api = await getPolkadotAPI(loggerOptions);
+  await api.isReady;
   let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {
     // eslint-disable-next-line no-await-in-loop
@@ -290,11 +321,18 @@ const crawler = async () => {
   const res = await client.query(sqlSelect);
   // eslint-disable-next-line no-restricted-syntax
   for (const row of res.rows) {
-    // Quick fix for gap 0-0 error
-    if (!(row.gap_start === 0 && row.gap_end === 0)) {
-      logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
+    logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
+    if (harvestMode === 'chunks') {
       // eslint-disable-next-line no-await-in-loop
       await harvestBlocks(
+        api,
+        client,
+        parseInt(row.gap_start, 10),
+        parseInt(row.gap_end, 10),
+      );
+    } else {
+      // eslint-disable-next-line no-await-in-loop
+      await harvestBlocksSeq(
         api,
         client,
         parseInt(row.gap_start, 10),
