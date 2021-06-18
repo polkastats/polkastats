@@ -15,7 +15,7 @@ const backendConfig = require('../backend.config');
 
 // possible values 'chunks' or 'seq'
 const harvestMode = 'chunks';
-const chunkSize = 100;
+const chunkSize = 50;
 const statsPrecision = 2;
 
 const crawlerName = 'blockHarvester';
@@ -217,7 +217,7 @@ const harvestBlocks = async (apiInstances, client, startBlock, endBlock) => {
     // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       chunk.map(
-        (blockNumber, index) => harvestBlock(apiInstances[index], client, blockNumber),
+        (blockNumber) => harvestBlock(apiInstances[getRndInteger(0, 9)], client, blockNumber),
       ),
     );
     const chunkEndTime = new Date().getTime();
@@ -250,8 +250,9 @@ const crawler = async () => {
   const startTime = new Date().getTime();
   const client = await getClient(loggerOptions);
 
+  const apiNum = 10;
   const apiInstances = [];
-  for (let i = 0; i < chunkSize; i += 1) {
+  for (let i = 0; i < apiNum; i += 1) {
     // eslint-disable-next-line no-await-in-loop
     apiInstances[i] = await getPolkadotAPI(loggerOptions);
   }
