@@ -2,7 +2,6 @@ ARG POLKADOT_VERSION
 FROM phusion/baseimage:0.11
 LABEL maintainer "@mariopino"
 LABEL description="Parity Polkadot client"
-ARG POLKADOT_VERSION
 ENV POLKADOT_VERSION=${POLKADOT_VERSION}
 RUN apt-get update && apt-get install wget curl jq -y
 WORKDIR /usr/local/bin
