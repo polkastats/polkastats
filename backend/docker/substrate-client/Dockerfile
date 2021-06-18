@@ -1,4 +1,3 @@
-ARG POLKADOT_VERSION
 FROM phusion/baseimage:0.11
 LABEL maintainer "@mariopino"
 LABEL description="Parity Polkadot client"
