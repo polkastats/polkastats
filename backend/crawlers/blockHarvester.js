@@ -197,7 +197,9 @@ const harvestBlocksSeq = async (api, client, startBlock, endBlock) => {
   }
 };
 
-const harvestBlocks = async (api, client, startBlock, endBlock) => {
+const getRndInteger = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+const harvestBlocks = async (apiInstances, client, startBlock, endBlock) => {
   const blocks = range(startBlock, endBlock, 1);
 
   const chunks = chunker(blocks, chunkSize);
@@ -215,7 +217,7 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
     // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       chunk.map(
-        (blockNumber) => harvestBlock(api, client, blockNumber),
+        (blockNumber) => harvestBlock(apiInstances[getRndInteger(0, 9)], client, blockNumber),
       ),
     );
     const chunkEndTime = new Date().getTime();
@@ -247,14 +249,23 @@ const crawler = async () => {
   logger.info(loggerOptions, 'Starting block harvester...');
   const startTime = new Date().getTime();
   const client = await getClient(loggerOptions);
-  const api = await getPolkadotAPI(loggerOptions);
-  await api.isReady;
-  let synced = await isNodeSynced(api, loggerOptions);
+
+  const apiNum = 10;
+  const apiInstances = [];
+  for (let i = 0; i < apiNum; i += 1) {
+    // eslint-disable-next-line no-await-in-loop
+    apiInstances[i] = await getPolkadotAPI(loggerOptions);
+  }
+  await Promise.all(
+    apiInstances.map((api) => api.isReady),
+  );
+
+  let synced = await isNodeSynced(apiInstances[0], loggerOptions);
   while (!synced) {
     // eslint-disable-next-line no-await-in-loop
     await wait(10000);
     // eslint-disable-next-line no-await-in-loop
-    synced = await isNodeSynced(api, loggerOptions);
+    synced = await isNodeSynced(apiInstances[0], loggerOptions);
   }
   // Get gaps from block table
   // Thanks to @miguelmota: https://gist.github.com/miguelmota/6d40be2ecb083507de1d073443154610
@@ -288,7 +299,7 @@ const crawler = async () => {
     if (harvestMode === 'chunks') {
       // eslint-disable-next-line no-await-in-loop
       await harvestBlocks(
-        api,
+        apiInstances,
         client,
         parseInt(row.gap_start, 10),
         parseInt(row.gap_end, 10),
@@ -296,7 +307,7 @@ const crawler = async () => {
     } else {
       // eslint-disable-next-line no-await-in-loop
       await harvestBlocksSeq(
-        api,
+        apiInstances,
         client,
         parseInt(row.gap_start, 10),
         parseInt(row.gap_end, 10),
@@ -304,7 +315,10 @@ const crawler = async () => {
     }
   }
   logger.debug(loggerOptions, 'Disconnecting from API');
-  await api.disconnect().catch((error) => logger.error(loggerOptions, `Disconnect error: ${JSON.stringify(error)}`));
+  await Promise.all(
+    apiInstances.map((api) => api.disconnect()),
+  );
+
   // Log execution time
   const endTime = new Date().getTime();
   logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
