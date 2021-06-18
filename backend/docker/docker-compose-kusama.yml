@@ -5,9 +5,9 @@ services:
   # Blockchain archive node
   #
   substrate-node:
-    image: substrate-client:kusama-latest
+    image: substrate-node
     hostname: substrate-node
-    build: ./substrate-client
+    build: ./substrate-node
     volumes:
       - 'substrate-data:/data'
     ports:
@@ -16,6 +16,8 @@ services:
       - '9944:9944'
     command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning archive --name 'PolkaStats NG' --chain kusama --state-cache-size 8192000000 --max-runtime-instances 256 --db-cache 8192
     restart: always
+    environment:
+      POLKADOT_VERSION: v0.9.3
   #
   # SQL data base
   #

@@ -7,8 +7,7 @@ services:
   substrate-node:
     image: substrate-node
     hostname: substrate-node
-    build:
-      context: ./substrate-node
+    build: ./substrate-node
     volumes:
       - 'substrate-data:/data'
     ports:
