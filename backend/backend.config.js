@@ -22,7 +22,7 @@ module.exports = {
       name: 'blockHarvester',
       enabled: !process.env.CRAWLER_BLOCK_HARVESTER_DISABLE,
       crawler: './crawlers/blockHarvester.js',
-      startDelay: 30 * 1000,
+      startDelay: 10 * 1000,
       pollingTime:
         parseInt(process.env.CRAWLER_BLOCK_LISTENER_POLLING_TIME_MS, 10)
         || 60 * 60 * 1000,
