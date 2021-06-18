@@ -5,12 +5,10 @@ services:
   # Blockchain archive node
   #
   substrate-node:
-    image: substrate-client:kusama-latest
+    image: substrate-node
     hostname: substrate-node
     build:
-      context: ./substrate-client
-      args:
-        POLKADOT_VERSION: ${POLKADOT_VERSION}
+      context: ./substrate-node
     volumes:
       - 'substrate-data:/data'
     ports:
