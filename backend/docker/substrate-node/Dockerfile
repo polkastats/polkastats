@@ -1,5 +1,6 @@
 
 FROM phusion/baseimage:0.11
+ARG POLKADOT_VERSION
 LABEL maintainer "@mariopino"
 LABEL description="Parity Polkadot client"
 RUN apt-get update && apt-get install wget curl jq -y
