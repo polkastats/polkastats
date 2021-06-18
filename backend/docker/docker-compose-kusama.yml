@@ -96,8 +96,8 @@ services:
   crawler:
     image: crawler:latest
     build:
-      context: ../../
-      dockerfile: ./docker/backend/crawler/Dockerfile
+      context: ../
+      dockerfile: ./docker/crawler/Dockerfile
     depends_on:
       - 'postgres'
       - 'substrate-node'
