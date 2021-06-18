@@ -15,7 +15,7 @@ const backendConfig = require('../backend.config');
 
 // possible values 'chunks' or 'seq'
 const harvestMode = 'chunks';
-const chunkSize = 100;
+const chunkSize = 10;
 const statsPrecision = 2;
 
 const crawlerName = 'blockHarvester';
