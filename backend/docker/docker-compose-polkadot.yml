@@ -7,7 +7,10 @@ services:
   substrate-node:
     image: substrate-client:kusama-latest
     hostname: substrate-node
-    build: ./substrate-client
+    build:
+      context: ./substrate-client
+      args:
+        POLKADOT_VERSION: v0.8.30
     volumes:
       - 'substrate-data:/data'
     ports:
