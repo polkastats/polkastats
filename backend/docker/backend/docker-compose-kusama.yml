@@ -5,9 +5,8 @@ services:
   # Blockchain archive node
   #
   substrate-node:
-    image: substrate-client:kusama-latest
+    image: parity/polkadot:v0.9.3
     hostname: substrate-node
-    build: ./substrate-client
     volumes:
       - 'substrate-data:/data'
     ports:
