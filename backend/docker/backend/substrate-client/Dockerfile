@@ -1,4 +1,4 @@
-FROM parity/polkadot:v0.9.3
+FROM phusion/baseimage:0.11
 LABEL maintainer "@mariopino"
 LABEL description="Parity Polkadot client"
 
