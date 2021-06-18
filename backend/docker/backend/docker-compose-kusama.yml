@@ -14,7 +14,7 @@ services:
       - '30333:30333'
       - '9933:9933'
       - '9944:9944'
-    command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'PolkaStats NG' --chain kusama --state-cache-size 8192000000 --max-runtime-instances 256 --db-cache=8192
+    command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning archive --name 'PolkaStats NG' --chain kusama --state-cache-size 8192000000 --max-runtime-instances 256 --db-cache 8192 --no-private-ipv4 --no-prometheus --ws-max-connections 250
     restart: always
   #
   # SQL data base
