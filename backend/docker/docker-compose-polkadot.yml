@@ -18,7 +18,7 @@ services:
     command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning archive --name 'PolkaStats NG' --chain polkadot --state-cache-size 8192000000 --max-runtime-instances 256 --db-cache 8192
     restart: always
     environment:
-      - POLKADOT_VERSION
+      POLKADOT_VERSION: v0.8.30
   #
   # SQL data base
   #
