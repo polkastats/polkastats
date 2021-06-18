@@ -5,7 +5,7 @@ LABEL description="Parity Polkadot client"
 RUN apt-get update && apt-get install wget curl jq -y
 WORKDIR /usr/local/bin
 RUN echo $POLKADOT_VERSION
-ENV POLKADOT_VERSION=${POLKADOT_VERSION}
+ENV POLKADOT_VERSION ${POLKADOT_VERSION}
 RUN echo $POLKADOT_VERSION
 RUN wget https://github.com/paritytech/polkadot/releases/download/${POLKADOT_VERSION}/polkadot \
     && chmod +x polkadot
