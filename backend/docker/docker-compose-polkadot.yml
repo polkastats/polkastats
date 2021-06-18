@@ -11,7 +11,7 @@ services:
       context: ./substrate-client
       dockerfile: ./substrate-client/Dockerfile
       args:
-        - POLKADOT_VERSION: 'v0.8.30'
+        POLKADOT_VERSION: 'v0.8.30'
     volumes:
       - 'substrate-data:/data'
     ports:
