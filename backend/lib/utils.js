@@ -344,6 +344,7 @@ module.exports = {
     }
     return identity.display || '';
   },
+  // TODO: Investigate https://dzone.com/articles/faster-postgresql-counting
   updateTotals: async (client, loggerOptions) => {
     await Promise.all([
       module.exports.updateTotalBlocks(client, loggerOptions),
