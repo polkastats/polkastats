@@ -5,7 +5,7 @@ const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
 const { hexToU8a, isHex } = require('@polkadot/util');
 const { Client } = require('pg');
 const _ = require('lodash');
-const config = require('../backend.config.js');
+const config = require('../backend.config');
 
 const logger = pino();
 
@@ -16,12 +16,6 @@ module.exports = {
     const api = await ApiPromise.create({ provider });
     await api.isReady;
     return api;
-  },
-  getClient: async (loggerOptions) => {
-    logger.debug(loggerOptions, `Connecting to DB ${config.postgresConnParams.database} at ${config.postgresConnParams.host}:${config.postgresConnParams.port}`);
-    const client = new Client(config.postgresConnParams);
-    await client.connect();
-    return client;
   },
   isNodeSynced: async (api, loggerOptions) => {
     let node;
@@ -42,6 +36,12 @@ module.exports = {
   wait: async (ms) => new Promise((resolve) => {
     setTimeout(resolve, ms);
   }),
+  getClient: async (loggerOptions) => {
+    logger.debug(loggerOptions, `Connecting to DB ${config.postgresConnParams.database} at ${config.postgresConnParams.host}:${config.postgresConnParams.port}`);
+    const client = new Client(config.postgresConnParams);
+    await client.connect();
+    return client;
+  },
   dbQuery: async (client, sql, loggerOptions) => {
     try {
       return await client.query(sql);
@@ -52,10 +52,11 @@ module.exports = {
   },
   dbParamQuery: async (client, sql, data, loggerOptions) => {
     try {
-      await client.query(sql, data);
+      return await client.query(sql, data);
     } catch (error) {
       logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
     }
+    return null;
   },
   isValidAddressPolkadotAddress: (address) => {
     try {

@@ -113,7 +113,6 @@ const crawler = async () => {
 
   const client = await getClient(loggerOptions);
   const api = await getPolkadotAPI(loggerOptions);
-  await api.isReady;
 
   let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {
