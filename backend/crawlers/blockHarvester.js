@@ -13,11 +13,6 @@ const {
 } = require('../lib/utils');
 const backendConfig = require('../backend.config');
 
-// possible values 'chunks' or 'seq'
-const harvestMode = 'chunks';
-const chunkSize = 10;
-const statsPrecision = 2;
-
 const crawlerName = 'blockHarvester';
 const logger = pino({
   level: backendConfig.logLevel,
@@ -149,7 +144,7 @@ const harvestBlock = async (api, client, blockNumber) => {
     try {
       await client.query(sqlInsert);
       const endTime = new Date().getTime();
-      logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(statsPrecision)}s`);
+      logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
     }
@@ -193,15 +188,15 @@ const harvestBlocksSeq = async (api, client, startBlock, endBlock) => {
     ) / blockProcessingTimes.length;
     const completed = ((blocks.indexOf(blockNumber) + 1) * 100) / blocks.length;
 
-    logger.info(loggerOptions, `Processed block #${blockNumber} ${blocks.indexOf(blockNumber) + 1}/${blocks.length} [${completed.toFixed(statsPrecision)}%] in ${((blockProcessingTimeMs) / 1000).toFixed(statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(statsPrecision)}/${(maxTimeMs / 1000).toFixed(statsPrecision)}/${(avgTimeMs / 1000).toFixed(statsPrecision)}`);
+    logger.info(loggerOptions, `Processed block #${blockNumber} ${blocks.indexOf(blockNumber) + 1}/${blocks.length} [${completed.toFixed(config.statsPrecision)}%] in ${((blockProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)}`);
   }
 };
 
 const harvestBlocks = async (api, client, startBlock, endBlock) => {
   const blocks = range(startBlock, endBlock, 1);
 
-  const chunks = chunker(blocks, chunkSize);
-  logger.info(loggerOptions, `Processing chunks of ${chunkSize} blocks`);
+  const chunks = chunker(blocks, config.chunkSize);
+  logger.info(loggerOptions, `Processing chunks of ${config.chunkSize} blocks`);
 
   const chunkProcessingTimes = [];
   let maxTimeMs = 0;
@@ -232,11 +227,16 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
     avgTimeMs = chunkProcessingTimes.reduce(
       (sum, chunkProcessingTime) => sum + chunkProcessingTime, 0,
     ) / chunkProcessingTimes.length;
-    avgBlocksPerSecond = 1 / ((avgTimeMs / 1000) / chunkSize);
-    const currentBlocksPerSecond = 1 / ((chunkProcessingTimeMs / 1000) / chunkSize);
+    avgBlocksPerSecond = 1 / ((avgTimeMs / 1000) / config.chunkSize);
+    const currentBlocksPerSecond = 1 / ((chunkProcessingTimeMs / 1000) / config.chunkSize);
     const completed = ((chunks.indexOf(chunk) + 1) * 100) / chunks.length;
 
-    logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} [${completed.toFixed(statsPrecision)}%] in ${((chunkProcessingTimeMs) / 1000).toFixed(statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(statsPrecision)}/${(maxTimeMs / 1000).toFixed(statsPrecision)}/${(avgTimeMs / 1000).toFixed(statsPrecision)} cur/avg block/s: ${currentBlocksPerSecond.toFixed(statsPrecision)}/${avgBlocksPerSecond.toFixed(statsPrecision)}`);
+    logger.info(loggerOptions, `
+      Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} 
+      [${completed.toFixed(config.statsPrecision)}%] in ${((chunkProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s 
+      min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)} 
+      cur/avg block/s: ${currentBlocksPerSecond.toFixed(config.statsPrecision)}/${avgBlocksPerSecond.toFixed(config.statsPrecision)}
+    `);
   }
 };
 
@@ -285,7 +285,7 @@ const crawler = async () => {
   // eslint-disable-next-line no-restricted-syntax
   for (const row of res.rows) {
     logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
-    if (harvestMode === 'chunks') {
+    if (config.mode === 'chunks') {
       // eslint-disable-next-line no-await-in-loop
       await harvestBlocks(
         api,
