@@ -9,7 +9,7 @@
     "start": "node index.js",
     "docker:kusama": "docker-compose -p backend -f docker/docker-compose-kusama.yml up -d",
     "docker:polkadot": "docker-compose -p backend -f docker/docker-compose-polkadot.yml up -d",
-    "docker:build:kusama": "docker-compose -p backend -f docker/docker-compose-kusama.yml build",
+    "docker:build:kusama": "docker-compose -p backend -f docker/docker-compose-kusama.yml build --no-cache",
     "docker:build:polkadot": "docker-compose -p backend -f docker/docker-compose-polkadot.yml build --no-cache",
     "docker:clean": "bash docker/scripts/clean-dockers.sh",
     "docker:stop": "docker stop backend_crawler_1 backend_graphql-engine_1 backend_postgres_1 backend_substrate-node_1",
