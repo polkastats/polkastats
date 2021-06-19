@@ -50,20 +50,12 @@ module.exports = {
     }
     return null;
   },
-  dbParamInsert: async (client, sql, data, loggerOptions) => {
+  dbParamQuery: async (client, sql, data, loggerOptions) => {
     try {
       await client.query(sql, data);
     } catch (error) {
       logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
     }
-  },
-  dbParamSelect: async (client, sql, data, loggerOptions) => {
-    try {
-      return await client.query(sql, data);
-    } catch (error) {
-      logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
-    }
-    return null;
   },
   isValidAddressPolkadotAddress: (address) => {
     try {

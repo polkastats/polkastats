@@ -5,7 +5,7 @@ const {
   getClient,
   getPolkadotAPI,
   isNodeSynced,
-  dbParamInsert,
+  dbParamQuery,
 } = require('../lib/utils');
 const backendConfig = require('../backend.config');
 
@@ -102,7 +102,7 @@ const processChunk = async (api, client, accountId) => {
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
   // eslint-disable-next-line no-await-in-loop
-  await dbParamInsert(client, query, data, loggerOptions);
+  await dbParamQuery(client, query, data, loggerOptions);
 };
 
 const crawler = async () => {

@@ -8,8 +8,7 @@ const {
   isNodeSynced,
   wait,
   dbQuery,
-  dbParamInsert,
-  dbParamSelect,
+  dbParamQuery,
 } = require('../lib/utils');
 const backendConfig = require('../backend.config');
 
@@ -373,7 +372,7 @@ const insertRankingValidator = async (client, validator, blockHeight, startTime)
     `${validator.dominated}`,
     `${startTime}`,
   ];
-  await dbParamInsert(client, sql, data, loggerOptions);
+  await dbParamQuery(client, sql, data, loggerOptions);
 };
 
 const insertEraValidatorStats = async (client, validator, activeEra) => {
@@ -394,7 +393,7 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
     validator.totalRating,
   ];
   // eslint-disable-next-line no-await-in-loop
-  await dbParamInsert(client, sql, data, loggerOptions);
+  await dbParamQuery(client, sql, data, loggerOptions);
   // eslint-disable-next-line no-restricted-syntax
   for (const commissionHistoryItem of validator.commissionHistory) {
     if (commissionHistoryItem.commission) {
@@ -415,7 +414,7 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
         commissionHistoryItem.commission,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamInsert(client, sql, data, loggerOptions);
+      await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
   // eslint-disable-next-line no-restricted-syntax
@@ -438,7 +437,7 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
         perfHistoryItem.relativePerformance,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamInsert(client, sql, data, loggerOptions);
+      await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
   // eslint-disable-next-line no-restricted-syntax
@@ -461,7 +460,7 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
         stakefHistoryItem.self,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamInsert(client, sql, data, loggerOptions);
+      await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
   // eslint-disable-next-line no-restricted-syntax
@@ -484,14 +483,14 @@ const insertEraValidatorStats = async (client, validator, activeEra) => {
         eraPointsHistoryItem.points,
       ];
       // eslint-disable-next-line no-await-in-loop
-      await dbParamInsert(client, sql, data, loggerOptions);
+      await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
 };
 
 const getAddressCreation = async (client, address) => {
   const query = "SELECT block_number FROM event WHERE method = 'NewAccount' AND data LIKE $1";
-  const res = await dbParamSelect(client, query, [`%${address}%`], loggerOptions);
+  const res = await dbParamQuery(client, query, [`%${address}%`], loggerOptions);
   if (res) {
     if (res.rows.length > 0) {
       if (res.rows[0].block_number) {
