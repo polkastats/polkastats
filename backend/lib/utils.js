@@ -207,10 +207,10 @@ module.exports = {
     if (isSigned) {
       feeInfo = await api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
         .then((result) => JSON.stringify(result.toJSON()))
-        .catch();
+        .catch(() => {}) || '';
       feeDetails = await api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)
         .then((result) => JSON.stringify(result.toJSON()))
-        .catch();
+        .catch(() => {}) || '';
     }
 
     const sql = `INSERT INTO extrinsic (
