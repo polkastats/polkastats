@@ -202,15 +202,28 @@ module.exports = {
     //   }
     // }
 
+    // let feeInfo = '';
+    // let feeDetails = '';
+    // if (isSigned) {
+    //   feeInfo = await api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
+    //     .then((result) => JSON.stringify(result.toJSON()))
+    //     .catch(() => {}) || '';
+    //   feeDetails = await api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)
+    //     .then((result) => JSON.stringify(result.toJSON()))
+    //     .catch(() => {}) || '';
+    // }
+
     let feeInfo = '';
     let feeDetails = '';
     if (isSigned) {
-      feeInfo = await api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
-        .then((result) => JSON.stringify(result.toJSON()))
-        .catch(() => {}) || '';
-      feeDetails = await api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)
-        .then((result) => JSON.stringify(result.toJSON()))
-        .catch(() => {}) || '';
+      [feeInfo, feeDetails] = await Promise.all([
+        api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
+          .then((result) => JSON.stringify(result.toJSON()))
+          .catch(() => {}) || '', // silent catch
+        api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)
+          .then((result) => JSON.stringify(result.toJSON()))
+          .catch(() => {}) || '', // silent catch
+      ]);
     }
 
     const sql = `INSERT INTO extrinsic (
