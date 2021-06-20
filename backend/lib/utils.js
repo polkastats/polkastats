@@ -179,16 +179,39 @@ module.exports = {
     const success = module.exports.getExtrinsicSuccess(index, blockEvents);
 
     // Fees
+
+    // TODO: Investigate why this queries fail
+    //
+    // This throws an error at certain blocks
+    //
+    // const blockNumber = 5935949;
+    // const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
+    // const { block } = await api.rpc.chain.getBlock(blockHash);
+    // for (const extrinsic of block.extrinsics) {
+    //   if (extrinsic.isSigned) {
+    //     const queryFeeDetails= await api.rpc.payment.queryFeeDetails(
+    //       extrinsic.toHex(),
+    //       blockHash
+    //     ).catch(error => console.log(error)) || '';
+    //     const queryInfo = await api.rpc.payment.queryInfo(
+    //       extrinsic.toHex(),
+    //       blockHash
+    //     ).catch(error => console.log(error)) || '';
+    //     console.log(JSON.stringify(queryFeeDetails));
+    //     console.log(JSON.stringify(queryInfo));
+    //   }
+    // }
+
     let feeInfo = '';
     let feeDetails = '';
     if (isSigned) {
       [feeInfo, feeDetails] = await Promise.all([
-        api.rpc.payment.queryInfo(
-          extrinsic.toHex(), blockHash,
-        ).then((result) => JSON.stringify(result.toJSON())),
-        api.rpc.payment.queryFeeDetails(
-          extrinsic.toHex(), blockHash,
-        ).then((result) => JSON.stringify(result.toJSON())),
+        api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
+          .then((result) => JSON.stringify(result.toJSON()))
+          .catch(), // silent catch
+        api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)
+          .then((result) => JSON.stringify(result.toJSON()))
+          .catch(), // silent catch
       ]);
     }
 
