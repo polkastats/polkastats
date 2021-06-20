@@ -219,10 +219,10 @@ module.exports = {
       [feeInfo, feeDetails] = await Promise.all([
         api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
           .then((result) => JSON.stringify(result.toJSON()))
-          .catch(() => {}) || '', // silent catch
+          .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '',
         api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)
           .then((result) => JSON.stringify(result.toJSON()))
-          .catch(() => {}) || '', // silent catch
+          .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '',
       ]);
     }
 
