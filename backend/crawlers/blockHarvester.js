@@ -2,6 +2,7 @@
 const pino = require('pino');
 const {
   getClient,
+  dbQuery,
   getPolkadotAPI,
   isNodeSynced,
   shortHash,
@@ -33,6 +34,34 @@ const chunker = (a, n) => Array.from(
   { length: Math.ceil(a.length / n) },
   (_, i) => a.slice(i * n, i * n + n),
 );
+
+const healthCheck = async (client) => {
+  const startTime = new Date().getTime();
+  logger.info(loggerOptions, 'Starting health check');
+  const query = `
+    SELECT
+      b.block_number,
+      b.total_events,
+      (SELECT COUNT(*) FROM event AS ev WHERE ev.block_number = b.block_number) AS table_total_events,
+      b.total_extrinsics,
+      (SELECT COUNT(*) FROM extrinsic AS ex WHERE ex.block_number = b.block_number) table_total_extrinsics
+    FROM
+      block AS b
+    WHERE
+      b.total_events > (SELECT COUNT(*) FROM event AS ev WHERE ev.block_number = b.block_number)
+    OR
+      b.total_extrinsics > (SELECT COUNT(*) FROM extrinsic AS ex WHERE ex.block_number = b.block_number) 
+    ;`;
+  const res = await dbQuery(client, query, loggerOptions);
+  // eslint-disable-next-line no-restricted-syntax
+  for (const row of res.rows) {
+    logger.info(loggerOptions, `Health check failed for block #${row.block_number}, deleting block from block table!`);
+    // eslint-disable-next-line no-await-in-loop
+    await dbQuery(client, `DELETE FROM block WHERE block_number = '${row.block_number}';`, loggerOptions);
+  }
+  const endTime = new Date().getTime();
+  logger.debug(loggerOptions, `Health check finished in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+};
 
 const harvestBlock = async (api, client, blockNumber) => {
   const startTime = new Date().getTime();
@@ -248,6 +277,10 @@ const crawler = async () => {
   logger.info(loggerOptions, 'Starting block harvester...');
   const startTime = new Date().getTime();
   const client = await getClient(loggerOptions);
+
+  // Delete blocks that don't have all its events or extrinsics in db
+  await healthCheck(client);
+
   const api = await getPolkadotAPI(loggerOptions);
   let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {
