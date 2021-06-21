@@ -96,7 +96,7 @@ const harvestBlock = async (api, client, blockNumber) => {
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
     // Get election status
     const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
-    const activeEra = chainActiveEra.toJSON().index.toString();
+    const activeEra = chainActiveEra.toJSON().index;
 
     // Store block extrinsics (async)
     processExtrinsics(
@@ -157,8 +157,8 @@ const harvestBlock = async (api, client, blockNumber) => {
         '${parentHash}',
         '${extrinsicsRoot}',
         '${stateRoot}',
-        '${activeEra}',
-        '${currentIndex}',
+        '${activeEra || 0}',
+        '${currentIndex || 0}',
         '${isElection}',
         '${runtimeVersion.specName}',
         '${runtimeVersion.specVersion}',
