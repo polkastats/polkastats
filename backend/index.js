@@ -7,7 +7,7 @@ const config = require('./backend.config');
 const logger = pino();
 
 const runCrawler = async (crawler) => {
-  const child = spawn('node', [`${crawler}`]);
+  const child = spawn('node', ['--max-old-space-size=8192', `${crawler}`]);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
   child.on('close', (exitCode) => {
