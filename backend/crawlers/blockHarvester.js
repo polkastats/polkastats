@@ -6,9 +6,9 @@ const {
   getPolkadotAPI,
   isNodeSynced,
   shortHash,
-  storeExtrinsics,
-  storeEvents,
-  storeLogs,
+  processExtrinsics,
+  processEvents,
+  processLogs,
   getDisplayName,
   wait,
 } = require('../lib/utils');
@@ -99,7 +99,7 @@ const harvestBlock = async (api, client, blockNumber) => {
     const activeEra = chainActiveEra.toJSON().index.toString();
 
     // Store block extrinsics (async)
-    storeExtrinsics(
+    processExtrinsics(
       api,
       client,
       blockNumber,
@@ -110,7 +110,7 @@ const harvestBlock = async (api, client, blockNumber) => {
       loggerOptions,
     );
     // Store module events (async)
-    storeEvents(
+    processEvents(
       client,
       blockNumber,
       blockEvents,
@@ -118,7 +118,7 @@ const harvestBlock = async (api, client, blockNumber) => {
       loggerOptions,
     );
     // Store block logs (async)
-    storeLogs(
+    processLogs(
       client,
       blockNumber,
       blockHeader.digest.logs,

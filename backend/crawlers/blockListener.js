@@ -7,9 +7,9 @@ const {
   isNodeSynced,
   wait,
   shortHash,
-  storeExtrinsics,
-  storeEvents,
-  storeLogs,
+  processExtrinsics,
+  processEvents,
+  processLogs,
   getDisplayName,
   updateTotals,
   updateFinalized,
@@ -172,7 +172,7 @@ const crawler = async () => {
 
       await Promise.all([
         // Store block extrinsics
-        storeExtrinsics(
+        processExtrinsics(
           api,
           client,
           blockNumber,
@@ -192,7 +192,7 @@ const crawler = async () => {
           blockEvents,
         ),
         // Store module events
-        storeEvents(
+        processEvents(
           client,
           blockNumber,
           blockEvents,
@@ -200,7 +200,7 @@ const crawler = async () => {
           loggerOptions,
         ),
         // Store block logs
-        storeLogs(
+        processLogs(
           client,
           blockNumber,
           blockHeader.digest.logs,

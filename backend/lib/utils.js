@@ -130,7 +130,7 @@ module.exports = {
       logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
     }
   },
-  storeExtrinsics: async (
+  processExtrinsics: async (
     api,
     client,
     blockNumber,
@@ -142,7 +142,7 @@ module.exports = {
   ) => {
     const startTime = new Date().getTime();
     await Promise.all(
-      extrinsics.map((extrinsic, index) => module.exports.storeExtrinsic(
+      extrinsics.map((extrinsic, index) => module.exports.processExtrinsic(
         api,
         client,
         blockNumber,
@@ -158,7 +158,7 @@ module.exports = {
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
-  storeExtrinsic: async (
+  processExtrinsic: async (
     api,
     client,
     blockNumber,
@@ -265,12 +265,12 @@ module.exports = {
       logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
     }
   },
-  storeEvents: async (
+  processEvents: async (
     client, blockNumber, blockEvents, timestamp, loggerOptions,
   ) => {
     const startTime = new Date().getTime();
     await Promise.all(
-      blockEvents.map((record, index) => module.exports.storeEvent(
+      blockEvents.map((record, index) => module.exports.processEvent(
         client, blockNumber, record, index, timestamp, loggerOptions,
       )),
     );
@@ -278,7 +278,7 @@ module.exports = {
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
-  storeEvent: async (
+  processEvent: async (
     client, blockNumber, record, index, timestamp, loggerOptions,
   ) => {
     const { event, phase } = record;
@@ -310,10 +310,10 @@ module.exports = {
       logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
     }
   },
-  storeLogs: async (client, blockNumber, logs, timestamp, loggerOptions) => {
+  processLogs: async (client, blockNumber, logs, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     await Promise.all(
-      logs.map((log, index) => module.exports.storeLog(
+      logs.map((log, index) => module.exports.processLog(
         client, blockNumber, log, index, timestamp, loggerOptions,
       )),
     );
@@ -321,7 +321,7 @@ module.exports = {
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
-  storeLog: async (client, blockNumber, log, index, timestamp, loggerOptions) => {
+  processLog: async (client, blockNumber, log, index, timestamp, loggerOptions) => {
     const { type } = log;
     const [[engine, data]] = Object.values(log.toJSON());
     const sql = `INSERT INTO log (
