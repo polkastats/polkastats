@@ -73,7 +73,7 @@ const harvestBlock = async (api, client, blockNumber) => {
       blockHeader,
       totalIssuance,
       runtimeVersion,
-      chainActiveEra,
+      activeEra,
       currentIndex,
       chainElectionStatus,
       timestampMs,
@@ -83,8 +83,10 @@ const harvestBlock = async (api, client, blockNumber) => {
       api.derive.chain.getHeader(blockHash),
       api.query.balances.totalIssuance.at(blockHash),
       api.rpc.state.getRuntimeVersion(blockHash),
-      api.query.staking.activeEra.at(blockHash),
-      api.query.session.currentIndex.at(blockHash),
+      api.query.staking.activeEra.at(blockHash)
+        .then((res) => (res ? res.toJSON().index : 0)),
+      api.query.session.currentIndex.at(blockHash)
+        .then((res) => (res || 0)),
       api.query.electionProviderMultiPhase.currentPhase.at(blockHash),
       api.query.timestamp.now.at(blockHash),
     ]);
@@ -96,7 +98,6 @@ const harvestBlock = async (api, client, blockNumber) => {
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
     // Get election status
     const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
-    const activeEra = chainActiveEra.toJSON().index;
 
     // Store block extrinsics (async)
     processExtrinsics(
@@ -157,8 +158,8 @@ const harvestBlock = async (api, client, blockNumber) => {
         '${parentHash}',
         '${extrinsicsRoot}',
         '${stateRoot}',
-        '${activeEra || 0}',
-        '${currentIndex || 0}',
+        '${activeEra}',
+        '${currentIndex}',
         '${isElection}',
         '${runtimeVersion.specName}',
         '${runtimeVersion.specVersion}',
