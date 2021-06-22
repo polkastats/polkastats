@@ -232,7 +232,7 @@ CREATE INDEX IF NOT EXISTS event_section_idx ON event (section);
 CREATE INDEX IF NOT EXISTS event_method_idx ON event (method);
 
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE harvester_error TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE harvest_error TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE ranking TO polkastats;

@@ -278,7 +278,7 @@ const crawler = async () => {
   // Delete blocks that don't have all its events or extrinsics in db
   await healthCheck(client);
 
-  const api = await getPolkadotAPI(loggerOptions);
+  const api = await getPolkadotAPI(loggerOptions, config.apiCustomTypes);
   let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {
     // eslint-disable-next-line no-await-in-loop

@@ -22,6 +22,7 @@ module.exports = {
       name: 'blockHarvester',
       enabled: !process.env.BLOCK_HARVESTER_DISABLE,
       crawler: './crawlers/blockHarvester.js',
+      apiCustomTypes: process.env.API_CUSTOM_TYPES || '',
       startDelay: 10 * 1000,
       mode: process.env.BLOCK_HARVESTER_MODE || 'chunks',
       chunkSize: parseInt(process.env.BLOCK_HARVESTER_CHUNK_SIZE, 10) || 10,

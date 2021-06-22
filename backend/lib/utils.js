@@ -5,15 +5,22 @@ const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
 const { hexToU8a, isHex } = require('@polkadot/util');
 const { Client } = require('pg');
 const _ = require('lodash');
+const fs = require('fs');
 const config = require('../backend.config');
 
 const logger = pino();
 
 module.exports = {
-  getPolkadotAPI: async (loggerOptions) => {
+  getPolkadotAPI: async (loggerOptions, apiCustomTypes) => {
+    let api;
     logger.debug(loggerOptions, `Connecting to ${config.wsProviderUrl}`);
     const provider = new WsProvider(config.wsProviderUrl);
-    const api = await ApiPromise.create({ provider });
+    if (apiCustomTypes && apiCustomTypes !== '') {
+      const types = JSON.parse(fs.readFileSync(`../types/${apiCustomTypes}`, 'utf8'));
+      api = await ApiPromise.create({ provider, types });
+    } else {
+      api = await ApiPromise.create({ provider });
+    }
     await api.isReady;
     return api;
   },

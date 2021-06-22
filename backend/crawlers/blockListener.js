@@ -29,7 +29,7 @@ const crawler = async () => {
   logger.info(loggerOptions, 'Starting block listener crawler...');
 
   const client = await getClient(loggerOptions);
-  const api = await getPolkadotAPI(loggerOptions);
+  const api = await getPolkadotAPI(loggerOptions, config.apiCustomTypes);
 
   let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {
