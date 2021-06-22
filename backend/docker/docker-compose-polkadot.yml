@@ -112,8 +112,8 @@ services:
       SUBSTRATE_NETWORK: 'kusama'
       RANKING_DISABLE: 'true'
       ACTIVE_ACCOUNTS_DISABLE: 'true'
-      # BLOCK_LISTENER_DISABLE: 'true'
-      # BLOCK_HARVESTER_DISABLE: 'true'
+      BLOCK_LISTENER_DISABLE: 'true'
+      BLOCK_HARVESTER_DISABLE: 'true'
       NODE_PG_FORCE_NATIVE: 'true'
       #
       #   Available modes:
