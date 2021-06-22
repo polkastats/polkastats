@@ -437,4 +437,23 @@ module.exports = {
       logger.error(loggerOptions, `Error updating finalized blocks: ${error}`);
     }
   },
+  logHarvestError: async (client, blockNumber, error, loggerOptions) => {
+    const timestamp = new Date().getTime();
+    const errorString = error.toString().replace(/'/g, "''");
+    const data = [
+      blockNumber,
+      errorString,
+      timestamp,
+    ];
+    const query = `
+      INSERT INTO
+        harvest_error (block_number, error, timestamp)
+      VALUES
+        ($1, $2, $3)
+      ON CONFLICT ON CONSTRAINT
+        harvest_error_pkey 
+        DO NOTHING
+      ;`;
+    await module.exports.dbParamQuery(client, query, data, loggerOptions);
+  },
 };

@@ -11,6 +11,7 @@ const {
   processLogs,
   getDisplayName,
   wait,
+  logHarvestError,
 } = require('../lib/utils');
 const backendConfig = require('../backend.config');
 
@@ -180,12 +181,7 @@ const harvestBlock = async (api, client, blockNumber) => {
     }
   } catch (error) {
     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
-    const timestamp = new Date().getTime();
-    const errorString = error.toString().replace(/'/g, "''");
-    const sql = `INSERT INTO harvester_error (block_number, error, timestamp)
-      VALUES ('${blockNumber}', '${errorString}', '${timestamp}');
-    `;
-    await client.query(sql);
+    await logHarvestError(client, blockNumber, error, loggerOptions);
   }
 };
 

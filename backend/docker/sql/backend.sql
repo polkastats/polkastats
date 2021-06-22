@@ -18,13 +18,14 @@ CREATE TABLE IF NOT EXISTS block (
   total_extrinsics INT NOT NULL,
   total_issuance TEXT NOT NULL, -- overflows BIGINT
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number )  
+  PRIMARY KEY ( block_number )
 );
 
-CREATE TABLE IF NOT EXISTS harvester_error (  
+CREATE TABLE IF NOT EXISTS harvest_error (  
   block_number BIGINT NOT NULL,
   error TEXT NOT NULL,
-  timestamp BIGINT NOT NULL
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number )
 );
 
 CREATE TABLE IF NOT EXISTS event (  
