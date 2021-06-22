@@ -313,23 +313,25 @@ const crawler = async () => {
   const res = await dbQuery(client, sqlSelect, loggerOptions);
   // eslint-disable-next-line no-restricted-syntax
   for (const row of res.rows) {
-    logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
-    if (config.mode === 'chunks') {
-      // eslint-disable-next-line no-await-in-loop
-      await harvestBlocks(
-        api,
-        client,
-        parseInt(row.gap_start, 10),
-        parseInt(row.gap_end, 10),
-      );
-    } else {
-      // eslint-disable-next-line no-await-in-loop
-      await harvestBlocksSeq(
-        api,
-        client,
-        parseInt(row.gap_start, 10),
-        parseInt(row.gap_end, 10),
-      );
+    if (!(row.gap_start === 0 && row.gap_end === 0)) {
+      logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
+      if (config.mode === 'chunks') {
+        // eslint-disable-next-line no-await-in-loop
+        await harvestBlocks(
+          api,
+          client,
+          parseInt(row.gap_start, 10),
+          parseInt(row.gap_end, 10),
+        );
+      } else {
+        // eslint-disable-next-line no-await-in-loop
+        await harvestBlocksSeq(
+          api,
+          client,
+          parseInt(row.gap_start, 10),
+          parseInt(row.gap_end, 10),
+        );
+      }
     }
   }
   logger.debug(loggerOptions, 'Disconnecting from API');
