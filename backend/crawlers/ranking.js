@@ -199,7 +199,7 @@ const addNewFeaturedValidator = async (client, ranking) => {
   // get previously featured
   const alreadyFeatured = [];
   const sql = 'SELECT stash_address, timestamp FROM featured';
-  const res = await client.query(sql);
+  const res = await dbQuery(client, sql, loggerOptions);
   res.rows.forEach((validator) => alreadyFeatured.push(validator.stash_address));
   // get candidates that meet the rules
   const featuredCandidates = ranking
@@ -1173,7 +1173,7 @@ const crawler = async () => {
         const era = new BigNumber(eraIndex.toString()).toString(10);
         let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = '${era}' AND commission != 100`;
         // eslint-disable-next-line no-await-in-loop
-        let res = await client.query(sql);
+        let res = await dbQuery(client, sql, loggerOptions);
         if (res.rows.length > 0) {
           if (res.rows[0].commission_avg) {
             sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ('${era}', '${res.rows[0].commission_avg}') ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
@@ -1183,7 +1183,7 @@ const crawler = async () => {
         }
         sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = '${era}'`;
         // eslint-disable-next-line no-await-in-loop
-        res = await client.query(sql);
+        res = await dbQuery(client, sql, loggerOptions);
         if (res.rows.length > 0) {
           if (res.rows[0].self_stake_avg) {
             const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
@@ -1194,7 +1194,7 @@ const crawler = async () => {
         }
         sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = '${era}'`;
         // eslint-disable-next-line no-await-in-loop
-        res = await client.query(sql);
+        res = await dbQuery(client, sql, loggerOptions);
         if (res.rows.length > 0) {
           if (res.rows[0].relative_performance_avg) {
             sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ('${era}', '${res.rows[0].relative_performance_avg}') ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
@@ -1204,7 +1204,7 @@ const crawler = async () => {
         }
         sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = '${era}'`;
         // eslint-disable-next-line no-await-in-loop
-        res = await client.query(sql);
+        res = await dbQuery(client, sql, loggerOptions);
         if (res.rows.length > 0) {
           if (res.rows[0].points_avg) {
             sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ('${era}', '${res.rows[0].points_avg}') ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
@@ -1231,7 +1231,7 @@ const crawler = async () => {
 
     // featured validator
     const sql = 'SELECT stash_address, timestamp FROM featured ORDER BY timestamp DESC LIMIT 1';
-    const res = await client.query(sql);
+    const res = await dbQuery(client, sql, loggerOptions);
     if (res.rows.length === 0) {
       await addNewFeaturedValidator(client, ranking);
     } else {

@@ -88,7 +88,7 @@ const crawler = async () => {
         const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
         const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
         sql = `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
-        res = await client.query(sql);
+        res = await dbQuery(client, sql, loggerOptions);
       } else {
         const blockAuthor = extendedHeader.author || '';
         const [
@@ -155,7 +155,7 @@ const crawler = async () => {
           ;`;
 
         try {
-          await client.query(sql);
+          await dbQuery(client, sql, loggerOptions);
         } catch (error) {
           logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
         }

@@ -172,7 +172,7 @@ const harvestBlock = async (api, client, blockNumber) => {
       DO NOTHING
       ;`;
     try {
-      await client.query(sqlInsert);
+      await dbQuery(client, sqlInsert, loggerOptions);
       const endTime = new Date().getTime();
       logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
     } catch (error) {
@@ -310,7 +310,7 @@ const crawler = async () => {
   )
   ORDER BY gap_start DESC
   `;
-  const res = await client.query(sqlSelect);
+  const res = await dbQuery(client, sqlSelect, loggerOptions);
   // eslint-disable-next-line no-restricted-syntax
   for (const row of res.rows) {
     logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
