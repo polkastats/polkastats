@@ -514,7 +514,7 @@ const getLastEraInDb = async (client) => {
       }
     }
   }
-  return null;
+  return 0;
 };
 
 const crawler = async () => {
