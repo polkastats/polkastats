@@ -18,12 +18,16 @@ const {
 } = require('../lib/utils');
 const backendConfig = require('../backend.config');
 
+const crawlerName = 'blockListener';
 const logger = pino({
   level: backendConfig.logLevel,
 });
 const loggerOptions = {
-  crawler: 'blockListener',
+  crawler: crawlerName,
 };
+const config = backendConfig.crawlers.find(
+  ({ name }) => name === crawlerName,
+);
 
 const crawler = async () => {
   logger.info(loggerOptions, 'Starting block listener crawler...');

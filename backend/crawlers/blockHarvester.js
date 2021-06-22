@@ -19,7 +19,6 @@ const crawlerName = 'blockHarvester';
 const logger = pino({
   level: backendConfig.logLevel,
 });
-
 const loggerOptions = {
   crawler: crawlerName,
 };
