@@ -110,10 +110,10 @@ services:
       NODE_OPTIONS: '--max-old-space-size=8192'
       WS_PROVIDER_URL: 'ws://substrate-node:9944'
       SUBSTRATE_NETWORK: 'kusama'
-      RANKING_DISABLE: 'true'
-      ACTIVE_ACCOUNTS_DISABLE: 'true'
-      BLOCK_LISTENER_DISABLE: 'true'
-      BLOCK_HARVESTER_DISABLE: 'true'
+      # RANKING_DISABLE: 'true'
+      # ACTIVE_ACCOUNTS_DISABLE: 'true'
+      # BLOCK_LISTENER_DISABLE: 'true'
+      # BLOCK_HARVESTER_DISABLE: 'true'
       NODE_PG_FORCE_NATIVE: 'true'
       #
       #   Available modes:
