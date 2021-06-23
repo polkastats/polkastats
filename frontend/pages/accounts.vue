@@ -78,13 +78,6 @@
               stacked="md"
               :fields="fields"
               :items="parsedAccounts"
-              :per-page="perPage"
-              :current-page="currentPage"
-              :sort-by.sync="sortBy"
-              :sort-desc.sync="sortDesc"
-              :filter="filter"
-              :filter-included-fields="filterOn"
-              @filtered="onFiltered"
             >
               <template #cell(rank)="data">
                 <p class="text-right mb-0">#{{ data.item.rank }}</p>
@@ -281,6 +274,7 @@ export default {
       filter: null,
       filterOn: [],
       totalRows: 1,
+      agggregateRows: 1,
       fields: [
         {
           key: 'rank',
@@ -316,7 +310,6 @@ export default {
       ],
       accounts: [],
       favorites: [],
-      polling: null,
     }
   },
   computed: {
@@ -355,9 +348,6 @@ export default {
       this.favorites = this.$cookies.get('favorites')
     }
   },
-  beforeDestroy() {
-    clearInterval(this.polling)
-  },
   methods: {
     setPageSize(num) {
       localStorage.paginationOptions = num
@@ -374,18 +364,18 @@ export default {
     isFavorite(accountId) {
       return this.favorites.includes(accountId)
     },
-    onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length
-      this.currentPage = 1
-    },
   },
   apollo: {
     $subscribe: {
       accounts: {
         query: gql`
-          query account {
-            account(order_by: { free_balance: desc }, where: {}) {
+          query account($accountId: String, $perPage: Int!, $offset: Int!) {
+            account(
+              limit: $perPage
+              offset: $offset
+              where: { account_id: { _eq: $accountId } }
+              order_by: { free_balance: desc }
+            ) {
               account_id
               identity_display
               identity_display_parent
@@ -395,10 +385,35 @@ export default {
             }
           }
         `,
+        variables() {
+          return {
+            accountId: this.filter ? this.filter : undefined,
+            perPage: this.perPage,
+            offset: (this.currentPage - 1) * this.perPage,
+          }
+        },
         result({ data }) {
           this.accounts = data.account
-          this.totalRows = this.accounts.length
+          if (this.filter) {
+            this.totalRows = this.accounts.length
+          } else {
+            this.totalRows = this.agggregateRows
+          }
           this.loading = false
+        },
+      },
+      count: {
+        query: gql`
+          subscription count {
+            account_aggregate {
+              aggregate {
+                count
+              }
+            }
+          }
+        `,
+        result({ data }) {
+          this.agggregateRows = data.account_aggregate.aggregate.count
         },
       },
     },
