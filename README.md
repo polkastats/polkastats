@@ -1,4 +1,11 @@
-# PolkaStats Next Gen
+# PolkaStats
+
+Polkastats is a block explorer for [Polkadot](https://polkadot.network/) and [Kusama](https://kusama.network/) and other blockchains based on [Substrate](https://substrate.dev/) framework.
+
+Check it out live versions for:
+
+- Kusama: [dev.kusama.polkastats.io](https://dev.kusama.polkastats.io)
+- Polkadot: [dev.polkadot.polkastats.io](https://dev.polkadot.polkastats.io)
 
 ## Dependencies
 
