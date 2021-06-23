@@ -27,15 +27,20 @@
         </b-navbar-nav>
         <b-dropdown class="my-md-2 ml-md-2 network" variant="primary2">
           <template #button-content>
-            <font-awesome-icon icon="plug" />
+            <img
+              class="network-logo"
+              :src="`/img/networks/icons/${network.name}.svg`"
+            />
             {{ network.name }}
           </template>
-          <b-dropdown-item href="https://dev.kusama.polkastats.io"
-            >KUSAMA</b-dropdown-item
-          >
-          <b-dropdown-item href="https://dev.polkadot.polkastats.io"
-            >POLKADOT</b-dropdown-item
-          >
+          <b-dropdown-item href="https://dev.kusama.polkastats.io">
+            <img class="network-logo" src="/img/networks/icons/kusama.svg" />
+            KUSAMA
+          </b-dropdown-item>
+          <b-dropdown-item href="https://dev.polkadot.polkastats.io">
+            <img class="network-logo" src="/img/networks/icons/polkadot.svg" />
+            POLKADOT
+          </b-dropdown-item>
         </b-dropdown>
       </b-collapse>
     </b-container>

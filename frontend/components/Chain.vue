@@ -102,17 +102,11 @@
         <div class="card h-100">
           <div class="card-body">
             <h4 class="mb-3">
-              {{ $t('components.network.contracts') }}
+              {{ $t('components.network.active_era') }}
             </h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              to="/contracts"
-              title="Click to see contracts!"
-            >
-              <h6 class="d-inline-block">
-                {{ formatNumber(totalContracts) }}
-              </h6>
-            </nuxt-link>
+            <h6 class="d-inline-block">
+              {{ formatNumber(activeEra) }}
+            </h6>
           </div>
         </div>
       </div>
@@ -144,10 +138,11 @@ export default {
       network,
       lastBlock: 0,
       lastFinalizedBlock: 0,
+      currentIndex: 0,
+      activeEra: 0,
       totalExtrinsics: 0,
       totalEvents: 0,
       totalAccounts: 0,
-      totalContracts: 0,
       totalIssuance: 0,
       totalTransfers: 0,
     }
@@ -160,12 +155,16 @@ export default {
             block(order_by: { block_number: desc }, where: {}, limit: 1) {
               block_number
               total_issuance
+              current_index
+              active_era
             }
           }
         `,
         result({ data }) {
           this.lastBlock = data.block[0].block_number
           this.totalIssuance = data.block[0].total_issuance
+          this.currentIndex = data.block[0].current_index
+          this.activeEra = data.block[0].active_era
         },
       },
       finalized: {
@@ -200,8 +199,6 @@ export default {
             data.total.find((row) => row.name === 'transfers').count || 0
           this.totalEvents =
             data.total.find((row) => row.name === 'events').count || 0
-          // this.totalContracts =
-          //   data.total.find((row) => row.name === 'contracts').count || 0
         },
       },
       accounts: {
