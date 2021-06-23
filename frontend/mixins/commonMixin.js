@@ -1,6 +1,6 @@
 import { hexToU8a, isHex } from '@polkadot/util'
 import { BigNumber } from 'bignumber.js'
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import { decodeAddress, encodeAddress } from '@polkadot/keyring'
 import { checkAddressChecksum } from 'web3-utils'
 import { network } from '@/frontend.config.js'

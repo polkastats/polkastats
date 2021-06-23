@@ -91,7 +91,10 @@
               </template>
               <template #cell(account_id)="data">
                 <div
-                  class="d-block d-sm-block d-md-none d-lg-none d-xl-none text-center"
+                  class="
+                    d-block d-sm-block d-md-none d-lg-none d-xl-none
+                    text-center
+                  "
                 >
                   <p class="mb-2">
                     {{ $t('pages.accounts.rank') }} #{{ data.item.rank }}
@@ -251,7 +254,7 @@
   </div>
 </template>
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'

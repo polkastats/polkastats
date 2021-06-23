@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
 import Loading from '@/components/Loading.vue'
 import Block from '@/components/Block.vue'
 
