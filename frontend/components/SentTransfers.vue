@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import { gql } from 'graphql-tag'
+import gql from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
@@ -254,11 +254,10 @@ export default {
               block_number: transfer.block_number,
               hash: transfer.hash,
               from: this.accountId,
-              to: JSON.parse(transfer.args)[0].id,
-              amount:
-                transfer.section === 'currencies'
-                  ? JSON.parse(transfer.args)[2]
-                  : JSON.parse(transfer.args)[1],
+              to: JSON.parse(transfer.args)[0].id
+                ? JSON.parse(transfer.args)[0].id
+                : JSON.parse(transfer.args)[0],
+              amount: JSON.parse(transfer.args)[1],
               success: transfer.success,
             }
           })
