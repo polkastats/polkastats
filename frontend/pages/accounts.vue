@@ -414,6 +414,9 @@ export default {
         `,
         result({ data }) {
           this.agggregateRows = data.account_aggregate.aggregate.count
+          if (!this.filter) {
+            this.totalRows = this.agggregateRows
+          }
         },
       },
     },
