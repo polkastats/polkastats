@@ -249,15 +249,25 @@
   </div>
 </template>
 <script>
+import { network } from '@/frontend.config.js'
 export default {
+  data() {
+    return {
+      network,
+    }
+  },
   head() {
     return {
-      title: this.$t('pages.polkastats_validator.head_title'),
+      title: this.$t('pages.polkastats_validator.head_title', {
+        networkName: network.name,
+      }),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: this.$t('pages.polkastats_validator.head_content'),
+          content: this.$t('pages.polkastats_validator.head_content', {
+            networkName: network.name,
+          }),
         },
       ],
     }

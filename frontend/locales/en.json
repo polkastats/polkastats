@@ -94,8 +94,8 @@
       "remove_from_favorites": "Remove from Favorites",
       "add_to_favorites": "Add to Favorites",
       "identity": "Identity",
-      "head_title": "PolkaStats - {networkName} active accounts",
-      "head_content": "{networkName} active accounts",
+      "head_title": "PolkaStats - {networkName} accounts",
+      "head_content": "{networkName} accounts",
       "loading_data": "Loading data, it can take a long time. Be patient, please",
       "download_csv": "Download in CSV format"
     },
@@ -173,21 +173,31 @@
     },
     "blocks": {
       "title": "Blocks",
+      "head_title": "PolkaStats - {networkName} blocks",
+      "head_content": "{networkName} blocks",
       "search_placeholder": "Search by block number"
     },
     "extrinsics": {
-      "title": "Extrinsics"
+      "title": "Extrinsics",
+      "head_title": "PolkaStats - {networkName} extrinsics",
+      "head_content": "{networkName} extrinsics"
     },
     "transfers": {
       "title": "Transfers",
+      "head_title": "PolkaStats - {networkName} transfers",
+      "head_content": "{networkName} transfers",
       "search_placeholder": "Search transfer by block number, hash or source address"
     },
     "activity": {
       "title": "Activity",
+      "head_title": "PolkaStats - {networkName} activity",
+      "head_content": "{networkName} activity",
       "search_placeholder": "Search activity by block number, hash or source address"
     },
     "events": {
       "title": "Events",
+      "head_title": "PolkaStats - {networkName} events",
+      "head_content": "{networkName} events",
       "search_placeholder": "Search by block number"
     },
     "support-us": {
@@ -250,6 +260,11 @@
           "head_content": "How to stake in Polkadot using PolkaStats"
         }
       }
+    },
+    "polkastats_validator": {
+      "title": "PolkaStats validator",
+      "head_title": "PolkaStats - {networkName} PolkaStats validator",
+      "head_content": "{networkName} PolkaStats validator"
     }
   },
   "details": {

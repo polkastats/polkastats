@@ -112,7 +112,7 @@
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
-import { paginationOptions } from '@/frontend.config.js'
+import { network, paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -155,6 +155,22 @@ export default {
           key: 'total_events',
           label: 'Events',
           sortable: true,
+        },
+      ],
+    }
+  },
+  head() {
+    return {
+      title: this.$t('pages.blocks.head_title', {
+        networkName: network.name,
+      }),
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('pages.blocks.head_content', {
+            networkName: network.name,
+          }),
         },
       ],
     }

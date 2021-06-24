@@ -94,8 +94,8 @@
       "remove_from_favorites": "Eliminar de Favoritos",
       "add_to_favorites": "Añadir a Favoritos",
       "identity": "Identidad",
-      "head_title": "PolkaStats - Cuentas activas en {networkName}",
-      "head_content": "Cuentas activas en {networkName}",
+      "head_title": "PolkaStats - Cuentas en {networkName}",
+      "head_content": "Cuentas en {networkName}",
       "loading_data": "Cargando datos, puede tardar tiempo. Sea paciente, por favor",
       "download_csv": "Descargar en formato CSV"
     },
@@ -173,21 +173,31 @@
     },
     "blocks": {
       "title": "Bloques",
+      "head_title": "PolkaStats - Bloques en {networkName}",
+      "head_content": "Bloques en {networkName}",
       "search_placeholder": "Buscar por número de bloque"
     },
     "extrinsics": {
-      "title": "Extrinsics"
+      "title": "Extrinsics",
+      "head_title": "PolkaStats - Extrinsics en {networkName}",
+      "head_content": "Extrinsics en {networkName}"
     },
     "transfers": {
       "title": "Transferencias",
+      "head_title": "PolkaStats - Transferencias en {networkName}",
+      "head_content": "Transferencias en {networkName}",
       "search_placeholder": "Buscar transferencia por número de bloque, hash o dirección de procedencia"
     },
     "activity": {
       "title": "Actividad",
+      "head_title": "PolkaStats - Actividad en {networkName}",
+      "head_content": "Actividad en {networkName}",
       "search_placeholder": "Buscar actividad por número de bloque, hash o dirección de procedencia"
     },
     "events": {
       "title": "Eventos",
+      "head_title": "PolkaStats - Eventos en {networkName}",
+      "head_content": "Eventos en {networkName}",
       "search_placeholder": "Buscar por número de bloque"
     },
     "support-us": {
@@ -250,6 +260,11 @@
           "head_content": "Como participar en Polkadot usando PolkaStats"
         }
       }
+    },
+    "polkastats_validator": {
+      "title": "Validador PolkaStats",
+      "head_title": "PolkaStats - Validador PolkaStats {networkName}",
+      "head_content": "Validador PolkaStats {networkName}"
     }
   },
   "details": {

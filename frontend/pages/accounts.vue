@@ -244,7 +244,7 @@ import JsonCSV from 'vue-json-csv'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
-import { paginationOptions } from '@/frontend.config.js'
+import { network, paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -302,6 +302,22 @@ export default {
       ],
       accounts: [],
       favorites: [],
+    }
+  },
+  head() {
+    return {
+      title: this.$t('pages.accounts.head_title', {
+        networkName: network.name,
+      }),
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('pages.accounts.head_content', {
+            networkName: network.name,
+          }),
+        },
+      ],
     }
   },
   computed: {
