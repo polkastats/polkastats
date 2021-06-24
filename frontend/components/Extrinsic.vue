@@ -49,11 +49,7 @@
           <td>Signer</td>
           <td>
             <div v-if="extrinsic.signer">
-              <Identicon
-                :key="extrinsic.signer"
-                :address="extrinsic.signer"
-                :size="20"
-              />
+              <Identicon :address="extrinsic.signer" :size="20" />
               <nuxt-link
                 v-b-tooltip.hover
                 :to="`/account/${extrinsic.signer}`"

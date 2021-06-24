@@ -65,11 +65,7 @@
                 :to="`/account/${data.item.signer}`"
                 :title="$t('pages.accounts.account_details')"
               >
-                <Identicon
-                  :key="data.item.signer"
-                  :address="data.item.signer"
-                  :size="20"
-                />
+                <Identicon :address="data.item.signer" :size="20" />
                 {{ shortAddress(data.item.signer) }}
               </nuxt-link>
             </p>

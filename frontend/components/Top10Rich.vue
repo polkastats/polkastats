@@ -4,11 +4,7 @@
       <b-table striped hover :fields="fields" :items="richList">
         <template #cell(account_id)="data">
           <p class="mb-0 d-inline-block">
-            <Identicon
-              :key="data.item.account_id"
-              :address="data.item.account_id"
-              :size="20"
-            />
+            <Identicon :address="data.item.account_id" :size="20" />
             <nuxt-link
               v-b-tooltip.hover
               :to="`/account/${data.item.account_id}`"

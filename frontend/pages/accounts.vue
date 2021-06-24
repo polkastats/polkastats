@@ -92,11 +92,7 @@
                   <p class="mb-2">
                     {{ $t('pages.accounts.rank') }} #{{ data.item.rank }}
                   </p>
-                  <Identicon
-                    :key="data.item.account_id"
-                    :address="data.item.account_id"
-                    :size="40"
-                  />
+                  <Identicon :address="data.item.account_id" :size="40" />
                   <nuxt-link
                     :to="`/account/${data.item.account_id}`"
                     :title="$t('pages.accounts.account_details')"
@@ -142,11 +138,7 @@
                   </table>
                 </div>
                 <div class="d-none d-sm-none d-md-block d-lg-block d-xl-block">
-                  <Identicon
-                    :key="data.item.account_id"
-                    :address="data.item.account_id"
-                    :size="20"
-                  />
+                  <Identicon :address="data.item.account_id" :size="20" />
                   <nuxt-link
                     v-b-tooltip.hover
                     :to="`/account/${data.item.account_id}`"

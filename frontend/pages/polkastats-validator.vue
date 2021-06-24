@@ -7,13 +7,21 @@
           <b-row>
             <b-col md="6" class="mb-4">
               <b-card>
-                <h4 class="mb-4">Polkadot validator</h4>
-                <Identicon
-                  value="15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t"
-                  size="25"
-                  theme="polkadot"
-                />
-                <span>15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t</span>
+                <h4 class="mb-4">Polkadot validators</h4>
+                <p>
+                  <Identicon
+                    address="15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t"
+                    size="25"
+                  />
+                  <span>15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t</span>
+                </p>
+                <p>
+                  <Identicon
+                    address="13dPstbBatxBkKJzP19KF3ETBrGfat6F5rgUStVjjpRrNPrv"
+                    size="25"
+                  />
+                  <span>13dPstbBatxBkKJzP19KF3ETBrGfat6F5rgUStVjjpRrNPrv</span>
+                </p>
                 <p class="text-right mb-0 pt-4">
                   <nuxt-link to="/how-to-stake/polkadot/" class="btn btn-stake">
                     How to nominate on Polkadot
@@ -23,13 +31,21 @@
             </b-col>
             <b-col md="6" class="mb-4">
               <b-card>
-                <h4 class="mb-4">Kusama validator</h4>
-                <Identicon
-                  value="GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY"
-                  size="25"
-                  theme="polkadot"
-                />
-                <span>GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY</span>
+                <h4 class="mb-4">Kusama validators</h4>
+                <p>
+                  <Identicon
+                    address="GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY"
+                    size="25"
+                  />
+                  <span>GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY</span>
+                </p>
+                <p>
+                  <Identicon
+                    address="EPStAMtjApGg8Ap6xKe9gyuinjmetz1MNhzu1cPmLQkWKUA"
+                    size="25"
+                  />
+                  <span>EPStAMtjApGg8Ap6xKe9gyuinjmetz1MNhzu1cPmLQkWKUA</span>
+                </p>
                 <p class="text-right mb-0 pt-4">
                   <nuxt-link to="/how-to-stake/kusama/" class="btn btn-stake">
                     How to nominate on Kusama
@@ -108,13 +124,26 @@
           <b-row>
             <b-col md="6" class="mb-4">
               <b-card>
-                <h4 class="mb-4">Validador Polkadot</h4>
-                <Identicon
-                  value="15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t"
-                  size="25"
-                  theme="polkadot"
-                />
-                <span>15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t</span>
+                <h4 class="mb-4">Validadores Polkadot</h4>
+                <p>
+                  <Identicon
+                    address="15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t"
+                    size="25"
+                  />
+                  <span>15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t</span>
+                </p>
+                <p>
+                  <Identicon
+                    address="13dPstbBatxBkKJzP19KF3ETBrGfat6F5rgUStVjjpRrNPrv"
+                    size="25"
+                  />
+                  <span>13dPstbBatxBkKJzP19KF3ETBrGfat6F5rgUStVjjpRrNPrv</span>
+                </p>
+                <p class="text-right mb-0 pt-4">
+                  <nuxt-link to="/how-to-stake/polkadot/" class="btn btn-stake">
+                    How to nominate on Polkadot
+                  </nuxt-link>
+                </p>
                 <p class="text-right mb-0 pt-4">
                   <nuxt-link to="/how-to-stake/polkadot/" class="btn btn-stake">
                     Como nominar en Polkadot
@@ -124,13 +153,21 @@
             </b-col>
             <b-col md="6" class="mb-4">
               <b-card>
-                <h4 class="mb-4">Validador Kusama</h4>
-                <Identicon
-                  value="GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY"
-                  size="25"
-                  theme="polkadot"
-                />
-                <span>GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY</span>
+                <h4 class="mb-4">Validadores Kusama</h4>
+                <p>
+                  <Identicon
+                    address="GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY"
+                    size="25"
+                  />
+                  <span>GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY</span>
+                </p>
+                <p>
+                  <Identicon
+                    address="EPStAMtjApGg8Ap6xKe9gyuinjmetz1MNhzu1cPmLQkWKUA"
+                    size="25"
+                  />
+                  <span>EPStAMtjApGg8Ap6xKe9gyuinjmetz1MNhzu1cPmLQkWKUA</span>
+                </p>
                 <p class="text-right mb-0 pt-4">
                   <nuxt-link to="/how-to-stake/kusama/" class="btn btn-stake">
                     Como nominar en Kusama

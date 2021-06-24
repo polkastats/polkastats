@@ -12,11 +12,7 @@
           <div class="card mb-4">
             <div class="card-body">
               <p class="text-center mb-2">
-                <Identicon
-                  :key="parsedAccount.accountId"
-                  :address="parsedAccount.accountId"
-                  :size="80"
-                />
+                <Identicon :address="parsedAccount.accountId" :size="80" />
               </p>
               <h4 class="text-center mb-4">
                 <span
@@ -45,7 +41,6 @@
                       <td>{{ $t('details.account.account_id') }}</td>
                       <td class="text-right">
                         <Identicon
-                          :key="parsedAccount.accountId"
                           :address="parsedAccount.accountId"
                           :size="20"
                         />

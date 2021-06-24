@@ -48,11 +48,7 @@
                 </template>
                 <template #cell(from)="data">
                   <p class="mb-0">
-                    <Identicon
-                      :key="data.item.from"
-                      :address="data.item.from"
-                      :size="20"
-                    />
+                    <Identicon :address="data.item.from" :size="20" />
                     <nuxt-link
                       v-b-tooltip.hover
                       :to="`/account/${data.item.from}`"
@@ -65,11 +61,7 @@
                 <template #cell(to)="data">
                   <div v-if="isValidAddressPolkadotAddress(data.item.to)">
                     <p class="mb-0">
-                      <Identicon
-                        :key="data.item.to"
-                        :address="data.item.to"
-                        :size="20"
-                      />
+                      <Identicon :address="data.item.to" :size="20" />
                       <nuxt-link
                         v-b-tooltip.hover
                         :to="`/account/${data.item.to}`"

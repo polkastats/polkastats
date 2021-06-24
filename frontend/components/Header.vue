@@ -19,11 +19,29 @@
       <b-navbar-toggle target="nav-collapse" />
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="ml-auto">
-          <b-nav-item right to="/blocks">Blocks</b-nav-item>
-          <b-nav-item right to="/transfers">Transfers</b-nav-item>
-          <b-nav-item right to="/extrinsics">Extrinsics</b-nav-item>
-          <b-nav-item right to="/events">Events</b-nav-item>
-          <b-nav-item right to="/accounts">Accounts</b-nav-item>
+          <b-nav-item right to="/polkastats-validator">{{
+            $t('layout.default.validator')
+          }}</b-nav-item>
+          <b-nav-item right to="/how-to-stake">{{
+            $t('layout.default.how_to_stake')
+          }}</b-nav-item>
+          <b-nav-item-dropdown text="Blockchain">
+            <b-dropdown-item to="/blocks">
+              {{ $t('layout.default.blocks') }}
+            </b-dropdown-item>
+            <b-dropdown-item to="/transfers">
+              {{ $t('layout.default.transfers') }}
+            </b-dropdown-item>
+            <b-dropdown-item to="/extrinsics">
+              {{ $t('layout.default.extrinsics') }}
+            </b-dropdown-item>
+            <b-dropdown-item to="/events">
+              {{ $t('layout.default.events') }}
+            </b-dropdown-item>
+          </b-nav-item-dropdown>
+          <b-nav-item right to="/accounts">{{
+            $t('layout.default.accounts')
+          }}</b-nav-item>
         </b-navbar-nav>
         <b-dropdown class="my-md-2 ml-md-2 network" variant="primary2">
           <template #button-content>

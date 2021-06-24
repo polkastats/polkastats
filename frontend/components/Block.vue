@@ -98,11 +98,7 @@
                     <td>{{ shortHash(extrinsic.hash) }}</td>
                     <td>
                       <span v-if="extrinsic.signer">
-                        <Identicon
-                          :key="extrinsic.signer"
-                          :address="extrinsic.signer"
-                          :size="20"
-                        />
+                        <Identicon :address="extrinsic.signer" :size="20" />
                         <nuxt-link
                           v-b-tooltip.hover
                           :to="`/account/${extrinsic.signer}`"
@@ -161,7 +157,6 @@
                         "
                       >
                         <Identicon
-                          :key="JSON.parse(event.data)[0]"
                           :address="JSON.parse(event.data)[0]"
                           :size="20"
                         />
@@ -174,7 +169,6 @@
                         </nuxt-link>
                         <font-awesome-icon icon="arrow-right" />
                         <Identicon
-                          :key="JSON.parse(event.data)[1]"
                           :address="JSON.parse(event.data)[1]"
                           :size="20"
                         />

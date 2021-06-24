@@ -48,28 +48,13 @@
               </nuxt-link>
             </p>
           </template>
-          <!-- <template #cell(hash)="data">
-            <p class="mb-0">
-              <nuxt-link
-                v-b-tooltip.hover
-                :to="`/block?blockNumber=${data.item.block_number}`"
-                title="Check block information"
-              >
-                {{ shortHash(data.item.hash) }}
-              </nuxt-link>
-            </p>
-          </template> -->
           <template #cell(from)="data">
             <p class="mb-0">
               <nuxt-link
                 :to="`/account/${data.item.from}`"
                 :title="$t('pages.accounts.account_details')"
               >
-                <Identicon
-                  :key="data.item.from"
-                  :address="data.item.from"
-                  :size="20"
-                />
+                <Identicon :address="data.item.from" :size="20" />
                 {{ shortAddress(data.item.from) }}
               </nuxt-link>
             </p>
@@ -80,11 +65,7 @@
                 :to="`/account/${data.item.to}`"
                 :title="$t('pages.accounts.account_details')"
               >
-                <Identicon
-                  :key="data.item.to"
-                  :address="data.item.to"
-                  :size="20"
-                />
+                <Identicon :address="data.item.to" :size="20" />
                 {{ shortAddress(data.item.to) }}
               </nuxt-link>
             </p>

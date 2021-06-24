@@ -45,11 +45,7 @@
                 </template>
                 <template #cell(signer)="data">
                   <p class="mb-0">
-                    <Identicon
-                      :key="data.item.signer"
-                      :address="data.item.signer"
-                      :size="20"
-                    />
+                    <Identicon :address="data.item.signer" :size="20" />
                     <nuxt-link
                       v-b-tooltip.hover
                       :to="`/account/${data.item.signer}`"
