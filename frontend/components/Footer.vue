@@ -106,12 +106,7 @@
           class="small pt-4 text-center text-white"
           data-testid="footer-bottom"
         >
-          <nuxt-link
-            to="/team"
-            active-class="nuxt-link-exact-active"
-            class="nav-link"
-            data-testid="polkastatsTeam"
-          >
+          <nuxt-link to="/team">
             {{ $t('layout.default.made_by') }}
           </nuxt-link>
           <span class="mx-2">|</span> {{ $t('layout.default.built_with') }}
