@@ -29,7 +29,7 @@
           <template #button-content>
             <img
               class="network-logo"
-              :src="`/img/networks/icons/${network.name}.svg`"
+              :src="`/img/networks/icons/${network.id}.svg`"
             />
             {{ network.name }}
           </template>
