@@ -265,6 +265,11 @@
       "title": "PolkaStats validator",
       "head_title": "PolkaStats - {networkName} PolkaStats validator",
       "head_content": "{networkName} PolkaStats validator"
+    },
+    "validators": {
+      "title": "Validators",
+      "head_title": "PolkaStats - {networkName} proof of stake validators",
+      "head_content": "{networkName} proof of stake validators"
     }
   },
   "details": {

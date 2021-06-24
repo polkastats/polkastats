@@ -415,7 +415,7 @@ export default {
         },
         {
           key: 'customVRCScore',
-          label: 'VRC score',
+          label: 'Score',
           sortable: true,
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
