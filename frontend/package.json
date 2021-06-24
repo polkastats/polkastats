@@ -25,6 +25,7 @@
     }
   },
   "dependencies": {
+    "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-regular-svg-icons": "^5.15.2",
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "@nuxtjs/apollo": "^4.0.1-rc.5",

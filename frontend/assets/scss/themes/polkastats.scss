@@ -96,7 +96,7 @@ body {
   font-size: 0.9rem;
 }
 .logo {
-  height: 48px;
+  height: 40px;
 }
 .explorer {
   text-align: inherit;
@@ -336,4 +336,142 @@ h1 {
   width: 1rem;
   height: 1rem;
   margin-right: 0.2rem;
+}
+
+/* ----------------------- Footer Styles -------------------------- */
+
+section .section-title {
+  text-align: center;
+  color: #007b5e;
+  margin-bottom: 50px;
+  text-transform: uppercase;
+}
+
+#footer {
+  background-color: #2d2f33;
+  padding: 0 0 1rem 0;
+}
+
+#footer h5 {
+  padding-left: 10px;
+  border-left: 3px solid #eee;
+  padding-bottom: 6px;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+#footer a {
+  color: #fff;
+  background-color: transparent;
+  -webkit-text-decoration-skip: objects;
+}
+
+#footer ul.social li {
+  padding: 3px 12px 0 0;
+}
+
+#footer ul.social li a i {
+  margin-right: 5px;
+  font-size: 18px;
+  -webkit-transition: 0.5s all ease;
+  -moz-transition: 0.5s all ease;
+  transition: 0.5s all ease;
+}
+
+#footer ul.quick-links li a i {
+  margin-right: 5px;
+}
+
+#footer ul.quick-links li:hover a i {
+  font-weight: 700;
+}
+
+#footer ul.social li:hover a i {
+  font-size: 24px;
+  margin-top: -10px;
+}
+
+#footer ul.social li a,
+#footer ul.quick-links li a {
+  color: #fff;
+}
+
+#footer ul.social li a:hover {
+  color: #eee;
+}
+
+#footer ul.quick-links li {
+  padding: 3px 0;
+  -webkit-transition: 0.5s all ease;
+  -moz-transition: 0.5s all ease;
+  transition: 0.5s all ease;
+}
+
+#footer ul.quick-links li:hover {
+  padding: 3px 0;
+  margin-left: 5px;
+  font-weight: 700;
+}
+
+#footer .small {
+  font-size: 0.9rem;
+}
+
+#footer .logo {
+  max-width: 400px;
+  width: 100%;
+}
+
+.bat {
+  max-width: 18px;
+  vertical-align: middle;
+  margin-left: 0.1rem;
+}
+
+.kusama-logo,
+.polkadot-logo {
+  width: 100%;
+  max-width: 120px;
+}
+
+.table {
+  background-color: white;
+}
+
+.badget-container {
+  justify-content: center;
+  margin: 0;
+}
+
+.grant-badge {
+  width: 75%;
+  max-width: 200px;
+}
+
+/* GitHub corner */
+
+.github-corner:hover .octo-arm {
+  animation: octocat-wave 560ms ease-in-out;
+}
+@keyframes octocat-wave {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20%,
+  60% {
+    transform: rotate(-25deg);
+  }
+  40%,
+  80% {
+    transform: rotate(10deg);
+  }
+}
+@media (max-width: 500px) {
+  .github-corner .octo-arm {
+    animation: octocat-wave 560ms ease-in-out;
+  }
+  .github-corner:hover .octo-arm {
+    animation: none;
+  }
 }

@@ -190,12 +190,66 @@
       "title": "Eventos",
       "search_placeholder": "Buscar por número de bloque"
     },
-    "contracts": {
-      "title": "Contratos",
-      "search_placeholder": "Buscar por dirección de contrato o número de bloque"
+    "support-us": {
+      "support_polkastats": "APOYA POLKASTATS",
+      "polkastats_software_TEXT": "El software de PolkaStats es de código abierto y el servicio de hospedaje en https: //polkastats.io es proporcionado gratuitamente (como una cerveza gratis).",
+      "i_enjoy_developing_TEXT": "Disfruto desarrollando PolkaStats y proporcionando el servicio sin publicidad molesta y pienso seguir haciéndolo así :-).",
+      "if_you_like_TEXT": "Si te gusta mi trabajo y quieres ayudar con los costes del servidor y el tiempo empleado en desarrollar y mantenerlo, puedes hacerlo de varias formas.",
+      "feedback": "FeedBack!",
+      "we_love_feedback_TEXT": "Nos encanta tener feedback de la comunidad, si encuentras un error, quieres comentar sobre algo o te gustaría que añadieramos alguna funcionalidad, por favor añade un Issue en nuestro",
+      "github_repository": "repositorio de GitHub",
+      "stake_in_our_validator": "Participa en nuestros validadores",
+      "this_is_an_TEXT": "Esta es la manera más fácil de ayudar a PolkaStats, echa un vistazo a nuestras guias de participación para Polkadot y Kusama para saber más.",
+      "follow_polkastats_on_twitter": "Sigue @PolkaStats en Twitter",
+      "are_you_a_TEXT": "¿Eres un feliz usuario de PolkaStats? Asegúrate de seguirnos",
+      "on_twitter_to_get_TEXT": "en Twitter para tener las últimas actualizaciones de la plataforma",
+      "head_title": "PolkaStats - Apóyanos",
+      "head_content": "Apóyanos"
     },
-    "verifyContract": {
-      "title": "Verifica y publica el código fuente de tu contrato"
+    "how_to_stake": {
+      "title": "Como participar",
+      "head_title": "PolkaStats - Como participar",
+      "head_content": "Como participar",
+      "kusama": {
+        "title": "Como participar en Kusama",
+        "head_title": "PolkaStats - Como participar en Kusama",
+        "head_content": "Como participar en Kusama",
+        "lunie": {
+          "title": "Como participar en Kusama usando Lunie",
+          "head_title": "PolkaStats - Como participar en Kusama usando Lunie",
+          "head_content": "Como participar en Kusama usando Lunie"
+        },
+        "polkadotjs": {
+          "title": "Como participar en Kusama usando Polkadot JS",
+          "head_title": "PolkaStats - Como participar en Kusama usando Polkadot JS",
+          "head_content": "Como participar en Kusama usando Polkadot JS"
+        },
+        "polkastats": {
+          "title": "Como participar en Kusama usando PolkaStats",
+          "head_title": "PolkaStats - Como participar en Kusama usando PolkaStats",
+          "head_content": "Como participar en Kusama usando PolkaStats"
+        }
+      },
+      "polkadot": {
+        "title": "Como participar en Polkadot",
+        "head_title": "PolkaStats - Como participar en Polkadot",
+        "head_content": "Como participar en Polkadot",
+        "lunie": {
+          "title": "Como participar en Polkadot usando Lunie",
+          "head_title": "PolkaStats - Como participar en Polkadot usando Lunie",
+          "head_content": "Como participar en Polkadot usando Lunie"
+        },
+        "polkadotjs": {
+          "title": "Como participar en Polkadot usando Polkadot JS",
+          "head_title": "PolkaStats - Como participar en Polkadot usando Polkadot JS",
+          "head_content": "Como participar en Polkadot usando Polkadot JS"
+        },
+        "polkastats": {
+          "title": "Como participar en Polkadot usando PolkaStats",
+          "head_title": "PolkaStats - Como participar en Polkadot usando PolkaStats",
+          "head_content": "Como participar en Polkadot usando PolkaStats"
+        }
+      }
     }
   },
   "details": {
