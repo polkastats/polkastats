@@ -89,7 +89,7 @@
                     <b-button
                       v-for="(option, index) in paginationOptions"
                       :key="index"
-                      variant="outline-secondary"
+                      variant="outline-primary2"
                       :class="{ 'selected-per-page': perPage === option }"
                       @click="setPageSize(option)"
                     >
@@ -102,7 +102,7 @@
                   <b-dropdown
                     class="m-md-2"
                     text="Page size"
-                    variant="outline-secondary"
+                    variant="outline-primary2"
                   >
                     <b-dropdown-item
                       v-for="(option, index) in paginationOptions"
