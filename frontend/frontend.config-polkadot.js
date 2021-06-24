@@ -10,5 +10,9 @@ export const network = {
   backendHttp: 'https://dev.polkadot.polkastats.io/api/v3',
   googleAnalytics: '',
   theme: '@/assets/scss/themes/polkastats.scss',
+  // ranking
+  historySize: 84, // 21 days
+  erasPerDay: 1,
+  validatorSetSize: 24,
 }
 export const paginationOptions = [10, 20, 50, 100]

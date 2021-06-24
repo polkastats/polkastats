@@ -27,8 +27,8 @@ $cyan: #17a2b8 !default;
 $body-bg: #fff;
 $body-color: #596065;
 $primary: #fff;
-$primary2: #001C71;
-$secondary: $gray-600;
+$primary2: #001c71;
+$secondary: #e6007a;
 $success: #068642;
 $info: $cyan !default;
 $warning: $yellow !default;
@@ -58,25 +58,29 @@ $link-color: $primary2 !default;
 $border-radius: 0.4rem !default;
 $border-radius-lg: 0.4rem !default;
 $border-radius-sm: 0.4rem !default;
-$pagination-color: $secondary !default;
+$pagination-color: $primary2 !default;
 $pagination-bg: $white !default;
-$pagination-border-color: $secondary !default;
+$pagination-border-color: $primary2 !default;
 $pagination-hover-color: $white !default;
 $pagination-hover-bg: $primary2 !default;
-$pagination-hover-border-color: $secondary !default;
+$pagination-hover-border-color: $primary2 !default;
 $pagination-active-color: $primary2 !default;
 $pagination-active-bg: $white !default;
-$pagination-active-border-color: $secondary !default;
-$pagination-disabled-color: $secondary !default;
+$pagination-active-border-color: $primary2 !default;
+$pagination-disabled-color: $primary2 !default;
 $pagination-disabled-bg: $white !default;
-$pagination-disabled-border-color: $secondary !default;
+$pagination-disabled-border-color: $primary2 !default;
 $nav-tabs-link-active-color: $body-color !default;
 $hr-border-color: rgba(255, 255, 255, 0.2) !default;
 $custom-control-indicator-checked-bg: $primary2 !default;
 $custom-control-indicator-focus-border-color: $gray-600 !default;
+$custom-control-indicator-bg: $white !default;
 $h1-font-size: 1.6rem !default;
 $table-border-color: #c6d7e8 !default;
 $table-accent-bg: #c2d7ec2b !default;
+
+$custom-range-thumb-bg: $primary2;
+$custom-range-thumb-active-bg: $primary2;
 
 // import bootstrap scss
 @import 'bootstrap/scss/bootstrap.scss';
@@ -473,5 +477,103 @@ section .section-title {
   }
   .github-corner:hover .octo-arm {
     animation: none;
+  }
+}
+
+// ranking component
+.elected-icon {
+  color: $white;
+  font-size: 1.6rem;
+  border: 2px solid rgb(128 128 128 / 49%);
+  border-radius: 50%;
+}
+.not-elected-icon {
+  color: $white;
+  font-size: 1.6rem;
+  border: 2px solid rgb(128 128 128 / 49%);
+  border-radius: 50%;
+}
+.custom-switch.b-custom-control-lg .custom-control-label,
+.input-group-lg .custom-switch .custom-control-label {
+  font-size: 0.9rem;
+}
+.widget {
+  padding: 1rem 1rem 0.5rem 1rem;
+  border: 1px solid $gray-100;
+  border-radius: $border-radius;
+  box-shadow: 0 8px 20px 0 rgb(40 133 208 / 15%);
+}
+.widget-title {
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+.select {
+  cursor: pointer;
+}
+.ranking .select .selected,
+.ranking .select .unselected {
+  font-size: 1.2rem;
+}
+.selected-per-page {
+  color: $primary;
+  background-color: $primary2;
+}
+.progress-bar {
+  color: $gray-700;
+  background-color: #00effc;
+}
+.xl-switch {
+  -ms-transform: scale(2);
+  -moz-transform: scale(2);
+  -webkit-transform: scale(2);
+  -o-transform: scale(2);
+  transform: scale(2);
+  padding: 10px;
+}
+.collapsed > .when-open,
+.not-collapsed > .when-closed {
+  display: none;
+}
+
+// rating component
+.rating {
+  font-size: 1rem;
+}
+
+// validator page
+.metric {
+  border: 1px solid gray;
+  border-radius: $border-radius;
+  padding: 1rem;
+}
+.validator-page .metric {
+  min-height: 10rem;
+}
+.validator-page .card-body {
+  position: relative;
+}
+.validator-page .verified {
+  font-size: 2rem;
+  cursor: pointer;
+}
+.metric .description {
+  color: $light;
+}
+.csv-export {
+  cursor: pointer;
+}
+
+
+// verifiedIcon component
+.verified .circle {
+  color: #0fccd6;
+}
+.verified .fa-check {
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .btn {
+    font-size: 0.8rem !important;
   }
 }

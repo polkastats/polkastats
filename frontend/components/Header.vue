@@ -22,6 +22,9 @@
           <b-nav-item right to="/polkastats-validator">{{
             $t('layout.default.validator')
           }}</b-nav-item>
+          <b-nav-item right to="/validators">{{
+            $t('layout.default.validators')
+          }}</b-nav-item>
           <b-nav-item right to="/how-to-stake">{{
             $t('layout.default.how_to_stake')
           }}</b-nav-item>
