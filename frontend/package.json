@@ -35,7 +35,7 @@
     "@polkadot/keyring": "^6.4.1",
     "@polkadot/util": "^6.4.1",
     "@polkadot/vue-identicon": "^0.68.1",
-    "bootstrap": "^4.5.3",
+    "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
     "cookie-universal-nuxt": "^2.1.4",
     "core-js": "^3.8.2",
