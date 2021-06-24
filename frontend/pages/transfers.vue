@@ -290,13 +290,10 @@ export default {
               block_number: transfer.block_number,
               hash: transfer.hash,
               from: transfer.signer,
-              to: JSON.parse(transfer.args)[0].address20
-                ? JSON.parse(transfer.args)[0].address20
-                : JSON.parse(transfer.args)[0].id,
-              amount:
-                transfer.section === 'currencies'
-                  ? JSON.parse(transfer.args)[2]
-                  : JSON.parse(transfer.args)[1],
+              to: JSON.parse(transfer.args)[0].id
+                ? JSON.parse(transfer.args)[0].id
+                : JSON.parse(transfer.args)[0],
+              amount: JSON.parse(transfer.args)[1],
               success: transfer.success,
             }
           })

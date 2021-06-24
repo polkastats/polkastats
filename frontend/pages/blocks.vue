@@ -41,6 +41,19 @@
                     </nuxt-link>
                   </p>
                 </template>
+                <template #cell(block_author)="data">
+                  <p class="mb-0">
+                    <Identicon :address="data.item.block_author" :size="22" />
+                    <nuxt-link :to="`/validator/${data.item.block_author}`">
+                      <span v-if="data.item.block_author_name">{{
+                        data.item.block_author_name
+                      }}</span>
+                      <span v-else>{{
+                        shortAddress(data.item.block_author)
+                      }}</span>
+                    </nuxt-link>
+                  </p>
+                </template>
                 <template #cell(finalized)="data">
                   <p v-if="data.item.finalized" class="mb-0">
                     <font-awesome-icon icon="check" class="text-success" />
@@ -142,6 +155,11 @@ export default {
           sortable: true,
         },
         {
+          key: 'block_author',
+          label: 'Author',
+          sortable: true,
+        },
+        {
           key: 'block_hash',
           label: 'Hash',
           sortable: true,
@@ -197,6 +215,8 @@ export default {
               order_by: { block_number: desc }
             ) {
               block_number
+              block_author
+              block_author_name
               finalized
               block_hash
               total_extrinsics
