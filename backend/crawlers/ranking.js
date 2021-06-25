@@ -517,6 +517,43 @@ const getLastEraInDb = async (client) => {
   return 0;
 };
 
+const insertEraValidatorStatsAvg = async (client, eraIndex) => {
+  const era = new BigNumber(eraIndex.toString()).toString(10);
+  let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = '${era}' AND commission != 100`;
+  let res = await dbQuery(client, sql, loggerOptions);
+  if (res.rows.length > 0) {
+    if (res.rows[0].commission_avg) {
+      sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ('${era}', '${res.rows[0].commission_avg}') ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
+      await dbQuery(client, sql, loggerOptions);
+    }
+  }
+  sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = '${era}'`;
+  res = await dbQuery(client, sql, loggerOptions);
+  if (res.rows.length > 0) {
+    if (res.rows[0].self_stake_avg) {
+      const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
+      sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ('${era}', '${selfStakeAvg}') ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
+      await dbQuery(client, sql, loggerOptions);
+    }
+  }
+  sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = '${era}'`;
+  res = await dbQuery(client, sql, loggerOptions);
+  if (res.rows.length > 0) {
+    if (res.rows[0].relative_performance_avg) {
+      sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ('${era}', '${res.rows[0].relative_performance_avg}') ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
+      await dbQuery(client, sql, loggerOptions);
+    }
+  }
+  sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = '${era}'`;
+  res = await dbQuery(client, sql, loggerOptions);
+  if (res.rows.length > 0) {
+    if (res.rows[0].points_avg) {
+      sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ('${era}', '${res.rows[0].points_avg}') ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
+      await dbQuery(client, sql, loggerOptions);
+    }
+  }
+};
+
 const crawler = async () => {
   logger.info(loggerOptions, `Delaying ranking crawler start for ${config.startDelay / 1000}s`);
   await wait(config.startDelay);
@@ -1172,53 +1209,10 @@ const crawler = async () => {
       await Promise.all(
         ranking.map((validator) => insertEraValidatorStats(client, validator, activeEra)),
       );
-
       logger.debug(loggerOptions, 'Storing era stats averages in db...');
-      // eslint-disable-next-line no-restricted-syntax
-      for (const eraIndex of eraIndexes) {
-        const era = new BigNumber(eraIndex.toString()).toString(10);
-        let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = '${era}' AND commission != 100`;
-        // eslint-disable-next-line no-await-in-loop
-        let res = await dbQuery(client, sql, loggerOptions);
-        if (res.rows.length > 0) {
-          if (res.rows[0].commission_avg) {
-            sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ('${era}', '${res.rows[0].commission_avg}') ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
-            // eslint-disable-next-line no-await-in-loop
-            await dbQuery(client, sql, loggerOptions);
-          }
-        }
-        sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = '${era}'`;
-        // eslint-disable-next-line no-await-in-loop
-        res = await dbQuery(client, sql, loggerOptions);
-        if (res.rows.length > 0) {
-          if (res.rows[0].self_stake_avg) {
-            const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
-            sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ('${era}', '${selfStakeAvg}') ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
-            // eslint-disable-next-line no-await-in-loop
-            await dbQuery(client, sql, loggerOptions);
-          }
-        }
-        sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = '${era}'`;
-        // eslint-disable-next-line no-await-in-loop
-        res = await dbQuery(client, sql, loggerOptions);
-        if (res.rows.length > 0) {
-          if (res.rows[0].relative_performance_avg) {
-            sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ('${era}', '${res.rows[0].relative_performance_avg}') ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
-            // eslint-disable-next-line no-await-in-loop
-            await dbQuery(client, sql, loggerOptions);
-          }
-        }
-        sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = '${era}'`;
-        // eslint-disable-next-line no-await-in-loop
-        res = await dbQuery(client, sql, loggerOptions);
-        if (res.rows.length > 0) {
-          if (res.rows[0].points_avg) {
-            sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ('${era}', '${res.rows[0].points_avg}') ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
-            // eslint-disable-next-line no-await-in-loop
-            await dbQuery(client, sql, loggerOptions);
-          }
-        }
-      }
+      await Promise.all(
+        eraIndexes.map((eraIndex) => insertEraValidatorStatsAvg(client, eraIndex)),
+      );
     } else {
       logger.debug(loggerOptions, 'Updating era averages is not needed!');
     }
