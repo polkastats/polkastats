@@ -41,6 +41,11 @@
                     </nuxt-link>
                   </p>
                 </template>
+                <template #cell(timestamp)="data">
+                  <p class="mb-0">
+                    {{ fromNow(data.item.timestamp) }}
+                  </p>
+                </template>
                 <template #cell(block_author)="data">
                   <p class="mb-0">
                     <Identicon :address="data.item.block_author" :size="22" />
@@ -150,6 +155,11 @@ export default {
           sortable: true,
         },
         {
+          key: 'timestamp',
+          label: 'Date',
+          sortable: true,
+        },
+        {
           key: 'finalized',
           label: 'Finalized',
           sortable: true,
@@ -221,6 +231,7 @@ export default {
               block_hash
               total_extrinsics
               total_events
+              timestamp
             }
           }
         `,
