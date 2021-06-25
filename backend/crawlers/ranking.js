@@ -678,36 +678,39 @@ const crawler = async () => {
     logger.debug(loggerOptions, `Current era is ${currentEra}`);
     logger.debug(loggerOptions, `Active era is ${activeEra}`);
     logger.debug(loggerOptions, `Minimum amount to stake is ${minimumStake}`);
-    await dbQuery(
-      client,
-      `UPDATE total SET count = '${activeValidatorCount}' WHERE name = 'active_validator_count'`,
-      loggerOptions,
-    );
-    await dbQuery(
-      client,
-      `UPDATE total SET count = '${waitingValidatorCount}' WHERE name = 'waiting_validator_count'`,
-      loggerOptions,
-    );
-    await dbQuery(
-      client,
-      `UPDATE total SET count = '${nominatorCount}' WHERE name = 'nominator_count'`,
-      loggerOptions,
-    );
-    await dbQuery(
-      client,
-      `UPDATE total SET count = '${currentEra}' WHERE name = 'current_era'`,
-      loggerOptions,
-    );
-    await dbQuery(
-      client,
-      `UPDATE total SET count = '${activeEra}' WHERE name = 'active_era'`,
-      loggerOptions,
-    );
-    await dbQuery(
-      client,
-      `UPDATE total SET count = '${minimumStake}' WHERE name = 'minimum_stake'`,
-      loggerOptions,
-    );
+
+    await Promise.all([
+      dbQuery(
+        client,
+        `UPDATE total SET count = '${activeValidatorCount}' WHERE name = 'active_validator_count'`,
+        loggerOptions,
+      ),
+      dbQuery(
+        client,
+        `UPDATE total SET count = '${waitingValidatorCount}' WHERE name = 'waiting_validator_count'`,
+        loggerOptions,
+      ),
+      dbQuery(
+        client,
+        `UPDATE total SET count = '${nominatorCount}' WHERE name = 'nominator_count'`,
+        loggerOptions,
+      ),
+      dbQuery(
+        client,
+        `UPDATE total SET count = '${currentEra}' WHERE name = 'current_era'`,
+        loggerOptions,
+      ),
+      dbQuery(
+        client,
+        `UPDATE total SET count = '${activeEra}' WHERE name = 'active_era'`,
+        loggerOptions,
+      ),
+      dbQuery(
+        client,
+        `UPDATE total SET count = '${minimumStake}' WHERE name = 'minimum_stake'`,
+        loggerOptions,
+      ),
+    ]);
 
     // eslint-disable-next-line
     const nominations = nominators.map(([key, nominations]) => {
@@ -728,12 +731,15 @@ const crawler = async () => {
     });
 
     // Remove duplicate accountIds: we filter intentions that exist in validator list
-    const accountIds = validators.map((v) => v.accountId);
-    const preFilterIntentions = intentions.length;
-    intentions = intentions
-      .filter(({ accountId }) => !accountIds.includes(accountId));
-    const postFilterIntentions = intentions.length;
-    logger.debug(loggerOptions, `Removed ${postFilterIntentions - preFilterIntentions} duplicated intentions`);
+    // const accountIds = validators.map((v) => v.accountId);
+    // const preFilterIntentions = intentions.length;
+    // intentions = intentions
+    //   .filter(({ accountId }) => !accountIds.includes(accountId));
+    // const postFilterIntentions = intentions.length;
+    // logger.debug(
+    //   loggerOptions,
+    //   `Removed ${postFilterIntentions - preFilterIntentions} duplicated intentions`,
+    // );
 
     // Merge validators and intentions
     validators = validators.concat(intentions);
