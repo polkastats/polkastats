@@ -266,9 +266,11 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
   }
 };
 
-const crawler = async () => {
-  logger.info(loggerOptions, `Delaying block harvester crawler start for ${config.startDelay / 1000}s`);
-  await wait(config.startDelay);
+const crawler = async (delayedStart) => {
+  if (delayedStart) {
+    logger.info(loggerOptions, `Delaying block harvester crawler start for ${config.startDelay / 1000}s`);
+    await wait(config.startDelay);
+  }
 
   logger.info(loggerOptions, 'Starting block harvester...');
   const startTime = new Date().getTime();
@@ -341,12 +343,12 @@ const crawler = async () => {
   logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
   logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
   setTimeout(
-    () => crawler(),
+    () => crawler(false),
     config.pollingTime,
   );
 };
 
-crawler().catch((error) => {
+crawler(true).catch((error) => {
   // eslint-disable-next-line no-console
   console.error(error);
   process.exit(-1);

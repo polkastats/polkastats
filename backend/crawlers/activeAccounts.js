@@ -105,9 +105,11 @@ const processChunk = async (api, client, accountId) => {
   await dbParamQuery(client, query, data, loggerOptions);
 };
 
-const crawler = async () => {
-  logger.debug(loggerOptions, `Delaying active accounts crawler start for ${config.startDelay / 1000}s`);
-  await wait(config.startDelay);
+const crawler = async (delayedStart) => {
+  if (delayedStart) {
+    logger.debug(loggerOptions, `Delaying active accounts crawler start for ${config.startDelay / 1000}s`);
+    await wait(config.startDelay);
+  }
 
   logger.debug(loggerOptions, 'Running active accounts crawler...');
 
@@ -147,12 +149,12 @@ const crawler = async () => {
 
   logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
   setTimeout(
-    () => crawler(),
+    () => crawler(false),
     config.pollingTime,
   );
 };
 
-crawler().catch((error) => {
+crawler(true).catch((error) => {
   // eslint-disable-next-line no-console
   console.error(error);
   process.exit(-1);

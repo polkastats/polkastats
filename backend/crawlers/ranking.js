@@ -554,9 +554,11 @@ const insertEraValidatorStatsAvg = async (client, eraIndex) => {
   }
 };
 
-const crawler = async () => {
-  logger.info(loggerOptions, `Delaying ranking crawler start for ${config.startDelay / 1000}s`);
-  await wait(config.startDelay);
+const crawler = async (delayedStart) => {
+  if (delayedStart) {
+    logger.info(loggerOptions, `Delaying ranking crawler start for ${config.startDelay / 1000}s`);
+    await wait(config.startDelay);
+  }
 
   logger.info(loggerOptions, 'Starting ranking crawler');
   const startTime = new Date().getTime();
@@ -1253,12 +1255,12 @@ const crawler = async () => {
     logger.error(loggerOptions, `General error in ranking crawler: ${JSON.stringify(error)}`);
   }
   setTimeout(
-    () => crawler(),
+    () => crawler(false),
     config.pollingTime,
   );
 };
 
-crawler().catch((error) => {
+crawler(true).catch((error) => {
   // eslint-disable-next-line no-console
   console.error(error);
   process.exit(-1);
