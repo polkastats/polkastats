@@ -320,7 +320,9 @@ const insertRankingValidator = async (client, validator, blockHeight, startTime)
     $47,
     $48,
     $49
-  )`;
+  )
+  ON CONFLICT ON CONSTRAINT ranking_pkey 
+  DO NOTHING`;
   const data = [
     `${blockHeight}`,
     `${validator.rank}`,
