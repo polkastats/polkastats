@@ -301,8 +301,6 @@ export const actions = {
       }
     `
     const { data } = await client.query({ query })
-    // eslint-disable-next-line
-    console.log(data)
     const ranking = data.ranking.map((validator) => {
       return {
         active: validator.active,
@@ -360,8 +358,6 @@ export const actions = {
     })
     const dataCollectionEndTime = new Date().getTime()
     const dataCollectionTime = dataCollectionEndTime - startTime
-    // eslint-disable-next-line
-    console.log(ranking)
     // eslint-disable-next-line
     console.log(
       `data collection time: ${(dataCollectionTime / 1000).toFixed(3)}s`
