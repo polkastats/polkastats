@@ -10,7 +10,7 @@ services:
     build:
       context: ./substrate-node
       args:
-        POLKADOT_VERSION: v0.9.5
+        POLKADOT_VERSION: v0.9.7
     volumes:
       - 'substrate-data:/data'
     ports:
