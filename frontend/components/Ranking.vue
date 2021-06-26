@@ -1,33 +1,9 @@
 <template>
   <div>
-    <div v-if="loading">
+    <div v-if="loading" class="text-center">
       <Loading />
     </div>
     <div v-else class="ranking">
-      <!-- Selected validators  -->
-      <!-- <b-row v-if="config.showValSelectorInPage">
-        <b-col offset-lg="9" cols="12" lg="3">
-          <b-dropdown
-            id="selected-validators"
-            ref="selectedValidators"
-            class="selected-validators"
-            toggle-class="btn btn-block btn-selected mb-3"
-            right
-          >
-            <template #button-content>
-              <span v-if="loading">Selected</span>
-              <span v-else>
-                {{ selectedValidatorAddresses.length }}/{{
-                  network.validatorSetSize
-                }}
-                selected
-              </span>
-              <font-awesome-icon icon="hand-paper" />
-            </template>
-            <SelectedValidators />
-          </b-dropdown>
-        </b-col>
-      </b-row> -->
       <!-- Exclude -->
       <div class="widget mb-4">
         <div class="row">
@@ -82,62 +58,6 @@
           </p>
         </b-collapse>
       </div>
-      <!-- Customize VRC score -->
-      <!-- <MetricWeights /> -->
-      <!-- Auto-Filter -->
-      <!-- <div class="widget mb-4">
-        <div class="row mb-2">
-          <div class="col-10">
-            <h5 class="widget-title">
-              <nuxt-link
-                v-b-tooltip.hover
-                to="/help#auto-filter"
-                title="Auto-filter of quantitatively dominated validators. Explanation: A validator X is dominated by another validator Y if all Y’s quantitatively metrics are at least equally good and at least one metric is strictly better"
-              >
-                <font-awesome-icon
-                  icon="question-circle"
-                  class="d-inline-block"
-                  style="font-size: 1rem"
-                />
-              </nuxt-link>
-              Auto-Filter validators
-            </h5>
-          </div>
-          <div class="col-2 text-right">
-            <span
-              v-b-toggle.auto-filter-collapse
-              class="m-1"
-              style="z-index: 100"
-            >
-              <font-awesome-icon
-                icon="chevron-up"
-                class="when-open"
-                style="z-index: 100"
-              />
-              <font-awesome-icon
-                icon="chevron-down"
-                class="when-closed"
-                style="z-index: 100"
-              />
-            </span>
-          </div>
-        </div>
-        <b-collapse id="auto-filter-collapse" visible>
-          <div class="text-center mt-0 mb-4">
-            <b-form-checkbox
-              switch
-              size="lg"
-              class="xl-switch"
-              :checked="autoFilter"
-              @change="toggleAutoFilter()"
-            />
-            <p class="text-center mt-4">
-              Your custom metric weights will be taken into account to filter
-              out validators
-            </p>
-          </div>
-        </b-collapse>
-      </div> -->
       <!-- Filter -->
       <b-row>
         <b-col cols="12">
