@@ -2,31 +2,27 @@
   <div>
     <section>
       <b-container class="block-page main py-5">
-        <Block :block-number="blockNumber" />
+        <Block v-if="blockNumber" :block-number="blockNumber" />
       </b-container>
     </section>
   </div>
 </template>
 <script>
+import { gql } from 'graphql-tag'
 import Block from '@/components/Block.vue'
-
 export default {
   components: {
     Block,
   },
   data() {
     return {
-      loading: true,
+      blockNumber: null,
       blockHash: this.$route.params.hash,
-      blockNumber: this.$route.query.blockNumber,
-      parsedBlock: undefined,
-      parsedExtrinsics: [],
-      parsedEvents: [],
     }
   },
   head() {
     return {
-      title: 'PolkaStats NG block explorer',
+      title: 'PolkaStats block explorer',
       meta: [
         {
           hid: 'description',
@@ -39,6 +35,29 @@ export default {
   watch: {
     $route() {
       this.blockHash = this.$route.params.hash
+    },
+  },
+  apollo: {
+    $subscribe: {
+      block: {
+        query: gql`
+          subscription block($block_hash: String!) {
+            block(where: { block_hash: { _eq: $block_hash } }) {
+              block_number
+            }
+          }
+        `,
+        variables() {
+          return {
+            block_hash: this.blockHash,
+          }
+        },
+        result({ data }) {
+          if (data.block[0]) {
+            this.blockNumber = '' + data.block[0].block_number
+          }
+        },
+      },
     },
   },
 }

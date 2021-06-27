@@ -87,7 +87,7 @@ export default {
         `,
         variables() {
           return {
-            block_number: this.$route.query.blockNumber,
+            block_number: this.blockNumber,
           }
         },
         result({ data }) {
