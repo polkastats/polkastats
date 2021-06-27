@@ -297,14 +297,9 @@
       "state_root": "State root",
       "spec_name": "Nombre de espec.",
       "spec_version": "Version de espec.",
-      "current_session_index": "Índice de sesión actual",
-      "session_length": "Longitud de la sesión",
-      "session_per_era": "Sesión por era",
-      "session_progress": "Progreso de la sesión",
-      "current_era_index": "Era",
-      "era_length": "Longitud era",
-      "era_progress": "Progreso Era",
-      "system_events": "Eventos de sistema",
+      "current_index": "Sesión",
+      "active_era": "Era",
+      "events": "Eventos",
       "extrinsics": "Extrinsics",
       "section": "Sección",
       "method": "Método",
@@ -325,20 +320,6 @@
   },
   "extrinsic": {
     "extrinsic_details": "Detalles del extrinsic"
-  },
-  "contract": {
-    "signer": "Firmante",
-    "value": "Valor",
-    "gas_limit": "Límite de gas",
-    "storage_limit": "Límite de almacenamiento",
-    "bytecode": "Bytecode",
-    "verified": "¿Verificado?",
-    "abi": "ABI",
-    "compiler_version": "Versión del compilador",
-    "optimization": "¿Optimización activada?",
-    "runs": "Runs (optimización)",
-    "target": "EVM target (optimización)",
-    "license": "Licencia open source"
   },
   "validator": {
     "previous_validator": "Validador previo:",
@@ -378,6 +359,8 @@
     "produced_blocks": "bloques producidos",
     "status": "Status",
     "date_time": "Día y hora",
-    "charts": "Gráficas"
+    "charts": "Gráficas",
+    "stash": "Stash",
+    "controller": "Controlador"
   }
 }

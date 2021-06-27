@@ -297,14 +297,9 @@
       "state_root": "State root",
       "spec_name": "Spec name",
       "spec_version": "Spec version",
-      "current_session_index": "Current session index",
-      "session_length": "Session length",
-      "session_per_era": "Session per era",
-      "session_progress": "Session progress",
-      "current_era_index": "Era index",
-      "era_length": "Era length",
-      "era_progress": "Era progress",
-      "system_events": "System events",
+      "current_index": "Session",
+      "active_era": "Era",
+      "events": "Events",
       "extrinsics": "Extrinsics",
       "section": "Section",
       "method": "Method",
@@ -325,20 +320,6 @@
     },
     "extrinsic": {
       "extrinsic_details": "Extrinsic details"
-    },
-    "contract": {
-      "signer": "Signer",
-      "value": "Value",
-      "gas_limit": "Gas limit",
-      "storage_limit": "Storage limit",
-      "bytecode": "Bytecode",
-      "verified": "Verified",
-      "abi": "ABI",
-      "compiler_version": "Compiler version",
-      "optimization": "Optimization enabled",
-      "runs": "Runs (optimization)",
-      "target": "EVM target (optimization)",
-      "license": "Open source license"
     },
     "validator": {
       "previous_validator": "Previous validator: ",
@@ -378,7 +359,9 @@
       "status": "Status",
       "date_time": "Date and Time",
       "charts": "Charts",
-      "produced_blocks": "Produced blocks"
+      "produced_blocks": "Produced blocks",
+      "stash": "Stash",
+      "controller": "Controller"
     }
   }
 }

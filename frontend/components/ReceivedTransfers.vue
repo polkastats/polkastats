@@ -75,7 +75,7 @@
               {{ formatAmount(data.item.amount) }}
             </p>
           </template>
-          <!-- <template #cell(success)="data">
+          <template #cell(success)="data">
             <p class="mb-0">
               <font-awesome-icon
                 v-if="data.item.success"
@@ -84,7 +84,7 @@
               />
               <font-awesome-icon v-else icon="times" class="text-danger" />
             </p>
-          </template> -->
+          </template>
         </b-table>
         <div class="mt-4 d-flex">
           <b-pagination
@@ -97,6 +97,7 @@
             <b-button
               v-for="(item, index) in tableOptions"
               :key="index"
+              variant="primary2"
               @click="handleNumFields(item)"
             >
               {{ item }}
@@ -169,11 +170,11 @@ export default {
           label: 'Amount',
           sortable: true,
         },
-        // {
-        //   key: 'success',
-        //   label: 'Success',
-        //   sortable: true,
-        // },
+        {
+          key: 'success',
+          label: 'Success',
+          sortable: true,
+        },
       ],
     }
   },
@@ -221,6 +222,7 @@ export default {
               from: JSON.parse(event.data)[0],
               to: this.accountId,
               amount: JSON.parse(event.data)[2],
+              success: true,
             }
           })
           this.totalRows = this.transfers.length

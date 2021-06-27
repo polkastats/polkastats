@@ -108,6 +108,7 @@
             <b-button
               v-for="(item, index) in tableOptions"
               :key="index"
+              variant="primary2"
               @click="handleNumFields(item)"
             >
               {{ item }}

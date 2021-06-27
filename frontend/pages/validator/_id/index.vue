@@ -69,71 +69,82 @@
           </a>
         </div>
       </div>
-
       <b-card class="mb-4">
+        <div v-if="validator.stashAddress" class="row">
+          <div class="col-md-3 mb-1">
+            <strong>{{ $t('details.validator.stash') }}</strong>
+          </div>
+          <div class="col-md-9 mb-1 fee">
+            <Identicon :address="validator.stashAddress" :size="20" />
+            <nuxt-link :to="`/account/${validator.stashAddress}`">
+              {{ shortAddress(validator.stashAddress) }}
+            </nuxt-link>
+          </div>
+        </div>
+        <div v-if="validator.controllerAddress" class="row">
+          <div class="col-md-3 mb-1">
+            <strong>{{ $t('details.validator.controller') }}</strong>
+          </div>
+          <div class="col-md-9 mb-1 fee">
+            <Identicon :address="validator.controllerAddress" :size="20" />
+            <nuxt-link :to="`/account/${validator.controllerAddress}`">
+              {{ shortAddress(validator.controllerAddress) }}
+            </nuxt-link>
+          </div>
+        </div>
         <!-- identity start -->
-        <div v-if="validator.identity.display">
-          <div v-if="validator.identity.display" class="row">
-            <div class="col-md-3 mb-1">
-              <strong>{{ $t('details.validator.name') }}</strong>
-            </div>
-            <div class="col-md-9 mb-1 fee">
-              {{ validator.identity.display }}
-            </div>
+        <div v-if="validator.identity.email" class="row">
+          <div class="col-md-3 mb-2">
+            <strong>{{ $t('details.validator.email') }}</strong>
           </div>
-          <div v-if="validator.identity.email" class="row">
-            <div class="col-md-3 mb-2">
-              <strong>{{ $t('details.validator.email') }}</strong>
-            </div>
-            <div class="col-md-9 mb-2 fee">
-              <a :href="`mailto:${validator.identity.email}`" target="_blank">
-                {{ validator.identity.email }}
-              </a>
-            </div>
+          <div class="col-md-9 mb-2 fee">
+            <a :href="`mailto:${validator.identity.email}`" target="_blank">
+              {{ validator.identity.email }}
+            </a>
           </div>
-          <div v-if="validator.identity.legal" class="row">
-            <div class="col-md-3 mb-2">
-              <strong>{{ $t('details.validator.legal') }}</strong>
-            </div>
-            <div class="col-md-9 mb-2 fee">
-              {{ validator.identity.legal }}
-            </div>
+        </div>
+        <div v-if="validator.identity.legal" class="row">
+          <div class="col-md-3 mb-2">
+            <strong>{{ $t('details.validator.legal') }}</strong>
           </div>
-          <div v-if="validator.identity.riot" class="row">
-            <div class="col-md-3 mb-2">
-              <strong>{{ $t('details.validator.riot') }}</strong>
-            </div>
-            <div class="col-md-9 mb-2 fee">
-              <a
-                :href="`https://riot.im/app/#/user/${validator.identity.riot}`"
-                target="_blank"
-              >
-                {{ validator.identity.riot }}
-              </a>
-            </div>
+          <div class="col-md-9 mb-2 fee">
+            {{ validator.identity.legal }}
           </div>
-          <div v-if="validator.identity.twitter" class="row">
-            <div class="col-md-3 mb-2">
-              <strong>Twitter</strong>
-            </div>
-            <div class="col-md-9 mb-2 fee">
-              <a
-                :href="`https://twitter.com/${validator.identity.twitter}`"
-                target="_blank"
-              >
-                {{ validator.identity.twitter }}
-              </a>
-            </div>
+        </div>
+        <div v-if="validator.identity.riot" class="row">
+          <div class="col-md-3 mb-2">
+            <strong>{{ $t('details.validator.riot') }}</strong>
           </div>
-          <div v-if="validator.identity.web" class="row">
-            <div class="col-md-3 mb-2">
-              <strong>Web</strong>
-            </div>
-            <div class="col-md-9 mb-2 fee">
-              <a :href="validator.identity.web" target="_blank">
-                {{ validator.identity.web }}
-              </a>
-            </div>
+          <div class="col-md-9 mb-2 fee">
+            <a
+              :href="`https://riot.im/app/#/user/${validator.identity.riot}`"
+              target="_blank"
+            >
+              {{ validator.identity.riot }}
+            </a>
+          </div>
+        </div>
+        <div v-if="validator.identity.twitter" class="row">
+          <div class="col-md-3 mb-2">
+            <strong>Twitter</strong>
+          </div>
+          <div class="col-md-9 mb-2 fee">
+            <a
+              :href="`https://twitter.com/${validator.identity.twitter}`"
+              target="_blank"
+            >
+              {{ validator.identity.twitter }}
+            </a>
+          </div>
+        </div>
+        <div v-if="validator.identity.web" class="row">
+          <div class="col-md-3 mb-2">
+            <strong>Web</strong>
+          </div>
+          <div class="col-md-9 mb-2 fee">
+            <a :href="validator.identity.web" target="_blank">
+              {{ validator.identity.web }}
+            </a>
           </div>
         </div>
         <!-- identity end -->

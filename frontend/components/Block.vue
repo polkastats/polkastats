@@ -102,6 +102,20 @@
                   <p class="mb-0">{{ parsedBlock.state_root }}</p>
                 </td>
               </tr>
+
+              <tr>
+                <td>{{ $t('details.block.currrent_index') }}</td>
+                <td class="text-right">
+                  <p class="mb-0">{{ parsedBlock.current_index }}</p>
+                </td>
+              </tr>
+              <tr>
+                <td>{{ $t('details.block.active_era') }}</td>
+                <td class="text-right">
+                  <p class="mb-0">{{ parsedBlock.active_era }}</p>
+                </td>
+              </tr>
+
               <tr>
                 <td>{{ $t('details.block.spec_name') }}</td>
                 <td class="text-right">
@@ -125,7 +139,7 @@
             </b-tab>
             <b-tab>
               <template #title>
-                <h5>{{ $t('details.block.system_events') }}</h5>
+                <h5>{{ $t('details.block.events') }}</h5>
               </template>
               <BlockEvents :block-number="blockNumber" />
             </b-tab>
@@ -180,6 +194,8 @@ export default {
               extrinsics_root
               parent_hash
               state_root
+              current_index
+              active_era
               spec_name
               spec_version
               timestamp
