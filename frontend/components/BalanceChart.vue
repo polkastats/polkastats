@@ -1,13 +1,14 @@
 <template>
-  <LineChart :data="chartData" :options="chartOptions" :height="200" />
+  <!-- <LineChart :data="chartData" :options="chartOptions" :height="200" /> -->
+  <div>{{ balanceChanges }}</div>
 </template>
 <script>
-import LineChart from '@/components/charts/LineChart.js'
+// import LineChart from '@/components/charts/LineChart.js'
 import { gql } from 'graphql-tag'
 export default {
-  components: {
-    LineChart,
-  },
+  // components: {
+  //   LineChart,
+  // },
   props: {
     accountId: {
       type: String,
@@ -62,6 +63,15 @@ export default {
     }
   },
   computed: {
+    balanceChanges() {
+      const balanceChanges = this.rewards
+        .concat(this.slashes)
+        .concat(this.sentTx)
+        .concat(this.receivedTx)
+      // eslint-disable-next-line no-console
+      console.log(balanceChanges)
+      return balanceChanges || []
+    },
     chartData() {
       return {
         // eslint-disable-next-line camelcase
@@ -112,12 +122,11 @@ export default {
             return {
               block_number: event.block_number,
               timestamp: event.timestamp,
-              timeago: event.timestamp,
               amount: JSON.parse(event.data)[1],
             }
           })
           // eslint-disable-next-line no-console
-          console.log('rewards:', this.rewards)
+          // console.log('rewards:', this.rewards)
         },
       },
       slashes: {
@@ -152,12 +161,11 @@ export default {
             return {
               block_number: event.block_number,
               timestamp: event.timestamp,
-              timeago: event.timestamp,
               amount: JSON.parse(event.data)[1],
             }
           })
           // eslint-disable-next-line no-console
-          console.log('slashes:', this.slashes)
+          // console.log('slashes:', this.slashes)
         },
       },
       sentTx: {
@@ -169,13 +177,12 @@ export default {
                 section: { _eq: "balances" }
                 method: { _like: "transfer%" }
                 signer: { _eq: $signer }
+                success: { _eq: true }
               }
             ) {
               block_number
-              section
-              hash
               args
-              success
+              timestamp
             }
           }
         `,
@@ -191,17 +198,12 @@ export default {
           this.sentTx = data.extrinsic.map((transfer) => {
             return {
               block_number: transfer.block_number,
-              hash: transfer.hash,
-              from: this.accountId,
-              to: JSON.parse(transfer.args)[0].id
-                ? JSON.parse(transfer.args)[0].id
-                : JSON.parse(transfer.args)[0],
+              timestamp: transfer.timestamp,
               amount: JSON.parse(transfer.args)[1],
-              success: transfer.success,
             }
           })
           // eslint-disable-next-line no-console
-          console.log('sentTx:', this.sentTx)
+          // console.log('sentTx:', this.sentTx)
         },
       },
       receivedTx: {
@@ -217,6 +219,7 @@ export default {
             ) {
               block_number
               data
+              timestamp
             }
           }
         `,
@@ -232,14 +235,12 @@ export default {
           this.receivedTx = data.event.map((event) => {
             return {
               block_number: event.block_number,
-              from: JSON.parse(event.data)[0],
-              to: this.accountId,
+              timestamp: event.timestamp,
               amount: JSON.parse(event.data)[2],
-              success: true,
             }
           })
           // eslint-disable-next-line no-console
-          console.log('receivedTx:', this.sentTx)
+          // console.log('receivedTx:', this.sentTx)
         },
       },
     },

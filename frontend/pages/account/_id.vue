@@ -210,12 +210,12 @@
                   </template>
                   <StakingSlashes :account-id="accountId" />
                 </b-tab>
-                <b-tab>
+                <!-- <b-tab>
                   <template #title>
                     <h5>Balances</h5>
                   </template>
                   <BalanceChart :account-id="accountId" />
-                </b-tab>
+                </b-tab> -->
               </b-tabs>
             </div>
           </div>
