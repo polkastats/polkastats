@@ -40,6 +40,10 @@
       "search": "Search transfer by block number, hash or source address",
       "no_transfer_found": "No transfer found"
     },
+    "staking_rewards": {
+      "search": "Search reward by block number",
+      "no_reward_found": "No reward found"
+    },
     "loading": {
       "loading_data": "Loading data, please be patient..."
     }

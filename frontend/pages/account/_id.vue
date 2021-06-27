@@ -198,6 +198,12 @@
                   </template>
                   <ReceivedTransfers :account-id="accountId" />
                 </b-tab>
+                <b-tab>
+                  <template #title>
+                    <h5>Staking rewards</h5>
+                  </template>
+                  <StakingRewards :account-id="accountId" />
+                </b-tab>
               </b-tabs>
             </div>
           </div>
@@ -213,6 +219,7 @@ import Loading from '@/components/Loading.vue'
 import Activities from '@/components/Activities.vue'
 import SentTransfers from '@/components/SentTransfers.vue'
 import ReceivedTransfers from '@/components/ReceivedTransfers.vue'
+import StakingRewards from '@/components/StakingRewards.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { network } from '@/frontend.config.js'
 
@@ -223,6 +230,7 @@ export default {
     Activities,
     SentTransfers,
     ReceivedTransfers,
+    StakingRewards,
   },
   mixins: [commonMixin],
   data() {

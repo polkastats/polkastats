@@ -124,6 +124,7 @@ services:
       BLOCK_HARVESTER_MODE: 'chunks'
       BLOCK_HARVESTER_CHUNK_SIZE: '10'
       BLOCK_HARVESTER_STATS_PRECISION: '2'
+      LOG_LEVEL: 'info'
 
 #
 # Persistent volumes

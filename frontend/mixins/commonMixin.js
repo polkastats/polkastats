@@ -25,11 +25,10 @@ export default {
         return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
       }
     },
-    formatAmount(amount) {
+    formatAmount(amount, precission = 2) {
       return `${new BigNumber(amount)
         .div(new BigNumber(10).pow(network.tokenDecimals))
-        .toFixed(2)
-        .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} ${network.tokenSymbol}`
+        .toFixed(precission)} ${network.tokenSymbol}`
     },
     capitalize(s) {
       if (typeof s !== 'string') return ''
