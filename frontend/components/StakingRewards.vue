@@ -48,6 +48,16 @@
               </nuxt-link>
             </p>
           </template>
+          <template #cell(timestamp)="data">
+            <p class="mb-0">
+              {{ getDateFromTimestamp(data.item.timestamp) }}
+            </p>
+          </template>
+          <template #cell(timeago)="data">
+            <p class="mb-0">
+              {{ fromNow(data.item.timeago) }}
+            </p>
+          </template>
           <template #cell(amount)="data">
             <p class="mb-0">
               {{ formatAmount(data.item.amount, 6) }}
@@ -116,6 +126,16 @@ export default {
           sortable: true,
         },
         {
+          key: 'timestamp',
+          label: 'Date',
+          sortable: true,
+        },
+        {
+          key: 'timeago',
+          label: 'Time ago',
+          sortable: true,
+        },
+        {
           key: 'amount',
           label: 'Reward',
           sortable: true,
@@ -165,6 +185,8 @@ export default {
           this.stakingRewards = data.event.map((event) => {
             return {
               block_number: event.block_number,
+              timestamp: event.timestamp,
+              timeago: event.timestamp,
               amount: JSON.parse(event.data)[1],
             }
           })
