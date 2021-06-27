@@ -191,7 +191,7 @@ export default {
   },
   apollo: {
     $subscribe: {
-      extrinsic: {
+      event: {
         query: gql`
           subscription event($accountId: String!) {
             event(

@@ -69,7 +69,7 @@
             v-model="currentPage"
             :total-rows="totalRows"
             :per-page="perPage"
-            aria-controls="validators-table"
+            aria-controls="staking-rewards"
           />
           <b-button-group class="ml-2">
             <b-button
@@ -156,7 +156,7 @@ export default {
   },
   apollo: {
     $subscribe: {
-      extrinsic: {
+      event: {
         query: gql`
           subscription event($accountId: String!) {
             event(

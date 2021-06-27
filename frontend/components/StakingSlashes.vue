@@ -1,12 +1,20 @@
 <template>
-  <div class="sent-transfers">
+  <div class="staking-slashes">
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
-    <div v-else-if="transfers.length === 0" class="text-center py-4">
-      <h5>{{ $t('components.transfers.no_transfer_found') }}</h5>
+    <div v-else-if="stakingSlashes.length === 0" class="text-center py-4">
+      <h5>{{ $t('components.staking_slashes.no_slashes_found') }}</h5>
     </div>
     <div v-else>
+      <JsonCSV
+        :data="stakingSlashes"
+        class="download-csv mb-2"
+        :name="`polkastats_staking_slashes_${accountId}.csv`"
+      >
+        <font-awesome-icon icon="file-csv" />
+        {{ $t('pages.accounts.download_csv') }}
+      </JsonCSV>
       <!-- Filter -->
       <b-row style="margin-bottom: 1rem">
         <b-col cols="12">
@@ -14,18 +22,10 @@
             id="filterInput"
             v-model="filter"
             type="search"
-            :placeholder="$t('components.transfers.search')"
+            :placeholder="$t('components.staking_slashes.search')"
           />
         </b-col>
       </b-row>
-      <JsonCSV
-        :data="transfers"
-        class="download-csv mb-2"
-        :name="`polkastats_sent_transfers_${accountId}.csv`"
-      >
-        <font-awesome-icon icon="file-csv" />
-        {{ $t('pages.accounts.download_csv') }}
-      </JsonCSV>
       <div class="table-responsive">
         <b-table
           striped
@@ -33,7 +33,7 @@
           :fields="fields"
           :per-page="perPage"
           :current-page="currentPage"
-          :items="transfers"
+          :items="stakingSlashes"
           :filter="filter"
           @filtered="onFiltered"
         >
@@ -48,52 +48,19 @@
               </nuxt-link>
             </p>
           </template>
-          <template #cell(hash)="data">
+          <template #cell(timestamp)="data">
             <p class="mb-0">
-              <nuxt-link
-                v-b-tooltip.hover
-                :to="`/block?blockNumber=${data.item.block_number}`"
-                title="Check block information"
-              >
-                {{ shortHash(data.item.hash) }}
-              </nuxt-link>
+              {{ getDateFromTimestamp(data.item.timestamp) }}
             </p>
           </template>
-          <template #cell(from)="data">
+          <template #cell(timeago)="data">
             <p class="mb-0">
-              <nuxt-link
-                :to="`/account/${data.item.from}`"
-                :title="$t('pages.accounts.account_details')"
-              >
-                <Identicon :address="data.item.from" :size="20" />
-                {{ shortAddress(data.item.from) }}
-              </nuxt-link>
-            </p>
-          </template>
-          <template #cell(to)="data">
-            <p class="mb-0">
-              <nuxt-link
-                :to="`/account/${data.item.to}`"
-                :title="$t('pages.accounts.account_details')"
-              >
-                <Identicon :address="data.item.to" :size="20" />
-                {{ shortAddress(data.item.to) }}
-              </nuxt-link>
+              {{ fromNow(data.item.timeago) }}
             </p>
           </template>
           <template #cell(amount)="data">
             <p class="mb-0">
-              {{ formatAmount(data.item.amount) }}
-            </p>
-          </template>
-          <template #cell(success)="data">
-            <p class="mb-0">
-              <font-awesome-icon
-                v-if="data.item.success"
-                icon="check"
-                class="text-success"
-              />
-              <font-awesome-icon v-else icon="times" class="text-danger" />
+              {{ formatAmount(data.item.amount, 6) }}
             </p>
           </template>
         </b-table>
@@ -102,7 +69,7 @@
             v-model="currentPage"
             :total-rows="totalRows"
             :per-page="perPage"
-            aria-controls="validators-table"
+            aria-controls="staking-slashes"
           />
           <b-button-group class="ml-2">
             <b-button
@@ -124,15 +91,13 @@
 import { gql } from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
 import commonMixin from '@/mixins/commonMixin.js'
-import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import { paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
-    Identicon,
-    JsonCSV,
     Loading,
+    JsonCSV,
   },
   mixins: [commonMixin],
   props: {
@@ -144,7 +109,7 @@ export default {
   data() {
     return {
       loading: true,
-      transfers: [],
+      stakingSlashes: [],
       filter: null,
       filterOn: [],
       tableOptions: paginationOptions,
@@ -161,29 +126,18 @@ export default {
           sortable: true,
         },
         {
-          key: 'hash',
-          label: 'Hash',
-          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
+          key: 'timestamp',
+          label: 'Date',
           sortable: true,
         },
         {
-          key: 'from',
-          label: 'From',
-          sortable: true,
-        },
-        {
-          key: 'to',
-          label: 'To',
+          key: 'timeago',
+          label: 'Time ago',
           sortable: true,
         },
         {
           key: 'amount',
-          label: 'Amount',
-          sortable: true,
-        },
-        {
-          key: 'success',
-          label: 'Success',
+          label: 'Slash',
           sortable: true,
         },
       ],
@@ -194,9 +148,6 @@ export default {
       localStorage.paginationOptions = num
       this.perPage = parseInt(num)
     },
-    isFavorite(accountId) {
-      return this.favorites.includes(accountId)
-    },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length
@@ -205,47 +156,43 @@ export default {
   },
   apollo: {
     $subscribe: {
-      extrinsic: {
+      event: {
         query: gql`
-          subscription extrinsic($signer: String!) {
-            extrinsic(
+          subscription event($accountId: String!, $phase: String!) {
+            event(
               order_by: { block_number: desc }
               where: {
-                section: { _eq: "balances" }
-                method: { _like: "transfer%" }
-                signer: { _eq: $signer }
+                section: { _eq: "staking" }
+                method: { _eq: "Slash" }
+                phase: { _eq: $phase }
+                data: { _like: $accountId }
               }
             ) {
               block_number
-              section
-              hash
-              args
-              success
+              data
+              timestamp
             }
           }
         `,
         variables() {
           return {
-            signer: this.accountId,
+            accountId: `%"${this.accountId}",%`,
+            phase: `{"applyExtrinsic":0}`,
           }
         },
         skip() {
           return !this.accountId
         },
         result({ data }) {
-          this.transfers = data.extrinsic.map((transfer) => {
+          this.stakingSlashes = data.event.map((event) => {
             return {
-              block_number: transfer.block_number,
-              hash: transfer.hash,
-              from: this.accountId,
-              to: JSON.parse(transfer.args)[0].id
-                ? JSON.parse(transfer.args)[0].id
-                : JSON.parse(transfer.args)[0],
-              amount: JSON.parse(transfer.args)[1],
-              success: transfer.success,
+              block_number: event.block_number,
+              timestamp: event.timestamp,
+              timeago: event.timestamp,
+              amount: JSON.parse(event.data)[1],
             }
           })
-          this.totalRows = this.transfers.length
+          this.totalRows = this.stakingSlashes.length
           this.loading = false
         },
       },
@@ -253,12 +200,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.sent-transfers {
-  background-color: white;
-}
-.spinner {
-  color: #d3d2d2;
-}
-</style>

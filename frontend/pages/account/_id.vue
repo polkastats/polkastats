@@ -200,9 +200,21 @@
                 </b-tab>
                 <b-tab>
                   <template #title>
-                    <h5>Staking rewards</h5>
+                    <h5>Rewards</h5>
                   </template>
                   <StakingRewards :account-id="accountId" />
+                </b-tab>
+                <b-tab>
+                  <template #title>
+                    <h5>Slashes</h5>
+                  </template>
+                  <StakingSlashes :account-id="accountId" />
+                </b-tab>
+                <b-tab>
+                  <template #title>
+                    <h5>Balances</h5>
+                  </template>
+                  <BalanceChart :account-id="accountId" />
                 </b-tab>
               </b-tabs>
             </div>
@@ -220,6 +232,8 @@ import Activities from '@/components/Activities.vue'
 import SentTransfers from '@/components/SentTransfers.vue'
 import ReceivedTransfers from '@/components/ReceivedTransfers.vue'
 import StakingRewards from '@/components/StakingRewards.vue'
+import StakingSlashes from '@/components/StakingSlashes.vue'
+import BalanceChart from '@/components/BalanceChart.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { network } from '@/frontend.config.js'
 
@@ -231,6 +245,8 @@ export default {
     SentTransfers,
     ReceivedTransfers,
     StakingRewards,
+    StakingSlashes,
+    BalanceChart,
   },
   mixins: [commonMixin],
   data() {
