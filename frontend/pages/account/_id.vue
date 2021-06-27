@@ -233,7 +233,7 @@ import SentTransfers from '@/components/SentTransfers.vue'
 import ReceivedTransfers from '@/components/ReceivedTransfers.vue'
 import StakingRewards from '@/components/StakingRewards.vue'
 import StakingSlashes from '@/components/StakingSlashes.vue'
-import BalanceChart from '@/components/BalanceChart.vue'
+// import BalanceChart from '@/components/BalanceChart.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { network } from '@/frontend.config.js'
 
@@ -246,7 +246,7 @@ export default {
     ReceivedTransfers,
     StakingRewards,
     StakingSlashes,
-    BalanceChart,
+    // BalanceChart,
   },
   mixins: [commonMixin],
   data() {
