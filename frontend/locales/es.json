@@ -16,9 +16,11 @@
       "current_era": "Era actual",
       "era": "Era",
       "accounts": "Cuentas",
-      "contracts": "Contratos Inteligentes",
+      "total_staked": "Total stakeado",
       "total_issuance": "Emisión total",
-      "transfers": "Transferencias"
+      "transfers": "Transferencias",
+      "nominators": "Nominadores",
+      "validators": "Validadores"
     },
     "chain": {
       "last_block": "Último bloque",

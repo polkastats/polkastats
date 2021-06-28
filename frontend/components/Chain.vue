@@ -123,11 +123,57 @@
         </div>
       </div>
     </div>
+    <!-- new row -->
+    <div class="row">
+      <div class="col-6 col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="mb-3">{{ $t('components.network.total_staked') }}</h4>
+            <h6 class="d-inline-block">
+              {{ formatAmount(totalStaked) }}
+              ({{ formatNumber(totalStakedPercentage) }}%)
+            </h6>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="mb-3">{{ $t('components.network.current_index') }}</h4>
+            <h6 class="d-inline-block">
+              {{ formatNumber(currentIndex) }}
+            </h6>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="mb-3">{{ $t('components.network.validators') }}</h4>
+            <h6 class="d-inline-block">
+              {{ formatNumber(totalValidators) }} /
+              {{ formatNumber(totalWaiting) }}
+            </h6>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="mb-3">{{ $t('components.network.nominators') }}</h4>
+            <h6 class="d-inline-block">
+              {{ formatNumber(totalNominators) }}
+            </h6>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { gql } from 'graphql-tag'
+import BN from 'bn.js'
 import commonMixin from '../mixins/commonMixin.js'
 import { network } from '../frontend.config.js'
 
@@ -145,7 +191,22 @@ export default {
       totalAccounts: 0,
       totalIssuance: 0,
       totalTransfers: 0,
+      totalStaked: 0,
+      totalValidators: 0,
+      totalWaiting: 0,
+      totalNominators: 0,
+      minStake: 0,
     }
+  },
+  computed: {
+    totalStakedPercentage() {
+      if (this.totalStaked && this.totalIssuance) {
+        const totalIssuance = new BN(this.totalIssuance, 10)
+        const totalStaked = new BN(this.totalStaked, 10).mul(new BN('100', 10))
+        return totalStaked.div(totalIssuance).toString(10)
+      }
+      return 0
+    },
   },
   apollo: {
     $subscribe: {
@@ -199,6 +260,16 @@ export default {
             data.total.find((row) => row.name === 'transfers').count || 0
           this.totalEvents =
             data.total.find((row) => row.name === 'events').count || 0
+          this.totalValidators =
+            data.total.find((row) => row.name === 'active_validator_count')
+              .count || 0
+          this.totalWaiting =
+            data.total.find((row) => row.name === 'waiting_validator_count')
+              .count || 0
+          this.totalNominators =
+            data.total.find((row) => row.name === 'nominator_count').count || 0
+          this.minStake =
+            data.total.find((row) => row.name === 'minimum_stake').count || 0
         },
       },
       accounts: {
@@ -213,6 +284,23 @@ export default {
         `,
         result({ data }) {
           this.totalAccounts = parseInt(data.account_aggregate.aggregate.count)
+        },
+      },
+      totalStaked: {
+        query: gql`
+          subscription ranking_aggregate {
+            ranking_aggregate(where: { active: { _eq: true } }) {
+              aggregate {
+                sum {
+                  total_stake
+                }
+              }
+            }
+          }
+        `,
+        result({ data }) {
+          this.totalStaked =
+            data.ranking_aggregate.aggregate.sum.total_stake.toString()
         },
       },
     },
