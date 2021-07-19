@@ -19,7 +19,7 @@ const loggerOptions = {
 const config = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
-const chunkSize = 200;
+const { chunkSize } = config;
 
 const getAccountId = (account) => account
   .map((e) => e.args)

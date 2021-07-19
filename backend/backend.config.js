@@ -49,6 +49,7 @@ module.exports = {
       enabled: !process.env.ACTIVE_ACCOUNTS_DISABLE,
       crawler: './crawlers/activeAccounts.js',
       startDelay: parseInt(process.env.ACTIVE_ACCOUNTS_START_DELAY_MS, 10) || 60 * 1000,
+      chunkSize: parseInt(process.env.ACTIVE_ACCOUNTS_CHUNK_SIZE, 10) || 100,
       pollingTime:
         parseInt(process.env.ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10)
         || 6 * 60 * 60 * 1000, // 6 hours
