@@ -126,6 +126,9 @@ services:
       BLOCK_HARVESTER_STATS_PRECISION: '2'
       API_CUSTOM_TYPES: 'kusama_custom_types.json'
       LOG_LEVEL: 'debug'
+      BLOCK_HARVESTER_START_DELAY_MS: '10000' # 10 sec
+      RANKING_START_DELAY_MS: '900000' # 15 min
+      ACTIVE_ACCOUNTS_START_DELAY_MS: '60000' # 1 min
 
 #
 # Persistent volumes
