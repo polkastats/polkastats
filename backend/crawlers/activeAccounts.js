@@ -141,6 +141,8 @@ const crawler = async (delayedStart) => {
     );
     const chunkEndTime = new Date().getTime();
     logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) / 1000).toFixed(3)}s`);
+    // eslint-disable-next-line no-await-in-loop
+    await wait(100);
   }
 
   await api.disconnect();
