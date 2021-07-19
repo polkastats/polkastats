@@ -182,7 +182,7 @@ module.exports = {
     const { method } = extrinsic.toHuman().method;
     const args = JSON.stringify(extrinsic.args);
     const hash = extrinsic.hash.toHex();
-    const doc = extrinsic.meta.documentation.toString().replace(/'/g, "''");
+    const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
     const success = module.exports.getExtrinsicSuccess(index, blockEvents);
 
     // Fees
