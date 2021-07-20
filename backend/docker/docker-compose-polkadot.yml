@@ -10,7 +10,7 @@ services:
     build:
       context: ./substrate-node
       args:
-        POLKADOT_VERSION: v0.9.8
+        POLKADOT_VERSION: v0.9.7
     volumes:
       - 'substrate-data:/data'
     ports:
@@ -126,16 +126,16 @@ services:
       #
       #   Available modes:
       #
-      #   chunks: Process batchs of 'BLOCK_HARVESTER_CHUNK_SIZE' blocks in parallel (faster)
+      #   chunks:     Process batchs of 'BLOCK_HARVESTER_CHUNK_SIZE' blocks in parallel (faster)
       #   sequential: Slower but less resource-intensive
       #
       BLOCK_HARVESTER_MODE: 'chunks'
       BLOCK_HARVESTER_CHUNK_SIZE: '10'
       BLOCK_HARVESTER_STATS_PRECISION: '2'
       LOG_LEVEL: 'debug'
-      BLOCK_HARVESTER_START_DELAY_MS: '10000' # 10 sec
+      BLOCK_HARVESTER_START_DELAY_MS: '60000' # 1 min
       RANKING_START_DELAY_MS: '1800000' # 30 min
-      ACTIVE_ACCOUNTS_START_DELAY_MS: '60000' # 1 min
+      ACTIVE_ACCOUNTS_START_DELAY_MS: '300000' # 5 min
       ACTIVE_ACCOUNTS_CHUNK_SIZE: '50'
 
 #

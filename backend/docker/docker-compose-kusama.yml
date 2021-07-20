@@ -118,6 +118,7 @@ services:
       NODE_OPTIONS: '--max-old-space-size=8192'
       WS_PROVIDER_URL: 'ws://substrate-node:9944'
       SUBSTRATE_NETWORK: 'kusama'
+      API_CUSTOM_TYPES: 'kusama_custom_types.json'
       # RANKING_DISABLE: 'true'
       # ACTIVE_ACCOUNTS_DISABLE: 'true'
       # BLOCK_LISTENER_DISABLE: 'true'
@@ -126,18 +127,17 @@ services:
       #
       #   Available modes:
       #
-      #   chunks: Process batchs of 'BLOCK_HARVESTER_CHUNK_SIZE' blocks in parallel (faster)
+      #   chunks:     Process batchs of 'BLOCK_HARVESTER_CHUNK_SIZE' blocks in parallel (faster)
       #   sequential: Slower but less resource-intensive
       #
       BLOCK_HARVESTER_MODE: 'chunks'
       BLOCK_HARVESTER_CHUNK_SIZE: '10'
       BLOCK_HARVESTER_STATS_PRECISION: '2'
-      API_CUSTOM_TYPES: 'kusama_custom_types.json'
       LOG_LEVEL: 'debug'
-      BLOCK_HARVESTER_START_DELAY_MS: '10000' # 10 sec
+      BLOCK_HARVESTER_START_DELAY_MS: '60000' # 1 min
       RANKING_START_DELAY_MS: '1800000' # 30 min
-      ACTIVE_ACCOUNTS_START_DELAY_MS: '60000' # 1 min
-      ACTIVE_ACCOUNTS_CHUNK_SIZE: '100'
+      ACTIVE_ACCOUNTS_START_DELAY_MS: '300000' # 5 min
+      ACTIVE_ACCOUNTS_CHUNK_SIZE: '50'
 
 #
 # Persistent volumes
