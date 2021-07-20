@@ -203,6 +203,7 @@ const crawler = async () => {
         await updateFinalized(client, finalizedBlock, loggerOptions);
 
         // Update totals
+        // Commented as now we are using stored procedures for this
         // await updateTotals(client, loggerOptions);
 
         const endTime = new Date().getTime();
