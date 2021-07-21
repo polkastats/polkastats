@@ -588,7 +588,7 @@ const crawler = async (delayedStart) => {
   const participateInGovernance = [];
   let validators = [];
   let intentions = [];
-  let erasExposure = [];
+  // let erasExposure = [];
   let maxPerformance = 0;
   let minPerformance = 0;
 
@@ -618,18 +618,18 @@ const crawler = async (delayedStart) => {
     const eraIndexes = erasHistoric.slice(
       Math.max(erasHistoric.length - config.historySize, 0),
     );
+    const { maxNominatorRewardedPerValidator } = api.consts.staking;
 
     logger.debug(loggerOptions, 'Step #2');
-    const { maxNominatorRewardedPerValidator } = api.consts.staking;
     const [
       { block },
       validatorAddresses,
       waitingInfo,
       nominators,
       councilVotes,
-      erasPoints,
-      erasPreferences,
-      erasSlashes,
+      // erasPoints,
+      // erasPreferences,
+      // erasSlashes,
       proposals,
       referendums,
     ] = await Promise.all([
@@ -639,22 +639,38 @@ const crawler = async (delayedStart) => {
       api.query.staking.nominators.entries(),
       api.derive.council.votes(),
       // eslint-disable-next-line no-underscore-dangle
-      api.derive.staking._erasPoints(eraIndexes, withActive),
+      // api.derive.staking._erasPoints(eraIndexes, withActive),
       // eslint-disable-next-line no-underscore-dangle
-      api.derive.staking._erasPrefs(eraIndexes, withActive),
+      // api.derive.staking._erasPrefs(eraIndexes, withActive),
       // eslint-disable-next-line no-underscore-dangle
-      api.derive.staking._erasSlashes(eraIndexes, withActive),
+      // api.derive.staking._erasSlashes(eraIndexes, withActive),
       api.derive.democracy.proposals(),
       api.derive.democracy.referendums(),
     ]);
 
     logger.debug(loggerOptions, 'Step #3');
-    // eslint-disable-next-line no-restricted-syntax
-    for (const eraIndex of eraIndexes) {
-      // eslint-disable-next-line no-await-in-loop
-      const eraExposure = await api.derive.staking.eraExposure(eraIndex);
-      erasExposure = erasExposure.concat(eraExposure);
-    }
+    const [
+      erasPoints,
+      erasPreferences,
+      erasSlashes,
+      erasExposure,
+    ] = await Promise.all([
+      // eslint-disable-next-line no-underscore-dangle
+      api.derive.staking._erasPoints(eraIndexes, withActive),
+      // eslint-disable-next-line no-underscore-dangle
+      api.derive.staking._erasPrefs(eraIndexes, withActive),
+      // eslint-disable-next-line no-underscore-dangle
+      api.derive.staking._erasSlashes(eraIndexes, withActive),
+      // eslint-disable-next-line no-underscore-dangle
+      api.derive.staking._erasExposure(eraIndexes, withActive),
+    ]);
+
+    // // eslint-disable-next-line no-restricted-syntax
+    // for (const eraIndex of eraIndexes) {
+    //   // eslint-disable-next-line no-await-in-loop
+    //   const eraExposure = await api.derive.staking.eraExposure(eraIndex);
+    //   erasExposure = erasExposure.concat(eraExposure);
+    // }
 
     logger.debug(loggerOptions, 'Step #4');
     validators = await Promise.all(
