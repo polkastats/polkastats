@@ -609,15 +609,17 @@ const crawler = async (delayedStart) => {
     logger.debug(loggerOptions, 'Fetching chain data ...');
     const withActive = false;
 
+    logger.debug(loggerOptions, 'Step #1');
     const [erasHistoric, chainCurrentEra, chainActiveEra] = await Promise.all([
       api.derive.staking.erasHistoric(withActive),
       api.query.staking.currentEra(),
       api.query.staking.activeEra(),
     ]);
-
     const eraIndexes = erasHistoric.slice(
       Math.max(erasHistoric.length - config.historySize, 0),
     );
+
+    logger.debug(loggerOptions, 'Step #2');
     const { maxNominatorRewardedPerValidator } = api.consts.staking;
     const [
       { block },
@@ -645,17 +647,23 @@ const crawler = async (delayedStart) => {
       api.derive.democracy.proposals(),
       api.derive.democracy.referendums(),
     ]);
+
+    logger.debug(loggerOptions, 'Step #3');
     // eslint-disable-next-line no-restricted-syntax
     for (const eraIndex of eraIndexes) {
       // eslint-disable-next-line no-await-in-loop
       const eraExposure = await api.derive.staking.eraExposure(eraIndex);
       erasExposure = erasExposure.concat(eraExposure);
     }
+
+    logger.debug(loggerOptions, 'Step #4');
     validators = await Promise.all(
       validatorAddresses.map(
         (authorityId) => api.derive.staking.query(authorityId, stakingQueryFlags),
       ),
     );
+
+    logger.debug(loggerOptions, 'Step #5');
     validators = await Promise.all(
       validators.map(
         (validator) => api.derive.accounts.info(validator.accountId).then(({ identity }) => ({
@@ -665,6 +673,8 @@ const crawler = async (delayedStart) => {
         })),
       ),
     );
+
+    logger.debug(loggerOptions, 'Step #6');
     intentions = await Promise.all(
       waitingInfo.info.map(
         (intention) => api.derive.accounts.info(intention.accountId).then(({ identity }) => ({
