@@ -602,7 +602,7 @@ const crawler = async (delayedStart) => {
     // thousand validators program data
     logger.debug(loggerOptions, 'Fetching thousand validator program validators ...');
     const thousandValidators = await getThousandValidators();
-    logger.debug(loggerOptions, `Got info from ${thousandValidators.length} validators of thousand validator program!`);
+    logger.debug(loggerOptions, `Got info of ${thousandValidators.length} validators from Thousand Validators program API`);
 
     // chain data
     logger.debug(loggerOptions, 'Fetching chain data ...');
