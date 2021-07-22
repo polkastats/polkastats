@@ -1280,7 +1280,11 @@ const crawler = async (delayedStart) => {
     }
 
     logger.debug(loggerOptions, 'Disconnecting from API');
-    await api.disconnect().catch((error) => logger.error(loggerOptions, `Disconnect error: ${JSON.stringify(error)}`));
+    await api.disconnect().catch((error) => logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`));
+
+    logger.debug(loggerOptions, 'Disconnecting from DB');
+    await client.end().catch((error) => logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`));
+
     const endTime = new Date().getTime();
     const dataProcessingTime = endTime - dataCollectionEndTime;
     logger.info(loggerOptions, `Added ${ranking.length} validators in ${((dataCollectionTime + dataProcessingTime) / 1000).toFixed(3)}s`);
