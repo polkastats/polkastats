@@ -337,7 +337,10 @@ const crawler = async (delayedStart) => {
     }
   }
   logger.debug(loggerOptions, 'Disconnecting from API');
-  await api.disconnect().catch((error) => logger.error(loggerOptions, `Disconnect error: ${JSON.stringify(error)}`));
+  await api.disconnect().catch((error) => logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`));
+  logger.debug(loggerOptions, 'Disconnecting from DB');
+  await client.end().catch((error) => logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`));
+
   // Log execution time
   const endTime = new Date().getTime();
   logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);

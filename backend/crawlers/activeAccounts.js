@@ -143,7 +143,12 @@ const crawler = async (delayedStart) => {
     logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) / 1000).toFixed(3)}s`);
   }
 
-  await api.disconnect();
+  logger.debug(loggerOptions, 'Disconnecting from API');
+  await api.disconnect().catch((error) => logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`));
+
+  logger.debug(loggerOptions, 'Disconnecting from DB');
+  await client.end().catch((error) => logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`));
+
   const endTime = new Date().getTime();
   logger.info(loggerOptions, `Processed ${accountIds.length} active accounts in ${((endTime - startTime) / 1000).toFixed(0)}s`);
 
