@@ -45,9 +45,10 @@ services:
     # OS Type: linux
     # DB Type: web
     # Total Memory (RAM): 128 GB
-    # CPUs num: 24
+    # CPUs num: 12
     # Connections num: 200
     # Data Storage: ssd
+
     command:
       - "postgres"
       - "-c"
@@ -75,11 +76,11 @@ services:
       - "-c"
       - "max_wal_size=4GB"
       - "-c"
-      - "max_worker_processes=24"
+      - "max_worker_processes=12"
       - "-c"
       - "max_parallel_workers_per_gather=4"
       - "-c"
-      - "max_parallel_workers=24"
+      - "max_parallel_workers=12"
       - "-c"
       - "max_parallel_maintenance_workers=4"
 
