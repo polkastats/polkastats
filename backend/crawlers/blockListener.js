@@ -11,7 +11,6 @@ const {
   processEvents,
   processLogs,
   getDisplayName,
-  updateTotals,
   updateFinalized,
   updateAccountsInfo,
   logHarvestError,
@@ -110,7 +109,6 @@ const crawler = async () => {
         const totalExtrinsics = block.extrinsics.length;
 
         // Store new block
-        logger.debug(loggerOptions, `Adding block #${blockNumber} (${shortHash(blockHash.toString())})`);
         const timestamp = Math.floor(parseInt(timestampMs.toString(), 10) / 1000);
 
         sql = `INSERT INTO block (
@@ -202,12 +200,8 @@ const crawler = async () => {
         // Update finalized blocks
         await updateFinalized(client, finalizedBlock, loggerOptions);
 
-        // Update totals
-        // Commented as now we are using stored procedures for this
-        // await updateTotals(client, loggerOptions);
-
         const endTime = new Date().getTime();
-        logger.info(loggerOptions, `Block #${blockNumber} processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+        logger.info(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
       }
     } catch (error) {
       logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error.stack}`);

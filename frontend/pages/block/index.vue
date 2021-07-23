@@ -16,11 +16,7 @@ export default {
   },
   data() {
     return {
-      loading: true,
       blockNumber: this.$route.query.blockNumber,
-      parsedBlock: undefined,
-      parsedExtrinsics: [],
-      parsedEvents: [],
     }
   },
   head() {

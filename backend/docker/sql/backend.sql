@@ -219,15 +219,15 @@ INSERT INTO total (name, count) VALUES
   ('minimum_stake', 0);
 
 CREATE INDEX IF NOT EXISTS block_finalized_idx ON block (finalized);
-
 CREATE INDEX IF NOT EXISTS block_block_number_idx ON block (block_number);
-CREATE INDEX IF NOT EXISTS extrinsic_block_number_idx ON extrinsic (block_number);
-CREATE INDEX IF NOT EXISTS event_block_number_idx ON event (block_number);
+CREATE INDEX IF NOT EXISTS block_block_hash_idx ON block (block_hash);
 
+CREATE INDEX IF NOT EXISTS extrinsic_block_number_idx ON extrinsic (block_number);
 CREATE INDEX IF NOT EXISTS extrinsic_section_idx ON extrinsic (section);
 CREATE INDEX IF NOT EXISTS extrinsic_method_idx ON extrinsic (method);
 CREATE INDEX IF NOT EXISTS extrinsic_signer_idx ON extrinsic (signer);
 
+CREATE INDEX IF NOT EXISTS event_block_number_idx ON event (block_number);
 CREATE INDEX IF NOT EXISTS event_section_idx ON event (section);
 CREATE INDEX IF NOT EXISTS event_method_idx ON event (method);
 
