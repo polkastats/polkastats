@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS block (
   spec_version INT NOT NULL,
   total_events INT NOT NULL,
   total_extrinsics INT NOT NULL,
-  total_issuance TEXT NOT NULL, -- overflows BIGINT
+  total_issuance NUMERIC(40,0) NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number )
 );
