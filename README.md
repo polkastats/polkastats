@@ -1,11 +1,11 @@
 # PolkaStats
 
-Polkastats is a block explorer for [Polkadot](https://polkadot.network/) and [Kusama](https://kusama.network/) and other blockchains based on [Substrate](https://substrate.dev/) framework.
+Polkastats is a block explorer for [Polkadot](https://polkadot.network/), [Kusama](https://kusama.network/) and other blockchains based on [Substrate](https://substrate.dev/) framework.
 
-Check it out live versions for:
+Check it out live versions:
 
-- Kusama: [dev.kusama.polkastats.io](https://dev.kusama.polkastats.io)
-- Polkadot: [dev.polkadot.polkastats.io](https://dev.polkadot.polkastats.io)
+- Polkadot: [polkadot.polkastats.io](https://polkastats.io)
+- Kusama: [kusama.polkastats.io](https://kusama.polkastats.io)
 
 ## Dependencies
 
@@ -48,7 +48,11 @@ yarn
 
 ### Backend
 
-Before build dockers be sure to edit `HASURA_GRAPHQL_ADMIN_SECRET` environmment variable in the proper docker-compose file `backend/docker/docker-compose-polkadot.yml` or `backend/docker/docker-compose-kusama.yml`.
+Before build dockers you need to create a `.env` file in `backend/docker` folder with your `HASURA_GRAPHQL_ADMIN_SECRET` environmment variable, just like:
+
+```
+HASURA_GRAPHQL_ADMIN_SECRET=your_hasura_password
+```
 
 Polkadot:
 
@@ -73,7 +77,7 @@ That will build and start all the required dockers:
 
 After that you need to access to Hasura console at http://server_ip_address:8082 and:
 
-- Login as admin using the password you previously set in `HASURA_GRAPHQL_ADMIN_SECRET`
+- Login as admin using the password you previously set in the `.env` file
 - Track all tables
 - For all tables go to Permissions and add a new ROLE named 'public' ony with SELECT permissions.
 

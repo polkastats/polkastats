@@ -54,11 +54,11 @@
             />
             {{ network.name }}
           </template>
-          <b-dropdown-item href="https://dev.kusama.polkastats.io">
+          <b-dropdown-item href="https://kusama.polkastats.io">
             <img class="network-logo" src="/img/networks/icons/kusama.svg" />
             KUSAMA
           </b-dropdown-item>
-          <b-dropdown-item href="https://dev.polkadot.polkastats.io">
+          <b-dropdown-item href="https://polkastats.io">
             <img class="network-logo" src="/img/networks/icons/polkadot.svg" />
             POLKADOT
           </b-dropdown-item>
