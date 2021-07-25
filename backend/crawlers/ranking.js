@@ -626,9 +626,6 @@ const crawler = async (delayedStart) => {
       waitingInfo,
       nominators,
       councilVotes,
-      // erasPoints,
-      // erasPreferences,
-      // erasSlashes,
       proposals,
       referendums,
     ] = await Promise.all([
@@ -637,12 +634,6 @@ const crawler = async (delayedStart) => {
       api.derive.staking.waitingInfo(stakingQueryFlags),
       api.query.staking.nominators.entries(),
       api.derive.council.votes(),
-      // eslint-disable-next-line no-underscore-dangle
-      // api.derive.staking._erasPoints(eraIndexes, withActive),
-      // eslint-disable-next-line no-underscore-dangle
-      // api.derive.staking._erasPrefs(eraIndexes, withActive),
-      // eslint-disable-next-line no-underscore-dangle
-      // api.derive.staking._erasSlashes(eraIndexes, withActive),
       api.derive.democracy.proposals(),
       api.derive.democracy.referendums(),
     ]);
@@ -734,6 +725,7 @@ const crawler = async (delayedStart) => {
     const activeEra = JSON.parse(JSON.stringify(chainActiveEra)).index;
 
     // minimun stake
+    logger.debug(loggerOptions, 'Finding minimum stake');
     const nominatorStakes = [];
     // eslint-disable-next-line
     for (const validator of validators){
@@ -802,17 +794,6 @@ const crawler = async (delayedStart) => {
     referendums.forEach(({ votes }) => {
       votes.forEach(({ accountId }) => participateInGovernance.push(accountId.toString()));
     });
-
-    // Remove duplicate accountIds: we filter intentions that exist in validator list
-    // const accountIds = validators.map((v) => v.accountId);
-    // const preFilterIntentions = intentions.length;
-    // intentions = intentions
-    //   .filter(({ accountId }) => !accountIds.includes(accountId));
-    // const postFilterIntentions = intentions.length;
-    // logger.debug(
-    //   loggerOptions,
-    //   `Removed ${postFilterIntentions - preFilterIntentions} duplicated intentions`,
-    // );
 
     // Merge validators and intentions
     validators = validators.concat(intentions);
