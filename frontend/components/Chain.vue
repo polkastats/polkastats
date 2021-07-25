@@ -201,7 +201,7 @@ export default {
   computed: {
     totalStakedPercentage() {
       if (this.totalStaked && this.totalIssuance) {
-        const totalIssuance = new BN(this.totalIssuance, 10)
+        const totalIssuance = new BN(this.totalIssuance.toString(), 10)
         const totalStaked = new BN(this.totalStaked, 10).mul(new BN('100', 10))
         return totalStaked.div(totalIssuance).toString(10)
       }
