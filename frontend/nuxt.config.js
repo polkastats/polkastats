@@ -59,6 +59,8 @@ export default {
     'nuxt-clipboard2',
     // https://www.npmjs.com/package/cookie-universal-nuxt
     ['cookie-universal-nuxt', { alias: 'cookies' }],
+    // https://github.com/nuxt-community/redirect-module
+    '@nuxtjs/redirect-module',
   ],
 
   // Module configurations
@@ -98,6 +100,7 @@ export default {
   googleAnalytics: {
     id: network.googleAnalytics,
   },
+  redirect: [{ from: '^/intention/(.*)$', to: '/validator/$1' }],
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
