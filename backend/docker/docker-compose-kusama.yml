@@ -140,6 +140,23 @@ services:
       ACTIVE_ACCOUNTS_START_DELAY_MS: '300000' # 5 min
       ACTIVE_ACCOUNTS_CHUNK_SIZE: '100'
 
+  #
+  # API
+  #
+  api:
+    image: api:latest
+    ports:
+      - '8000:8000'
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    depends_on:
+      - 'postgres'
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - NODE_PORT=8000
+
 #
 # Persistent volumes
 #

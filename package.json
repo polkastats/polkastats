@@ -20,7 +20,7 @@
     "url": "https://github.com/Colm3na/polkastats-ng/issues"
   },
   "homepage": "https://github.com/Colm3na/polkastats-ng#readme",
-  "workspaces": ["frontend", "backend"],
+  "workspaces": ["frontend", "backend", "api"],
   "scripts": {}
  }
  
