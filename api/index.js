@@ -55,7 +55,7 @@ app.get('/api/v1/block', async (req, res) => {
       const data = dbres.rows.map(row => {
         return {
           attributes: {
-            id: paseInt(row.block_number),
+            id: parseInt(row.block_number),
             hash: row.block_hash,
             datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
           }
