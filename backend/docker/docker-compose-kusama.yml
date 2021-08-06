@@ -148,7 +148,7 @@ services:
     ports:
       - '8000:8000'
     build:
-      context: ../api
+      context: ../../api
       dockerfile: Dockerfile
     depends_on:
       - 'postgres'
