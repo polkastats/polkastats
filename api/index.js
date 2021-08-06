@@ -25,16 +25,7 @@ const getPool = async () => {
   await pool.connect();
   return pool;
 }
-
 const app = express();
-
-// Enable file upload
-app.use(fileUpload({
-  createParentPath: true,
-  limits: { 
-    fileSize: 1 * 1024 * 1024 * 1024 // 1MB max file(s) size
-  },
-}));
 
 // Add other middleware
 app.use(cors());
