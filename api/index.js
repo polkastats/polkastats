@@ -47,6 +47,7 @@ app.get('/api/v1/block', async (req, res) => {
         block_hash,
         timestamp
       FROM block
+      WHERE finalized IS TRUE
       ORDER BY block_number DESC
       LIMIT $1
     ;`;
