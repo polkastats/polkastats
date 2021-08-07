@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const crypto = require('crypto');
 const fetch = require('node-fetch');
-const { Pool } = require('pg');
+const { Pool, Client } = require('pg');
 const axios = require('axios');
 const moment = require('moment');
 
@@ -25,6 +25,14 @@ const getPool = async () => {
   await pool.connect();
   return pool;
 }
+
+const getClient = async () => {
+  const client = new Client(postgresConnParams);
+  await client.connect();
+  return client;
+}
+
+
 const app = express();
 
 // Add other middleware
@@ -40,7 +48,7 @@ app.get('/api/v1/block', async (req, res) => {
   try {
     const pageSize = req.query.page.size;
     const pageOffset = 0;
-    const pool = await getPool();
+    const client = await getClient();
     const query = `
       SELECT
         block_number,
@@ -51,7 +59,7 @@ app.get('/api/v1/block', async (req, res) => {
       ORDER BY block_number DESC
       LIMIT $1
     ;`;
-    const dbres = await pool.query(query, [pageSize]);
+    const dbres = await client.query(query, [pageSize]);
     if (dbres.rows.length > 0) {
       const data = dbres.rows.map(row => {
         return {
@@ -73,6 +81,7 @@ app.get('/api/v1/block', async (req, res) => {
         message: 'There was an error processing your request'
       });
     }
+    await client.end();
   } catch (error) {
     res.send({
       status: false,
