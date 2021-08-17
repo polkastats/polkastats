@@ -117,12 +117,10 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     if (dbres.rows.length > 0) {
       const data = dbres.rows.map(row => {
         return {
-          attributes: {
-            block_number: parseInt(row.block_number),
-            extrinsic_hash: row.hash,
-            args: row.args,
-            datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
-          }
+          block_number: parseInt(row.block_number),
+          extrinsic_hash: row.hash,
+          args: row.args,
+          datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
         }
       });
       res.send({
@@ -144,6 +142,63 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     });
   }
 });
+
+//
+// Council Bat-Signal App API
+//
+// Get council.Proposed events in the last 24 hours
+//
+//
+// Proposed(AccountId, ProposalIndex, Hash, MemberCount)# 
+// interface: api.events.council.Proposed.is 
+// summary: A motion (given hash) has been proposed (by given account) with a threshold (given MemberCount). [account, proposal_index, proposal_hash, threshold]
+//
+
+app.get('/api/v1/batsignal/council-events', async (req, res) => {
+  try {
+    const timestamp = Math.floor((Date.now() / 1000) - 86400); // last 24h
+    const client = await getClient();
+    const query = `
+      SELECT
+        block_number,
+        data,
+        timestamp
+      FROM event
+      WHERE
+        section = 'council' AND
+        method = 'Proposed' AND
+        timestamp >= $1
+      ORDER BY block_number DESC
+    ;`;
+    const dbres = await client.query(query, [timestamp]);
+    if (dbres.rows.length > 0) {
+      const data = dbres.rows.map(row => {
+        return {
+          block_number: parseInt(row.block_number),
+          data: row.data,
+          datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
+        }
+      });
+      res.send({
+        status: true,
+        message: 'Request was successful',
+        data,
+      });
+    } else {
+      res.send({
+        status: false,
+        message: 'There was an error processing your request'
+      });
+    }
+    await client.end();
+  } catch (error) {
+    res.send({
+      status: false,
+      message: 'There was an error processing your request'
+    });
+  }
+});
+
 
 // Start app
 app.listen(port, () => 
