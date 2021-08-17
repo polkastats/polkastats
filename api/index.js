@@ -41,6 +41,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
 
+// from https://stackoverflow.com/questions/60504945/javascript-encode-decode-utf8-to-hex-and-hex-to-utf8
+const hexToUtf8 = (s) =>
+{
+  return decodeURIComponent(
+     s.replace(/\s+/g, '') // remove spaces
+      .replace(/[0-9a-f]{2}/g, '%$&') // add '%' before each 2 characters
+  );
+}
+
 //
 // Example query: /api/v1/block?page[size]=5
 //
@@ -120,6 +129,7 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
           block_number: parseInt(row.block_number),
           extrinsic_hash: row.hash,
           args: row.args,
+          decoded_remark: hexToUtf8(JSON.stringify(row.args[0])),
           datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
         }
       });
