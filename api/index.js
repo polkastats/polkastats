@@ -90,6 +90,61 @@ app.get('/api/v1/block', async (req, res) => {
   }
 });
 
+//
+// Council Bat-Signal App API
+//
+// Get sytem.remarks extrinsics in the last 24 hours
+//
+app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
+  try {
+    const timestamp = (new Date.now() / 1000) - 86400; // last 24h
+    const client = await getClient();
+    const query = `
+      SELECT
+        block_number,
+        extrinsic_hash,
+        args,
+        timestamp
+      FROM extrinsic
+      WHERE
+        section = 'system' AND
+        method = 'remark' AND
+        success IS TRUE AND
+        timestamp >= $1
+      ORDER BY block_number DESC
+    ;`;
+    const dbres = await client.query(query, [timestamp]);
+    if (dbres.rows.length > 0) {
+      const data = dbres.rows.map(row => {
+        return {
+          attributes: {
+            block_number: parseInt(row.block_number),
+            extrinsic_hash: row.extrinsic_hash,
+            args: row.extrinsic_hash,
+            datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
+          }
+        }
+      });
+      res.send({
+        status: true,
+        message: 'Request was successful',
+        data,
+      });
+    } else {
+      res.send({
+        status: false,
+        message: 'There was an error processing your request'
+      });
+    }
+    await client.end();
+  } catch (error) {
+    res.send({
+      status: false,
+      message: 'There was an error processing your request'
+    });
+  }
+});
+
 // Start app
 app.listen(port, () => 
   console.log(`PolkaStats API is listening on port ${port}.`)
