@@ -102,7 +102,7 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     const query = `
       SELECT
         block_number,
-        extrinsic_hash,
+        hash,
         args,
         timestamp
       FROM extrinsic
