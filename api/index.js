@@ -97,7 +97,7 @@ app.get('/api/v1/block', async (req, res) => {
 //
 app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
   try {
-    const timestamp = (Date.now() / 1000) - 86400; // last 24h
+    const timestamp = Math.floor((Date.now() / 1000) - 86400); // last 24h
     const client = await getClient();
     const query = `
       SELECT
