@@ -130,8 +130,9 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
       });
     } else {
       res.send({
-        status: false,
-        message: 'There was an error processing your request'
+        status: true,
+        message: 'Request was successful',
+        data: [],
       });
     }
     await client.end();
@@ -147,7 +148,6 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
 // Council Bat-Signal App API
 //
 // Get council.Proposed events in the last 24 hours
-//
 //
 // Proposed(AccountId, ProposalIndex, Hash, MemberCount)# 
 // interface: api.events.council.Proposed.is 
@@ -186,8 +186,9 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
       });
     } else {
       res.send({
-        status: false,
-        message: 'There was an error processing your request'
+        status: true,
+        message: 'Request was successful',
+        data: [],
       });
     }
     await client.end();
