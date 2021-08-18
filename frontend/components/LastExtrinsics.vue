@@ -6,8 +6,8 @@
           <p class="mb-0">
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/block?blockNumber=${data.item.block_number}`"
-              title="Check block information"
+              :to="`/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`"
+              title="Check extrinsic information"
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.extrinsic_index

@@ -104,6 +104,6 @@ td {
   word-break: break-all;
 }
 td:first-child {
-  width: 10%;
+  width: 12%;
 }
 </style>

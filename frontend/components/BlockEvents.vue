@@ -4,6 +4,7 @@
       <table class="table table-striped">
         <thead>
           <tr>
+            <th>{{ $t('details.block.event') }}</th>
             <th>{{ $t('details.block.section') }}</th>
             <th>{{ $t('details.block.method') }}</th>
             <th>{{ $t('details.block.phase') }}</th>
@@ -12,6 +13,17 @@
         </thead>
         <tbody>
           <tr v-for="event in parsedEvents" :key="event.event_index">
+            <td>
+              <p class="mb-0">
+                <nuxt-link
+                  v-b-tooltip.hover
+                  :to="`/event/${event.block_number}/${event.event_index}`"
+                  title="Check event information"
+                >
+                  #{{ event.block_number }}-{{ event.event_index }}
+                </nuxt-link>
+              </p>
+            </td>
             <td>{{ event.section }}</td>
             <td>{{ event.method }}</td>
             <td>{{ event.phase }}</td>
@@ -101,5 +113,8 @@ export default {
 <style scoped>
 td {
   word-break: break-all;
+}
+td:first-child {
+  width: 12%;
 }
 </style>

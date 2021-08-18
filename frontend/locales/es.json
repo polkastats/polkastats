@@ -321,7 +321,8 @@
       "logs": "Logs",
       "index": "Índice",
       "engine": "Motor",
-      "total_issuance": "Emisión total"
+      "total_issuance": "Emisión total",
+      "event": "Evento"
     }
   },
   "extrinsic": {
