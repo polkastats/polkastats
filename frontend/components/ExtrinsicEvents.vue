@@ -1,14 +1,12 @@
 <template>
-  <div class="last-events">
+  <div class="extrinsic-events">
     <h4 class="my-4">Triggered events</h4>
     <div class="table-responsive">
       <b-table striped hover :fields="fields" :items="events">
         <template #cell(block_number)="data">
           <p class="mb-0">
             <nuxt-link
-              v-b-tooltip.hover
               :to="`/event/${data.item.block_number}/${data.item.event_index}`"
-              title="Check event information"
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.event_index
@@ -108,14 +106,14 @@ export default {
 </script>
 
 <style>
-.last-events .table th,
-.last-events .table td {
+.extrinsic-events .table th,
+.extrinsic-events .table td {
   padding: 0.45rem;
 }
-.last-events .table thead th {
+.extrinsic-events .table thead th {
   border-bottom: 0;
 }
-.last-events .identicon {
+.extrinsic-events .identicon {
   display: inline-block;
   margin: 0 0.2rem 0 0;
   cursor: copy;

@@ -18,8 +18,8 @@
             </div>
           </div>
           <extrinsic-events
-            :block-number="blockNumber"
-            :extrinsic-index="extrinsicIndex"
+            :block-number="parseInt(blockNumber)"
+            :extrinsic-index="parseInt(extrinsicIndex)"
           />
         </template>
       </b-container>
@@ -30,7 +30,7 @@
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { gql } from 'graphql-tag'
-import ExtrinsicEvents from '../../../components/ExtrinsicEvents.vue'
+import ExtrinsicEvents from '@/components/ExtrinsicEvents.vue'
 
 export default {
   components: {
