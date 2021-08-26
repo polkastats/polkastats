@@ -4,12 +4,8 @@
       <b-table striped hover :fields="fields" :items="transfers">
         <template #cell(block_number)="data">
           <p class="mb-0">
-            <nuxt-link
-              v-b-tooltip.hover
-              :to="`/block?blockNumber=${data.item.block_number}`"
-              title="Check block information"
-            >
-              #{{ formatNumber(data.item.block_number) }}
+            <nuxt-link :to="`/transfer/${data.item.hash}`">
+              {{ shortHash(data.item.hash) }}
             </nuxt-link>
           </p>
         </template>
@@ -19,7 +15,11 @@
               :to="`/account/${data.item.from}`"
               :title="$t('pages.accounts.account_details')"
             >
-              <Identicon :address="data.item.from" :size="20" />
+              <Identicon
+                :key="data.item.from"
+                :address="data.item.from"
+                :size="20"
+              />
               {{ shortAddress(data.item.from) }}
             </nuxt-link>
           </p>
@@ -31,7 +31,11 @@
                 :to="`/account/${data.item.to}`"
                 :title="$t('pages.accounts.account_details')"
               >
-                <Identicon :address="data.item.to" :size="20" />
+                <Identicon
+                  :key="data.item.to"
+                  :address="data.item.to"
+                  :size="20"
+                />
                 {{ shortAddress(data.item.to) }}
               </nuxt-link>
             </p>
@@ -53,7 +57,7 @@
 </template>
 
 <script>
-import { gql } from 'graphql-tag'
+import gql from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
 import { network } from '../frontend.config'
