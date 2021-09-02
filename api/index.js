@@ -112,6 +112,7 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
       SELECT
         block_number,
         hash,
+        signer,
         args,
         timestamp
       FROM extrinsic
@@ -128,7 +129,7 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
         return {
           block_number: parseInt(row.block_number),
           extrinsic_hash: row.hash,
-          // args: row.args,
+          signer: row.signer,
           remark: hexToUtf8(JSON.parse(row.args)[0]),
           datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
         }
