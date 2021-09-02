@@ -102,11 +102,11 @@ app.get('/api/v1/block', async (req, res) => {
 //
 // Council Bat-Signal App API
 //
-// Get sytem.remarks extrinsics in the last 24 hours
+// Get sytem.remarks extrinsics in the last 8 hours
 //
 app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
   try {
-    const timestamp = Math.floor((Date.now() / 1000) - 86400); // last 24h
+    const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
     const client = await getClient();
     const query = `
       SELECT
@@ -157,7 +157,7 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
 //
 // Council Bat-Signal App API
 //
-// Get council.Proposed events in the last 24 hours
+// Get council.Proposed events in the last 8 hours
 //
 // Proposed(AccountId, ProposalIndex, Hash, MemberCount)# 
 // interface: api.events.council.Proposed.is 
@@ -166,11 +166,13 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
 
 app.get('/api/v1/batsignal/council-events', async (req, res) => {
   try {
-    const timestamp = Math.floor((Date.now() / 1000) - 86400); // last 24h
+    const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
     const client = await getClient();
     const query = `
       SELECT
         block_number,
+        section,
+        method,
         data,
         timestamp
       FROM event
@@ -185,6 +187,8 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
       const data = dbres.rows.map(row => {
         return {
           block_number: parseInt(row.block_number),
+          section: row.section,
+          method: row.method,
           data: row.data,
           datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
         }
