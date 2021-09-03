@@ -25,6 +25,7 @@ services:
   postgres:
     image: postgres
     restart: always
+    shm_size: 1gb
     volumes:
       - 'db-data:/var/lib/postgresql/data'
       - './sql/backend.sql:/docker-entrypoint-initdb.d/backend.sql'
