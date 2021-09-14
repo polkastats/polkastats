@@ -4,7 +4,7 @@
       <Loading />
     </div>
     <div v-else-if="stakingSlashes.length === 0" class="text-center py-4">
-      <h5>{{ $t('components.staking_slashes.no_slashes_found') }}</h5>
+      <h5>{{ $t('components.staking_slashes.no_slash_found') }}</h5>
     </div>
     <div v-else>
       <JsonCSV
