@@ -4,7 +4,7 @@
       <Loading />
     </div>
     <div v-else-if="stakingRewards.length === 0" class="text-center py-4">
-      <h5>{{ $t('components.staking_rewards.no_rewards_found') }}</h5>
+      <h5>{{ $t('components.staking_rewards.no_reward_found') }}</h5>
     </div>
     <div v-else>
       <JsonCSV
