@@ -46,6 +46,10 @@
       "search": "Search reward by block number",
       "no_reward_found": "No reward found"
     },
+    "staking_slashes": {
+      "search": "Search slash by block number",
+      "no_reward_found": "No slash found"
+    },
     "loading": {
       "loading_data": "Loading data, please be patient..."
     }
