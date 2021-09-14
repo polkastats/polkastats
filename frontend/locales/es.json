@@ -48,7 +48,7 @@
     },
     "staking_slashes": {
       "search": "Buscar slash por número de bloque",
-      "no_reward_found": "No se han encontrado slashes"
+      "no_slash_found": "No se han encontrado slashes"
     },    
     "loading": {
       "loading_data": "Cargando datos, por favor sea paciente..."
