@@ -98,6 +98,7 @@ const harvestBlock = async (api, client, blockNumber) => {
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
     // Get election status
     // const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
+    // ToDo fix with CBI-1451
     const isElection = false;
 
     // Store block extrinsics (async)

@@ -103,6 +103,7 @@ const crawler = async () => {
 
         // Get election status
         // const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
+        // ToDo fix with CBI-1451
         const isElection = false;
 
         // Totals
