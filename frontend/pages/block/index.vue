@@ -21,12 +21,12 @@ export default {
   },
   head() {
     return {
-      title: 'Cere Network Stats',
+      title: 'Cerebellum Network Stats',
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: 'Cere Network Stats',
+          content: 'Cerebellum Network Stats',
         },
       ],
     }
