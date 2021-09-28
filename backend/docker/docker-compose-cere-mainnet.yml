@@ -102,7 +102,7 @@ services:
       NODE_OPTIONS: '--max-old-space-size=8192'
       WS_PROVIDER_URL: 'wss://archive.mainnet.cere.network:9945'
       SUBSTRATE_NETWORK: 'cere'
-      API_CUSTOM_TYPES: 'kusama_custom_types.json'
+      API_CUSTOM_TYPES: 'cere_custom_types.json'
       # RANKING_DISABLE: 'true'
       # ACTIVE_ACCOUNTS_DISABLE: 'true'
       # BLOCK_LISTENER_DISABLE: 'true'
