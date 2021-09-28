@@ -43,12 +43,12 @@ export default {
   },
   head() {
     return {
-      title: 'PolkaStats NG block explorer',
+      title: 'Cerebellum Network Stats',
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: 'PolkaStats block explorer',
+          content: 'Cerebellum Network Stats',
         },
       ],
     }
