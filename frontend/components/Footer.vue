@@ -2,14 +2,11 @@
   <div id="footer" class="container-fluid footer mt-4">
     <footer class="text-muted">
       <div class="container">
-        <div class="row mt-4 pt-5">
-          <div class="col-12 text-center">
-            <img
-              class="img-fluid"
-              src="/img/polkastats_logo_light@2x.png"
-              style="max-width: 300px"
-            />
+        <div class="d-flex align-items-center justify-content-center mt-4 pt-5">
+          <div class="">
+            <img src="/img/cere-logo.png" class="cere-logo" />
           </div>
+          <div class="cere-title">Cerebellum Network</div>
         </div>
         <div class="row mt-4 pt-5">
           <div
@@ -29,21 +26,26 @@
             <hr />
             <ul class="list-unstyled social text-center">
               <li class="mr-2" data-testid="footer-twitter">
-                <a target="_blank" href="https://twitter.com/polkastats">
+                <a target="_blank" href="https://twitter.com/cerenetwork">
                   <font-awesome-icon :icon="['fab', 'twitter']" />
-                  @PolkaStats
+                  @cerenetwork
+                </a>
+              </li>
+              <li class="mr-2" data-testid="footer-twitter">
+                <a target="_blank" href="https://t.me/cerenetwork_official">
+                  <font-awesome-icon :icon="['fab', 'telegram']" />
+                  Cere Network
                 </a>
               </li>
               <li class="mr-2" data-testid="footer-pgp">
-                <a target="_blank" href="https://keybase.io/encrypt#polkastats">
-                  <font-awesome-icon :icon="['fab', 'keybase']" />
-                  PGP: 14C5 91D0 8ABA 03B7
+                <a target="_blank" href="https://discord.gg/A5pCWaYQ92">
+                  <font-awesome-icon :icon="['fab', 'discord']" />
+                  Cere Network
                 </a>
               </li>
               <li data-testid="footer-email">
-                <a target="_blank" href="mailto:polkastats@protonmail.com"
-                  ><font-awesome-icon icon="envelope" />
-                  polkastats@protonmail.com</a
+                <a target="_blank" href="mailto:team@cere.network"
+                  ><font-awesome-icon icon="envelope" /> team@cere.network</a
                 >
               </li>
             </ul>
@@ -59,24 +61,11 @@
             "
             data-testid="footer-polkadot"
           >
-            <h3 class="mb-3">PolkaStats</h3>
+            <h3 class="mb-3">Cerestats</h3>
             <hr />
-            <nuxt-link
-              to="/team"
-              active-class="nuxt-link-exact-active"
-              class="nav-link"
-              data-testid="aboutUs"
+            <a class="nav-link" target="_blank" href="https://cere.network/">
+              {{ $t('layout.default.about_us') }}</a
             >
-              {{ $t('layout.default.about_us') }}
-            </nuxt-link>
-            <nuxt-link
-              to="/support-us"
-              active-class="nuxt-link-exact-active"
-              class="nav-link"
-              data-testid="supportPolkastats"
-            >
-              {{ $t('layout.default.support_polkastats') }}
-            </nuxt-link>
           </div>
           <div
             class="
@@ -93,11 +82,11 @@
               {{ $t('layout.default.built_with') }}
             </h3>
             <hr />
-            <a href="https://web3.foundation/grants/" target="_blank">
+            <a href="https://polkastats.io/" target="_blank">
               <img
-                src="/img/grant_badge.png"
+                src="/img/polkastats_logo_light@2x.png"
                 class="grant-badge"
-                alt="Web3 foundation grants program"
+                alt="Polkastats"
               />
             </a>
           </div>
@@ -106,20 +95,8 @@
           class="small pt-4 text-center text-white"
           data-testid="footer-bottom"
         >
-          <nuxt-link to="/team">
-            {{ $t('layout.default.made_by') }}
-          </nuxt-link>
-          <span class="mx-2">|</span> {{ $t('layout.default.built_with') }}
           <a
-            href="https://basicattentiontoken.org/"
-            target="_blank"
-            data-testid="bat"
-            >Basic Atttention Token
-            <img src="/img/brave/logo-full-color.png" class="img-fluid bat"
-          /></a>
-          <span class="mx-2">|</span>
-          <a
-            href="https://github.com/Colm3na/polkastats-ng"
+            href="https://github.com/Cerebellum-Network/cerestats"
             aria-label="View source on GitHub"
             title="View source code on GitHub"
             target="_blank"
@@ -135,3 +112,16 @@
 <script>
 export default {}
 </script>
+
+<style>
+.cere-logo {
+  max-width: 70px;
+  max-height: auto;
+}
+.cere-title {
+  font-size: 30px;
+}
+.grant-badge {
+  max-width: 150px;
+}
+</style>

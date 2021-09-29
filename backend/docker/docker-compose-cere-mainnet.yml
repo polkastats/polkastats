@@ -1,0 +1,146 @@
+version: '3.7'
+
+services:
+  #
+  # SQL data base
+  #
+  postgres:
+    image: postgres
+    restart: always
+    shm_size: 1gb
+    volumes:
+      - 'db-data:/var/lib/postgresql/data'
+      - './sql/backend.sql:/docker-entrypoint-initdb.d/backend.sql'
+    environment:
+      POSTGRES_USER: 'polkastats'
+      POSTGRES_PASSWORD: 'polkastats'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U polkastats']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    #
+    # https://pgtune.leopard.in.ua/#/
+    #
+    # Optimized for:
+    #
+    # DB Version: 13
+    # OS Type: linux
+    # DB Type: web
+    # Total Memory (RAM): 128 GB
+    # CPUs num: 12
+    # Connections num: 200
+    # Data Storage: ssd
+
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=32GB"
+      - "-c"
+      - "effective_cache_size=96GB"
+      - "-c"
+      - "maintenance_work_mem=2GB"
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+      - "-c"
+      - "wal_buffers=16MB"
+      - "-c"
+      - "default_statistics_target=100"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "effective_io_concurrency=200"
+      - "-c"
+      - "work_mem=41943kB"
+      - "-c"
+      - "min_wal_size=1GB"
+      - "-c"
+      - "max_wal_size=4GB"
+      - "-c"
+      - "max_worker_processes=12"
+      - "-c"
+      - "max_parallel_workers_per_gather=4"
+      - "-c"
+      - "max_parallel_workers=12"
+      - "-c"
+      - "max_parallel_maintenance_workers=4"
+
+  #
+  # Hasura
+  #
+  graphql-engine:
+    image: hasura/graphql-engine:v1.3.3
+    ports:
+      - '8082:8080'
+    depends_on:
+      - 'postgres'
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: 'postgres://polkastats:polkastats@postgres:5432/polkastats'
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to 'false' to disable console
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: 'startup, http-log, webhook-log, websocket-log, query-log'
+      HASURA_GRAPHQL_CORS_DOMAIN: http://localhost:3000
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
+      HASURA_GRAPHQL_ADMIN_SECRET: my_admin_secret_key
+
+  #
+  # Block crawler
+  #
+  crawler:
+    image: crawler:latest
+    build:
+      context: ../
+      dockerfile: ./docker/crawler/Dockerfile
+    depends_on:
+      - 'postgres'
+    restart: always
+    environment:
+      NODE_ENV: 'production'
+      NODE_OPTIONS: '--max-old-space-size=8192'
+      WS_PROVIDER_URL: 'wss://archive.mainnet.cere.network:9945'
+      SUBSTRATE_NETWORK: 'cere'
+      API_CUSTOM_TYPES: 'cere_custom_types.json'
+      # RANKING_DISABLE: 'true'
+      # ACTIVE_ACCOUNTS_DISABLE: 'true'
+      # BLOCK_LISTENER_DISABLE: 'true'
+      # BLOCK_HARVESTER_DISABLE: 'true'
+      NODE_PG_FORCE_NATIVE: 'true'
+      #
+      #   Available modes:
+      #
+      #   chunks:     Process batchs of 'BLOCK_HARVESTER_CHUNK_SIZE' blocks in parallel (faster)
+      #   sequential: Slower but less resource-intensive
+      #
+      BLOCK_HARVESTER_MODE: 'chunks'
+      BLOCK_HARVESTER_CHUNK_SIZE: '10'
+      BLOCK_HARVESTER_STATS_PRECISION: '2'
+      LOG_LEVEL: 'debug'
+      BLOCK_HARVESTER_START_DELAY_MS: '60000' # 1 min
+      RANKING_START_DELAY_MS: '1800000' # 30 min
+      ACTIVE_ACCOUNTS_START_DELAY_MS: '300000' # 5 min
+      ACTIVE_ACCOUNTS_CHUNK_SIZE: '100'
+
+  #
+  # API
+  #
+  api:
+    image: api:latest
+    ports:
+      - '8000:8000'
+    build:
+      context: ../../api
+      dockerfile: Dockerfile
+    depends_on:
+      - 'postgres'
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - NODE_PORT=8000
+
+#
+# Persistent volumes
+#
+volumes:
+  db-data: {}
