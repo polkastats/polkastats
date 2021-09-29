@@ -93,16 +93,18 @@ const crawler = async () => {
         const [
           blockAuthorIdentity,
           blockEvents,
-          chainElectionStatus,
+          // chainElectionStatus,
         ] = await Promise.all([
           api.derive.accounts.info(blockAuthor),
           api.query.system.events.at(blockHash),
-          api.query.electionProviderMultiPhase.currentPhase(),
+          // api.query.electionProviderMultiPhase.currentPhase(),
         ]);
         const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
 
         // Get election status
-        const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
+        // const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
+        // ToDo fix with CBI-1451
+        const isElection = false;
 
         // Totals
         const totalEvents = blockEvents.length || 0;
