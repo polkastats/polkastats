@@ -1,3 +1,4 @@
+// @ts-check
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -7,24 +8,25 @@ const fetch = require('node-fetch');
 const { Pool, Client } = require('pg');
 const axios = require('axios');
 const moment = require('moment');
+const { ApiPromise, WsProvider } = require('@polkadot/api');
 
 const postgresConnParams = {
   user: process.env.POSTGRES_USER || 'polkastats',
   host: process.env.POSTGRES_HOST || 'postgres',
   database: process.env.POSTGRES_DATABASE || 'polkastats',
   password: process.env.POSTGRES_PASSWORD || 'polkastats',
-  port: process.env.POSTGRES_PORT || 5432,
+  port: parseInt(process.env.POSTGRES_PORT) || 5432,
 };
-
-// Http port
 const port = process.env.PORT || 8000;
+const wsProviderUrl = 'ws://substrate-node:9944';
+const polkassemblyGraphQL = 'https://kusama.polkassembly.io/v1/graphql';
+const app = express();
 
-// Connnect to db
-const getPool = async () => {
-  const pool = new Pool(postgresConnParams);
-  await pool.connect();
-  return pool;
-}
+// middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(morgan('dev'));
 
 const getClient = async () => {
   const client = new Client(postgresConnParams);
@@ -32,14 +34,17 @@ const getClient = async () => {
   return client;
 }
 
+const getPolkadotAPI = async () => {
+  console.log(`Connecting to ${wsProviderUrl}`);
+  const provider = new WsProvider(wsProviderUrl);
+  const api = await ApiPromise.create({ provider });
+  await api.isReady;
+  return api;
+}
 
-const app = express();
+const getCouncilAndTCAddresses() {
 
-// Add other middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(morgan('dev'));
+}
 
 // from https://stackoverflow.com/questions/60504945/javascript-encode-decode-utf8-to-hex-and-hex-to-utf8
 const hexToUtf8 = (s) =>
@@ -55,8 +60,8 @@ const hexToUtf8 = (s) =>
 //
 app.get('/api/v1/block', async (req, res) => {
   try {
+    // @ts-ignore
     const pageSize = req.query.page.size;
-    const pageOffset = 0;
     const client = await getClient();
     const query = `
       SELECT
@@ -106,6 +111,12 @@ app.get('/api/v1/block', async (req, res) => {
 //
 app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
   try {
+
+    const api = await getPolkadotAPI();
+    const councilMembers = await api.query.council.members();
+    const technicalCommitteeMembers = await api.query.technicalCommittee.members();
+    const councilAndTCAddresses = councilMembers.concat(technicalCommitteeMembers);
+
     const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
     const client = await getClient();
     const query = `
@@ -120,10 +131,11 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
         section = 'system' AND
         method = 'remark' AND
         success IS TRUE AND
-        timestamp >= $1
+        timestamp >= $1 AND
+        signer IN $2
       ORDER BY block_number DESC
     ;`;
-    const dbres = await client.query(query, [timestamp]);
+    const dbres = await client.query(query, [timestamp, councilAndTCAddresses]);
     if (dbres.rows.length > 0) {
       const data = dbres.rows.map(row => {
         return {
@@ -185,15 +197,46 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
     ;`;
     const dbres = await client.query(query, [timestamp]);
     if (dbres.rows.length > 0) {
-      const data = dbres.rows.map(row => {
-        return {
+      const data = [];
+      for (const row of dbres.rows) {
+        const proposal_id = JSON.parse(row.data)[1];
+
+        const graphQlQuery = `
+          query {
+            posts(where: {onchain_link: {onchain_motion_id: {_eq: ${proposal_id}}}}) {
+              title
+              content
+              onchain_link {
+                proposer_address
+                onchain_motion_id
+              }
+            }
+          }`;
+        let title = ''
+        let content = ''
+        // @ts-ignore
+        fetch(polkassemblyGraphQL, {
+          method: 'POST',
+          body: JSON.stringify({graphQlQuery}),
+        }).then(res => res.text())
+          .then(body => {
+            title = JSON.parse(body).data.posts[0].title;
+            content = JSON.parse(body).data.posts[0].content;              
+          })
+          .catch(error => console.error(error));
+        data.push({
           block_number: parseInt(row.block_number),
           section: row.section,
           method: row.method,
           data: row.data,
+          proposal_id,
+          title,
+          content,
+          polkassembly_link: `https://kusama.polkassembly.io/motion/${proposal_id}`,
+          timestamp: row.timestamp,
           datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
-        }
-      });
+        });
+      }
       res.send({
         status: true,
         message: 'Request was successful',
