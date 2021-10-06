@@ -176,6 +176,7 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
 
 app.get('/api/v1/batsignal/council-events', async (req, res) => {
   try {
+    // const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
     const timestamp = Math.floor((Date.now() / 1000) - 30 * 24 * 60 * 60); // last 30d
     const client = await getClient();
     const query = `
@@ -217,6 +218,7 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
           body: JSON.stringify({graphQlQuery}),
         }).then(res => res.text())
           .then(body => {
+            console.log(body);
             title = JSON.parse(body).data.posts[0].title;
             content = JSON.parse(body).data.posts[0].content;              
           })
