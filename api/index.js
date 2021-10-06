@@ -113,9 +113,6 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     const technicalCommitteeMembers = await api.query.technicalCommittee.members();
     const councilAndTCAddresses = councilMembers.concat(technicalCommitteeMembers);
 
-    console.log(councilAndTCAddresses);
-    console.log(councilAndTCAddresses.map(address => `'${address}'`).join(','));
-
     const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
     const client = await getClient();
     const query = `
@@ -131,10 +128,10 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
         method = 'remark' AND
         success IS TRUE AND
         timestamp >= $1 AND
-        signer IN $2
+        signer ANY ($2)
       ORDER BY block_number DESC
     ;`;
-    const dbres = await client.query(query, [timestamp, `(${councilAndTCAddresses.map(address => `'${address}'`).join(',')})`]);
+    const dbres = await client.query(query, [timestamp, councilAndTCAddresses]);
     if (dbres.rows.length > 0) {
       const data = dbres.rows.map(row => {
         return {
