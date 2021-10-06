@@ -199,7 +199,7 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
       for (const row of dbres.rows) {
         const proposal_id = JSON.parse(row.data)[1];
 
-        const query = `
+        const graphQlQuery = `
           query {
             posts(where: {onchain_link: {onchain_motion_id: {_eq: ${proposal_id}}}}) {
               title
@@ -215,10 +215,10 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
         // @ts-ignore
         fetch(polkassemblyGraphQL, {
           method: 'POST',
-          body: JSON.stringify({query}),
+          body: JSON.stringify({query: graphQlQuery}),
         }).then(res => res.text())
           .then(body => {
-            console.log(body);
+            console.log(body)
             title = JSON.parse(body).data.posts[0].title;
             content = JSON.parse(body).data.posts[0].content;              
           })
