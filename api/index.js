@@ -111,8 +111,8 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     const api = await getPolkadotAPI();
     const councilMembers = await api.query.council.members();
     const technicalCommitteeMembers = await api.query.technicalCommittee.members();
+    await api.disconnect();
     const councilAndTCAddresses = JSON.parse(JSON.stringify(councilMembers.concat(technicalCommitteeMembers)));
-
     const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
     const client = await getClient();
     const query = `
