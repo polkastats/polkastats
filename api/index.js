@@ -212,19 +212,22 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
           }`;
         let title = ''
         let content = ''
-        // @ts-ignore
-        fetch(polkassemblyGraphQL, {
-          method: 'POST',
-          body: JSON.stringify({query: graphQlQuery}),
-        }).then(res => res.text())
-          .then(body => {
-            // console.log(body);
-            title = JSON.parse(body).data.posts[0].title;
-            content = JSON.parse(body).data.posts[0].content;
-            console.log('title:', title);
-            console.log('content:', content);
-          })
-          .catch(error => console.error(error));
+        try {
+          // @ts-ignore
+          const response = await fetch(polkassemblyGraphQL, {
+            method: 'POST',
+            body: JSON.stringify({query: graphQlQuery}),
+          });
+          const body = await response.text();
+          // console.log(body);
+          title = JSON.parse(body).data.posts[0].title;
+          content = JSON.parse(body).data.posts[0].content;
+          console.log('title:', title);
+          console.log('content:', content);
+        } catch(error) {
+          console.error(error);
+        }
+
         data.push({
           block_number: parseInt(row.block_number),
           section: row.section,
