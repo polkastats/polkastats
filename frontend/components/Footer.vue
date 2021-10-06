@@ -1,8 +1,8 @@
 <template>
-  <div id="footer" class="container-fluid footer mt-4">
+  <div id="footer" class="container-fluid footer mt-2">
     <footer class="text-muted">
       <div class="container">
-        <div class="d-flex align-items-center justify-content-center mt-4 pt-5">
+        <div class="d-flex align-items-center justify-content-center mt-2 pt-1">
           <div>
             <a href="https://cere.network/">
               <img src="/img/cere-logo.png" class="cere-logo" />
@@ -12,19 +12,12 @@
             <div class="cere-title">Cerebellum Network</div>
           </a>
         </div>
-        <div class="row mt-4 pt-5">
+        <div class="row pt-2">
           <div
-            class="
-              col-xs-12 col-sm-12 col-md-4
-              mt-2
-              mb-4
-              pb-4
-              mt-sm-2
-              text-center text-white
-            "
+            class="col-xs-12 col-sm-12 col-md-4 mt-sm-2 text-center text-white"
             data-testid="footer-getInContact"
           >
-            <h3 class="mb-3">
+            <h3 class="mb-1" style="font-size: 16px">
               {{ $t('layout.default.get_in_contact') }}
             </h3>
             <hr />
@@ -55,34 +48,21 @@
             </ul>
           </div>
           <div
-            class="
-              col-xs-12 col-sm-12 col-md-4
-              mt-2
-              mb-4
-              pb-4
-              mt-sm-2
-              text-center text-white
-            "
+            class="col-xs-12 col-sm-12 col-md-4 mt-sm-2 text-center text-white"
             data-testid="footer-polkadot"
           >
-            <h3 class="mb-3">Cerestats</h3>
+            <h3 class="mb-1" style="font-size: 16px">Cerestats</h3>
             <hr />
             <a class="nav-link" target="_blank" href="https://cere.network/">
               {{ $t('layout.default.about_us') }}</a
             >
+            <a href="https://github.com/Cerebellum-Network/cerestats">Github</a>
           </div>
           <div
-            class="
-              col-xs-12 col-sm-12 col-md-4
-              mt-2
-              mb-4
-              pb-4
-              mt-sm-2
-              text-center text-white
-            "
+            class="col-xs-12 col-sm-12 col-md-4 mt-sm-2 text-center text-white"
             data-testid="footer-builtFor"
           >
-            <h3 class="mb-3">
+            <h3 class="mb-1" style="font-size: 16px">
               {{ $t('layout.default.built_with') }}
             </h3>
             <hr />
@@ -95,20 +75,6 @@
             </a>
           </div>
         </div>
-        <p
-          class="small pt-4 text-center text-white"
-          data-testid="footer-bottom"
-        >
-          <a
-            href="https://github.com/Cerebellum-Network/cerestats"
-            aria-label="View source on GitHub"
-            title="View source code on GitHub"
-            target="_blank"
-            data-testid="github"
-            ><i class="fab fa-github" />
-            {{ $t('layout.default.view_source_code_on_github') }}</a
-          >
-        </p>
       </div>
     </footer>
   </div>
@@ -119,11 +85,11 @@ export default {}
 
 <style>
 .cere-logo {
-  max-width: 70px;
+  max-width: 50px;
   max-height: auto;
 }
 .cere-title {
-  font-size: 30px;
+  font-size: 20px;
 }
 .grant-badge {
   max-width: 150px;
