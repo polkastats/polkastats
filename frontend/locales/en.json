@@ -104,14 +104,14 @@
       "remove_from_favorites": "Remove from Favorites",
       "add_to_favorites": "Add to Favorites",
       "identity": "Identity",
-      "head_title": "PolkaStats - {networkName} accounts",
-      "head_content": "{networkName} accounts",
+      "head_title": "{networkName} Accounts",
+      "head_content": "{networkName} Accounts",
       "loading_data": "Loading data, it can take a long time. Be patient, please",
       "download_csv": "Download in CSV format"
     },
     "account": {
-      "head_title": "PolkaStats - {networkName} account {address}",
-      "head_content": "{networkName} account {address}",
+      "head_title": "{networkName} Account {address}",
+      "head_content": "{networkName} Account {address}",
       "sent_transfers": "Sent transfers",
       "received_transfers": "Received transfers"
     },
@@ -142,7 +142,7 @@
       "reward_destination": "Reward destination",
       "nominators": "nominators",
       "intention": "Intention",
-      "head_title": "PolkaStats - {networkName} favorite validators and intentions",
+      "head_title": "{networkName} favorite validators and intentions",
       "head_content": "{networkName} favorite validators and intentions"
     },
     "index": {
@@ -183,31 +183,31 @@
     },
     "blocks": {
       "title": "Blocks",
-      "head_title": "PolkaStats - {networkName} blocks",
-      "head_content": "{networkName} blocks",
+      "head_title": "{networkName} Blocks",
+      "head_content": "{networkName} Blocks",
       "search_placeholder": "Search by block number"
     },
     "extrinsics": {
       "title": "Extrinsics",
-      "head_title": "PolkaStats - {networkName} extrinsics",
-      "head_content": "{networkName} extrinsics"
+      "head_title": "{networkName} Extrinsics",
+      "head_content": "{networkName} Extrinsics"
     },
     "transfers": {
       "title": "Transfers",
-      "head_title": "PolkaStats - {networkName} transfers",
-      "head_content": "{networkName} transfers",
+      "head_title": "{networkName} Transfers",
+      "head_content": "{networkName} Transfers",
       "search_placeholder": "Search transfer by block number, hash or source address"
     },
     "activity": {
       "title": "Activity",
-      "head_title": "PolkaStats - {networkName} activity",
-      "head_content": "{networkName} activity",
+      "head_title": "{networkName} Activity",
+      "head_content": "{networkName} Activity",
       "search_placeholder": "Search activity by block number, hash or source address"
     },
     "events": {
       "title": "Events",
-      "head_title": "PolkaStats - {networkName} events",
-      "head_content": "{networkName} events",
+      "head_title": "{networkName} Events",
+      "head_content": "{networkName} Events",
       "search_placeholder": "Search by block number"
     },
     "support-us": {
@@ -223,7 +223,7 @@
       "follow_polkastats_on_twitter": "Follow @PolkaStats on Twitter",
       "are_you_a_TEXT": "Are you a happy PolkaStats user? Make sure you follow",
       "on_twitter_to_get_TEXT": "on Twitter to get the last platform updates",
-      "head_title": "PolkaStats - Support us",
+      "head_title": "Cerebellum Network - Support us",
       "head_content": "Support us"
     },
     "how_to_stake": {
@@ -273,13 +273,13 @@
     },
     "polkastats_validator": {
       "title": "PolkaStats validator",
-      "head_title": "PolkaStats - {networkName} PolkaStats validator",
-      "head_content": "{networkName} PolkaStats validator"
+      "head_title": "{networkName} Validator",
+      "head_content": "{networkName} Validator"
     },
     "validators": {
       "title": "Validators",
-      "head_title": "PolkaStats - {networkName} proof of stake validators",
-      "head_content": "{networkName} proof of stake validators"
+      "head_title": "{networkName} Validators",
+      "head_content": "{networkName} Proof Of Stake Validators"
     }
   },
   "details": {
