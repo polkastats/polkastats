@@ -113,6 +113,9 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     const technicalCommitteeMembers = await api.query.technicalCommittee.members();
     const councilAndTCAddresses = councilMembers.concat(technicalCommitteeMembers);
 
+    console.log(councilAndTCAddresses);
+    console.log(councilAndTCAddresses.map(address => `'${address}'`).join(','));
+
     const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
     const client = await getClient();
     const query = `
