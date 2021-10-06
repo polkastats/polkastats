@@ -42,10 +42,6 @@ const getPolkadotAPI = async () => {
   return api;
 }
 
-const getCouncilAndTCAddresses() {
-
-}
-
 // from https://stackoverflow.com/questions/60504945/javascript-encode-decode-utf8-to-hex-and-hex-to-utf8
 const hexToUtf8 = (s) =>
 {
