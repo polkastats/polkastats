@@ -156,6 +156,7 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     }
     await client.end();
   } catch (error) {
+    console.log(error)
     res.send({
       status: false,
       message: 'There was an error processing your request'
