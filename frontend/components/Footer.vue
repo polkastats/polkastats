@@ -3,10 +3,14 @@
     <footer class="text-muted">
       <div class="container">
         <div class="d-flex align-items-center justify-content-center mt-4 pt-5">
-          <div class="">
-            <img src="/img/cere-logo.png" class="cere-logo" />
+          <div>
+            <a href="https://cere.network/">
+              <img src="/img/cere-logo.png" class="cere-logo" />
+            </a>
           </div>
-          <div class="cere-title">Cerebellum Network</div>
+          <a href="https://cere.network/" style="text-decoration: none">
+            <div class="cere-title">Cerebellum Network</div>
+          </a>
         </div>
         <div class="row mt-4 pt-5">
           <div
