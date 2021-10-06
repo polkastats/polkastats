@@ -128,7 +128,7 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
         method = 'remark' AND
         success IS TRUE AND
         timestamp >= $1 AND
-        signer ANY ($2)
+        signer = ANY ($2)
       ORDER BY block_number DESC
     ;`;
     const dbres = await client.query(query, [timestamp, councilAndTCAddresses]);
