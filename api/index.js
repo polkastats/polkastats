@@ -131,7 +131,7 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
         signer IN $2
       ORDER BY block_number DESC
     ;`;
-    const dbres = await client.query(query, [timestamp, councilAndTCAddresses]);
+    const dbres = await client.query(query, [timestamp, `(${councilAndTCAddresses.map(address => `'${address}'`).join(',')})`]);
     if (dbres.rows.length > 0) {
       const data = dbres.rows.map(row => {
         return {
