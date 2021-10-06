@@ -215,7 +215,7 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
         // @ts-ignore
         fetch(polkassemblyGraphQL, {
           method: 'POST',
-          body: JSON.stringify({graphQlQuery}),
+          query: JSON.stringify({graphQlQuery}),
         }).then(res => res.text())
           .then(body => {
             console.log(body);
