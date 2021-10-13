@@ -256,6 +256,7 @@ GRANT ALL PRIVILEGES ON TABLE era_points_avg TO dev_cerestats;
 GRANT ALL PRIVILEGES ON TABLE featured TO dev_cerestats;
 GRANT ALL PRIVILEGES ON TABLE account TO dev_cerestats;
 GRANT ALL PRIVILEGES ON TABLE total TO dev_cerestats;
+GRANT ALL PRIVILEGES ON TABLE edp TO dev_cerestats;
 
 --
 -- Fast counters
