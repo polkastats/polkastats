@@ -256,6 +256,7 @@ GRANT ALL PRIVILEGES ON TABLE era_points_avg TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE featured TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE total TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE edp TO polkastats;
 
 --
 -- Fast counters
