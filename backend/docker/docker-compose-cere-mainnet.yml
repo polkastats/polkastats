@@ -138,6 +138,7 @@ services:
     environment:
       - NODE_ENV=production
       - NODE_PORT=8000
+      - API_KEY=my_access_key
 
 #
 # Persistent volumes

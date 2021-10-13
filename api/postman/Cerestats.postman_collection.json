@@ -1,0 +1,76 @@
+{
+	"info": {
+		"_postman_id": "b5772ee7-2479-4ffb-b10e-9f95134778b0",
+		"name": "Cerestats",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add value",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-KEY",
+						"value": "{x-api-key-goes-here}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"key\" : \"test1\",\n    \"value\": {\n        \"graduates-number\": \"10\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.stats.cere.network/api/v1/edp",
+					"protocol": "https",
+					"host": [
+						"api",
+						"stats",
+						"cere",
+						"network"
+					],
+					"path": [
+						"api",
+						"v1",
+						"edp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get data",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-KEY",
+						"value": "{x-api-key-goes-here}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.stats.cere.network/api/v1/edp",
+					"protocol": "https",
+					"host": [
+						"api",
+						"stats",
+						"cere",
+						"network"
+					],
+					"path": [
+						"api",
+						"v1",
+						"edp"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

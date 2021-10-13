@@ -48,7 +48,26 @@ const hexToUtf8 = (s) =>
      s.replace(/\s+/g, '') // remove spaces
       .replace(/[0-9a-f]{2}/g, '%$&') // add '%' before each 2 characters
   );
-}
+};
+
+/**
+ * Validate access token
+ * @param {*} req request object
+ * @param {*} res response object
+ * @param {*} next next object
+ * @returns 
+ */
+const validateToken = (req, res, next) => {
+  const token = req.body.token || req.query.token || req.headers['x-api-key'];
+  if (token === process.env.API_KEY) {
+    return next();
+  } else {
+    return res.status(403).json({
+      status: false,
+      msg: `Access Denied`,
+    });
+  }
+};
 
 //
 // Example query: /api/v1/block?page[size]=5
@@ -215,6 +234,72 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
   }
 });
 
+/**
+ * Add EDP data to database
+ * @param {key, value} key and values
+ */
+app.post('/api/v1/edp', validateToken, async (req, res) => {
+  try {
+    const { key, value } = req.body;
+    const client = await getClient();
+    const query = `
+      INSERT INTO edp (
+        key,
+        value
+      )
+      VALUES (
+        $1,
+        $2
+      )
+      ON CONFLICT (key) DO UPDATE
+      SET value = EXCLUDED.value
+      WHERE EXCLUDED.key = $1
+    ;`;
+    const dbres = await client.query(query, [key, JSON.stringify(value)]);
+    res.status(200).json({
+      status: true
+    });
+    await client.end();
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      message: `There was an error processing your request`,
+    });
+  }
+});
+
+/**
+ * Get EDP data from database
+ * @param key key
+ */
+app.get('/api/v1/edp/:key', validateToken, async (req, res) => {
+  try {
+    const { key } = req.params;
+    const client = await getClient();
+    const query = `SELECT value FROM edp WHERE key = $1;`;
+    const dbres = await client.query(query, [key]);
+    if (dbres.rowCount === 0) {
+      return res.status(404).json({});
+    }
+    res.status(200).json({
+      status: true,
+      data: dbres.rows[0]?.value
+    });
+    await client.end();
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      message: `There was an error processing your request`,
+    });
+  }
+});
+
+app.use('/', (req, res) => {
+  res.status(404).json({
+    status: false,
+    msg: 'Requested route not found'
+  })
+});
 
 // Start app
 app.listen(port, () => 
