@@ -14,6 +14,5 @@ export const network = {
   historySize: 84, // 84 days
   erasPerDay: 1,
   validatorSetSize: 24,
-  enableEdpMetric: true,
 }
 export const paginationOptions = [10, 20, 50, 100]

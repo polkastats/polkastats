@@ -1,20 +1,30 @@
 <template>
-  <div v-if="network.enableEdpMetric">
-    <div class="title mb-4">EDP Metrics</div>
-    <div class="row">
-      <div
-        v-for="(value, name) in metrics"
-        :key="value"
-        class="col-6 col-md-6 col-lg-3 mb-4 chain-info"
-      >
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">{{ name }}</h4>
-
-            <h6 class="d-inline-block">
-              {{ value }}
-            </h6>
-          </div>
+  <div v-if="showBanner" class="banner">
+    <div class="flex col child left">
+      <div class="cere-logo">
+        <img
+          src="../static/img/cere_logo_edp.png"
+          alt="Cere Logo"
+          class="img"
+          height="60px"
+        />
+      </div>
+    </div>
+    <div class="flex col child right">
+      <div class="content">
+        <div class="rectangle first">
+          <span>Number of cere bootcamp graduated</span>
+          <span class="value">67</span>
+        </div>
+        <div class="rectangle second">
+          <span>Total tokens rewarded</span>
+          <span class="value">97K+ Cere tokens</span>
+        </div>
+        <div class="rectangle third">
+          <span>Cere bootcamp Participants feedback</span>
+          <span class="value"
+            >90% of participants think this is Challenging and Interesting</span
+          >
         </div>
       </div>
     </div>
@@ -24,15 +34,13 @@
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '../mixins/commonMixin.js'
-import { network } from '../frontend.config.js'
 
 export default {
   mixins: [commonMixin],
   data() {
     return {
-      network,
       metrics: {},
-      loading: true,
+      showBanner: true,
     }
   },
   apollo: {
@@ -47,7 +55,7 @@ export default {
         `,
         result({ data }) {
           this.metrics = data.edp[0].value
-          this.loading = false
+          this.showBanner = data.edp[0].value.banner
         },
       },
     },
@@ -56,13 +64,86 @@ export default {
 </script>
 
 <style>
-.title {
-  font-size: 20px;
-  color: #001c71;
-  text-transform: uppercase;
-  padding: 5px;
+.banner {
+  background-image: url('../static/img/edp_banner_bg.png');
+  height: 200px;
+  margin-top: -15px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  display: none;
 }
-.chain-info .card {
-  box-shadow: 0 8px 20px 0 rgb(40 133 208 / 15%);
+
+.child.left {
+  flex: 15;
+}
+
+.child.right {
+  flex: 85;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.col {
+  flex-direction: column;
+}
+
+.rectangle {
+  height: 30px;
+  background: linear-gradient(90deg, #c9529e 0%, #a04799 33.85%, #5e4186 100%);
+  box-shadow: 0 0 4px 4px rgba(121, 119, 119, 0.25);
+  border-radius: 90px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 10px;
+  align-items: center;
+  color: white;
+}
+
+.value {
+  margin-left: 80px;
+}
+
+.banner span {
+  padding: 0 5px;
+}
+
+.flex.content {
+  padding: 10px;
+  flex-direction: column;
+}
+
+.rectangle.first {
+  width: 50%;
+}
+
+.rectangle.second {
+  width: 65%;
+  margin: 25px 0;
+}
+
+@media (min-width: 1024px) {
+  .banner {
+    display: flex;
+    font-size: 0.7rem;
+  }
+  .rectangle.first {
+    width: 60%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .banner {
+    font-size: 0.9rem;
+  }
+  .rectangle.first {
+    width: 50%;
+  }
 }
 </style>
