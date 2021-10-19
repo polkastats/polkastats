@@ -13,24 +13,29 @@
     <div class="flex child middle column">
       <div class="content">
         <div class="rectangle first">
-          <span>Number of cere bootcamp graduated</span>
-          <span class="value">{{ graduates }}</span>
+          <span>Total tokens rewarded to EDP community members</span>
+          <span class="value">{{ formatNumber }} CERE tokens</span>
         </div>
         <div class="rectangle second">
-          <span>Total tokens rewarded</span>
-          <span class="value">{{ formatNumber }}+ Cere tokens</span>
+          <span>
+            Number of EDP community members who finished Cere Bootcamp
+          </span>
+          <span class="value">{{ graduates }}</span>
         </div>
         <div class="rectangle third">
-          <span>Cere bootcamp Participants feedback</span>
-          <span class="value"
-            >{{ feedback }}% of participants think this is Challenging and
-            Interesting</span
-          >
+          <span>
+            {{ feedback }}% of the EDP community members think the Cere Bootcamp
+            is ‘interesting’.
+          </span>
         </div>
       </div>
     </div>
     <div class="flex child right column">
-      <div class="button">Click to know more about EDP</div>
+      <a :href="edpLink" target="_blank">
+        <div class="button">
+          Click here to find out more about the EDP community
+        </div>
+      </a>
     </div>
   </div>
 </template>
@@ -46,6 +51,7 @@ export default {
       tokenRewarded: 0,
       feedback: 0,
       showBanner: true,
+      edpLink: '',
       formatBalance,
     }
   },
@@ -71,6 +77,7 @@ export default {
           this.tokenRewarded = data.edp[0].value.tokensRewarded
           this.graduates = data.edp[0].value.cereBootcampGraduateNumber
           this.feedback = data.edp[0].value.challengingAndInterstingPercentage
+          this.edpLink = data.edp[0].value.edpLink
         },
       },
     },
@@ -132,17 +139,22 @@ export default {
 }
 
 .rectangle.first {
-  width: 60%;
+  width: 75%;
 }
 
 .rectangle.second {
-  width: 70%;
+  width: 80%;
   margin: 25px 0;
+}
+
+.rectangle.third {
+  width: 90%;
 }
 
 .content {
   padding: 0 15px;
   align-content: flex-start;
+  width: 100%;
 }
 
 .button {
@@ -155,22 +167,20 @@ export default {
   justify-content: flex-start;
 }
 
+a {
+  text-decoration: none !important;
+}
+
 @media (min-width: 1024px) {
   .banner {
     display: flex;
     font-size: 0.6rem;
-  }
-  .rectangle.first {
-    width: 60%;
   }
 }
 
 @media (min-width: 1280px) {
   .banner {
     font-size: 0.8rem;
-  }
-  .rectangle.first {
-    width: 60%;
   }
 }
 </style>
