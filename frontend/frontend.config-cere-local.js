@@ -1,6 +1,6 @@
 export const network = {
   id: 'cere',
-  name: 'Cerebellum Network',
+  name: 'Cere Network',
   tokenSymbol: 'CERE',
   tokenDecimals: 10,
   ss58Format: -1,

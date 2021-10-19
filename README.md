@@ -73,8 +73,9 @@ After that you need to access to Hasura console at http://localhost:8082 and:
 
 - Login as admin using the password you previously set in `HASURA_GRAPHQL_ADMIN_SECRET`
 - Track all tables
-- For all tables go to Permissions and add a new ROLE named 'public' ony with SELECT permissions.
-- For all tables enable aggregate under Permissions tab.
+- For all tables go to Permissions and:
+  - Add a new ROLE named 'public' with SELECT permissions.
+  - Enable aggregate permissions.
 
 
 ### Frontend
