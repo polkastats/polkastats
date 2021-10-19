@@ -8,7 +8,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Cerebellum Network Stats',
+    title: 'Cere Network Stats',
     htmlAttrs: {
       lang: 'en',
     },
@@ -18,7 +18,7 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: 'Cerebellum Network Stats',
+        content: 'Cere Network Stats',
       },
     ],
     link: [{ rel: 'icon', type: 'image/png', href: '/img/favicon.ico' }],

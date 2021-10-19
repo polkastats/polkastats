@@ -5,9 +5,9 @@ export const network = {
   tokenDecimals: 10,
   ss58Format: -1,
   coinGeckoDenom: 'cere',
-  nodeWs: 'wss://archive.testnet.cere.network:9945',
-  backendWs: 'wss://hasura.stats.dev.cere.network/v1/graphql',
-  backendHttp: 'https://api.stats.dev.cere.network/api/v1',
+  nodeWs: 'wss://archive.mainnet.cere.network:9945',
+  backendWs: 'wss://hasura.stats.stg.cere.network/v1/graphql',
+  backendHttp: 'https://api.stats.stg.cere.network/api/v1',
   googleAnalytics: '',
   theme: '@/assets/scss/themes/polkastats.scss',
   // ranking               Í
