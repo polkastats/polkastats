@@ -22,19 +22,19 @@
             </h3>
             <hr />
             <ul class="list-unstyled social text-center">
-              <li class="mr-2" data-testid="footer-twitter">
+              <li data-testid="footer-twitter">
                 <a target="_blank" href="https://twitter.com/cerenetwork">
                   <font-awesome-icon :icon="['fab', 'twitter']" />
                   @cerenetwork
                 </a>
               </li>
-              <li class="mr-2" data-testid="footer-twitter">
+              <li data-testid="footer-twitter">
                 <a target="_blank" href="https://t.me/cerenetwork_official">
                   <font-awesome-icon :icon="['fab', 'telegram']" />
                   Cere Network
                 </a>
               </li>
-              <li class="mr-2" data-testid="footer-pgp">
+              <li data-testid="footer-pgp">
                 <a target="_blank" href="https://discord.gg/A5pCWaYQ92">
                   <font-awesome-icon :icon="['fab', 'discord']" />
                   Cere Network
@@ -53,10 +53,23 @@
           >
             <h3 class="mb-1" style="font-size: 16px">Cerestats</h3>
             <hr />
-            <a class="nav-link" target="_blank" href="https://cere.network/">
-              {{ $t('layout.default.about_us') }}</a
-            >
-            <a href="https://github.com/Cerebellum-Network/cerestats">Github</a>
+            <ul class="list-unstyled text-center">
+              <li>
+                <a target="_blank" href="https://block-viewer.cere.network/"
+                  >Block Viewer</a
+                >
+              </li>
+              <li>
+                <a target="_blank" href="https://bridge.cere.network">Bridge</a>
+              </li>
+              <li>
+                <a
+                  target="_blank"
+                  href="https://github.com/Cerebellum-Network/cerestats"
+                  >GitHub</a
+                >
+              </li>
+            </ul>
           </div>
           <div
             class="col-xs-12 col-sm-12 col-md-4 mt-sm-2 text-center text-white"
