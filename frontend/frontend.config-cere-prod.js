@@ -1,13 +1,13 @@
 export const network = {
   id: 'cere',
-  name: 'Cerebellum Network',
+  name: 'Cere Network',
   tokenSymbol: 'CERE',
   tokenDecimals: 10,
   ss58Format: -1,
   coinGeckoDenom: 'cere',
   nodeWs: 'wss://archive.mainnet.cere.network:9945',
-  backendWs: 'wss://hasura.stats.stg.cere.network/v1/graphql',
-  backendHttp: 'https://api.stats.stg.cere.network/api/v1',
+  backendWs: 'wss://hasura.stats.cere.network/v1/graphql',
+  backendHttp: 'https://api.stats.cere.network/api/v1',
   googleAnalytics: '',
   theme: '@/assets/scss/themes/polkastats.scss',
   // ranking               Í

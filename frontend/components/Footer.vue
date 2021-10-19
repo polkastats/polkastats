@@ -9,7 +9,7 @@
             </a>
           </div>
           <a href="https://cere.network/" style="text-decoration: none">
-            <div class="cere-title">Cerebellum Network</div>
+            <div class="cere-title">Cere Network</div>
           </a>
         </div>
         <div class="row pt-2">
