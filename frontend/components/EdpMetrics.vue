@@ -1,6 +1,6 @@
 <template>
-  <div v-if="showBanner" class="banner">
-    <div class="flex col child left">
+  <div v-if="showBanner" class="banner row">
+    <div class="flex child left column">
       <div class="cere-logo">
         <img
           src="../static/img/cere_logo_edp.png"
@@ -10,38 +10,50 @@
         />
       </div>
     </div>
-    <div class="flex col child right">
+    <div class="flex child middle column">
       <div class="content">
         <div class="rectangle first">
           <span>Number of cere bootcamp graduated</span>
-          <span class="value">67</span>
+          <span class="value">{{ graduates }}</span>
         </div>
         <div class="rectangle second">
           <span>Total tokens rewarded</span>
-          <span class="value">97K+ Cere tokens</span>
+          <span class="value">{{ formatNumber }}+ Cere tokens</span>
         </div>
         <div class="rectangle third">
           <span>Cere bootcamp Participants feedback</span>
           <span class="value"
-            >90% of participants think this is Challenging and Interesting</span
+            >{{ feedback }}% of participants think this is Challenging and
+            Interesting</span
           >
         </div>
       </div>
+    </div>
+    <div class="flex child right column">
+      <div class="button">Click to know more about EDP</div>
     </div>
   </div>
 </template>
 
 <script>
 import { gql } from 'graphql-tag'
-import commonMixin from '../mixins/commonMixin.js'
+import { formatBalance } from '@polkadot/util'
 
 export default {
-  mixins: [commonMixin],
   data() {
     return {
-      metrics: {},
+      graduates: 0,
+      tokenRewarded: 0,
+      feedback: 0,
       showBanner: true,
+      formatBalance,
     }
+  },
+  computed: {
+    formatNumber() {
+      const formatter = Intl.NumberFormat('en', { notation: 'compact' })
+      return formatter.format(this.tokenRewarded)
+    },
   },
   apollo: {
     $subscribe: {
@@ -56,6 +68,9 @@ export default {
         result({ data }) {
           this.metrics = data.edp[0].value
           this.showBanner = data.edp[0].value.banner
+          this.tokenRewarded = data.edp[0].value.tokensRewarded
+          this.graduates = data.edp[0].value.cereBootcampGraduateNumber
+          this.feedback = data.edp[0].value.challengingAndInterstingPercentage
         },
       },
     },
@@ -74,23 +89,25 @@ export default {
 }
 
 .child.left {
-  flex: 15;
+  width: 10%;
+  display: flex;
+}
+
+.child.middle {
+  width: 70%;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .child.right {
-  flex: 85;
+  width: 20%;
   display: flex;
-  flex-direction: column;
 }
 
 .flex {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.col {
-  flex-direction: column;
 }
 
 .rectangle {
@@ -101,7 +118,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0 10px;
+  padding: 0 0;
   align-items: center;
   color: white;
 }
@@ -111,27 +128,37 @@ export default {
 }
 
 .banner span {
-  padding: 0 5px;
-}
-
-.flex.content {
-  padding: 10px;
-  flex-direction: column;
+  padding: 0 10px;
 }
 
 .rectangle.first {
-  width: 50%;
+  width: 60%;
 }
 
 .rectangle.second {
-  width: 65%;
+  width: 70%;
   margin: 25px 0;
+}
+
+.content {
+  padding: 0 15px;
+  align-content: flex-start;
+}
+
+.button {
+  width: 150px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px 10px;
+  justify-content: flex-start;
 }
 
 @media (min-width: 1024px) {
   .banner {
     display: flex;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
   }
   .rectangle.first {
     width: 60%;
@@ -140,10 +167,10 @@ export default {
 
 @media (min-width: 1280px) {
   .banner {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
   .rectangle.first {
-    width: 50%;
+    width: 60%;
   }
 }
 </style>
