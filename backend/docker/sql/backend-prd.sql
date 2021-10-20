@@ -1,4 +1,4 @@
-GRANT ALL PRIVILEGES ON DATABASE prod_cerestats TO prod_cerestats;
+GRANT ALL PRIVILEGES ON DATABASE prd_cerestats TO prd_cerestats;
 
 CREATE TABLE IF NOT EXISTS block (
   block_number BIGINT NOT NULL,
@@ -238,25 +238,25 @@ CREATE INDEX IF NOT EXISTS event_block_number_idx ON event (block_number);
 CREATE INDEX IF NOT EXISTS event_section_idx ON event (section);
 CREATE INDEX IF NOT EXISTS event_method_idx ON event (method);
 
-GRANT ALL PRIVILEGES ON TABLE block TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE harvest_error TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE event TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE extrinsic TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE ranking TO prod_cerestats;
+GRANT ALL PRIVILEGES ON TABLE block TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE harvest_error TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE event TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE extrinsic TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE ranking TO prd_cerestats;
 
-GRANT ALL PRIVILEGES ON TABLE era_vrc_score TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE era_commission TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE era_commission_avg TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE era_self_stake TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE era_self_stake_avg TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE era_relative_performance TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE era_relative_performance_avg TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE era_points TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE era_points_avg TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE featured TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE account TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE total TO prod_cerestats;
-GRANT ALL PRIVILEGES ON TABLE edp TO prod_cerestats;
+GRANT ALL PRIVILEGES ON TABLE era_vrc_score TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE era_commission TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE era_commission_avg TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE era_self_stake TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE era_self_stake_avg TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE era_relative_performance TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE era_relative_performance_avg TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE era_points TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE era_points_avg TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE featured TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE account TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE total TO prd_cerestats;
+GRANT ALL PRIVILEGES ON TABLE edp TO prd_cerestats;
 
 --
 -- Fast counters
