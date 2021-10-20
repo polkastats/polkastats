@@ -51,7 +51,7 @@
             class="col-xs-12 col-sm-12 col-md-4 mt-sm-2 text-center text-white"
             data-testid="footer-polkadot"
           >
-            <h3 class="mb-1" style="font-size: 16px">Cerestats</h3>
+            <h3 class="mb-1" style="font-size: 16px">Explore</h3>
             <hr />
             <ul class="list-unstyled text-center">
               <li>
