@@ -162,9 +162,6 @@ export default {
 .button {
   width: 100%;
   text-align: center;
-  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-  background-color: white;
-  border-radius: 10px;
   padding: 10px 10px;
   justify-content: flex-start;
   margin-right: 25px;
