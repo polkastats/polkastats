@@ -1,56 +1,68 @@
 <template>
-  <div v-if="showBanner" class="banner row">
-    <a :href="edpLink" target="_blank" rel="noopener noreferrer">
-      <div class="flex row banner">
-        <div class="flex child left column">
-          <div class="cere-logo">
-            <img
-              src="../static/img/cere_logo_edp.png"
-              alt="Cere Logo"
-              class="img"
-              height="60px"
-            />
-          </div>
-        </div>
-        <div class="flex child middle column">
-          <div class="content">
-            <div class="rectangle first">
-              <span>Total tokens rewarded to EDP community members</span>
-              <span class="value">{{ formatNumber }} CERE tokens</span>
+  <div>
+    <div v-if="loading" class="text-center py-4">
+      <Loading />
+    </div>
+    <div v-else>
+      <div v-if="showBanner" class="banner row">
+        <a :href="edpLink" target="_blank" rel="noopener noreferrer">
+          <div class="flex row banner">
+            <div class="flex child left column">
+              <div class="cere-logo">
+                <img
+                  src="../static/img/cere_logo_edp.png"
+                  alt="Cere Logo"
+                  class="img"
+                  height="60px"
+                />
+              </div>
             </div>
-            <div class="rectangle second">
-              <span>
-                Number of EDP community members who finished Cere Bootcamp
-              </span>
-              <span class="value">{{ graduates }}</span>
+            <div class="flex child middle column">
+              <div class="content">
+                <div class="rectangle first">
+                  <span>Total tokens rewarded to EDP community members</span>
+                  <span class="value">{{ formatNumber }} CERE tokens</span>
+                </div>
+                <div class="rectangle second">
+                  <span>
+                    Number of EDP community members who finished Cere Bootcamp
+                  </span>
+                  <span class="value">{{ graduates }}</span>
+                </div>
+                <div class="rectangle third">
+                  <span>
+                    Percentage of the EDP community members think the Cere
+                    Bootcamp is 'interesting'
+                  </span>
+                  <span class="value"> {{ feedback }}%</span>
+                </div>
+              </div>
             </div>
-            <div class="rectangle third">
-              <span>
-                Percentage of the EDP community members think the Cere Bootcamp
-                is 'interesting'
-              </span>
-              <span class="value"> {{ feedback }}%</span>
+            <div class="flex child right column">
+              <div class="button">
+                Click the banner to find out more about the Extended Developers
+                Program community
+              </div>
             </div>
           </div>
-        </div>
-        <div class="flex child right column">
-          <div class="button">
-            Click the banner to find out more about the Extended Developers
-            Program community
-          </div>
-        </div>
+        </a>
       </div>
-    </a>
+    </div>
   </div>
 </template>
 
 <script>
 import { gql } from 'graphql-tag'
 import { formatBalance } from '@polkadot/util'
+import Loading from '@/components/Loading.vue'
 
 export default {
+  components: {
+    Loading,
+  },
   data() {
     return {
+      loading: true,
       graduates: 0,
       tokenRewarded: 0,
       feedback: 0,
@@ -82,6 +94,7 @@ export default {
           this.graduates = data.edp[0].value.cereBootcampGraduatesNumber
           this.feedback = data.edp[0].value.feedbackPercentage
           this.edpLink = data.edp[0].value.onClickLink
+          this.loading = false
         },
       },
     },
