@@ -26,9 +26,10 @@
             </div>
             <div class="rectangle third">
               <span>
-                {{ feedback }}% of the EDP community members think the Cere
-                Bootcamp is ‘interesting’.
+                Percentage of the EDP community members think the Cere Bootcamp
+                is 'interesting'
               </span>
+              <span class="value"> {{ feedback }}%</span>
             </div>
           </div>
         </div>
@@ -150,10 +151,6 @@ export default {
 .rectangle.second {
   width: 85%;
   margin: 25px 0;
-}
-
-.rectangle.third {
-  width: 90%;
 }
 
 .content {
