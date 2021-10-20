@@ -1,42 +1,45 @@
 <template>
   <div v-if="showBanner" class="banner row">
-    <div class="flex child left column">
-      <div class="cere-logo">
-        <img
-          src="../static/img/cere_logo_edp.png"
-          alt="Cere Logo"
-          class="img"
-          height="60px"
-        />
+    <a :href="edpLink" target="_blank" rel="noopener noreferrer">
+      <div class="flex row banner">
+        <div class="flex child left column">
+          <div class="cere-logo">
+            <img
+              src="../static/img/cere_logo_edp.png"
+              alt="Cere Logo"
+              class="img"
+              height="60px"
+            />
+          </div>
+        </div>
+        <div class="flex child middle column">
+          <div class="content">
+            <div class="rectangle first">
+              <span>Total tokens rewarded to EDP community members</span>
+              <span class="value">{{ formatNumber }} CERE tokens</span>
+            </div>
+            <div class="rectangle second">
+              <span>
+                Number of EDP community members who finished Cere Bootcamp
+              </span>
+              <span class="value">{{ graduates }}</span>
+            </div>
+            <div class="rectangle third">
+              <span>
+                {{ feedback }}% of the EDP community members think the Cere
+                Bootcamp is ‘interesting’.
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="flex child right column">
+          <div class="button">
+            Click the banner to find out more about the Extended Developers
+            Program community
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="flex child middle column">
-      <div class="content">
-        <div class="rectangle first">
-          <span>Total tokens rewarded to EDP community members</span>
-          <span class="value">{{ formatNumber }} CERE tokens</span>
-        </div>
-        <div class="rectangle second">
-          <span>
-            Number of EDP community members who finished Cere Bootcamp
-          </span>
-          <span class="value">{{ graduates }}</span>
-        </div>
-        <div class="rectangle third">
-          <span>
-            {{ feedback }}% of the EDP community members think the Cere Bootcamp
-            is ‘interesting’.
-          </span>
-        </div>
-      </div>
-    </div>
-    <div class="flex child right column">
-      <a :href="edpLink" target="_blank">
-        <div class="button">
-          Click here to find out more about the EDP community
-        </div>
-      </a>
-    </div>
+    </a>
   </div>
 </template>
 
@@ -89,7 +92,7 @@ export default {
 .banner {
   background-image: url('../static/img/edp_banner_bg.png');
   height: 200px;
-  margin-top: -15px;
+  margin-top: -5px;
   margin-bottom: 30px;
   border-radius: 10px;
   display: none;
@@ -98,18 +101,18 @@ export default {
 }
 
 .child.left {
-  width: 10%;
+  width: 8%;
   display: flex;
 }
 
 .child.middle {
-  width: 70%;
+  width: 67%;
   display: flex;
   justify-content: flex-start;
 }
 
 .child.right {
-  width: 20%;
+  width: 25%;
   display: flex;
 }
 
@@ -141,11 +144,11 @@ export default {
 }
 
 .rectangle.first {
-  width: 75%;
+  width: 80%;
 }
 
 .rectangle.second {
-  width: 80%;
+  width: 85%;
   margin: 25px 0;
 }
 
@@ -160,17 +163,19 @@ export default {
 }
 
 .button {
-  width: 150px;
+  width: 100%;
   text-align: center;
   box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
   background-color: white;
   border-radius: 10px;
   padding: 10px 10px;
   justify-content: flex-start;
+  margin-right: 25px;
 }
 
 a {
   text-decoration: none !important;
+  width: 100% !important;
 }
 
 @media (min-width: 1024px) {
