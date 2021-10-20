@@ -93,6 +93,8 @@ export default {
   margin-bottom: 30px;
   border-radius: 10px;
   display: none;
+  margin-right: -1px;
+  margin-left: -1px;
 }
 
 .child.left {
