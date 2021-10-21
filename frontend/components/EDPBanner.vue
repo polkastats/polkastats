@@ -81,8 +81,8 @@ export default {
     $subscribe: {
       banner: {
         query: gql`
-          subscription edp (where: {key: {_eq: "banner"}}) {
-            edp {
+          subscription edp {
+            edp(where: { key: { _eq: "banner" } }) {
               value
             }
           }
