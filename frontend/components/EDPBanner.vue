@@ -79,9 +79,9 @@ export default {
   },
   apollo: {
     $subscribe: {
-      metrics: {
+      banner: {
         query: gql`
-          subscription edp {
+          subscription edp (where: {key: {_eq: "banner"}}) {
             edp {
               value
             }
