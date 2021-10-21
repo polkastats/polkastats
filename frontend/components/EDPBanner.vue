@@ -185,14 +185,14 @@ a {
   width: 100% !important;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 992px) {
   .banner {
     display: flex;
     font-size: 0.6rem;
   }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1200px) {
   .banner {
     font-size: 0.8rem;
   }
