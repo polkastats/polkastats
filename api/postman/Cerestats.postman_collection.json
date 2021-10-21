@@ -18,7 +18,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"key\" : \"banner\",\n    \"value\": {\n        \"show\": \"true\",\n        \"feedbackPercentage\": \"90\",\n        \"onClickLink\": \"http://cere.network\",\n        \"cereBootcampGraduatesNumber\": \"67\",\n        \"tokensRewarded\": \"95000\"\n    }\n}",
+					"raw": "{\n    \"key\" : \"banner\",\n    \"value\": {\n        \"show\": true,\n        \"feedbackPercentage\": 90,\n        \"onClickLink\": \"http://cere.network\",\n        \"cereBootcampGraduatesNumber\": 67,\n        \"tokensRewarded\": 95000\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
