@@ -1,26 +1,26 @@
 {
   "private": true,
-  "name": "polkastats-ng",
-  "description": "PolkaStats Next Gen mono repo",
+  "name": "cerestats",
+  "description": "Cerestats mono repo",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Colm3na/polkastats-ng.git"
+    "url": "git+https://github.com/Cerebellum-Network/cerestats"
   },
   "keywords": [
     "blockchain",
+    "cere",
     "kusama",
     "polkadot",
     "substrate",
     "PoS",
     "validator"
   ],
-  "author": "Mario Pino Uceda",
+  "author": "Cere Team",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Colm3na/polkastats-ng/issues"
+    "url": "https://github.com/Cerebellum-Network/cerestats/issues"
   },
-  "homepage": "https://github.com/Colm3na/polkastats-ng#readme",
+  "homepage": "https://github.com/Cerebellum-Network/cerestats#readme",
   "workspaces": ["frontend", "backend", "api"],
   "scripts": {}
  }
- 
