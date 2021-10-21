@@ -40,8 +40,8 @@
             </div>
             <div class="flex child right column">
               <div class="button">
-                Click the banner to find out more about the Extended Developers
-                Program community
+                Click to find out more about Extended Developers Program (EDP)
+                community
               </div>
             </div>
           </div>
