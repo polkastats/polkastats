@@ -88,13 +88,18 @@ export default {
           }
         `,
         result({ data }) {
-          this.metrics = data.edp[0].value
-          this.showBanner = data.edp[0].value.show
-          this.tokenRewarded = data.edp[0].value.tokensRewarded
-          this.graduates = data.edp[0].value.cereBootcampGraduatesNumber
-          this.feedback = data.edp[0].value.feedbackPercentage
-          this.edpLink = data.edp[0].value.onClickLink
-          this.loading = false
+          if (data.edp.length === 0) {
+            this.loading = false
+            this.showBanner = false
+          } else {
+            this.metrics = data.edp[0].value
+            this.showBanner = data.edp[0].value.show
+            this.tokenRewarded = data.edp[0].value.tokensRewarded
+            this.graduates = data.edp[0].value.cereBootcampGraduatesNumber
+            this.feedback = data.edp[0].value.feedbackPercentage
+            this.edpLink = data.edp[0].value.onClickLink
+            this.loading = false
+          }
         },
       },
     },
