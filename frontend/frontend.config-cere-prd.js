@@ -8,7 +8,7 @@ export const network = {
   nodeWs: 'wss://archive.mainnet.cere.network:9945',
   backendWs: 'wss://hasura.stats.cere.network/v1/graphql',
   backendHttp: 'https://api.stats.cere.network/api/v1',
-  googleAnalytics: '',
+  googleAnalytics: 'UA-167490397-2',
   theme: '@/assets/scss/themes/polkastats.scss',
   // ranking               Í
   historySize: 84, // 84 days
