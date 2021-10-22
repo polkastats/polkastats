@@ -2,36 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const crypto = require('crypto');
-const fetch = require('node-fetch');
-const { Pool, Client } = require('pg');
-const axios = require('axios');
+const getClient = require('./db/db');
 const moment = require('moment');
-
-const postgresConnParams = {
-  user: process.env.POSTGRES_USER || 'polkastats',
-  host: process.env.POSTGRES_HOST || 'postgres',
-  database: process.env.POSTGRES_DATABASE || 'polkastats',
-  password: process.env.POSTGRES_PASSWORD || 'polkastats',
-  port: process.env.POSTGRES_PORT || 5432,
-};
+const rateLimit = require('express-rate-limit');
+const faucet = require('./src/service/faucet');
+require('dotenv').config();
+const { REQUEST_PER_IP_PER_DAY } = process.env;
 
 // Http port
 const port = process.env.PORT || 8000;
-
-// Connnect to db
-const getPool = async () => {
-  const pool = new Pool(postgresConnParams);
-  await pool.connect();
-  return pool;
-}
-
-const getClient = async () => {
-  const client = new Client(postgresConnParams);
-  await client.connect();
-  return client;
-}
-
 
 const app = express();
 
@@ -40,12 +19,13 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
+app.set('trust proxy', 1);
 
 // from https://stackoverflow.com/questions/60504945/javascript-encode-decode-utf8-to-hex-and-hex-to-utf8
-const hexToUtf8 = (s) =>
-{
+const hexToUtf8 = (s) => {
   return decodeURIComponent(
-     s.replace(/\s+/g, '') // remove spaces
+    s
+      .replace(/\s+/g, '') // remove spaces
       .replace(/[0-9a-f]{2}/g, '%$&') // add '%' before each 2 characters
   );
 };
@@ -293,6 +273,18 @@ app.get('/api/v1/edp/:key', validateToken, async (req, res) => {
     });
   }
 });
+
+const limiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 60 minutes
+  max: +REQUEST_PER_IP_PER_DAY, // limit each IP to {REQUEST_PER_IP_PER_DAY} requests per windowMs
+  handler: function (req, res /*next*/) {
+    return res.status(429).json({
+      msg: `Test tokens can't be requested more than ${+REQUEST_PER_IP_PER_DAY} times in a day`,
+    });
+  },
+});
+
+app.use("/api/v1/faucet", limiter, faucet.faucet);
 
 app.use('/', (req, res) => {
   res.status(404).json({

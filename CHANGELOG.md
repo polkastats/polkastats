@@ -1,6 +1,7 @@
 # Cerestats
 
 ## vNext
+- Added faucet functionality.
 - Added Google Analytics for PROD
 
 ## v0.2.0

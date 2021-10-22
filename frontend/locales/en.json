@@ -64,6 +64,7 @@
       "election-prediction": "Election prediction",
       "nominators": "Nominators",
       "accounts": "Accounts",
+      "faucet": "Faucet",
       "get_in_contact": "Get in contact",
       "about_us": "About us",
       "support_polkastats": "Support Polkastats",
@@ -280,6 +281,11 @@
       "title": "Validators",
       "head_title": "{networkName} Validators",
       "head_content": "{networkName} Proof Of Stake Validators"
+    },
+    "faucet": {
+      "title": "Faucet",
+      "head_title": "Cere Faucet",
+      "head_content": "Cere Faucet"
     }
   },
   "details": {

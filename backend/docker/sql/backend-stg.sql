@@ -213,6 +213,18 @@ CREATE TABLE IF NOT EXISTS edp(
   PRIMARY KEY ( key )
 );
 
+CREATE TABLE IF NOT EXISTS faucet(
+  id serial NOT NULL,
+  sender TEXT,
+  value TEXT,
+  txnHash TEXT,
+  destination TEXT,
+  network TEXT,
+  address INET,
+  createdAt timestamp default current_timestamp,
+  PRIMARY KEY( id )
+);
+
 INSERT INTO total (name, count) VALUES
   ('blocks', 0),
   ('extrinsics', 0),
@@ -257,6 +269,7 @@ GRANT ALL PRIVILEGES ON TABLE featured TO stg_cerestats;
 GRANT ALL PRIVILEGES ON TABLE account TO stg_cerestats;
 GRANT ALL PRIVILEGES ON TABLE total TO stg_cerestats;
 GRANT ALL PRIVILEGES ON TABLE edp TO stg_cerestats;
+GRANT ALL PRIVILEGES ON TABLE faucet TO stg_cerestats;
 
 --
 -- Fast counters
