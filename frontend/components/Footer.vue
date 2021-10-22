@@ -2,14 +2,21 @@
   <div id="footer" class="container-fluid footer mt-2">
     <footer class="text-muted">
       <div class="container">
-        <div class="d-flex align-items-center justify-content-center mt-2 pt-1">
-          <div>
-            <a href="https://cere.network/">
-              <img src="/img/cere-logo.png" class="cere-logo" />
-            </a>
-          </div>
-          <a href="https://cere.network/" style="text-decoration: none">
-            <div class="cere-title">Cere Network</div>
+        <div class="mt-2 pt-1">
+          <a
+            href="https://cere.network/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex"
+          >
+            <span>
+              <img
+                src="/img/cere-logo.png"
+                alt="Cere Network"
+                class="cere-logo"
+              />
+            </span>
+            <span class="cere-title"> Cere Network </span>
           </a>
         </div>
         <div class="row pt-2">
@@ -106,5 +113,12 @@ export default {}
 }
 .grant-badge {
   max-width: 150px;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: columns;
 }
 </style>
