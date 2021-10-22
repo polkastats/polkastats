@@ -1,12 +1,12 @@
 {
 	"info": {
-		"_postman_id": "b5772ee7-2479-4ffb-b10e-9f95134778b0",
+		"_postman_id": "a62d02bb-78f2-4c7f-9bad-0caa9dad730e",
 		"name": "Cerestats",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Add value",
+			"name": "Add/Update Banner data",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -18,7 +18,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"key\" : \"test1\",\n    \"value\": {\n        \"graduates-number\": \"10\"\n    }\n}",
+					"raw": "{\n    \"key\" : \"banner\",\n    \"value\": {\n        \"show\": true,\n        \"feedbackPercentage\": 90,\n        \"onClickLink\": \"http://cere.network\",\n        \"cereBootcampGraduatesNumber\": 67,\n        \"tokensRewarded\": 95000\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -44,7 +44,7 @@
 			"response": []
 		},
 		{
-			"name": "Get data",
+			"name": "Get Banner data",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -55,7 +55,7 @@
 					}
 				],
 				"url": {
-					"raw": "https://api.stats.cere.network/api/v1/edp",
+					"raw": "https://api.stats.cere.network/api/v1/edp/banner",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -66,7 +66,8 @@
 					"path": [
 						"api",
 						"v1",
-						"edp"
+						"edp",
+						"banner"
 					]
 				}
 			},
