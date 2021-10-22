@@ -7,7 +7,7 @@ const {
   NETWORKS,
   NUMBER_OF_TOKENS_TO_SEND,
   MAX_BALANCE,
-  REQUEST_PER_DAY,
+  REQUESTS_PER_DAY,
 } = process.env;
 const networkParams = new Map();
 
@@ -88,9 +88,9 @@ module.exports = {
       const dbresselect = await client.query(selectQuery);
       const todaysTransaction = dbresselect.rows[0].count;
 
-      if (todaysTransaction > +REQUEST_PER_DAY) {
+      if (todaysTransaction > +REQUESTS_PER_DAY) {
         throw new Error(
-          `We exceed our daily limit: ${+REQUEST_PER_DAY}. Try again later.`
+          `We exceed our daily limit: ${+REQUESTS_PER_DAY}. Try again later.`
         );
       }
 

@@ -7,7 +7,7 @@ const moment = require('moment');
 const rateLimit = require('express-rate-limit');
 const faucet = require('./src/service/faucet');
 require('dotenv').config();
-const { REQUEST_PER_IP_PER_DAY } = process.env;
+const { REQUESTS_PER_IP_PER_DAY } = process.env;
 
 // Http port
 const port = process.env.PORT || 8000;
@@ -276,10 +276,10 @@ app.get('/api/v1/edp/:key', validateToken, async (req, res) => {
 
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 minutes
-  max: +REQUEST_PER_IP_PER_DAY, // limit each IP to {REQUEST_PER_IP_PER_DAY} requests per windowMs
+  max: +REQUESTS_PER_IP_PER_DAY, // limit each IP to {REQUEST_PER_IP_PER_DAY} requests per windowMs
   handler: function (req, res /*next*/) {
     return res.status(429).json({
-      msg: `Test tokens can't be requested more than ${+REQUEST_PER_IP_PER_DAY} times in a day`,
+      msg: `Test tokens can't be requested more than ${+REQUESTS_PER_IP_PER_DAY} times in a day`,
     });
   },
 });
