@@ -1,7 +1,7 @@
 # Cerestats
 
 ## vNext
-- ...
+- Added Google Analytics for PROD
 
 ## v0.2.0
 - Added UI to show EDP banner on homepage.
