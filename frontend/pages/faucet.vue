@@ -1,7 +1,7 @@
 <template>
   <div>
-    <section>
-      <b-container class="main py-5">
+    <section class="container faucet-container">
+      <div>
         <b-row>
           <b-col cols="12">
             <h1>
@@ -24,12 +24,13 @@
               type="search"
               placeholder="Account ID"
             />
+            <span v-if="addressE" class="error"> {{ addressE }}</span>
           </b-col>
         </b-form-row>
         <b-row class="button-flex">
           <b-button
             :disabled="disableButton"
-            class="button"
+            class="send-button"
             @click="requestAsset"
           >
             <span>Send me test CERE tokens</span>
@@ -40,14 +41,14 @@
             :show="dismissCountDown"
             dismissible
             :variant="alertType"
-            class="mt-5"
+            class="mt-3"
             @dismissed="dismissCountDown = 0"
             @dismiss-count-down="countDownChanged"
           >
             {{ alertMessage }}
           </b-alert>
         </div>
-      </b-container>
+      </div>
     </section>
   </div>
 </template>
@@ -55,30 +56,49 @@
 <script>
 import axios from 'axios'
 import { network } from '@/frontend.config.js'
+import commonMixin from '@/mixins/commonMixin.js'
+
 export default {
+  mixins: [commonMixin],
   data() {
     return {
       network,
       networkValue: 'testnet',
       address: null,
       disableButton: false,
-      dismissSecs: 5,
+      dismissSecs: 10,
       dismissCountDown: 0,
       alertType: null,
       alertMessage: null,
+      addressE: '',
     }
   },
   head() {
     return {
-      title: this.$t('pages.faucet.head_title'),
+      title: this.$t('pages.faucet.head_title', {
+        networkName: network.name,
+      }),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: this.$t('pages.faucet.head_content'),
+          content: this.$t('pages.faucet.head_content', {
+            networkName: network.name,
+          }),
         },
       ],
     }
+  },
+  watch: {
+    address(value) {
+      if (value !== '') {
+        this.addressE = this.isValidAddressPolkadotAddress(value)
+          ? ''
+          : 'Please enter a valid Account ID.'
+      } else {
+        this.addressE = ''
+      }
+    },
   },
   methods: {
     requestAsset() {
@@ -98,7 +118,7 @@ export default {
           }
         })
         .catch((error) => {
-          if (error.response.status === 400) {
+          if (error.response.status === 400 || error.response.status === 429) {
             this.alertType = 'danger'
             this.alertMessage = error.response.data.msg
             this.showAlert()
@@ -145,10 +165,20 @@ input:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-left: 10px;
 }
 
-.button {
+.send-button {
   border-radius: 10px;
   max-width: 250px;
+  margin-right: 0 !important;
+}
+
+.faucet-container {
+  min-height: 49vh;
+}
+
+.error {
+  color: red;
 }
 </style>

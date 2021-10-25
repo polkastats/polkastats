@@ -284,8 +284,8 @@
     },
     "faucet": {
       "title": "Faucet",
-      "head_title": "Cere Faucet",
-      "head_content": "Cere Faucet"
+      "head_title": "{networkName} Faucet",
+      "head_content": "{networkName} Faucet"
     }
   },
   "details": {
