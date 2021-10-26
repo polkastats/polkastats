@@ -2,7 +2,8 @@
 
 ## vNext
 - Added faucet functionality.
-- Added Google Analytics for PROD
+- Added Google Analytics for PROD.
+- Updated backend config values.
 
 ## v0.2.0
 - Added UI to show EDP banner on homepage.
