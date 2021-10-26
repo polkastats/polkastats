@@ -78,7 +78,7 @@ module.exports = {
       // Validate network type
       const isValidNetwork = networkParams.has(network.toUpperCase());
       if (!isValidNetwork) {
-        throw new Error("Invalid Network Type");
+        throw new Error("Invalid Network Type.");
       }
 
       const client = await getClient();
@@ -105,7 +105,7 @@ module.exports = {
       // Check for minimum balance
       if (balance >= maxBalance) {
         throw new Error(
-          `Your balance is ${balance.toHuman()}, So we couldn't process your request.`
+          `Your balance is ${balance.toHuman()}, so we couldn't process your request.`
         );
       }
 
