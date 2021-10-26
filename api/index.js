@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const getClient = require('./db/db');
 const moment = require('moment');
 const rateLimit = require('express-rate-limit');
-const faucet = require('./src/service/faucet');
+const faucet = require('./src/services/faucet');
 require('dotenv').config();
 const { REQUESTS_PER_IP_PER_DAY } = process.env;
 
