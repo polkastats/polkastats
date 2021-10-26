@@ -1,6 +1,6 @@
 <template>
   <div>
-    <section class="container faucet-container">
+    <section class="container faucet-container py-5">
       <div>
         <b-row>
           <b-col cols="12">
@@ -172,10 +172,6 @@ input:focus {
   border-radius: 10px;
   max-width: 250px;
   margin-right: 0 !important;
-}
-
-.faucet-container {
-  min-height: 49vh;
 }
 
 .error {

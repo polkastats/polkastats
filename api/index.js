@@ -279,7 +279,7 @@ const limiter = rateLimit({
   max: +REQUESTS_PER_IP_PER_DAY, // limit each IP to {REQUEST_PER_IP_PER_DAY} requests per windowMs
   handler: function (req, res /*next*/) {
     return res.status(429).json({
-      msg: `Test tokens can't be requested more than ${+REQUESTS_PER_IP_PER_DAY} times in a day`,
+      msg: `Test tokens can't be requested more than ${+REQUESTS_PER_IP_PER_DAY} times in a day. Please, try again later.`,
     });
   },
 });
