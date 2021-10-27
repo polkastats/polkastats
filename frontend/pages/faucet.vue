@@ -60,6 +60,15 @@ import commonMixin from '@/mixins/commonMixin.js'
 
 export default {
   mixins: [commonMixin],
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.attachFooterToBottom()
+    })
+  },
+  beforeRouteLeave(to, from, next) {
+    this.detachFooterFromBottom()
+    next()
+  },
   data() {
     return {
       network,
@@ -100,7 +109,24 @@ export default {
       }
     },
   },
+  mounted() {
+    this.attachFooterToBottom()
+  },
   methods: {
+    attachFooterToBottom() {
+      this.setFooterStyles('fixed', '0', '9999')
+    },
+    detachFooterFromBottom() {
+      this.setFooterStyles('', '', '')
+    },
+    setFooterStyles(position, bottom, zIndex) {
+      const footer = document.getElementById('footer')
+      if (footer) {
+        footer.style.position = position
+        footer.style.bottom = bottom
+        footer.style.zIndex = zIndex
+      }
+    },
     requestAsset() {
       this.disableButton = true
       axios
