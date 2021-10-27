@@ -24,7 +24,9 @@
               type="search"
               placeholder="Account ID"
             />
-            <span v-if="addressE" class="error"> {{ addressE }}</span>
+            <span v-if="addressValidationError" class="error">
+              {{ addressValidationError }}</span
+            >
           </b-col>
         </b-form-row>
         <b-row class="button-flex">
@@ -73,13 +75,13 @@ export default {
     return {
       network,
       networkValue: 'testnet',
-      address: null,
-      disableButton: false,
+      address: '',
+      disableButton: true,
       dismissSecs: 10,
       dismissCountDown: 0,
       alertType: null,
       alertMessage: null,
-      addressE: '',
+      addressValidationError: '',
     }
   },
   head() {
@@ -101,11 +103,15 @@ export default {
   watch: {
     address(value) {
       if (value !== '') {
-        this.addressE = this.isValidAddressPolkadotAddress(value)
-          ? ''
-          : 'Please enter a valid Account ID.'
+        if (this.isValidAddressPolkadotAddress(value)) {
+          this.addressValidationError = ''
+          this.disableButton = false
+        } else {
+          this.addressValidationError = 'Please enter a valid Account ID.'
+          this.disableButton = true
+        }
       } else {
-        this.addressE = ''
+        this.addressValidationError = ''
       }
     },
   },
@@ -154,9 +160,9 @@ export default {
     countDownChanged(dismissCountDown) {
       this.dismissCountDown = dismissCountDown
       if (this.dismissCountDown === 0) {
-        this.address = null
+        this.address = ''
         this.networkValue = 'testnet'
-        this.disableButton = false
+        this.disableButton = true
       }
     },
     showAlert() {
