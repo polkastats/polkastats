@@ -62,18 +62,8 @@
             <hr />
             <ul class="list-unstyled text-center">
               <li>
-                <a target="_blank" href="https://block-viewer.cere.network/"
-                  >Block Viewer</a
-                >
-              </li>
-              <li>
-                <a target="_blank" href="https://bridge.cere.network">Bridge</a>
-              </li>
-              <li>
-                <a
-                  target="_blank"
-                  href="https://github.com/Cerebellum-Network/cerestats"
-                  >GitHub</a
+                <a target="_blank" href="https://cere-network.gitbook.io/cere-network/mainnet/network-details"
+                  >Cere Network Homepage</a
                 >
               </li>
             </ul>
