@@ -159,7 +159,7 @@
             class="text-center py-3 glitch"
           >
             This information is verified and provided by historical data on the
-            Kusama blockchain
+            Cere Network blockchain
           </b-alert>
           <div class="row pt-4">
             <div class="col-md-6 mb-5">

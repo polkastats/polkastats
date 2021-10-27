@@ -2,24 +2,23 @@
   <div id="footer" class="container-fluid footer mt-2">
     <footer class="text-muted">
       <div class="container">
-        <div class="mt-2 pt-1">
-          <a
-            href="https://cere.network/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex"
-          >
-            <span>
+        <div class="row mt-2 pt-1">
+          <div class="col-12 text-center">
+            <a
+              href="https://cere.network/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img
                 src="/img/cere-logo.png"
                 alt="Cere Network"
-                class="cere-logo"
+                style="max-width: 50px"
               />
-            </span>
-            <span class="cere-title"> Cere Network </span>
-          </a>
+              <span class="cere-title"> Cere Network </span>
+            </a>
+          </div>
         </div>
-        <div class="row pt-2">
+        <div class="row mt-1 pt-2">
           <div
             class="col-xs-12 col-sm-12 col-md-4 mt-sm-2 text-center text-white"
             data-testid="footer-getInContact"
@@ -62,18 +61,10 @@
             <hr />
             <ul class="list-unstyled text-center">
               <li>
-                <a target="_blank" href="https://block-viewer.cere.network/"
-                  >Block Viewer</a
-                >
-              </li>
-              <li>
-                <a target="_blank" href="https://bridge.cere.network">Bridge</a>
-              </li>
-              <li>
                 <a
                   target="_blank"
-                  href="https://github.com/Cerebellum-Network/cerestats"
-                  >GitHub</a
+                  href="https://cere-network.gitbook.io/cere-network/mainnet/network-details"
+                  >Cere Network Homepage</a
                 >
               </li>
             </ul>
@@ -106,19 +97,12 @@ export default {}
 <style>
 .cere-logo {
   max-width: 50px;
-  max-height: auto;
 }
 .cere-title {
   font-size: 20px;
+  padding-right: 10px;
 }
 .grant-badge {
   max-width: 150px;
-}
-
-.flex {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: columns;
 }
 </style>

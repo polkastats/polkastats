@@ -30,6 +30,9 @@
           <b-nav-item right to="/accounts">{{
             $t('layout.default.accounts')
           }}</b-nav-item>
+          <b-nav-item right to="/faucet">{{
+            $t('layout.default.faucet')
+          }}</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-container>
