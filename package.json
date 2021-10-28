@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "cerestats",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Cerestats mono repo",
   "repository": {
     "type": "git",
