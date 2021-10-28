@@ -3,6 +3,9 @@
 ## vNext
 - ...
 
+## v0.3.1
+- Updated Cere Network Homepage link.
+
 ## v0.3.0
 - Added faucet functionality.
 - Added Google Analytics for PROD.
