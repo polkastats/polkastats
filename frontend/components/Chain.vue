@@ -86,15 +86,11 @@
         <div class="card h-100">
           <div class="card-body">
             <h4 class="mb-3">
-              {{ $t('components.network.transfers') }}
+              {{ $t('components.network.signedTransactions') }}
             </h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              to="/transfers"
-              title="Click to see tranfers!"
-            >
-              <h6 class="d-inline-block">{{ formatNumber(totalTransfers) }}</h6>
-            </nuxt-link>
+            <h6 class="d-inline-block">
+              {{ formatNumber(totalSignedTransactions) }}
+            </h6>
           </div>
         </div>
       </div>
@@ -190,7 +186,7 @@ export default {
       totalEvents: 0,
       totalAccounts: 0,
       totalIssuance: 0,
-      totalTransfers: 0,
+      totalSignedTransactions: 0,
       totalStaked: 0,
       totalValidators: 0,
       totalWaiting: 0,
@@ -256,8 +252,9 @@ export default {
         result({ data }) {
           this.totalExtrinsics =
             data.total.find((row) => row.name === 'extrinsics').count || 0
-          this.totalTransfers =
-            data.total.find((row) => row.name === 'transfers').count || 0
+          this.totalSignedTransactions =
+            data.total.find((row) => row.name === 'signed_transactions')
+              .count || 0
           this.totalEvents =
             data.total.find((row) => row.name === 'events').count || 0
           this.totalValidators =
