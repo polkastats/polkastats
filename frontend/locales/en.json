@@ -20,7 +20,8 @@
       "total_issuance": "Total issuance",
       "transfers": "Transfers",
       "nominators": "Nominators",
-      "validators": "Validators"
+      "validators": "Validators",
+      "signedTransactions": "Signed transactions"
     },
     "chain": {
       "last_block": "Last block",

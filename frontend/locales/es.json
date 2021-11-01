@@ -20,7 +20,8 @@
       "total_issuance": "Emisión total",
       "transfers": "Transferencias",
       "nominators": "Nominadores",
-      "validators": "Validadores"
+      "validators": "Validadores",
+      "signedTransactions": "Transacciones firmadas"
     },
     "chain": {
       "last_block": "Último bloque",
