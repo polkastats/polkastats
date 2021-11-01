@@ -63,7 +63,7 @@
               <li>
                 <a
                   target="_blank"
-                  href="https://cere-network.gitbook.io/cere-network/mainnet/network-details"
+                  href="https://cere-network.gitbook.io/cere-network/"
                   >Cere Network Homepage</a
                 >
               </li>
