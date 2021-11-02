@@ -3,7 +3,7 @@
     <b-container class="px-sm-3">
       <b-navbar-brand>
         <nuxt-link to="/" class="navbar-brand" title="Reef block explorer">
-          <img class="logo" src="/img/cere-logo.png" />
+          <img class="logo" src="/img/cerestats-logo.png" />
           Cerestats
         </nuxt-link>
       </b-navbar-brand>

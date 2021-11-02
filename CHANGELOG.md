@@ -1,7 +1,7 @@
 # Cerestats
 
 ## vNext
-- ...
+- Updated logo and favicon.
 
 ## v0.3.1
 - Updated Cere Network Homepage link.
