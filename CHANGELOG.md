@@ -1,6 +1,9 @@
 # Cerestats
 
 ## vNext
+- ...
+
+## v0.4.0
 - Updated logo and favicon.
 
 ## v0.3.1
