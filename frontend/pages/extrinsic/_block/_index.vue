@@ -48,7 +48,7 @@ export default {
   },
   head() {
     return {
-      title: 'Cere Network Stats',
+      title: 'Cere Stats - Extrinsic',
       meta: [
         {
           hid: 'description',

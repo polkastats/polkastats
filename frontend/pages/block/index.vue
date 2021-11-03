@@ -21,12 +21,12 @@ export default {
   },
   head() {
     return {
-      title: 'Cere Network Stats',
+      title: 'Cere Stats - Block',
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: 'Cere Network Stats',
+          content: 'Cere Stats',
         },
       ],
     }
