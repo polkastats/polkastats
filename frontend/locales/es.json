@@ -21,7 +21,7 @@
       "transfers": "Transferencias",
       "nominators": "Nominadores",
       "validators": "Validadores",
-      "signedTransactions": "Transacciones firmadas"
+      "signedTransactions": "Transacción total"
     },
     "chain": {
       "last_block": "Último bloque",
