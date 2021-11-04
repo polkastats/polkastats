@@ -131,7 +131,6 @@
             <h4 class="mb-3">{{ $t('components.network.total_staked') }}</h4>
             <h6 class="d-inline-block">
               {{ formatAmount(totalStaked) }}
-              ({{ formatNumber(totalStakedPercentage) }}%)
             </h6>
           </div>
         </div>
