@@ -49,7 +49,7 @@
     "staking_slashes": {
       "search": "Buscar slash por número de bloque",
       "no_slash_found": "No se han encontrado slashes"
-    },    
+    },
     "loading": {
       "loading_data": "Cargando datos, por favor sea paciente..."
     }
@@ -111,7 +111,7 @@
       "download_csv": "Descargar en formato CSV"
     },
     "account": {
-      "head_title": "Cere Stats - cuenta {address}",
+      "head_title": "Cere Stats - Cuenta {address}",
       "head_content": "{networkName} cuenta {address}",
       "sent_transfers": "Transferencias enviadas",
       "received_transfers": "Transferencias recibidos"
