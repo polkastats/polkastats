@@ -188,25 +188,9 @@
               />
             </div>
             <div class="col-md-6 mb-5">
-              <Subaccounts
-                :rating="validator.subAccountsRating"
-                :cluster-members="validator.clusterMembers"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-5">
               <Nominators
                 :nominators="validator.nominators"
                 :rating="validator.nominatorsRating"
-              />
-            </div>
-            <div class="col-md-6 mb-5">
-              <EraPoints
-                :percent="validator.eraPointsPercent"
-                :average="eraPointsAveragePercent"
-                :era-points-history="validator.eraPointsHistory"
-                :rating="validator.eraPointsRating"
               />
             </div>
           </div>
@@ -219,9 +203,11 @@
               />
             </div>
             <div class="col-md-6 mb-5">
-              <Payouts
-                :payout-history="validator.payoutHistory"
-                :rating="validator.payoutRating"
+              <EraPoints
+                :percent="validator.eraPointsPercent"
+                :average="eraPointsAveragePercent"
+                :era-points-history="validator.eraPointsHistory"
+                :rating="validator.eraPointsRating"
               />
             </div>
           </div>
@@ -285,12 +271,9 @@ import commonMixin from '@/mixins/commonMixin.js'
 import Identity from '@/components/validator/metrics/Identity.vue'
 import Address from '@/components/validator/metrics/Address.vue'
 import Slashes from '@/components/validator/metrics/Slashes.vue'
-import Subaccounts from '@/components/validator/metrics/Subaccounts.vue'
 import Nominators from '@/components/validator/metrics/Nominators.vue'
 import EraPoints from '@/components/validator/metrics/EraPoints.vue'
 import Commission from '@/components/validator/metrics/Commission.vue'
-import Payouts from '@/components/validator/metrics/Payouts.vue'
-import Governance from '@/components/validator/metrics/Governance.vue'
 import Thousand from '@/components/validator/metrics/Thousand.vue'
 import RelativePerformanceChart from '@/components/validator/charts/RelativePerformanceChart.vue'
 import EraPointsChart from '@/components/validator/charts/EraPointsChart.vue'
@@ -304,12 +287,9 @@ export default {
     Identity,
     Address,
     Slashes,
-    Subaccounts,
     Nominators,
     EraPoints,
     Commission,
-    Payouts,
-    Governance,
     Thousand,
     RelativePerformanceChart,
     EraPointsChart,
