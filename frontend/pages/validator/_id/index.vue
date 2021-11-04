@@ -329,9 +329,7 @@ export default {
   },
   head() {
     return {
-      title: `Validator ${this.accountId} metrics | ${
-        network.title
-      } for ${this.capitalize(network.name)}`,
+      title: `Cere Stats - Validator`,
       meta: [
         {
           hid: 'description',

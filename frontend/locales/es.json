@@ -49,7 +49,7 @@
     "staking_slashes": {
       "search": "Buscar slash por número de bloque",
       "no_slash_found": "No se han encontrado slashes"
-    },    
+    },
     "loading": {
       "loading_data": "Cargando datos, por favor sea paciente..."
     }
@@ -105,13 +105,13 @@
       "remove_from_favorites": "Eliminar de Favoritos",
       "add_to_favorites": "Añadir a Favoritos",
       "identity": "Identidad",
-      "head_title": "PolkaStats - Cuentas en {networkName}",
+      "head_title": "Cere Stats - Cuentas en {networkName}",
       "head_content": "Cuentas en {networkName}",
       "loading_data": "Cargando datos, puede tardar tiempo. Sea paciente, por favor",
       "download_csv": "Descargar en formato CSV"
     },
     "account": {
-      "head_title": "PolkaStats - {networkName} cuenta {address}",
+      "head_title": "Cere Stats - Cuenta {address}",
       "head_content": "{networkName} cuenta {address}",
       "sent_transfers": "Transferencias enviadas",
       "received_transfers": "Transferencias recibidos"
@@ -143,7 +143,7 @@
       "reward_destination": "Destino de la recompensa",
       "nominators": "Nominadores",
       "intention": "Intenciones",
-      "head_title": "PolkaStats - Validadores e intenciones favoritas en {networkName}",
+      "head_title": "Cere Stats - Validadores e intenciones favoritas",
       "head_content": "Validadores e intenciones favoritas en {networkName}"
     },
     "index": {
@@ -184,30 +184,30 @@
     },
     "blocks": {
       "title": "Bloques",
-      "head_title": "PolkaStats - Bloques en {networkName}",
+      "head_title": "Cere Stats - Bloques",
       "head_content": "Bloques en {networkName}",
       "search_placeholder": "Buscar por número de bloque"
     },
     "extrinsics": {
       "title": "Extrinsics",
-      "head_title": "PolkaStats - Extrinsics en {networkName}",
+      "head_title": "Cere Stats - Extrinsics",
       "head_content": "Extrinsics en {networkName}"
     },
     "transfers": {
       "title": "Transferencias",
-      "head_title": "PolkaStats - Transferencias en {networkName}",
+      "head_title": "Cere Stats - Transferencias",
       "head_content": "Transferencias en {networkName}",
       "search_placeholder": "Buscar transferencia por número de bloque, hash o dirección de procedencia"
     },
     "activity": {
       "title": "Actividad",
-      "head_title": "PolkaStats - Actividad en {networkName}",
+      "head_title": "Cere Stats - Actividad",
       "head_content": "Actividad en {networkName}",
       "search_placeholder": "Buscar actividad por número de bloque, hash o dirección de procedencia"
     },
     "events": {
       "title": "Eventos",
-      "head_title": "PolkaStats - Eventos en {networkName}",
+      "head_title": "Cere Stats - Eventos",
       "head_content": "Eventos en {networkName}",
       "search_placeholder": "Buscar por número de bloque"
     },
@@ -224,7 +224,7 @@
       "follow_polkastats_on_twitter": "Sigue @PolkaStats en Twitter",
       "are_you_a_TEXT": "¿Eres un feliz usuario de PolkaStats? Asegúrate de seguirnos",
       "on_twitter_to_get_TEXT": "en Twitter para tener las últimas actualizaciones de la plataforma",
-      "head_title": "PolkaStats - Apóyanos",
+      "head_title": "Cere Stats - Apóyanos",
       "head_content": "Apóyanos"
     },
     "how_to_stake": {
@@ -274,12 +274,12 @@
     },
     "polkastats_validator": {
       "title": "Validador PolkaStats",
-      "head_title": "PolkaStats - Validador PolkaStats {networkName}",
+      "head_title": "Cere Stats - Validador",
       "head_content": "Validador PolkaStats {networkName}"
     },
     "validators": {
       "title": "Validadores",
-      "head_title": "PolkaStats - Validatores proof of stake de {networkName}",
+      "head_title": "Cere Stats - Validatores proof of stake",
       "head_content": "Validatores proof of stake de {networkName}"
     },
     "faucet": {

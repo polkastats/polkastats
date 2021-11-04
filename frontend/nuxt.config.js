@@ -8,7 +8,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Cere Network Stats',
+    title: 'Cere Stats',
     htmlAttrs: {
       lang: 'en',
     },
@@ -18,7 +18,7 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: 'Cere Network Stats',
+        content: 'Cere Stats',
       },
     ],
     link: [{ rel: 'icon', type: 'image/png', href: '/img/favicon.ico' }],
