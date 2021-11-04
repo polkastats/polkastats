@@ -2,7 +2,7 @@
   "private": true,
   "name": "cerestats",
   "version": "0.4.0",
-  "description": "Cerestats mono repo",
+  "description": "Cere Stats mono repo",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Cerebellum-Network/cerestats"

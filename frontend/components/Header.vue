@@ -4,7 +4,7 @@
       <b-navbar-brand>
         <nuxt-link to="/" class="navbar-brand" title="Reef block explorer">
           <img class="logo" src="/img/cerestats-logo.png" />
-          Cerestats
+          Stats
         </nuxt-link>
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse" />
