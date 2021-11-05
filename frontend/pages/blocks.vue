@@ -215,13 +215,17 @@ export default {
         query: gql`
           subscription blocks(
             $blockNumber: bigint
+            $blockHash: String
             $perPage: Int!
             $offset: Int!
           ) {
             block(
               limit: $perPage
               offset: $offset
-              where: { block_number: { _eq: $blockNumber } }
+              where: {
+                block_number: { _eq: $blockNumber }
+                block_hash: { _eq: $blockHash }
+              }
               order_by: { block_number: desc }
             ) {
               block_number
@@ -237,7 +241,10 @@ export default {
         `,
         variables() {
           return {
-            blockNumber: this.filter ? parseInt(this.filter) : undefined,
+            blockNumber: this.isBlockNumber(this.filter)
+              ? parseInt(this.filter)
+              : undefined,
+            blockHash: this.isHash(this.filter) ? this.filter : undefined,
             perPage: this.perPage,
             offset: (this.currentPage - 1) * this.perPage,
           }

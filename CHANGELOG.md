@@ -6,6 +6,7 @@
 
 ## v0.4.0
 - Updated logo and favicon.
+- Added functionality to filter blocks based on block hash.
 
 ## v0.3.1
 - Updated Cere Network Homepage link.

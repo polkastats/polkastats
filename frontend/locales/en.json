@@ -187,7 +187,7 @@
       "title": "Blocks",
       "head_title": "Cere Stats - Blocks",
       "head_content": "{networkName} Blocks",
-      "search_placeholder": "Search by block number"
+      "search_placeholder": "Search by block number or block hash"
     },
     "extrinsics": {
       "title": "Extrinsics",
