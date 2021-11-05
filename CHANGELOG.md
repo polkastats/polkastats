@@ -1,7 +1,7 @@
 # Cerestats
 
 ## vNext
-- ...
+- Added total transactions to homepage.
 
 ## v0.4.0
 - Updated logo and favicon.

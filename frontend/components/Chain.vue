@@ -4,7 +4,9 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.last_block') }}</h4>
+            <h4 class="mb-3 title">
+              {{ $t('components.network.last_block') }}
+            </h4>
             <nuxt-link
               v-b-tooltip.hover
               :to="`/block?blockNumber=${lastBlock}`"
@@ -18,7 +20,7 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">
+            <h4 class="mb-3 title">
               {{ $t('components.network.last_block_finalized') }}
             </h4>
             <nuxt-link
@@ -36,7 +38,7 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">Total Extrinsics</h4>
+            <h4 class="mb-3 title">Total Extrinsics</h4>
             <nuxt-link
               v-b-tooltip.hover
               to="/extrinsics"
@@ -52,7 +54,7 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">Total Events</h4>
+            <h4 class="mb-3 title">Total Events</h4>
             <nuxt-link
               v-b-tooltip.hover
               to="/events"
@@ -69,7 +71,7 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.accounts') }}</h4>
+            <h4 class="mb-3 title">{{ $t('components.network.accounts') }}</h4>
             <nuxt-link
               v-b-tooltip.hover
               to="/accounts"
@@ -85,23 +87,19 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">
-              {{ $t('components.network.transfers') }}
+            <h4 class="mb-3 title">
+              {{ $t('components.network.signedTransactions') }}
             </h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              to="/transfers"
-              title="Click to see tranfers!"
-            >
-              <h6 class="d-inline-block">{{ formatNumber(totalTransfers) }}</h6>
-            </nuxt-link>
+            <h6 class="d-inline-block">
+              {{ formatNumber(totalSignedExtrinsics) }}
+            </h6>
           </div>
         </div>
       </div>
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">
+            <h4 class="mb-3 title">
               {{ $t('components.network.active_era') }}
             </h4>
             <h6 class="d-inline-block">
@@ -113,7 +111,7 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">
+            <h4 class="mb-3 title">
               {{ $t('components.network.total_issuance') }}
             </h4>
             <h6 class="d-inline-block">
@@ -128,7 +126,9 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.total_staked') }}</h4>
+            <h4 class="mb-3 title">
+              {{ $t('components.network.total_staked') }}
+            </h4>
             <h6 class="d-inline-block">
               {{ formatAmount(totalStaked) }}
             </h6>
@@ -138,7 +138,9 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.current_index') }}</h4>
+            <h4 class="mb-3 title">
+              {{ $t('components.network.current_index') }}
+            </h4>
             <h6 class="d-inline-block">
               {{ formatNumber(currentIndex) }}
             </h6>
@@ -148,7 +150,9 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.validators') }}</h4>
+            <h4 class="mb-3 title">
+              {{ $t('components.network.validators') }}
+            </h4>
             <h6 class="d-inline-block">
               {{ formatNumber(totalValidators) }} /
               {{ formatNumber(totalWaiting) }}
@@ -159,7 +163,9 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.nominators') }}</h4>
+            <h4 class="mb-3 title">
+              {{ $t('components.network.nominators') }}
+            </h4>
             <h6 class="d-inline-block">
               {{ formatNumber(totalNominators) }}
             </h6>
@@ -189,7 +195,7 @@ export default {
       totalEvents: 0,
       totalAccounts: 0,
       totalIssuance: 0,
-      totalTransfers: 0,
+      totalSignedExtrinsics: 0,
       totalStaked: 0,
       totalValidators: 0,
       totalWaiting: 0,
@@ -255,8 +261,9 @@ export default {
         result({ data }) {
           this.totalExtrinsics =
             data.total.find((row) => row.name === 'extrinsics').count || 0
-          this.totalTransfers =
-            data.total.find((row) => row.name === 'transfers').count || 0
+          this.totalSignedExtrinsics =
+            data.total.find((row) => row.name === 'signed_extrinsics').count ||
+            0
           this.totalEvents =
             data.total.find((row) => row.name === 'events').count || 0
           this.totalValidators =
@@ -310,5 +317,8 @@ export default {
 <style>
 .chain-info .card {
   box-shadow: 0 8px 20px 0 rgb(40 133 208 / 15%);
+}
+.title {
+  font-size: 1.4rem;
 }
 </style>
