@@ -1,7 +1,7 @@
 # Cerestats
 
 ## vNext
-- Added signed transactions count to homepage.
+- Added total transactions to homepage.
 
 ## v0.3.1
 - Updated Cere Network Homepage link.
