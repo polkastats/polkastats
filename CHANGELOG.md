@@ -1,6 +1,6 @@
 # Cerestats
 
-## vNext
+## v0.5.0
 - Added total transactions to homepage.
 - Updated tooltip position for blocks.
 
