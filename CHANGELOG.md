@@ -2,6 +2,7 @@
 
 ## vNext
 - Added total transactions to homepage.
+- Updated tooltip position for blocks.
 
 ## v0.4.0
 - Updated logo and favicon.
