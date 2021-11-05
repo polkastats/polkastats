@@ -1,4 +1,7 @@
-# Cerestats
+# Cere Stats
+
+## vNext
+- ...
 
 ## v0.5.0
 - Added total transactions to homepage.
