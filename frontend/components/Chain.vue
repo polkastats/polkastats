@@ -91,7 +91,7 @@
               {{ $t('components.network.signedTransactions') }}
             </h4>
             <h6 class="d-inline-block">
-              {{ formatNumber(totalSignedTransactions) }}
+              {{ formatNumber(totalSignedExtrinsics) }}
             </h6>
           </div>
         </div>
@@ -196,7 +196,7 @@ export default {
       totalEvents: 0,
       totalAccounts: 0,
       totalIssuance: 0,
-      totalSignedTransactions: 0,
+      totalSignedExtrinsics: 0,
       totalStaked: 0,
       totalValidators: 0,
       totalWaiting: 0,
@@ -262,9 +262,9 @@ export default {
         result({ data }) {
           this.totalExtrinsics =
             data.total.find((row) => row.name === 'extrinsics').count || 0
-          this.totalSignedTransactions =
-            data.total.find((row) => row.name === 'signed_transactions')
-              .count || 0
+          this.totalSignedExtrinsics =
+            data.total.find((row) => row.name === 'signed_extrinsics').count ||
+            0
           this.totalEvents =
             data.total.find((row) => row.name === 'events').count || 0
           this.totalValidators =

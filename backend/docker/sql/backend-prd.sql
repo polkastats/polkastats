@@ -386,31 +386,31 @@ CREATE TRIGGER transfer_count_trunc AFTER TRUNCATE ON extrinsic
 UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE method IN ('transfer', 'transferKeepAlive')) WHERE name = 'transfers';
 COMMIT;
 
--- Signed Transactions
+-- Signed Extrinsics
 START TRANSACTION;
-CREATE FUNCTION signed_transaction_count() RETURNS trigger LANGUAGE plpgsql AS
+CREATE FUNCTION signed_extrinsics_count() RETURNS trigger LANGUAGE plpgsql AS
 $$BEGIN
   IF NEW.is_signed = true THEN
     IF TG_OP = 'INSERT' THEN
-      UPDATE total SET count = count + 1 WHERE name = 'signed_transactions';
+      UPDATE total SET count = count + 1 WHERE name = 'signed_extrinsics';
       RETURN NEW;
     ELSIF TG_OP = 'DELETE' THEN
-      UPDATE total SET count = count - 1 WHERE name = 'signed_transactions';
+      UPDATE total SET count = count - 1 WHERE name = 'signed_extrinsics';
       RETURN OLD;
     ELSE
-      UPDATE total SET count = 0 WHERE name = 'signed_transactions';
+      UPDATE total SET count = 0 WHERE name = 'signed_extrinsics';
       RETURN NULL;
     END IF;
   END IF;
   RETURN NULL;
 END;$$;
-CREATE CONSTRAINT TRIGGER signed_transaction_count_mod
+CREATE CONSTRAINT TRIGGER signed_extrinsics_count_mod
   AFTER INSERT OR DELETE ON extrinsic
   DEFERRABLE INITIALLY DEFERRED
-  FOR EACH ROW EXECUTE PROCEDURE signed_transaction_count();
+  FOR EACH ROW EXECUTE PROCEDURE signed_extrinsics_count();
 -- TRUNCATE triggers must be FOR EACH STATEMENT
-CREATE TRIGGER signed_transaction_count_trunc AFTER TRUNCATE ON extrinsic
-  FOR EACH STATEMENT EXECUTE PROCEDURE signed_transaction_count();
+CREATE TRIGGER signed_extrinsics_count_trunc AFTER TRUNCATE ON extrinsic
+  FOR EACH STATEMENT EXECUTE PROCEDURE signed_extrinsics_count();
 -- initialize the counter table
-UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE is_signed = true) WHERE name = 'signed_transactions';
+UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE is_signed = true) WHERE name = 'signed_extrinsics';
 COMMIT;
