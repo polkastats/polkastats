@@ -111,7 +111,7 @@ const crawler = async (delayedStart) => {
     await wait(config.startDelay);
   }
 
-  logger.debug(loggerOptions, 'Running active accounts crawler...');
+  logger.info(loggerOptions, 'Running active accounts crawler...');
 
   const client = await getClient(loggerOptions);
   const api = await getPolkadotAPI(loggerOptions, config.apiCustomTypes);

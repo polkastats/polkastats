@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-- ...
+- Updated crawlers log levels.
 
 ## v0.5.0
 - Added total transactions to homepage.
