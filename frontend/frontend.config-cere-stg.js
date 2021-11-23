@@ -4,7 +4,7 @@ export const network = {
   tokenSymbol: 'CERE',
   tokenDecimals: 10,
   ss58Format: -1,
-  coinGeckoDenom: 'cere',
+  coinGeckoDenom: 'cere-network',
   nodeWs: 'wss://archive.mainnet.cere.network:9945',
   backendWs: 'wss://hasura.stats.stg.cere.network/v1/graphql',
   backendHttp: 'https://api.stats.stg.cere.network/api/v1',

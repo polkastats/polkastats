@@ -7,6 +7,16 @@
           Stats
         </nuxt-link>
       </b-navbar-brand>
+      <a
+        v-if="network.coinGeckoDenom && USDConversion && USD24hChange"
+        :href="`https://www.coingecko.com/en/coins/${network.coinGeckoDenom}`"
+        target="_blank"
+        class="fiat mh-2"
+      >
+        <strong>{{ network.tokenSymbol }}</strong> ${{ USDConversion }} ({{
+          USD24hChange
+        }}%)
+      </a>
       <b-navbar-toggle target="nav-collapse" />
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="ml-auto">
