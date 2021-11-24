@@ -1,7 +1,7 @@
 # Cere Stats
 ## vNext
 
-- ...
+- Removed auto-payout and participation in governance filters
 
 
 ## v0.6.0
