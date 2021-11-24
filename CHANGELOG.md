@@ -2,8 +2,9 @@
 
 ## vNext
 
-- Show CERE-USD conversion rate in header
 - Updated crawlers log levels.
+- Show CERE-USD conversion rate in header.
+- Downgraded @polkadot/api to 3.11.1.
 
 ## v0.5.0
 
