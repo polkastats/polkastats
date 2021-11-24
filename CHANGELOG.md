@@ -1,6 +1,10 @@
 # Cere Stats
-
 ## vNext
+
+- ...
+
+
+## v0.6.0
 
 - Updated crawlers log levels.
 - Show CERE-USD conversion rate in header.
