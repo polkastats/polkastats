@@ -1,8 +1,9 @@
 # Cere Stats
+
 ## vNext
 
 - Removed auto-payout and participation in governance filters
-
+- Fixed hand icon colour, when validator is selected
 
 ## v0.6.0
 

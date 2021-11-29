@@ -230,7 +230,7 @@
               <font-awesome-icon
                 v-else
                 icon="hand-paper"
-                class="unselected text-primary2"
+                class="unselected text-secondary"
               />
             </a>
           </p>
