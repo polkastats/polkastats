@@ -3,6 +3,8 @@
 ## vNext
 
 - Removed auto-payout and participation in governance filters
+- Implemented charts framework for cumulative line and bar types
+- Implemented Signed Extrinsic charts
 - Fixed hand icon colour, when validator is selected
 
 ## v0.6.0

@@ -599,3 +599,39 @@ section .section-title {
     font-size: 0.8rem !important;
   }
 }
+
+// charts
+.canvas-chart {
+  background-image: url('../../../static/img/cere-charts-watermark.png');
+  background-repeat: no-repeat;
+  background-position: 22% 30%;
+  background-size: 70px;
+}
+
+@media only screen and (min-width: 600px) {
+  .canvas-chart {
+    background-size: 70px;
+    background-position: 22% 30%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .canvas-chart {
+    background-size: 100px;
+    background-position: 14% 25%;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .canvas-chart {
+    background-size: 150px;
+    background-position: 12% 20%;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .canvas-chart {
+    background-size: 200px;
+    background-position: 10% 20%;
+  }
+}
