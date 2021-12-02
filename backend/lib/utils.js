@@ -113,25 +113,62 @@ module.exports = {
     const JSONIdentity = identity.display ? JSON.stringify(identity) : '';
     const JSONbalances = JSON.stringify(balances);
     const nonce = balances.accountNonce.toString();
-    const sql = `
-      INSERT INTO   account (account_id, identity, identity_display, identity_display_parent, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height)
-      VALUES        ('${address}', '${JSONIdentity}', '${identityDisplay}', '${identityDisplayParent}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}', '${timestamp}', '${blockNumber}')
-      ON CONFLICT   (account_id)
-      DO UPDATE
-      SET           identity = EXCLUDED.identity,
-                    identity_display = EXCLUDED.identity_display,
-                    identity_display_parent = EXCLUDED.identity_display_parent,
-                    balances = EXCLUDED.balances,
-                    available_balance = EXCLUDED.available_balance,
-                    free_balance = EXCLUDED.free_balance,
-                    locked_balance = EXCLUDED.locked_balance,
-                    nonce = EXCLUDED.nonce,
-                    timestamp = EXCLUDED.timestamp,
-                    block_height = EXCLUDED.block_height;
-    `;
+    const data = [
+      address,
+      JSONIdentity,
+      identityDisplay,
+      identityDisplayParent,
+      JSONbalances,
+      availableBalance,
+      freeBalance,
+      lockedBalance,
+      nonce,
+      timestamp,
+      blockNumber,
+    ];
+    const query = `
+      INSERT INTO account (
+        account_id,
+        identity,
+        identity_display,
+        identity_display_parent,
+        balances,
+        available_balance,
+        free_balance,
+        locked_balance,
+        nonce,
+        timestamp,
+        block_height
+      ) VALUES (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7,
+        $8,
+        $9,
+        $10,
+        $11
+      )
+      ON CONFLICT (account_id)
+      DO UPDATE SET
+        identity = EXCLUDED.identity,
+        identity_display = EXCLUDED.identity_display,
+        identity_display_parent = EXCLUDED.identity_display_parent,
+        balances = EXCLUDED.balances,
+        available_balance = EXCLUDED.available_balance,
+        free_balance = EXCLUDED.free_balance,
+        locked_balance = EXCLUDED.locked_balance,
+        nonce = EXCLUDED.nonce,
+        timestamp = EXCLUDED.timestamp,
+        block_height = EXCLUDED.block_height
+      WHERE EXCLUDED.block_height > account.block_height
+    ;`;
     try {
       // eslint-disable-next-line no-await-in-loop
-      await client.query(sql);
+      await client.query(query, data);
       logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
     } catch (error) {
       logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
