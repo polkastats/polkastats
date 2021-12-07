@@ -17,7 +17,7 @@
       "era": "Era",
       "accounts": "Cuentas",
       "total_staked": "Total stakeado",
-      "total_issuance": "Emisión total",
+      "total_supply": "Suministro total",
       "transfers": "Transferencias",
       "nominators": "Nominadores",
       "validators": "Validadores",

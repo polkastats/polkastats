@@ -6,6 +6,8 @@
 - Implemented charts framework for cumulative line and bar types
 - Implemented Signed Extrinsic charts
 - Fixed hand icon colour, when validator is selected
+- Renamed 'Total issuance' to 'Total supply' on home page
+- Updated validators count format on home page
 
 ## v0.6.0
 

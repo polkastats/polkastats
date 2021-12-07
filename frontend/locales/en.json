@@ -17,7 +17,7 @@
       "era": "Era",
       "accounts": "Accounts",
       "total_staked": "Total staked",
-      "total_issuance": "Total issuance",
+      "total_supply": "Total supply",
       "transfers": "Transfers",
       "nominators": "Nominators",
       "validators": "Validators",
