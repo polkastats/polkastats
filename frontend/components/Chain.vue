@@ -172,6 +172,18 @@
           </div>
         </div>
       </div>
+      <div class="col-6 col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="mb-3 title">
+              {{ $t('components.network.transactionsFees') }}
+            </h4>
+            <h6 class="d-inline-block">
+              {{ formatAmount(totalTransactionsFees) }}
+            </h6>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -201,6 +213,7 @@ export default {
       totalWaiting: 0,
       totalNominators: 0,
       minStake: 0,
+      totalTransactionsFees: 0,
     }
   },
   computed: {
@@ -259,6 +272,9 @@ export default {
           }
         `,
         result({ data }) {
+          this.totalTransactionsFees =
+            data.total.find((row) => row.name === 'transactions_fees').count ||
+            0
           this.totalExtrinsics =
             data.total.find((row) => row.name === 'extrinsics').count || 0
           this.totalSignedExtrinsics =
