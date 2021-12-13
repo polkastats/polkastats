@@ -6,6 +6,7 @@ const getClient = require('./db/db');
 const moment = require('moment');
 const rateLimit = require('express-rate-limit');
 const faucet = require('./src/services/faucet');
+const ethNetwork = require('./src/services/ethNetwork');
 require('dotenv').config();
 const { REQUESTS_PER_IP_PER_DAY } = process.env;
 
@@ -285,6 +286,21 @@ const limiter = rateLimit({
 });
 
 app.use("/api/v1/faucet", limiter, faucet.faucet);
+
+app.get("/api/v1/cereTokens/:type", async(req, res) => {
+  try {
+    const { type } = req.params;
+    if (type === "totalSupply") {
+      const totalSupply = await ethNetwork.getCereTotalSupply();
+      return res.status(200).json(totalSupply);
+    }
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      message: `There was an error processing your request`,
+    });
+  }
+});
 
 app.use('/', (req, res) => {
   res.status(404).json({
