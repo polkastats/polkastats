@@ -144,6 +144,8 @@ services:
       - NUMBER_OF_TOKENS_TO_SEND=10
       - REQUESTS_PER_DAY=100
       - REQUESTS_PER_IP_PER_DAY=3
+      - HTTP_ETH_PROVIDER=
+      - CERE_TOKEN_CONTRACT_ADDRESS='0x2da719db753dfa10a62e140f436e1d67f2ddb0d6'
 
 #
 # Persistent volumes

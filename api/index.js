@@ -287,27 +287,8 @@ const limiter = rateLimit({
 
 app.use("/api/v1/faucet", limiter, faucet.faucet);
 
-app.get("/api/v1/cereTokens/:type", async(req, res) => {
-  try {
-    const { type } = req.params;
-    if (type === "totalSupply") {
-      const totalSupply = await ethNetwork.getCereTotalSupply();
-      return res.status(200).json(totalSupply);
-    } else if (type === 'circulating'){
-      const totalCirculatingSupply = await ethNetwork.getCereTotalCirculatingSupply();
-      return res.status(200).json(totalCirculatingSupply);
-    } else {
-      return res.status(400).json({
-        error: 'Invalid query param'
-      })
-    }
-  } catch (error) {
-    res.status(400).json({
-      status: false,
-      message: `There was an error processing your request`,
-    });
-  }
-});
+app.get("/api/v1/cere-tokens/total-supply", ethNetwork.getCereTotalSupply);
+app.get("/api/v1/cere-tokens/circulating-supply", ethNetwork.getCereTotalCirculatingSupply);
 
 app.use('/', (req, res) => {
   res.status(404).json({

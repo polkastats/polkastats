@@ -21,5 +21,4 @@ const config = {
 };
 
 const decimal = 10;
-const CereTokenContractAddress = "0x2da719db753dfa10a62e140f436e1d67f2ddb0d6";
-module.exports = { config, decimal, CereTokenContractAddress };
+module.exports = { config, decimal };
