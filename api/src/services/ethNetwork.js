@@ -9,5 +9,8 @@ module.exports = {
   getCereTotalSupply: async() => {
     const totalSupply = await contract.methods.totalSupply().call();
     return +totalSupply / 10 ** decimal;
+  },
+  getCereTotalCirculatingSupply: () => {
+    return 68900000;
   }
 }

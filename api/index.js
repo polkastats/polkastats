@@ -293,6 +293,13 @@ app.get("/api/v1/cereTokens/:type", async(req, res) => {
     if (type === "totalSupply") {
       const totalSupply = await ethNetwork.getCereTotalSupply();
       return res.status(200).json(totalSupply);
+    } else if (type === 'circulating'){
+      const totalCirculatingSupply = await ethNetwork.getCereTotalCirculatingSupply();
+      return res.status(200).json(totalCirculatingSupply);
+    } else {
+      return res.status(400).json({
+        error: 'Invalid query param'
+      })
     }
   } catch (error) {
     res.status(400).json({
