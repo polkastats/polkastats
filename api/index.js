@@ -287,8 +287,11 @@ const limiter = rateLimit({
 
 app.use("/api/v1/faucet", limiter, faucet.faucet);
 
-app.get("/api/v1/cere-tokens/total-supply", ethNetwork.getCereTotalSupply);
-app.get("/api/v1/cere-tokens/circulating-supply", ethNetwork.getCereTotalCirculatingSupply);
+app.get("/api/v1/cere-erc20-token/total-supply", ethNetwork.getCereTotalSupply);
+app.get(
+  "/api/v1/cere-erc20-token/circulating-supply",
+  ethNetwork.getCereCirculatingSupply
+);
 
 app.use('/', (req, res) => {
   res.status(404).json({

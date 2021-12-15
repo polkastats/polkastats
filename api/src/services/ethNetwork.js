@@ -9,12 +9,12 @@ const contract = new web3.eth.Contract(
 );
 
 module.exports = {
-  getCereTotalSupply: async(req, res) => {
+  getCereTotalSupply: async (req, res) => {
     const totalSupply = await contract.methods.totalSupply().call();
     const result = +totalSupply / 10 ** decimal;
     res.json(result);
   },
-  getCereTotalCirculatingSupply: (req, res) => {
+  getCereCirculatingSupply: (req, res) => {
     res.json(68900000);
-  }
-}
+  },
+};
