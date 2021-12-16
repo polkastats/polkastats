@@ -134,11 +134,12 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     const dbres = await client.query(query, [timestamp, councilAndTCAddresses]);
     if (dbres.rows.length > 0) {
       const data = dbres.rows.map(row => {
+        const remarkMessage = hexToUtf8(JSON.parse(row.args)[0]);
         return {
           block_number: parseInt(row.block_number),
           extrinsic_hash: row.hash,
           signer: row.signer,
-          remark: hexToUtf8(JSON.parse(row.args)[0]),
+          remark: remarkMessage.startsWith('0x') ? remarkMessage.substring(2) : remarkMessage,
           datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
         }
       });
