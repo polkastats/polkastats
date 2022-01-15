@@ -17,7 +17,7 @@
     "docker:postgres:restore": "docker stop backend_crawler_1 && cat polkastats_dump.sql | docker exec -i backend_postgres_1 psql -U polkastats -d polkastats && docker restart backend_postgres_1 && docker start backend_crawler_1"
   },
   "dependencies": {
-    "@polkadot/api": "^7.3.1",
+    "@polkadot/api": "^7.3.2-6",
     "@polkadot/keyring": "^8.3.1",
     "@polkadot/util": "^8.3.1",
     "@polkadot/util-crypto": "^8.3.1",
