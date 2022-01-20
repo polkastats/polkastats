@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@polkadot/api": "^7.4.1",
+    "@polkadot/api-augment": "^7.4.1",
     "@polkadot/keyring": "^8.3.2",
     "@polkadot/util": "^8.3.2",
     "@polkadot/util-crypto": "^8.3.2",

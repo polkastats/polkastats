@@ -1,4 +1,5 @@
 // @ts-check
+require('@polkadot/api-augment');
 const pino = require('pino');
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
