@@ -1,16 +1,9 @@
 // @ts-check
-const { BigNumber } = require('bignumber.js');
-const pino = require('pino');
+import { BigNumber } from 'bignumber.js';
+import pino from 'pino';
 const axios = require('axios').default;
-const {
-  getClient,
-  getPolkadotAPI,
-  isNodeSynced,
-  wait,
-  dbQuery,
-  dbParamQuery,
-} = require('../lib/utils');
-const backendConfig = require('../backend.config');
+import { getClient, getPolkadotAPI, isNodeSynced, wait, dbQuery, dbParamQuery } from '../lib/utils';
+import { backendConfig } from '../backend.config';
 
 const crawlerName = 'ranking';
 const logger = pino({

@@ -4,7 +4,7 @@
   "description": "PolkaStats NG Backend",
   "author": "Mario Pino Uceda",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "built/index.js",
   "scripts": {
     "start": "tsc && node built/index.js",
     "tsc": "tsc",
@@ -33,6 +33,7 @@
     "pino": "^6.7.0"
   },
   "devDependencies": {
+    "@types/pino": "^7.0.5",
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",

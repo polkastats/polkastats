@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,21 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
-const { BigNumber } = require('bignumber.js');
-const pino = require('pino');
+const bignumber_js_1 = require("bignumber.js");
+const pino_1 = __importDefault(require("pino"));
 const axios = require('axios').default;
-const { getClient, getPolkadotAPI, isNodeSynced, wait, dbQuery, dbParamQuery, } = require('../lib/utils');
-const backendConfig = require('../backend.config');
+const utils_1 = require("../lib/utils");
+const backend_config_1 = require("../backend.config");
 const crawlerName = 'ranking';
-const logger = pino({
-    level: backendConfig.logLevel,
+const logger = (0, pino_1.default)({
+    level: backend_config_1.backendConfig.logLevel,
 });
 const loggerOptions = {
     crawler: crawlerName,
 };
-const config = backendConfig.crawlers.find(({ name }) => name === crawlerName);
-const getThousandValidators = () => __awaiter(this, void 0, void 0, function* () {
+const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
+const getThousandValidators = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield axios.get('https://kusama.w3f.community/candidates');
         return response.data;
@@ -93,13 +98,13 @@ const getCommissionHistory = (accountId, erasPreferences) => {
     erasPreferences.forEach(({ era, validators }) => {
         if (validators[accountId]) {
             commissionHistory.push({
-                era: new BigNumber(era.toString()).toString(10),
+                era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                 commission: (validators[accountId].commission / 10000000).toFixed(2),
             });
         }
         else {
             commissionHistory.push({
-                era: new BigNumber(era.toString()).toString(10),
+                era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                 commission: null,
             });
         }
@@ -171,7 +176,7 @@ const getRandom = (arr, n) => {
     const shuffled = [...arr].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, n);
 };
-const addNewFeaturedValidator = (client, ranking) => __awaiter(this, void 0, void 0, function* () {
+const addNewFeaturedValidator = (client, ranking) => __awaiter(void 0, void 0, void 0, function* () {
     // rules:
     // - maximum commission is 10%
     // - at least 20 KSM own stake
@@ -179,7 +184,7 @@ const addNewFeaturedValidator = (client, ranking) => __awaiter(this, void 0, voi
     // get previously featured
     const alreadyFeatured = [];
     const sql = 'SELECT stash_address, timestamp FROM featured';
-    const res = yield dbQuery(client, sql, loggerOptions);
+    const res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
     res.rows.forEach((validator) => alreadyFeatured.push(validator.stash_address));
     // get candidates that meet the rules
     const featuredCandidates = ranking
@@ -191,10 +196,10 @@ const addNewFeaturedValidator = (client, ranking) => __awaiter(this, void 0, voi
     const shuffled = [...featuredCandidates].sort(() => 0.5 - Math.random());
     const randomRank = shuffled[0];
     const featured = ranking.find((validator) => validator.rank === randomRank);
-    yield dbQuery(client, `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`, loggerOptions);
+    yield (0, utils_1.dbQuery)(client, `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`, loggerOptions);
     logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
 });
-const insertRankingValidator = (client, validator, blockHeight, startTime) => __awaiter(this, void 0, void 0, function* () {
+const insertRankingValidator = (client, validator, blockHeight, startTime) => __awaiter(void 0, void 0, void 0, function* () {
     const sql = `INSERT INTO ranking (
     block_height,
     rank,
@@ -349,9 +354,9 @@ const insertRankingValidator = (client, validator, blockHeight, startTime) => __
         `${validator.dominated}`,
         `${startTime}`,
     ];
-    yield dbParamQuery(client, sql, data, loggerOptions);
+    yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
 });
-const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(this, void 0, void 0, function* () {
+const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(void 0, void 0, void 0, function* () {
     let sql = `INSERT INTO era_vrc_score (
     stash_address,
     era,
@@ -369,7 +374,7 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(this
         validator.totalRating,
     ];
     // eslint-disable-next-line no-await-in-loop
-    yield dbParamQuery(client, sql, data, loggerOptions);
+    yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
     // eslint-disable-next-line no-restricted-syntax
     for (const commissionHistoryItem of validator.commissionHistory) {
         if (commissionHistoryItem.commission) {
@@ -390,7 +395,7 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(this
                 commissionHistoryItem.commission,
             ];
             // eslint-disable-next-line no-await-in-loop
-            yield dbParamQuery(client, sql, data, loggerOptions);
+            yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     // eslint-disable-next-line no-restricted-syntax
@@ -413,7 +418,7 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(this
                 perfHistoryItem.relativePerformance,
             ];
             // eslint-disable-next-line no-await-in-loop
-            yield dbParamQuery(client, sql, data, loggerOptions);
+            yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     // eslint-disable-next-line no-restricted-syntax
@@ -436,7 +441,7 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(this
                 stakefHistoryItem.self,
             ];
             // eslint-disable-next-line no-await-in-loop
-            yield dbParamQuery(client, sql, data, loggerOptions);
+            yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     // eslint-disable-next-line no-restricted-syntax
@@ -459,13 +464,13 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(this
                 eraPointsHistoryItem.points,
             ];
             // eslint-disable-next-line no-await-in-loop
-            yield dbParamQuery(client, sql, data, loggerOptions);
+            yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
 });
-const getAddressCreation = (client, address) => __awaiter(this, void 0, void 0, function* () {
+const getAddressCreation = (client, address) => __awaiter(void 0, void 0, void 0, function* () {
     const query = "SELECT block_number FROM event WHERE method = 'NewAccount' AND data LIKE $1";
-    const res = yield dbParamQuery(client, query, [`%${address}%`], loggerOptions);
+    const res = yield (0, utils_1.dbParamQuery)(client, query, [`%${address}%`], loggerOptions);
     if (res) {
         if (res.rows.length > 0) {
             if (res.rows[0].block_number) {
@@ -476,11 +481,11 @@ const getAddressCreation = (client, address) => __awaiter(this, void 0, void 0, 
     // if not found we assume that it's included in genesis
     return 0;
 });
-const getLastEraInDb = (client) => __awaiter(this, void 0, void 0, function* () {
+const getLastEraInDb = (client) => __awaiter(void 0, void 0, void 0, function* () {
     // TODO: check also:
     // era_points_avg, era_relative_performance_avg, era_self_stake_avg
     const query = 'SELECT era FROM era_commission_avg ORDER BY era DESC LIMIT 1';
-    const res = yield dbQuery(client, query, loggerOptions);
+    const res = yield (0, utils_1.dbQuery)(client, query, loggerOptions);
     if (res) {
         if (res.rows.length > 0) {
             if (res.rows[0].era) {
@@ -490,57 +495,57 @@ const getLastEraInDb = (client) => __awaiter(this, void 0, void 0, function* () 
     }
     return 0;
 });
-const insertEraValidatorStatsAvg = (client, eraIndex) => __awaiter(this, void 0, void 0, function* () {
-    const era = new BigNumber(eraIndex.toString()).toString(10);
+const insertEraValidatorStatsAvg = (client, eraIndex) => __awaiter(void 0, void 0, void 0, function* () {
+    const era = new bignumber_js_1.BigNumber(eraIndex.toString()).toString(10);
     let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = '${era}' AND commission != 100`;
-    let res = yield dbQuery(client, sql, loggerOptions);
+    let res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].commission_avg) {
             sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ('${era}', '${res.rows[0].commission_avg}') ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
-            yield dbQuery(client, sql, loggerOptions);
+            yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
         }
     }
     sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = '${era}'`;
-    res = yield dbQuery(client, sql, loggerOptions);
+    res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].self_stake_avg) {
             const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
             sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ('${era}', '${selfStakeAvg}') ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
-            yield dbQuery(client, sql, loggerOptions);
+            yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
         }
     }
     sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = '${era}'`;
-    res = yield dbQuery(client, sql, loggerOptions);
+    res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].relative_performance_avg) {
             sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ('${era}', '${res.rows[0].relative_performance_avg}') ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
-            yield dbQuery(client, sql, loggerOptions);
+            yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
         }
     }
     sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = '${era}'`;
-    res = yield dbQuery(client, sql, loggerOptions);
+    res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].points_avg) {
             sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ('${era}', '${res.rows[0].points_avg}') ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
-            yield dbQuery(client, sql, loggerOptions);
+            yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
         }
     }
 });
-const crawler = (delayedStart) => __awaiter(this, void 0, void 0, function* () {
+const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* () {
     if (delayedStart) {
         logger.info(loggerOptions, `Delaying ranking crawler start for ${config.startDelay / 1000}s`);
-        yield wait(config.startDelay);
+        yield (0, utils_1.wait)(config.startDelay);
     }
     logger.info(loggerOptions, 'Starting ranking crawler');
     const startTime = new Date().getTime();
-    const client = yield getClient(loggerOptions);
-    const api = yield getPolkadotAPI(loggerOptions, config.apiCustomTypes);
-    let synced = yield isNodeSynced(api, loggerOptions);
+    const client = yield (0, utils_1.getClient)(loggerOptions);
+    const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
+    let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
         // eslint-disable-next-line no-await-in-loop
-        yield wait(10000);
+        yield (0, utils_1.wait)(10000);
         // eslint-disable-next-line no-await-in-loop
-        synced = yield isNodeSynced(api, loggerOptions);
+        synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     }
     const clusters = [];
     const stakingQueryFlags = {
@@ -660,12 +665,12 @@ const crawler = (delayedStart) => __awaiter(this, void 0, void 0, function* () {
         logger.debug(loggerOptions, `Active era is ${activeEra}`);
         logger.debug(loggerOptions, `Minimum amount to stake is ${minimumStake}`);
         yield Promise.all([
-            dbQuery(client, `UPDATE total SET count = '${activeValidatorCount}' WHERE name = 'active_validator_count'`, loggerOptions),
-            dbQuery(client, `UPDATE total SET count = '${waitingValidatorCount}' WHERE name = 'waiting_validator_count'`, loggerOptions),
-            dbQuery(client, `UPDATE total SET count = '${nominatorCount}' WHERE name = 'nominator_count'`, loggerOptions),
-            dbQuery(client, `UPDATE total SET count = '${currentEra}' WHERE name = 'current_era'`, loggerOptions),
-            dbQuery(client, `UPDATE total SET count = '${activeEra}' WHERE name = 'active_era'`, loggerOptions),
-            dbQuery(client, `UPDATE total SET count = '${minimumStake}' WHERE name = 'minimum_stake'`, loggerOptions),
+            (0, utils_1.dbQuery)(client, `UPDATE total SET count = '${activeValidatorCount}' WHERE name = 'active_validator_count'`, loggerOptions),
+            (0, utils_1.dbQuery)(client, `UPDATE total SET count = '${waitingValidatorCount}' WHERE name = 'waiting_validator_count'`, loggerOptions),
+            (0, utils_1.dbQuery)(client, `UPDATE total SET count = '${nominatorCount}' WHERE name = 'nominator_count'`, loggerOptions),
+            (0, utils_1.dbQuery)(client, `UPDATE total SET count = '${currentEra}' WHERE name = 'current_era'`, loggerOptions),
+            (0, utils_1.dbQuery)(client, `UPDATE total SET count = '${activeEra}' WHERE name = 'active_era'`, loggerOptions),
+            (0, utils_1.dbQuery)(client, `UPDATE total SET count = '${minimumStake}' WHERE name = 'minimum_stake'`, loggerOptions),
         ]);
         // eslint-disable-next-line
         const nominations = nominators.map(([key, nominations]) => {
@@ -801,7 +806,7 @@ const crawler = (delayedStart) => __awaiter(this, void 0, void 0, function* () {
                     activeEras += 1;
                     const points = parseInt(eraPoints.validators[stashAddress].toString(), 10);
                     eraPointsHistory.push({
-                        era: new BigNumber(era.toString()).toString(10),
+                        era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                         points,
                     });
                     if (validator.stakingLedger.claimedRewards.includes(era)) {
@@ -811,41 +816,41 @@ const crawler = (delayedStart) => __awaiter(this, void 0, void 0, function* () {
                         eraPayoutState = 'pending';
                     }
                     // era performance
-                    const eraTotalStake = new BigNumber(erasExposure.find((eraExposure) => eraExposure.era === era).validators[stashAddress].total);
-                    const eraSelfStake = new BigNumber(erasExposure.find((eraExposure) => eraExposure.era === era).validators[stashAddress].own);
+                    const eraTotalStake = new bignumber_js_1.BigNumber(erasExposure.find((eraExposure) => eraExposure.era === era).validators[stashAddress].total);
+                    const eraSelfStake = new bignumber_js_1.BigNumber(erasExposure.find((eraExposure) => eraExposure.era === era).validators[stashAddress].own);
                     const eraOthersStake = eraTotalStake.minus(eraSelfStake);
                     stakeHistory.push({
-                        era: new BigNumber(era.toString()).toString(10),
+                        era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                         self: eraSelfStake.toString(10),
                         others: eraOthersStake.toString(10),
                         total: eraTotalStake.toString(10),
                     });
                     eraPerformance = (points * (1 - (commission / 100)))
-                        / (eraTotalStake.div(new BigNumber(10).pow(config.tokenDecimals)).toNumber());
+                        / (eraTotalStake.div(new bignumber_js_1.BigNumber(10).pow(config.tokenDecimals)).toNumber());
                     performanceHistory.push({
-                        era: new BigNumber(era.toString()).toString(10),
+                        era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                         performance: eraPerformance,
                     });
                 }
                 else {
                     // validator was not active in that era
                     eraPointsHistory.push({
-                        era: new BigNumber(era.toString()).toString(10),
+                        era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                         points: 0,
                     });
                     stakeHistory.push({
-                        era: new BigNumber(era.toString()).toString(10),
+                        era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                         self: 0,
                         others: 0,
                         total: 0,
                     });
                     performanceHistory.push({
-                        era: new BigNumber(era.toString()).toString(10),
+                        era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                         performance: 0,
                     });
                 }
                 payoutHistory.push({
-                    era: new BigNumber(era.toString()).toString(10),
+                    era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                     status: eraPayoutState,
                 });
                 // total performance
@@ -857,14 +862,14 @@ const crawler = (delayedStart) => __awaiter(this, void 0, void 0, function* () {
             const payoutRating = getPayoutRating(payoutHistory);
             // stake
             const selfStake = active
-                ? new BigNumber(validator.exposure.own.toString())
-                : new BigNumber(validator.stakingLedger.total.toString());
+                ? new bignumber_js_1.BigNumber(validator.exposure.own.toString())
+                : new bignumber_js_1.BigNumber(validator.stakingLedger.total.toString());
             const totalStake = active
-                ? new BigNumber(validator.exposure.total.toString())
+                ? new bignumber_js_1.BigNumber(validator.exposure.total.toString())
                 : selfStake;
             const otherStake = active
                 ? totalStake.minus(selfStake)
-                : new BigNumber(0);
+                : new bignumber_js_1.BigNumber(0);
             // performance
             if (performance > maxPerformance) {
                 maxPerformance = performance;
@@ -941,7 +946,7 @@ const crawler = (delayedStart) => __awaiter(this, void 0, void 0, function* () {
         });
         // populate minMaxEraPerformance
         eraIndexes.forEach((eraIndex) => {
-            const era = new BigNumber(eraIndex.toString()).toString(10);
+            const era = new bignumber_js_1.BigNumber(eraIndex.toString()).toString(10);
             const eraPerformances = ranking.map(({ performanceHistory }) => performanceHistory.find((performance) => performance.era === era).performance);
             minMaxEraPerformance.push({
                 era,
@@ -1044,10 +1049,10 @@ const crawler = (delayedStart) => __awaiter(this, void 0, void 0, function* () {
         logger.debug(loggerOptions, `Storing ${ranking.length} validators in db...`);
         yield Promise.all(ranking.map((validator) => insertRankingValidator(client, validator, blockHeight, startTime)));
         logger.debug(loggerOptions, 'Cleaning old data');
-        yield dbQuery(client, `DELETE FROM ranking WHERE block_height != '${blockHeight}';`, loggerOptions);
+        yield (0, utils_1.dbQuery)(client, `DELETE FROM ranking WHERE block_height != '${blockHeight}';`, loggerOptions);
         // featured validator
         const sql = 'SELECT stash_address, timestamp FROM featured ORDER BY timestamp DESC LIMIT 1';
-        const res = yield dbQuery(client, sql, loggerOptions);
+        const res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
         if (res.rows.length === 0) {
             yield addNewFeaturedValidator(client, ranking);
         }

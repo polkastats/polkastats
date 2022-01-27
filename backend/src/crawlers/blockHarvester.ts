@@ -1,19 +1,7 @@
 // @ts-check
-const pino = require('pino');
-const {
-  getClient,
-  dbQuery,
-  getPolkadotAPI,
-  isNodeSynced,
-  shortHash,
-  processExtrinsics,
-  processEvents,
-  processLogs,
-  getDisplayName,
-  wait,
-  logHarvestError,
-} = require('../lib/utils');
-const backendConfig = require('../backend.config');
+import pino from 'pino';
+import { getClient, dbQuery, getPolkadotAPI, isNodeSynced, shortHash, processExtrinsics, processEvents, processLogs, getDisplayName, wait, logHarvestError } from '../lib/utils';
+import { backendConfig } from '../backend.config';
 
 const crawlerName = 'blockHarvester';
 const logger = pino({

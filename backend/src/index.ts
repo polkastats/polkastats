@@ -1,12 +1,12 @@
 // @ts-check
-const pino = require('pino');
-const { spawn } = require('child_process');
-const { wait } = require('./lib/utils');
-const config = require('./backend.config');
+import pino from 'pino';
+import { spawn } from 'child_process';
+import { wait } from './lib/utils';
+import { backendConfig } from './backend.config';
 
 const logger = pino();
 
-const runCrawler = async (crawler) => {
+const runCrawler = async (crawler: string) => {
   const child = spawn('node', [`${crawler}`]);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
@@ -22,7 +22,7 @@ const runCrawlers = async () => {
 
   logger.debug('Running crawlers');
   await Promise.all(
-    config.crawlers
+    backendConfig.crawlers
       .filter((crawler) => crawler.enabled)
       .map(({ crawler }) => runCrawler(crawler)),
   );

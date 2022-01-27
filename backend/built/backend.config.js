@@ -1,6 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.backendConfig = void 0;
 // @ts-check
 require('dotenv').config();
-module.exports = {
+exports.backendConfig = {
     substrateNetwork: process.env.SUBSTRATE_NETWORK || 'kusama',
     wsProviderUrl: process.env.WS_PROVIDER_URL || 'ws://substrate-node:9944',
     postgresConnParams: {

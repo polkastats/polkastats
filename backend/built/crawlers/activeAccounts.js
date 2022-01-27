@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,26 +8,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
-const pino = require('pino');
-const { wait, getClient, getPolkadotAPI, isNodeSynced, dbParamQuery, } = require('../lib/utils');
-const backendConfig = require('../backend.config');
+const pino_1 = __importDefault(require("pino"));
+const utils_1 = require("../lib/utils");
+const backend_config_1 = require("../backend.config");
 const crawlerName = 'activeAccounts';
-const logger = pino({
-    level: backendConfig.logLevel,
+const logger = (0, pino_1.default)({
+    level: backend_config_1.backendConfig.logLevel,
 });
 const loggerOptions = {
     crawler: crawlerName,
 };
-const config = backendConfig.crawlers.find(({ name }) => name === crawlerName);
+const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
 const { chunkSize } = config;
 const getAccountId = (account) => account
     .map((e) => e.args)
     .map(([e]) => e)
     .map((e) => e.toHuman());
-const fetchAccountIds = (api) => __awaiter(this, void 0, void 0, function* () { return getAccountId(yield api.query.system.account.keys()); });
+const fetchAccountIds = (api) => __awaiter(void 0, void 0, void 0, function* () { return getAccountId(yield api.query.system.account.keys()); });
 const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
-const processChunk = (api, client, accountId) => __awaiter(this, void 0, void 0, function* () {
+const processChunk = (api, client, accountId) => __awaiter(void 0, void 0, void 0, function* () {
     const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
     const [block, identity, balances] = yield Promise.all([
         api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
@@ -95,22 +100,22 @@ const processChunk = (api, client, accountId) => __awaiter(this, void 0, void 0,
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
     // eslint-disable-next-line no-await-in-loop
-    yield dbParamQuery(client, query, data, loggerOptions);
+    yield (0, utils_1.dbParamQuery)(client, query, data, loggerOptions);
 });
-const crawler = (delayedStart) => __awaiter(this, void 0, void 0, function* () {
+const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* () {
     if (delayedStart) {
         logger.debug(loggerOptions, `Delaying active accounts crawler start for ${config.startDelay / 1000}s`);
-        yield wait(config.startDelay);
+        yield (0, utils_1.wait)(config.startDelay);
     }
     logger.debug(loggerOptions, 'Running active accounts crawler...');
-    const client = yield getClient(loggerOptions);
-    const api = yield getPolkadotAPI(loggerOptions, config.apiCustomTypes);
-    let synced = yield isNodeSynced(api, loggerOptions);
+    const client = yield (0, utils_1.getClient)(loggerOptions);
+    const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
+    let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
         // eslint-disable-next-line no-await-in-loop
-        yield wait(10000);
+        yield (0, utils_1.wait)(10000);
         // eslint-disable-next-line no-await-in-loop
-        synced = yield isNodeSynced(api, loggerOptions);
+        synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     }
     const startTime = new Date().getTime();
     const accountIds = yield fetchAccountIds(api);

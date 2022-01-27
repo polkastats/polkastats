@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,31 +8,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
-const pino = require('pino');
-const { dbQuery, getClient, getPolkadotAPI, isNodeSynced, wait, shortHash, processExtrinsics, processEvents, processLogs, getDisplayName, updateFinalized, updateAccountsInfo, logHarvestError, } = require('../lib/utils');
-const backendConfig = require('../backend.config');
+const pino_1 = __importDefault(require("pino"));
+const utils_1 = require("../lib/utils");
+const backend_config_1 = require("../backend.config");
 const crawlerName = 'blockListener';
-const logger = pino({
-    level: backendConfig.logLevel,
+const logger = (0, pino_1.default)({
+    level: backend_config_1.backendConfig.logLevel,
 });
 const loggerOptions = {
     crawler: crawlerName,
 };
-const config = backendConfig.crawlers.find(({ name }) => name === crawlerName);
-const crawler = () => __awaiter(this, void 0, void 0, function* () {
+const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
+const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
     logger.info(loggerOptions, 'Starting block listener crawler...');
-    const client = yield getClient(loggerOptions);
-    const api = yield getPolkadotAPI(loggerOptions, config.apiCustomTypes);
-    let synced = yield isNodeSynced(api, loggerOptions);
+    const client = yield (0, utils_1.getClient)(loggerOptions);
+    const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
+    let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
         // eslint-disable-next-line no-await-in-loop
-        yield wait(10000);
+        yield (0, utils_1.wait)(10000);
         // eslint-disable-next-line no-await-in-loop
-        synced = yield isNodeSynced(api, loggerOptions);
+        synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     }
     // Subscribe to new blocks
-    yield api.rpc.chain.subscribeNewHeads((blockHeader) => __awaiter(this, void 0, void 0, function* () {
+    yield api.rpc.chain.subscribeNewHeads((blockHeader) => __awaiter(void 0, void 0, void 0, function* () {
         const startTime = new Date().getTime();
         const blockNumber = blockHeader.number.toNumber();
         try {
@@ -55,15 +60,15 @@ const crawler = () => __awaiter(this, void 0, void 0, function* () {
             const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
             // Handle chain reorganizations
             let sql = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
-            let res = yield dbQuery(client, sql, loggerOptions);
+            let res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
             if (res && res.rows.length > 0) {
                 // Chain reorganization detected! We need to update block_author, block_hash and state_root
                 logger.debug(loggerOptions, `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
                 const blockAuthor = extendedHeader.author;
                 const blockAuthorIdentity = yield api.derive.accounts.info(blockAuthor);
-                const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
+                const blockAuthorName = (0, utils_1.getDisplayName)(blockAuthorIdentity.identity);
                 sql = `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
-                res = yield dbQuery(client, sql, loggerOptions);
+                res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
             }
             else {
                 const blockAuthor = extendedHeader.author || '';
@@ -72,7 +77,7 @@ const crawler = () => __awaiter(this, void 0, void 0, function* () {
                     api.query.system.events.at(blockHash),
                     api.query.electionProviderMultiPhase.currentPhase(),
                 ]);
-                const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
+                const blockAuthorName = (0, utils_1.getDisplayName)(blockAuthorIdentity.identity);
                 // Get election status
                 const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
                 // Totals
@@ -121,30 +126,30 @@ const crawler = () => __awaiter(this, void 0, void 0, function* () {
           DO NOTHING
           ;`;
                 try {
-                    yield dbQuery(client, sql, loggerOptions);
+                    yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
                 }
                 catch (error) {
                     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
                 }
                 yield Promise.all([
                     // Store block extrinsics
-                    processExtrinsics(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp, loggerOptions),
+                    (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp, loggerOptions),
                     // Get involved addresses from block events and update its balances
-                    updateAccountsInfo(api, client, blockNumber, timestamp, loggerOptions, blockEvents),
+                    (0, utils_1.updateAccountsInfo)(api, client, blockNumber, timestamp, loggerOptions, blockEvents),
                     // Store module events
-                    processEvents(client, blockNumber, blockEvents, timestamp, loggerOptions),
+                    (0, utils_1.processEvents)(client, blockNumber, blockEvents, timestamp, loggerOptions),
                     // Store block logs
-                    processLogs(client, blockNumber, blockHeader.digest.logs, timestamp, loggerOptions),
+                    (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp, loggerOptions),
                 ]);
                 // Update finalized blocks
-                yield updateFinalized(client, finalizedBlock, loggerOptions);
+                yield (0, utils_1.updateFinalized)(client, finalizedBlock, loggerOptions);
                 const endTime = new Date().getTime();
-                logger.info(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+                logger.info(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
             }
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error.stack}`);
-            yield logHarvestError(client, blockNumber, error, loggerOptions);
+            yield (0, utils_1.logHarvestError)(client, blockNumber, error, loggerOptions);
         }
     }));
 });

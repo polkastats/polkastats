@@ -1,13 +1,7 @@
 // @ts-check
-const pino = require('pino');
-const {
-  wait,
-  getClient,
-  getPolkadotAPI,
-  isNodeSynced,
-  dbParamQuery,
-} = require('../lib/utils');
-const backendConfig = require('../backend.config');
+import pino from 'pino';
+import { wait, getClient, getPolkadotAPI, isNodeSynced, dbParamQuery } from '../lib/utils';
+import { backendConfig } from '../backend.config';
 
 const crawlerName = 'activeAccounts';
 const logger = pino({

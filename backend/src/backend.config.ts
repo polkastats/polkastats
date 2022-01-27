@@ -1,7 +1,7 @@
 // @ts-check
 require('dotenv').config();
 
-module.exports = {
+export const backendConfig = {
   substrateNetwork: process.env.SUBSTRATE_NETWORK || 'kusama',
   wsProviderUrl: process.env.WS_PROVIDER_URL || 'ws://substrate-node:9944',
   postgresConnParams: {
