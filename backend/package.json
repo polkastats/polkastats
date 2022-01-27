@@ -6,7 +6,8 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "tsc && node built/index.js",
+    "tsc": "tsc",
     "docker:kusama": "docker-compose -p backend -f docker/docker-compose-kusama.yml up -d",
     "docker:polkadot": "docker-compose -p backend -f docker/docker-compose-polkadot.yml up -d",
     "docker:build:kusama": "docker-compose -p backend -f docker/docker-compose-kusama.yml build --no-cache",
@@ -34,6 +35,7 @@
   "devDependencies": {
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1"
+    "eslint-plugin-import": "^2.22.1",
+    "source-map": "^0.7.3"
   }
 }
