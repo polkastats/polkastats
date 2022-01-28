@@ -8,10 +8,13 @@ import { Client } from 'pg';
 import _ from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
+import { Codec } from '@polkadot/types-codec/types';
+import { AccountIndex, Address } from '@polkadot/types/interfaces';
+import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 
 const logger = pino();
 
-export const getPolkadotAPI = async (loggerOptions, apiCustomTypes) => {
+export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCustomTypes: string | undefined) => {
   let api;
   logger.debug(loggerOptions, `Connecting to ${backendConfig.wsProviderUrl}`);
   const provider = new WsProvider(backendConfig.wsProviderUrl);
@@ -25,7 +28,7 @@ export const getPolkadotAPI = async (loggerOptions, apiCustomTypes) => {
   return api;
 };
 
-export const isNodeSynced = async (api, loggerOptions) => {
+export const isNodeSynced = async (api: ApiPromise, loggerOptions: { crawler: string; }) => {
   let node;
   try {
     node = await api.rpc.system.health();
@@ -40,22 +43,22 @@ export const isNodeSynced = async (api, loggerOptions) => {
   return false;
 };
 
-export const formatNumber = (number) => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+export const formatNumber = (number: number) => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 
-export const shortHash = (hash) => `${hash.substr(0, 6)}…${hash.substr(hash.length - 5, 4)}`;
+export const shortHash = (hash: string) => `${hash.substr(0, 6)}…${hash.substr(hash.length - 5, 4)}`;
 
-export const wait = async (ms) => new Promise((resolve) => {
+export const wait = async (ms: number ) => new Promise((resolve) => {
   setTimeout(resolve, ms);
 });
 
-export const getClient = async (loggerOptions) => {
+export const getClient = async (loggerOptions: { crawler: string; }) => {
   logger.debug(loggerOptions, `Connecting to DB ${backendConfig.postgresConnParams.database} at ${backendConfig.postgresConnParams.host}:${backendConfig.postgresConnParams.port}`);
   const client = new Client(backendConfig.postgresConnParams);
   await client.connect();
   return client;
 };
 
-export const dbQuery = async (client, sql, loggerOptions) => {
+export const dbQuery = async (client: Client, sql: string, loggerOptions: { crawler: string; }) => {
   try {
     return await client.query(sql);
   } catch (error) {
@@ -64,7 +67,7 @@ export const dbQuery = async (client, sql, loggerOptions) => {
   return null;
 };
 
-export const dbParamQuery = async (client, sql, data, loggerOptions) => {
+export const dbParamQuery = async (client: Client, sql: string, data: any[], loggerOptions: { crawler: string; }) => {
   try {
     return await client.query(sql, data);
   } catch (error) {
@@ -73,7 +76,7 @@ export const dbParamQuery = async (client, sql, data, loggerOptions) => {
   return null;
 };
 
-export const isValidAddressPolkadotAddress = (address) => {
+export const isValidAddressPolkadotAddress = (address: string) => {
   try {
     encodeAddress(
       isHex(address)
@@ -86,12 +89,12 @@ export const isValidAddressPolkadotAddress = (address) => {
   }
 };
 
-export const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
+export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: any[]) => {
   const startTime = new Date().getTime();
-  const involvedAddresses = [];
+  const involvedAddresses: any = [];
   blockEvents
     .forEach(({ event }) => {
-      event.data.forEach((arg) => {
+      event.data.forEach((arg: any) => {
         if (module.exports.isValidAddressPolkadotAddress(arg)) {
           involvedAddresses.push(arg);
         }
@@ -110,7 +113,7 @@ export const updateAccountsInfo = async (api, client, blockNumber, timestamp, lo
   logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 
-export const updateAccountInfo = async (api, client, blockNumber, timestamp, address, loggerOptions) => {
+export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: Address, loggerOptions: { crawler: string; }) => {
   const [balances, { identity }] = await Promise.all([
     api.derive.balances.all(address),
     api.derive.accounts.info(address),
@@ -186,14 +189,14 @@ export const updateAccountInfo = async (api, client, blockNumber, timestamp, add
 };
 
 export const processExtrinsics = async (
-  api,
-  client,
-  blockNumber,
-  blockHash,
-  extrinsics,
-  blockEvents,
-  timestamp,
-  loggerOptions,
+  api: ApiPromise,
+  client: Client,
+  blockNumber: number,
+  blockHash: string,
+  extrinsics: any[],
+  blockEvents: any[],
+  timestamp: number,
+  loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
   await Promise.all(
@@ -216,15 +219,15 @@ export const processExtrinsics = async (
 
 
 export const processExtrinsic = async (
-  api,
-  client,
-  blockNumber,
-  blockHash,
-  extrinsic,
-  index,
-  blockEvents,
-  timestamp,
-  loggerOptions,
+  api: ApiPromise,
+  client: Client,
+  blockNumber: number,
+  blockHash: string,
+  extrinsic: any,
+  index: number,
+  blockEvents: any[],
+  timestamp: number,
+  loggerOptions: { crawler: string; },
 ) => {
   const { isSigned } = extrinsic;
   const signer = isSigned ? extrinsic.signer.toString() : '';
@@ -319,7 +322,7 @@ export const processExtrinsic = async (
 };
 
 export const processEvents = async (
-  client, blockNumber, blockEvents, timestamp, loggerOptions,
+  client: Client, blockNumber: number, blockEvents: any[], timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
   await Promise.all(
@@ -333,7 +336,7 @@ export const processEvents = async (
 };
 
 export const processEvent = async (
-  client, blockNumber, record, index, timestamp, loggerOptions,
+  client: Client, blockNumber: number, record: any, index: number, timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const { event, phase } = record;
   const sql = `INSERT INTO event (
@@ -365,7 +368,7 @@ export const processEvent = async (
   }
 };
 
-export const processLogs = async (client, blockNumber, logs, timestamp, loggerOptions) => {
+export const processLogs = async (client: Client, blockNumber: number, logs: any[], timestamp: number, loggerOptions: { crawler: string; }) => {
   const startTime = new Date().getTime();
   await Promise.all(
     logs.map((log, index) => module.exports.processLog(
@@ -377,7 +380,7 @@ export const processLogs = async (client, blockNumber, logs, timestamp, loggerOp
   logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 
-export const processLog = async (client, blockNumber, log, index, timestamp, loggerOptions) => {
+export const processLog = async (client: Client, blockNumber: number, log: any, index: number, timestamp: number, loggerOptions: { crawler: string; }) => {
   const { type } = log;
   const [[engine, data]] = Object.values(log.toJSON());
   const sql = `INSERT INTO log (
@@ -406,7 +409,7 @@ export const processLog = async (client, blockNumber, log, index, timestamp, log
   }
 };
 
-export const getExtrinsicSuccess = (index, blockEvents) => {
+export const getExtrinsicSuccess = (index: number, blockEvents: any[]) => {
   // assume success if no events were extracted
   if (blockEvents.length === 0) {
     return true;
@@ -425,7 +428,7 @@ export const getExtrinsicSuccess = (index, blockEvents) => {
   return extrinsicSuccess;
 };
 
-export const getDisplayName = (identity) => {
+export const getDisplayName = (identity: DeriveAccountRegistration) => {
   if (
     identity.displayParent
     && identity.displayParent !== ''
@@ -438,7 +441,7 @@ export const getDisplayName = (identity) => {
 };
 
 // TODO: Investigate https://dzone.com/articles/faster-postgresql-counting
-export const updateTotals = async (client, loggerOptions) => {
+export const updateTotals = async (client: Client, loggerOptions: { crawler: string; }) => {
   await Promise.all([
     module.exports.updateTotalBlocks(client, loggerOptions),
     module.exports.updateTotalExtrinsics(client, loggerOptions),
@@ -447,7 +450,7 @@ export const updateTotals = async (client, loggerOptions) => {
   ]);
 };
 
-export const updateTotalBlocks = async (client, loggerOptions) => {
+export const updateTotalBlocks = async (client: Client, loggerOptions: { crawler: string; }) => {
   const sql = `
     UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks';
   `;
@@ -458,7 +461,7 @@ export const updateTotalBlocks = async (client, loggerOptions) => {
   }
 };
 
-export const updateTotalExtrinsics = async (client, loggerOptions) => {
+export const updateTotalExtrinsics = async (client: Client, loggerOptions: { crawler: string; }) => {
   const sql = `
     UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
   `;
@@ -469,7 +472,7 @@ export const updateTotalExtrinsics = async (client, loggerOptions) => {
   }
 };
 
-export const updateTotalTransfers = async (client, loggerOptions) => {
+export const updateTotalTransfers = async (client: Client, loggerOptions: { crawler: string; }) => {
   const sql = `
     UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers';
   `;
@@ -481,7 +484,7 @@ export const updateTotalTransfers = async (client, loggerOptions) => {
 };
 
 
-export const updateTotalEvents = async (client, loggerOptions) => {
+export const updateTotalEvents = async (client: Client, loggerOptions: { crawler: string; }) => {
   const sql = `
     UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events';
   `;
@@ -492,7 +495,7 @@ export const updateTotalEvents = async (client, loggerOptions) => {
   }
 };
 
-export const updateFinalized = async (client, finalizedBlock, loggerOptions) => {
+export const updateFinalized = async (client: Client, finalizedBlock: number, loggerOptions: { crawler: string; }) => {
   const sql = `
     UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock};
   `;
@@ -503,7 +506,7 @@ export const updateFinalized = async (client, finalizedBlock, loggerOptions) => 
   }
 };
 
-export const logHarvestError = async (client, blockNumber, error, loggerOptions) => {
+export const logHarvestError = async (client: Client, blockNumber: number, error: any, loggerOptions: { crawler: string; }) => {
   const timestamp = new Date().getTime();
   const errorString = error.toString().replace(/'/g, "''");
   const data = [
