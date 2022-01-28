@@ -2,6 +2,8 @@
 import pino from 'pino';
 import { getClient, dbQuery, getPolkadotAPI, isNodeSynced, shortHash, processExtrinsics, processEvents, processLogs, getDisplayName, wait, logHarvestError } from '../lib/utils';
 import { backendConfig } from '../backend.config';
+import { Client } from 'pg';
+import { ApiPromise } from '@polkadot/api';
 
 const crawlerName = 'blockHarvester';
 const logger = pino({
@@ -15,15 +17,15 @@ const config = backendConfig.crawlers.find(
 );
 
 // Return a reverse ordered array from range
-const range = (start, stop, step) => Array
+const range = (start: number, stop: number, step: number) => Array
   .from({ length: (stop - start) / step + 1 }, (_, i) => stop - (i * step));
 
-const chunker = (a, n) => Array.from(
+const chunker = (a: any[], n: number) => Array.from(
   { length: Math.ceil(a.length / n) },
   (_, i) => a.slice(i * n, i * n + n),
 );
 
-const healthCheck = async (client) => {
+const healthCheck = async (client: Client) => {
   const startTime = new Date().getTime();
   logger.info(loggerOptions, 'Starting health check');
   const query = `
@@ -51,7 +53,7 @@ const healthCheck = async (client) => {
   logger.debug(loggerOptions, `Health check finished in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
 };
 
-const harvestBlock = async (api, client, blockNumber) => {
+const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number) => {
   const startTime = new Date().getTime();
   try {
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
@@ -173,7 +175,7 @@ const harvestBlock = async (api, client, blockNumber) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const harvestBlocksSeq = async (api, client, startBlock, endBlock) => {
+const harvestBlocksSeq = async (api: ApiPromise, client: Client, startBlock: number, endBlock: number) => {
   const blocks = range(startBlock, endBlock, 1);
   const blockProcessingTimes = [];
   let maxTimeMs = 0;
@@ -205,7 +207,7 @@ const harvestBlocksSeq = async (api, client, startBlock, endBlock) => {
   }
 };
 
-const harvestBlocks = async (api, client, startBlock, endBlock) => {
+const harvestBlocks = async (api: ApiPromise, client: Client, startBlock: number, endBlock: number) => {
   const blocks = range(startBlock, endBlock, 1);
 
   const chunks = chunker(blocks, config.chunkSize);
@@ -254,7 +256,7 @@ const harvestBlocks = async (api, client, startBlock, endBlock) => {
   }
 };
 
-const crawler = async (delayedStart) => {
+const crawler = async (delayedStart: boolean) => {
   if (delayedStart) {
     logger.info(loggerOptions, `Delaying block harvester crawler start for ${config.startDelay / 1000}s`);
     await wait(config.startDelay);

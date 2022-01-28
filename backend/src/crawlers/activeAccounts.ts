@@ -2,6 +2,8 @@
 import pino from 'pino';
 import { wait, getClient, getPolkadotAPI, isNodeSynced, dbParamQuery } from '../lib/utils';
 import { backendConfig } from '../backend.config';
+import { ApiPromise } from '@polkadot/api';
+import { Client } from 'pg';
 
 const crawlerName = 'activeAccounts';
 const logger = pino({
@@ -15,19 +17,19 @@ const config = backendConfig.crawlers.find(
 );
 const { chunkSize } = config;
 
-const getAccountId = (account) => account
+const getAccountId = (account: any[]) => account
   .map((e) => e.args)
   .map(([e]) => e)
   .map((e) => e.toHuman());
 
-const fetchAccountIds = async (api) => getAccountId(await api.query.system.account.keys());
+const fetchAccountIds = async (api: ApiPromise) => getAccountId(await api.query.system.account.keys());
 
-const chunker = (a, n) => Array.from(
+const chunker = (a: any[], n: number) => Array.from(
   { length: Math.ceil(a.length / n) },
   (_, i) => a.slice(i * n, i * n + n),
 );
 
-const processChunk = async (api, client, accountId) => {
+const processChunk = async (api: ApiPromise, client: Client, accountId: any) => {
   const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
   const [block, identity, balances] = await Promise.all([
     api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
@@ -99,8 +101,8 @@ const processChunk = async (api, client, accountId) => {
   await dbParamQuery(client, query, data, loggerOptions);
 };
 
-const crawler = async (delayedStart) => {
-  if (delayedStart) {
+const crawler = async (delayedStart: boolean) => {
+  if (delayedStart && config.startDelay) {
     logger.debug(loggerOptions, `Delaying active accounts crawler start for ${config.startDelay / 1000}s`);
     await wait(config.startDelay);
   }

@@ -190,7 +190,7 @@ const crawler = async () => {
         logger.info(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
       }
     } catch (error) {
-      logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error.stack}`);
+      logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
       await logHarvestError(client, blockNumber, error, loggerOptions);
     }
   });

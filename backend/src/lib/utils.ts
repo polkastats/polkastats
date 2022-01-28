@@ -9,7 +9,7 @@ import _ from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
 import { Codec } from '@polkadot/types-codec/types';
-import { AccountIndex, Address } from '@polkadot/types/interfaces';
+import { AccountIndex, Address, BlockHash } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 
 const logger = pino();
@@ -192,7 +192,7 @@ export const processExtrinsics = async (
   api: ApiPromise,
   client: Client,
   blockNumber: number,
-  blockHash: string,
+  blockHash: BlockHash,
   extrinsics: any[],
   blockEvents: any[],
   timestamp: number,
@@ -222,7 +222,7 @@ export const processExtrinsic = async (
   api: ApiPromise,
   client: Client,
   blockNumber: number,
-  blockHash: string,
+  blockHash: BlockHash,
   extrinsic: any,
   index: number,
   blockEvents: any[],

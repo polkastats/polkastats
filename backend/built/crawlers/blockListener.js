@@ -148,7 +148,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
             }
         }
         catch (error) {
-            logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error.stack}`);
+            logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
             yield (0, utils_1.logHarvestError)(client, blockNumber, error, loggerOptions);
         }
     }));

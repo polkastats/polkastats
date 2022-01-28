@@ -103,7 +103,7 @@ const processChunk = (api, client, accountId) => __awaiter(void 0, void 0, void 
     yield (0, utils_1.dbParamQuery)(client, query, data, loggerOptions);
 });
 const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* () {
-    if (delayedStart) {
+    if (delayedStart && config.startDelay) {
         logger.debug(loggerOptions, `Delaying active accounts crawler start for ${config.startDelay / 1000}s`);
         yield (0, utils_1.wait)(config.startDelay);
     }
