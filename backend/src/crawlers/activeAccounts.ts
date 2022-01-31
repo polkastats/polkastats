@@ -1,8 +1,9 @@
 // @ts-check
+import '@polkadot/api-augment';
+import { ApiPromise } from '@polkadot/api';
 import pino from 'pino';
 import { wait, getClient, getPolkadotAPI, isNodeSynced, dbParamQuery } from '../lib/utils';
 import { backendConfig } from '../backend.config';
-import { ApiPromise } from '@polkadot/api';
 import { Client } from 'pg';
 
 const crawlerName = 'activeAccounts';

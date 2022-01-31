@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logHarvestError = exports.updateFinalized = exports.updateTotalEvents = exports.updateTotalTransfers = exports.updateTotalExtrinsics = exports.updateTotalBlocks = exports.updateTotals = exports.getDisplayName = exports.getExtrinsicSuccess = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
-require('@polkadot/api-augment');
+require("@polkadot/api-augment");
 const pino_1 = __importDefault(require("pino"));
 const api_1 = require("@polkadot/api");
 const keyring_1 = require("@polkadot/keyring");

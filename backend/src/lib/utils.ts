@@ -1,5 +1,5 @@
 // @ts-check
-require('@polkadot/api-augment');
+import '@polkadot/api-augment';
 import pino from 'pino';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
@@ -8,11 +8,8 @@ import { Client } from 'pg';
 import _ from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
-import { Codec } from '@polkadot/types-codec/types';
 import { Address, BlockHash, EventRecord } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
-import { Vec } from '@polkadot/types';
-
 
 const logger = pino();
 
@@ -91,7 +88,7 @@ export const isValidAddressPolkadotAddress = (address: string) => {
   }
 };
 
-export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: any) => {
+export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: any[]) => {
   const startTime = new Date().getTime();
   const involvedAddresses: any = [];
   blockEvents
@@ -196,7 +193,7 @@ export const processExtrinsics = async (
   blockNumber: number,
   blockHash: BlockHash,
   extrinsics: any[],
-  blockEvents: any,
+  blockEvents: any[],
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
@@ -227,7 +224,7 @@ export const processExtrinsic = async (
   blockHash: BlockHash,
   extrinsic: any,
   index: number,
-  blockEvents: any,
+  blockEvents: any[],
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
@@ -324,7 +321,7 @@ export const processExtrinsic = async (
 };
 
 export const processEvents = async (
-  client: Client, blockNumber: number, blockEvents: any, timestamp: number, loggerOptions: { crawler: string; },
+  client: Client, blockNumber: number, blockEvents: any[], timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
   await Promise.all(
@@ -411,7 +408,7 @@ export const processLog = async (client: Client, blockNumber: number, log: any, 
   }
 };
 
-export const getExtrinsicSuccess = (index: number, blockEvents: any) => {
+export const getExtrinsicSuccess = (index: number, blockEvents: any[]) => {
   // assume success if no events were extracted
   if (blockEvents.length === 0) {
     return true;

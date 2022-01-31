@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
+require("@polkadot/api-augment");
 const pino_1 = __importDefault(require("pino"));
 const utils_1 = require("../lib/utils");
 const backend_config_1 = require("../backend.config");
@@ -75,7 +76,7 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
         const blockAuthor = blockHeader.author || '';
         const blockAuthorIdentity = yield api.derive.accounts.info(blockHeader.author);
         const blockAuthorName = (0, utils_1.getDisplayName)(blockAuthorIdentity.identity);
-        const timestamp = Math.floor(timestampMs / 1000);
+        const timestamp = Math.floor(timestampMs.toNumber() / 1000);
         const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
         // Get election status
         const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';

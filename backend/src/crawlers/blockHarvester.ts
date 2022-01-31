@@ -1,9 +1,10 @@
 // @ts-check
+import '@polkadot/api-augment';
+import { ApiPromise } from '@polkadot/api';
 import pino from 'pino';
 import { getClient, dbQuery, getPolkadotAPI, isNodeSynced, shortHash, processExtrinsics, processEvents, processLogs, getDisplayName, wait, logHarvestError } from '../lib/utils';
 import { backendConfig } from '../backend.config';
 import { Client } from 'pg';
-import { ApiPromise } from '@polkadot/api';
 
 const crawlerName = 'blockHarvester';
 const logger = pino({
@@ -84,7 +85,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
     const blockAuthor = blockHeader.author || '';
     const blockAuthorIdentity = await api.derive.accounts.info(blockHeader.author);
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
-    const timestamp = Math.floor(timestampMs / 1000);
+    const timestamp = Math.floor(timestampMs.toNumber() / 1000);
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
     // Get election status
     const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
