@@ -774,7 +774,7 @@ const crawler = async (delayedStart: boolean) => {
     ]);
 
     // eslint-disable-next-line
-    const nominations = nominators.map(([key, nominations]) => {
+    const nominations = nominators.map(([key, nominations]: [any, any]) => {
       const nominator = key.toHuman()[0];
       // eslint-disable-next-line
       const targets = nominations.toJSON()['targets'];

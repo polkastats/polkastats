@@ -75,7 +75,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       api.query.balances.totalIssuance,
       api.rpc.state.getRuntimeVersion(blockHash),
       api.query.staking.activeEra.at(blockHash)
-        .then((res) => (res.toJSON() ? res.toJSON().index : 0)),
+        .then((res: any) => (res.toJSON() ? res.toJSON().index : 0)),
       api.query.session.currentIndex.at(blockHash)
         .then((res) => (res || 0)),
       api.query.electionProviderMultiPhase.currentPhase.at(blockHash),
