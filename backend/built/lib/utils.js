@@ -214,7 +214,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, extrinsic, index,
     const args = JSON.stringify(extrinsic.args);
     const hash = extrinsic.hash.toHex();
     const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
-    const success = module.exports.getExtrinsicSuccess(index, blockEvents);
+    const success = module.exports.getExtrinsicSuccess(api, index, blockEvents);
     // Fees
     // TODO: Investigate why this queries fail
     //
@@ -378,17 +378,13 @@ const processLog = (client, blockNumber, log, index, timestamp, loggerOptions) =
     }
 });
 exports.processLog = processLog;
-const getExtrinsicSuccess = (index, blockEvents) => {
-    // assume success if no events were extracted
-    if (blockEvents.length === 0) {
-        return true;
-    }
+const getExtrinsicSuccess = (api, index, blockEvents) => {
     let extrinsicSuccess = false;
-    blockEvents.forEach((record) => {
-        const { event, phase } = record;
-        if (parseInt(phase.toHuman().ApplyExtrinsic, 10) === index
-            && event.section === 'system'
-            && event.method === 'ExtrinsicSuccess') {
+    blockEvents
+        .filter(({ phase }) => phase.isApplyExtrinsic &&
+        phase.asApplyExtrinsic.eq(index))
+        .forEach(({ event }) => {
+        if (api.events.system.ExtrinsicSuccess.is(event)) {
             extrinsicSuccess = true;
         }
     });

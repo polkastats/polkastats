@@ -8,6 +8,7 @@ import { Client } from 'pg';
 import _ from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
+import type { Vec } from '@polkadot/types-codec';
 import { Address, BlockHash, EventRecord } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 
@@ -88,7 +89,7 @@ export const isValidAddressPolkadotAddress = (address: string) => {
   }
 };
 
-export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: any[]) => {
+export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: Vec<EventRecord>) => {
   const startTime = new Date().getTime();
   const involvedAddresses: any = [];
   blockEvents
@@ -193,7 +194,7 @@ export const processExtrinsics = async (
   blockNumber: number,
   blockHash: BlockHash,
   extrinsics: any[],
-  blockEvents: any[],
+  blockEvents: Vec<EventRecord>,
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
@@ -224,7 +225,7 @@ export const processExtrinsic = async (
   blockHash: BlockHash,
   extrinsic: any,
   index: number,
-  blockEvents: any[],
+  blockEvents: Vec<EventRecord>,
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
@@ -235,7 +236,7 @@ export const processExtrinsic = async (
   const args = JSON.stringify(extrinsic.args);
   const hash = extrinsic.hash.toHex();
   const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
-  const success = module.exports.getExtrinsicSuccess(index, blockEvents);
+  const success = module.exports.getExtrinsicSuccess(api, index, blockEvents);
   // Fees
   // TODO: Investigate why this queries fail
   //
@@ -321,7 +322,7 @@ export const processExtrinsic = async (
 };
 
 export const processEvents = async (
-  client: Client, blockNumber: number, blockEvents: any[], timestamp: number, loggerOptions: { crawler: string; },
+  client: Client, blockNumber: number, blockEvents: Vec<EventRecord>, timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
   await Promise.all(
@@ -408,22 +409,18 @@ export const processLog = async (client: Client, blockNumber: number, log: any, 
   }
 };
 
-export const getExtrinsicSuccess = (index: number, blockEvents: any[]) => {
-  // assume success if no events were extracted
-  if (blockEvents.length === 0) {
-    return true;
-  }
+export const getExtrinsicSuccess = (api: ApiPromise, index: number, blockEvents: Vec<EventRecord>) => {
   let extrinsicSuccess = false;
-  blockEvents.forEach((record) => {
-    const { event, phase } = record;
-    if (
-      parseInt(phase.toHuman().ApplyExtrinsic, 10) === index
-      && event.section === 'system'
-      && event.method === 'ExtrinsicSuccess'
-    ) {
-      extrinsicSuccess = true;
-    }
-  });
+  blockEvents
+    .filter(({ phase }) =>
+      phase.isApplyExtrinsic &&
+      phase.asApplyExtrinsic.eq(index)
+    )
+    .forEach(({ event }) => {
+      if (api.events.system.ExtrinsicSuccess.is(event)) {
+        extrinsicSuccess = true;
+      }
+    });
   return extrinsicSuccess;
 };
 
