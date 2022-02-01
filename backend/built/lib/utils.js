@@ -211,7 +211,8 @@ const processExtrinsics = (api, client, blockNumber, blockHash, extrinsics, bloc
     logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 });
 exports.processExtrinsics = processExtrinsics;
-const processExtrinsic = (api, client, blockNumber, blockHash, extrinsic, index, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const [index, extrinsic] = indexedExtrinsic;
     const { isSigned } = extrinsic;
     const signer = isSigned ? extrinsic.signer.toString() : '';
     const { section } = extrinsic.toHuman().method;
@@ -287,8 +288,8 @@ const processEvents = (client, blockNumber, blockEvents, timestamp, loggerOption
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 });
 exports.processEvents = processEvents;
-const processEvent = (client, blockNumber, record, index, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const { event, phase } = record;
+const processEvent = (client, blockNumber, indexedEvent, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const [index, { event, phase }] = indexedEvent;
     const sql = `INSERT INTO event (
     block_number,
     event_index,

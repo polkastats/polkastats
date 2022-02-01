@@ -227,12 +227,12 @@ export const processExtrinsic = async (
   client: Client,
   blockNumber: number,
   blockHash: BlockHash,
-  extrinsic: any,
-  index: number,
+  indexedExtrinsic: any,
   blockEvents: Vec<EventRecord>,
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
+  const [index, extrinsic]  = indexedExtrinsic;
   const { isSigned } = extrinsic;
   const signer = isSigned ? extrinsic.signer.toString() : '';
   const { section } = extrinsic.toHuman().method;
@@ -314,9 +314,9 @@ export const processEvents = async (
 };
 
 export const processEvent = async (
-  client: Client, blockNumber: number, record: any, index: number, timestamp: number, loggerOptions: { crawler: string; },
+  client: Client, blockNumber: number, indexedEvent: any, timestamp: number, loggerOptions: { crawler: string; },
 ) => {
-  const { event, phase } = record;
+  const [index, { event, phase }] = indexedEvent;
   const sql = `INSERT INTO event (
     block_number,
     event_index,
