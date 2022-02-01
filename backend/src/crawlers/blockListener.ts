@@ -22,9 +22,7 @@ const crawler = async () => {
 
   let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {
-    // eslint-disable-next-line no-await-in-loop
     await wait(10000);
-    // eslint-disable-next-line no-await-in-loop
     synced = await isNodeSynced(api, loggerOptions);
   }
 

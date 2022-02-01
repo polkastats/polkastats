@@ -100,7 +100,6 @@ const processChunk = (api, client, accountId) => __awaiter(void 0, void 0, void 
       block_height = EXCLUDED.block_height
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
-    // eslint-disable-next-line no-await-in-loop
     yield (0, utils_1.dbParamQuery)(client, query, data, loggerOptions);
 });
 const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* () {
@@ -113,9 +112,7 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
     const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
     let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
-        // eslint-disable-next-line no-await-in-loop
         yield (0, utils_1.wait)(10000);
-        // eslint-disable-next-line no-await-in-loop
         synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     }
     const startTime = new Date().getTime();
@@ -123,10 +120,8 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
     logger.info(loggerOptions, `Got ${accountIds.length} active accounts`);
     const chunks = chunker(accountIds, chunkSize);
     logger.info(loggerOptions, `Processing chunks of ${chunkSize} accounts`);
-    // eslint-disable-next-line no-restricted-syntax
     for (const chunk of chunks) {
         const chunkStartTime = Date.now();
-        // eslint-disable-next-line no-await-in-loop
         yield Promise.all(chunk.map((accountId) => processChunk(api, client, accountId)));
         const chunkEndTime = new Date().getTime();
         logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) / 1000).toFixed(3)}s`);

@@ -30,9 +30,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
     const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
     let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
-        // eslint-disable-next-line no-await-in-loop
         yield (0, utils_1.wait)(10000);
-        // eslint-disable-next-line no-await-in-loop
         synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     }
     // Subscribe to new blocks

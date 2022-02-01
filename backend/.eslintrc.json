@@ -11,5 +11,6 @@
         "ecmaVersion": 12
     },
     "rules": {
+        "no-await-in-loop": "off"
     }
 }

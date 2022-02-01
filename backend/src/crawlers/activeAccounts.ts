@@ -98,7 +98,6 @@ const processChunk = async (api: ApiPromise, client: Client, accountId: any) => 
       block_height = EXCLUDED.block_height
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
-  // eslint-disable-next-line no-await-in-loop
   await dbParamQuery(client, query, data, loggerOptions);
 };
 
@@ -115,9 +114,7 @@ const crawler = async (delayedStart: boolean) => {
 
   let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {
-    // eslint-disable-next-line no-await-in-loop
     await wait(10000);
-    // eslint-disable-next-line no-await-in-loop
     synced = await isNodeSynced(api, loggerOptions);
   }
 
@@ -127,10 +124,8 @@ const crawler = async (delayedStart: boolean) => {
   const chunks = chunker(accountIds, chunkSize);
   logger.info(loggerOptions, `Processing chunks of ${chunkSize} accounts`);
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const chunk of chunks) {
     const chunkStartTime = Date.now();
-    // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       chunk.map(
         (accountId) => processChunk(api, client, accountId),

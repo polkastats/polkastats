@@ -47,10 +47,8 @@ const healthCheck = (client) => __awaiter(void 0, void 0, void 0, function* () {
       b.total_extrinsics > (SELECT COUNT(*) FROM extrinsic AS ex WHERE ex.block_number = b.block_number) 
     ;`;
     const res = yield (0, utils_1.dbQuery)(client, query, loggerOptions);
-    // eslint-disable-next-line no-restricted-syntax
     for (const row of res.rows) {
         logger.info(loggerOptions, `Health check failed for block #${row.block_number}, deleting block from block table!`);
-        // eslint-disable-next-line no-await-in-loop
         yield (0, utils_1.dbQuery)(client, `DELETE FROM block WHERE block_number = '${row.block_number}';`, loggerOptions);
     }
     const endTime = new Date().getTime();
@@ -151,10 +149,8 @@ const harvestBlocksSeq = (api, client, startBlock, endBlock) => __awaiter(void 0
     let maxTimeMs = 0;
     let minTimeMs = 1000000;
     let avgTimeMs = 0;
-    // eslint-disable-next-line no-restricted-syntax
     for (const blockNumber of blocks) {
         const blockStartTime = Date.now();
-        // eslint-disable-next-line no-await-in-loop
         yield harvestBlock(api, client, blockNumber);
         const blockEndTime = new Date().getTime();
         // Cook some stats
@@ -180,10 +176,8 @@ const harvestBlocks = (api, client, startBlock, endBlock) => __awaiter(void 0, v
     let minTimeMs = 1000000;
     let avgTimeMs = 0;
     let avgBlocksPerSecond = 0;
-    // eslint-disable-next-line no-restricted-syntax
     for (const chunk of chunks) {
         const chunkStartTime = Date.now();
-        // eslint-disable-next-line no-await-in-loop
         yield Promise.all(chunk.map((blockNumber) => harvestBlock(api, client, blockNumber)));
         const chunkEndTime = new Date().getTime();
         // Cook some stats
@@ -218,9 +212,7 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
     const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
     let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
-        // eslint-disable-next-line no-await-in-loop
         yield (0, utils_1.wait)(10000);
-        // eslint-disable-next-line no-await-in-loop
         synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     }
     // Get gaps from block table
@@ -249,16 +241,13 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
   ORDER BY gap_start DESC
   `;
     const res = yield (0, utils_1.dbQuery)(client, sqlSelect, loggerOptions);
-    // eslint-disable-next-line no-restricted-syntax
     for (const row of res.rows) {
         if (!(row.gap_start === 0 && row.gap_end === 0)) {
             logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
             if (config.mode === 'chunks') {
-                // eslint-disable-next-line no-await-in-loop
                 yield harvestBlocks(api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10));
             }
             else {
-                // eslint-disable-next-line no-await-in-loop
                 yield harvestBlocksSeq(api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10));
             }
         }

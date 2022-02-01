@@ -44,10 +44,8 @@ const healthCheck = async (client: Client) => {
       b.total_extrinsics > (SELECT COUNT(*) FROM extrinsic AS ex WHERE ex.block_number = b.block_number) 
     ;`;
   const res = await dbQuery(client, query, loggerOptions);
-  // eslint-disable-next-line no-restricted-syntax
   for (const row of res.rows) {
     logger.info(loggerOptions, `Health check failed for block #${row.block_number}, deleting block from block table!`);
-    // eslint-disable-next-line no-await-in-loop
     await dbQuery(client, `DELETE FROM block WHERE block_number = '${row.block_number}';`, loggerOptions);
   }
   const endTime = new Date().getTime();
@@ -184,10 +182,8 @@ const harvestBlocksSeq = async (api: ApiPromise, client: Client, startBlock: num
   let minTimeMs = 1000000;
   let avgTimeMs = 0;
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const blockNumber of blocks) {
     const blockStartTime = Date.now();
-    // eslint-disable-next-line no-await-in-loop
     await harvestBlock(api, client, blockNumber);
     const blockEndTime = new Date().getTime();
 
@@ -221,10 +217,8 @@ const harvestBlocks = async (api: ApiPromise, client: Client, startBlock: number
   let avgTimeMs = 0;
   let avgBlocksPerSecond = 0;
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const chunk of chunks) {
     const chunkStartTime = Date.now();
-    // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       chunk.map(
         (blockNumber) => harvestBlock(api, client, blockNumber),
@@ -274,9 +268,7 @@ const crawler = async (delayedStart: boolean) => {
   const api = await getPolkadotAPI(loggerOptions, config.apiCustomTypes);
   let synced = await isNodeSynced(api, loggerOptions);
   while (!synced) {
-    // eslint-disable-next-line no-await-in-loop
     await wait(10000);
-    // eslint-disable-next-line no-await-in-loop
     synced = await isNodeSynced(api, loggerOptions);
   }
   // Get gaps from block table
@@ -305,12 +297,10 @@ const crawler = async (delayedStart: boolean) => {
   ORDER BY gap_start DESC
   `;
   const res = await dbQuery(client, sqlSelect, loggerOptions);
-  // eslint-disable-next-line no-restricted-syntax
   for (const row of res.rows) {
     if (!(row.gap_start === 0 && row.gap_end === 0)) {
       logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
       if (config.mode === 'chunks') {
-        // eslint-disable-next-line no-await-in-loop
         await harvestBlocks(
           api,
           client,
@@ -318,7 +308,6 @@ const crawler = async (delayedStart: boolean) => {
           parseInt(row.gap_end, 10),
         );
       } else {
-        // eslint-disable-next-line no-await-in-loop
         await harvestBlocksSeq(
           api,
           client,

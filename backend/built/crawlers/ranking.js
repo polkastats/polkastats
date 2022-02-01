@@ -373,9 +373,7 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(void
         activeEra,
         validator.totalRating,
     ];
-    // eslint-disable-next-line no-await-in-loop
     yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
-    // eslint-disable-next-line no-restricted-syntax
     for (const commissionHistoryItem of validator.commissionHistory) {
         if (commissionHistoryItem.commission) {
             sql = `INSERT INTO era_commission (
@@ -394,11 +392,9 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(void
                 commissionHistoryItem.era,
                 commissionHistoryItem.commission,
             ];
-            // eslint-disable-next-line no-await-in-loop
             yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
-    // eslint-disable-next-line no-restricted-syntax
     for (const perfHistoryItem of validator.relativePerformanceHistory) {
         if (perfHistoryItem.relativePerformance && perfHistoryItem.relativePerformance > 0) {
             sql = `INSERT INTO era_relative_performance (
@@ -417,11 +413,9 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(void
                 perfHistoryItem.era,
                 perfHistoryItem.relativePerformance,
             ];
-            // eslint-disable-next-line no-await-in-loop
             yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
-    // eslint-disable-next-line no-restricted-syntax
     for (const stakefHistoryItem of validator.stakeHistory) {
         if (stakefHistoryItem.self && stakefHistoryItem.self !== 0) {
             sql = `INSERT INTO era_self_stake (
@@ -440,11 +434,9 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(void
                 stakefHistoryItem.era,
                 stakefHistoryItem.self,
             ];
-            // eslint-disable-next-line no-await-in-loop
             yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
-    // eslint-disable-next-line no-restricted-syntax
     for (const eraPointsHistoryItem of validator.eraPointsHistory) {
         if (eraPointsHistoryItem.points && eraPointsHistoryItem.points !== 0) {
             sql = `INSERT INTO era_points (
@@ -463,7 +455,6 @@ const insertEraValidatorStats = (client, validator, activeEra) => __awaiter(void
                 eraPointsHistoryItem.era,
                 eraPointsHistoryItem.points,
             ];
-            // eslint-disable-next-line no-await-in-loop
             yield (0, utils_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
@@ -542,9 +533,7 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
     const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
     let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
-        // eslint-disable-next-line no-await-in-loop
         yield (0, utils_1.wait)(10000);
-        // eslint-disable-next-line no-await-in-loop
         synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
     }
     const clusters = [];
@@ -597,25 +586,19 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         const erasPoints = yield api.derive.staking._erasPoints(eraIndexes, withActive);
         logger.debug(loggerOptions, 'Step #4');
         let erasPreferences = [];
-        // eslint-disable-next-line no-restricted-syntax
         for (const eraIndex of eraIndexes) {
-            // eslint-disable-next-line no-await-in-loop
             const eraPrefs = yield api.derive.staking.eraPrefs(eraIndex);
             erasPreferences = erasPreferences.concat(eraPrefs);
         }
         logger.debug(loggerOptions, 'Step #5');
         let erasSlashes = [];
-        // eslint-disable-next-line no-restricted-syntax
         for (const eraIndex of eraIndexes) {
-            // eslint-disable-next-line no-await-in-loop
             const eraSlashes = yield api.derive.staking.eraSlashes(eraIndex);
             erasSlashes = erasSlashes.concat(eraSlashes);
         }
         logger.debug(loggerOptions, 'Step #6');
         let erasExposure = [];
-        // eslint-disable-next-line no-restricted-syntax
         for (const eraIndex of eraIndexes) {
-            // eslint-disable-next-line no-await-in-loop
             const eraExposure = yield api.derive.staking.eraExposure(eraIndex);
             erasExposure = erasExposure.concat(eraExposure);
         }
@@ -693,14 +676,11 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         validators = validators.concat(intentions);
         // stash & identity parent address creation block
         const stashAddressesCreation = [];
-        // eslint-disable-next-line no-restricted-syntax
         for (const validator of validators) {
             const stashAddress = validator.stashId.toString();
-            // eslint-disable-next-line no-await-in-loop
             stashAddressesCreation[stashAddress] = yield getAddressCreation(client, stashAddress);
             if (validator.identity.parent) {
                 const stashParentAddress = validator.identity.parent.toString();
-                // eslint-disable-next-line no-await-in-loop
                 stashAddressesCreation[stashParentAddress] = yield getAddressCreation(client, stashParentAddress);
             }
         }
@@ -979,7 +959,6 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
             });
             // dominated validator logic
             let dominated = false;
-            // eslint-disable-next-line no-restricted-syntax
             for (const opponent of ranking) {
                 if (opponent !== validator
                     && (parseFloat(opponent.relativePerformance)
@@ -999,7 +978,6 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         // cluster categorization
         logger.debug(loggerOptions, 'Random selection of validators based on cluster size');
         let validatorsToHide = [];
-        // eslint-disable-next-line no-restricted-syntax
         for (const cluster of clusters) {
             const clusterMembers = ranking.filter(({ clusterName }) => clusterName === cluster);
             const clusterSize = clusterMembers[0].clusterMembers;

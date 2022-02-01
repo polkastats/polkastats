@@ -180,7 +180,6 @@ export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNu
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
   try {
-    // eslint-disable-next-line no-await-in-loop
     await client.query(query, data);
     logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
   } catch (error) {
@@ -330,7 +329,6 @@ export const processEvent = async (
   DO NOTHING
   ;`;
   try {
-    // eslint-disable-next-line no-await-in-loop
     await client.query(sql);
     logger.debug(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
   } catch (error) {

@@ -189,7 +189,6 @@ const updateAccountInfo = (api, client, blockNumber, timestamp, address, loggerO
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
     try {
-        // eslint-disable-next-line no-await-in-loop
         yield client.query(query, data);
         logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
     }
@@ -301,7 +300,6 @@ const processEvent = (client, blockNumber, record, index, timestamp, loggerOptio
   DO NOTHING
   ;`;
     try {
-        // eslint-disable-next-line no-await-in-loop
         yield client.query(sql);
         logger.debug(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
     }
