@@ -498,3 +498,8 @@ export const logHarvestError = async (client: Client, blockNumber: number, error
     ;`;
   await module.exports.dbParamQuery(client, query, data, loggerOptions);
 };
+
+export const chunker = (a: any[], n: number) => Array.from(
+  { length: Math.ceil(a.length / n) },
+  (_, i) => a.slice(i * n, i * n + n),
+)
