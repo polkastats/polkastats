@@ -41,19 +41,19 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
         const blockNumber = blockHeader.number.toNumber();
         try {
             const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
+            const apiAt = yield api.at(blockHash);
             // Parallelize
             const [activeEra, currentIndex, { block }, extendedHeader, runtimeVersion, finalizedBlockHash, totalIssuance, timestampMs,] = yield Promise.all([
-                api.query.staking.activeEra()
-                    // @ts-ignore
+                apiAt.query.staking.activeEra()
                     .then((res) => (res.toJSON() ? res.toJSON().index : 0)),
-                api.query.session.currentIndex()
+                apiAt.query.session.currentIndex()
                     .then((res) => (res || 0)),
                 api.rpc.chain.getBlock(blockHash),
                 api.derive.chain.getHeader(blockHash),
                 api.rpc.state.getRuntimeVersion(blockHash),
                 api.rpc.chain.getFinalizedHead(),
-                api.query.balances.totalIssuance.at(blockHash),
-                api.query.timestamp.now.at(blockHash),
+                apiAt.query.balances.totalIssuance(),
+                apiAt.query.timestamp.now(),
             ]);
             const finalizedBlockHeader = yield api.rpc.chain.getHeader(finalizedBlockHash);
             const finalizedBlock = finalizedBlockHeader.number.toNumber();
@@ -74,7 +74,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
                 const blockAuthor = extendedHeader.author || '';
                 const [blockAuthorIdentity, blockEvents, chainElectionStatus,] = yield Promise.all([
                     api.derive.accounts.info(blockAuthor),
-                    api.query.system.events.at(blockHash),
+                    apiAt.query.system.events(),
                     api.query.electionProviderMultiPhase.currentPhase(),
                 ]);
                 const blockAuthorName = (0, utils_1.getDisplayName)(blockAuthorIdentity.identity);

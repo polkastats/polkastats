@@ -60,18 +60,19 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
     const startTime = new Date().getTime();
     try {
         const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
+        const apiAt = yield api.at(blockHash);
         const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestampMs,] = yield Promise.all([
             api.rpc.chain.getBlock(blockHash),
-            api.query.system.events.at(blockHash),
+            apiAt.query.system.events(),
             api.derive.chain.getHeader(blockHash),
-            api.query.balances.totalIssuance.at(blockHash),
+            apiAt.query.balances.totalIssuance(),
             api.rpc.state.getRuntimeVersion(blockHash),
-            api.query.staking.activeEra.at(blockHash)
+            apiAt.query.staking.activeEra()
                 .then((res) => (res.toJSON() ? res.toJSON().index : 0)),
-            api.query.session.currentIndex.at(blockHash)
+            apiAt.query.session.currentIndex()
                 .then((res) => (res || 0)),
-            api.query.electionProviderMultiPhase.currentPhase.at(blockHash),
-            api.query.timestamp.now.at(blockHash),
+            apiAt.query.electionProviderMultiPhase.currentPhase(),
+            api.query.timestamp.now(),
         ]);
         const blockAuthor = blockHeader.author || '';
         const blockAuthorIdentity = yield api.derive.accounts.info(blockHeader.author);
