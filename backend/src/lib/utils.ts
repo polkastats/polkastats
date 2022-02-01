@@ -19,7 +19,7 @@ export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCus
   logger.debug(loggerOptions, `Connecting to ${backendConfig.wsProviderUrl}`);
   const provider = new WsProvider(backendConfig.wsProviderUrl);
   if (apiCustomTypes && apiCustomTypes !== '') {
-    const types = JSON.parse(fs.readFileSync(`./types/${apiCustomTypes}`, 'utf8'));
+    const types = JSON.parse(fs.readFileSync(`./src/types/${apiCustomTypes}`, 'utf8'));
     api = await ApiPromise.create({ provider, types });
   } else {
     api = await ApiPromise.create({ provider });
