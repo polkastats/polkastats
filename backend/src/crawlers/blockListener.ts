@@ -185,7 +185,7 @@ const crawler = async () => {
         await updateFinalized(client, finalizedBlock, loggerOptions);
 
         const endTime = new Date().getTime();
-        logger.info(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+        logger.info(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
       }
     } catch (error) {
       logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);

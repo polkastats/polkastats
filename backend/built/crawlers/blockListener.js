@@ -142,7 +142,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
                 // Update finalized blocks
                 yield (0, utils_1.updateFinalized)(client, finalizedBlock, loggerOptions);
                 const endTime = new Date().getTime();
-                logger.info(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) processed in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+                logger.info(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
             }
         }
         catch (error) {
