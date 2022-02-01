@@ -72,7 +72,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       api.rpc.chain.getBlock(blockHash),
       api.query.system.events.at(blockHash),
       api.derive.chain.getHeader(blockHash),
-      api.query.balances.totalIssuance,
+      api.query.balances.totalIssuance.at(blockHash),
       api.rpc.state.getRuntimeVersion(blockHash),
       api.query.staking.activeEra.at(blockHash)
         .then((res: any) => (res.toJSON() ? res.toJSON().index : 0)),
