@@ -14,6 +14,9 @@ import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 
 const logger = pino();
 
+// Used for processing events and extrinsics
+const chunkSize = 100;
+
 export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCustomTypes: string | undefined) => {
   let api;
   logger.debug(loggerOptions, `Connecting to ${backendConfig.wsProviderUrl}`);
@@ -198,24 +201,26 @@ export const processExtrinsics = async (
   loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
-  await Promise.all(
-    extrinsics.map((extrinsic, index) => module.exports.processExtrinsic(
-      api,
-      client,
-      blockNumber,
-      blockHash,
-      extrinsic,
-      index,
-      blockEvents,
-      timestamp,
-      loggerOptions,
-    )),
-  );
+  const indexedExtrinsics = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
+  const chunks = module.exports.chunker(indexedExtrinsics, chunkSize);
+  for (const chunk of chunks) {
+    await Promise.all(
+      chunk.map((indexedExtrinsic: any) => module.exports.processExtrinsic(
+        api,
+        client,
+        blockNumber,
+        blockHash,
+        indexedExtrinsic,
+        blockEvents,
+        timestamp,
+        loggerOptions,
+      )),
+    );
+  }
   // Log execution time
   const endTime = new Date().getTime();
   logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
-
 
 export const processExtrinsic = async (
   api: ApiPromise,
@@ -294,11 +299,15 @@ export const processEvents = async (
   client: Client, blockNumber: number, blockEvents: Vec<EventRecord>, timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
-  await Promise.all(
-    blockEvents.map((record: any, index: any) => module.exports.processEvent(
-      client, blockNumber, record, index, timestamp, loggerOptions,
-    )),
-  );
+  const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
+  const chunks = module.exports.chunker(indexedBlockEvents, chunkSize);
+  for (const chunk of chunks) {
+    await Promise.all(
+      chunk.map((indexedEvent: any) => module.exports.processEvent(
+        client, blockNumber, indexedEvent, timestamp, loggerOptions,
+      )),
+    );
+  }
   // Log execution time
   const endTime = new Date().getTime();
   logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);

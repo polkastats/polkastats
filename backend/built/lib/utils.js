@@ -24,6 +24,8 @@ const lodash_1 = __importDefault(require("lodash"));
 const fs_1 = __importDefault(require("fs"));
 const backend_config_1 = require("../backend.config");
 const logger = (0, pino_1.default)();
+// Used for processing events and extrinsics
+const chunkSize = 100;
 const getPolkadotAPI = (loggerOptions, apiCustomTypes) => __awaiter(void 0, void 0, void 0, function* () {
     let api;
     logger.debug(loggerOptions, `Connecting to ${backend_config_1.backendConfig.wsProviderUrl}`);
@@ -199,7 +201,11 @@ const updateAccountInfo = (api, client, blockNumber, timestamp, address, loggerO
 exports.updateAccountInfo = updateAccountInfo;
 const processExtrinsics = (api, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = new Date().getTime();
-    yield Promise.all(extrinsics.map((extrinsic, index) => module.exports.processExtrinsic(api, client, blockNumber, blockHash, extrinsic, index, blockEvents, timestamp, loggerOptions)));
+    const indexedExtrinsics = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
+    const chunks = module.exports.chunker(indexedExtrinsics, chunkSize);
+    for (const chunk of chunks) {
+        yield Promise.all(chunk.map((indexedExtrinsic) => module.exports.processExtrinsic(api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
+    }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
@@ -271,7 +277,11 @@ const processExtrinsic = (api, client, blockNumber, blockHash, extrinsic, index,
 exports.processExtrinsic = processExtrinsic;
 const processEvents = (client, blockNumber, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = new Date().getTime();
-    yield Promise.all(blockEvents.map((record, index) => module.exports.processEvent(client, blockNumber, record, index, timestamp, loggerOptions)));
+    const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
+    const chunks = module.exports.chunker(indexedBlockEvents, chunkSize);
+    for (const chunk of chunks) {
+        yield Promise.all(chunk.map((indexedEvent) => module.exports.processEvent(client, blockNumber, indexedEvent, timestamp, loggerOptions)));
+    }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
