@@ -16,12 +16,12 @@ export const backendConfig = {
     {
       name: 'blockListener',
       enabled: !process.env.BLOCK_LISTENER_DISABLE,
-      crawler: './crawlers/blockListener.js',
+      crawler: './built/crawlers/blockListener.js',
     },
     {
       name: 'blockHarvester',
       enabled: !process.env.BLOCK_HARVESTER_DISABLE,
-      crawler: './crawlers/blockHarvester.js',
+      crawler: './built/crawlers/blockHarvester.js',
       apiCustomTypes: process.env.API_CUSTOM_TYPES || '',
       startDelay: parseInt(process.env.BLOCK_HARVESTER_START_DELAY_MS, 10) || 10 * 1000,
       mode: process.env.BLOCK_HARVESTER_MODE || 'chunks',
@@ -34,7 +34,7 @@ export const backendConfig = {
     {
       name: 'ranking',
       enabled: !process.env.RANKING_DISABLE,
-      crawler: './crawlers/ranking.js',
+      crawler: './built/crawlers/ranking.js',
       startDelay: parseInt(process.env.RANKING_START_DELAY_MS, 10) || 15 * 60 * 1000,
       pollingTime:
         parseInt(process.env.RANKING_POLLING_TIME_MS, 10)
@@ -47,7 +47,7 @@ export const backendConfig = {
     {
       name: 'activeAccounts',
       enabled: !process.env.ACTIVE_ACCOUNTS_DISABLE,
-      crawler: './crawlers/activeAccounts.js',
+      crawler: './built/crawlers/activeAccounts.js',
       startDelay: parseInt(process.env.ACTIVE_ACCOUNTS_START_DELAY_MS, 10) || 60 * 1000,
       chunkSize: parseInt(process.env.ACTIVE_ACCOUNTS_CHUNK_SIZE, 10) || 100,
       pollingTime:
