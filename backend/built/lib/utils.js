@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.updateTotalEvents = exports.updateTotalTransfers = exports.updateTotalExtrinsics = exports.updateTotalBlocks = exports.updateTotals = exports.getDisplayName = exports.getExtrinsicSuccess = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
+exports.getExtrinsicError = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.updateTotalEvents = exports.updateTotalTransfers = exports.updateTotalExtrinsics = exports.updateTotalBlocks = exports.updateTotals = exports.getDisplayName = exports.getExtrinsicSuccess = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
 require("@polkadot/api-augment");
 const pino_1 = __importDefault(require("pino"));
@@ -23,6 +23,7 @@ const pg_1 = require("pg");
 const lodash_1 = __importDefault(require("lodash"));
 const fs_1 = __importDefault(require("fs"));
 const backend_config_1 = require("../backend.config");
+const bignumber_js_1 = require("bignumber.js");
 const logger = (0, pino_1.default)();
 // Used for processing events and extrinsics
 const chunkSize = 100;
@@ -235,7 +236,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
                 .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '',
         ]);
     }
-    const sql = `INSERT INTO extrinsic (
+    let sql = `INSERT INTO extrinsic (
       block_number,
       extrinsic_index,
       is_signed,
@@ -274,6 +275,95 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     catch (error) {
         logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
     }
+    if (isSigned) {
+        // Store signed extrinsic
+        sql = `INSERT INTO signed_extrinsic (
+      block_number,
+      extrinsic_index,
+      signer,
+      section,
+      method,
+      args,
+      hash,
+      doc,
+      fee_info,
+      fee_details,
+      success,
+      timestamp
+    ) VALUES (
+      '${blockNumber}',
+      '${index}',
+      '${signer}',
+      '${section}',
+      '${method}',
+      '${args}',
+      '${hash}',
+      '${doc}',
+      '${feeInfo}',
+      '${feeDetails}',
+      '${success}',
+      '${timestamp}'
+    )
+    ON CONFLICT ON CONSTRAINT signed_extrinsic_pkey 
+    DO NOTHING;
+    ;`;
+        try {
+            yield client.query(sql);
+            logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+        }
+        catch (error) {
+            logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+        }
+        if (section === 'balances' && (method === 'forceTransfer' || method === 'transfer' || method === 'transferAll' || method === 'transferKeepAlive')) {
+            // Store transfer
+            const source = signer;
+            const destination = JSON.parse(args)[0].id
+                ? JSON.parse(args)[0].id
+                : JSON.parse(args)[0].address20;
+            const amount = JSON.parse(args)[1];
+            const feeAmount = JSON.parse(feeInfo).partialFee;
+            const errorMessage = success
+                ? ''
+                : module.exports.getExtrinsicError(index, blockEvents);
+            sql = `INSERT INTO transfer (
+          block_number,
+          extrinsic_index,
+          section,
+          method,
+          hash,
+          source,
+          destination,
+          amount,
+          fee_amount,      
+          success,
+          error_message,
+          timestamp
+        ) VALUES (
+          '${blockNumber}',
+          '${index}',
+          '${section}',
+          '${method}',
+          '${hash}',
+          '${source}',
+          '${destination}',
+          '${new bignumber_js_1.BigNumber(amount).toString(10)}',
+          '${new bignumber_js_1.BigNumber(feeAmount).toString(10)}',
+          '${success}',
+          '${errorMessage}',
+          '${timestamp}'
+        )
+        ON CONFLICT ON CONSTRAINT transfer_pkey 
+        DO NOTHING;
+        ;`;
+            try {
+                yield client.query(sql);
+                logger.debug(loggerOptions, `Added transfer ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+            }
+            catch (error) {
+                logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+            }
+        }
+    }
 });
 exports.processExtrinsic = processExtrinsic;
 const processEvents = (client, blockNumber, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
@@ -290,7 +380,7 @@ const processEvents = (client, blockNumber, blockEvents, timestamp, loggerOption
 exports.processEvents = processEvents;
 const processEvent = (client, blockNumber, indexedEvent, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const [index, { event, phase }] = indexedEvent;
-    const sql = `INSERT INTO event (
+    let sql = `INSERT INTO event (
     block_number,
     event_index,
     section,
@@ -316,6 +406,60 @@ const processEvent = (client, blockNumber, indexedEvent, timestamp, loggerOption
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+    }
+    // Store staking reward
+    if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
+        // TODO: also store validator and era index
+        sql = `INSERT INTO staking_reward (
+      block_number,
+      event_index,
+      account_id,
+      amount,
+      timestamp
+    ) VALUES (
+      '${blockNumber}',
+      '${index}',
+      '${event.data[0]}',
+      '${new bignumber_js_1.BigNumber(event.data[1]).toString(10)}',
+      '${timestamp}'
+    )
+    ON CONFLICT ON CONSTRAINT staking_reward_pkey 
+    DO NOTHING
+    ;`;
+        try {
+            yield client.query(sql);
+            logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
+        }
+        catch (error) {
+            logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+        }
+    }
+    // Store staking slash
+    if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
+        // TODO: also store validator and era index
+        sql = `INSERT INTO staking_slash (
+      block_number,
+      event_index,
+      account_id,
+      amount,
+      timestamp
+    ) VALUES (
+      '${blockNumber}',
+      '${index}',
+      '${event.data[0]}',
+      '${new bignumber_js_1.BigNumber(event.data[1]).toString(10)}',
+      '${timestamp}'
+    )
+    ON CONFLICT ON CONSTRAINT staking_slash_pkey 
+    DO NOTHING
+    ;`;
+        try {
+            yield client.query(sql);
+            logger.debug(loggerOptions, `Added staking slash #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
+        }
+        catch (error) {
+            logger.error(loggerOptions, `Error adding staking slash #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+        }
     }
 });
 exports.processEvent = processEvent;
@@ -472,3 +616,11 @@ const logHarvestError = (client, blockNumber, error, loggerOptions) => __awaiter
 exports.logHarvestError = logHarvestError;
 const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
 exports.chunker = chunker;
+const getExtrinsicError = (index, blockEvents) => JSON.stringify(blockEvents
+    .find(({ event, phase }) => {
+    var _a, _b;
+    return ((((_a = phase.toJSON()) === null || _a === void 0 ? void 0 : _a.ApplyExtrinsic) === index || ((_b = phase.toJSON()) === null || _b === void 0 ? void 0 : _b.applyExtrinsic) === index)
+        && event.section === 'system'
+        && event.method === 'ExtrinsicFailed');
+}).event.data || '');
+exports.getExtrinsicError = getExtrinsicError;

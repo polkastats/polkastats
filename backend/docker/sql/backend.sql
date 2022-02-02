@@ -99,7 +99,6 @@ CREATE TABLE IF NOT EXISTS transfer (
   source TEXT NOT NULL,
   destination TEXT NOT NULL,
   amount BIGINT NOT NULL,
-  denom TEXT NOT NULL,
   fee_amount BIGINT NOT NULL,
   success BOOLEAN NOT NULL,
   error_message TEXT DEFAULT NULL,
