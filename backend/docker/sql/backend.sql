@@ -39,6 +39,24 @@ CREATE TABLE IF NOT EXISTS event (
   PRIMARY KEY ( block_number, event_index ) 
 );
 
+CREATE TABLE IF NOT EXISTS staking_reward (  
+  block_number BIGINT NOT NULL,
+  event_index INT NOT NULL,
+  account_id TEXT NOT NULL,
+  amount BIGINT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, event_index ) 
+);
+
+CREATE TABLE IF NOT EXISTS staking_slash (  
+  block_number BIGINT NOT NULL,
+  event_index INT NOT NULL,
+  account_id TEXT NOT NULL,
+  amount BIGINT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, event_index ) 
+);
+
 CREATE TABLE IF NOT EXISTS extrinsic (  
   block_number BIGINT NOT NULL,
   extrinsic_index INT NOT NULL,
@@ -52,6 +70,39 @@ CREATE TABLE IF NOT EXISTS extrinsic (
   fee_info TEXT NOT NULL,
   fee_details TEXT NOT NULL,
   success BOOLEAN NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, extrinsic_index ) 
+);
+
+CREATE TABLE IF NOT EXISTS signed_extrinsic (  
+  block_number BIGINT NOT NULL,
+  extrinsic_index INT NOT NULL,
+  signer TEXT NOT NULL,
+  section TEXT NOT NULL,
+  method TEXT NOT NULL,
+  args TEXT NOT NULL,
+  hash TEXT NOT NULL,
+  doc TEXT NOT NULL,
+  fee_info TEXT NOT NULL,
+  fee_details TEXT NOT NULL,
+  success BOOLEAN NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, extrinsic_index ) 
+);
+
+CREATE TABLE IF NOT EXISTS transfer (  
+  block_number BIGINT NOT NULL,
+  extrinsic_index INT NOT NULL,
+  section TEXT NOT NULL,
+  method TEXT NOT NULL,
+  hash TEXT NOT NULL,
+  source TEXT NOT NULL,
+  destination TEXT NOT NULL,
+  amount BIGINT NOT NULL,
+  denom TEXT NOT NULL,
+  fee_amount BIGINT NOT NULL,
+  success BOOLEAN NOT NULL,
+  error_message TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ) 
 );
@@ -227,14 +278,37 @@ CREATE INDEX IF NOT EXISTS extrinsic_section_idx ON extrinsic (section);
 CREATE INDEX IF NOT EXISTS extrinsic_method_idx ON extrinsic (method);
 CREATE INDEX IF NOT EXISTS extrinsic_signer_idx ON extrinsic (signer);
 
+CREATE INDEX IF NOT EXISTS signed_extrinsic_block_number_idx ON signed_extrinsic (block_number);
+CREATE INDEX IF NOT EXISTS signed_extrinsic_section_idx ON signed_extrinsic (section);
+CREATE INDEX IF NOT EXISTS signed_extrinsic_method_idx ON signed_extrinsic (method);
+CREATE INDEX IF NOT EXISTS signed_extrinsic_signer_idx ON signed_extrinsic (signer);
+CREATE INDEX IF NOT EXISTS signed_extrinsic_hash_idx ON signed_extrinsic (hash);
+
+CREATE INDEX IF NOT EXISTS transfer_block_number_idx ON transfer (block_number);
+CREATE INDEX IF NOT EXISTS transfer_section_idx ON transfer (section);
+CREATE INDEX IF NOT EXISTS transfer_method_idx ON transfer (method);
+CREATE INDEX IF NOT EXISTS transfer_source_idx ON transfer (source);
+CREATE INDEX IF NOT EXISTS transfer_destination_idx ON transfer (destination);
+CREATE INDEX IF NOT EXISTS transfer_hash_idx ON transfer (hash);
+
 CREATE INDEX IF NOT EXISTS event_block_number_idx ON event (block_number);
 CREATE INDEX IF NOT EXISTS event_section_idx ON event (section);
 CREATE INDEX IF NOT EXISTS event_method_idx ON event (method);
 
+CREATE INDEX IF NOT EXISTS staking_reward_block_number_idx ON staking_reward (block_number);
+CREATE INDEX IF NOT EXISTS staking_reward_account_id_idx ON staking_reward (account_id);
+
+CREATE INDEX IF NOT EXISTS staking_slash_block_number_idx ON staking_slash (block_number);
+CREATE INDEX IF NOT EXISTS staking_slash_account_id_idx ON staking_slash (account_id);
+
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE harvest_error TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE staking_reward TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE staking_slash TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE signed_extrinsic TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE transfer TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE ranking TO polkastats;
 
 GRANT ALL PRIVILEGES ON TABLE era_vrc_score TO polkastats;
@@ -333,4 +407,30 @@ CREATE TRIGGER event_count_trunc AFTER TRUNCATE ON event
   FOR EACH STATEMENT EXECUTE PROCEDURE event_count();
 -- initialize the counter table
 UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events';
+COMMIT;
+
+-- Transfers
+START TRANSACTION;
+CREATE FUNCTION transfer_count() RETURNS trigger LANGUAGE plpgsql AS
+$$BEGIN
+  IF TG_OP = 'INSERT' THEN
+    UPDATE total SET count = count + 1 WHERE name = 'transfers';
+    RETURN NEW;
+  ELSIF TG_OP = 'DELETE' THEN
+    UPDATE total SET count = count - 1 WHERE name = 'transfers';
+    RETURN OLD;
+  ELSE
+    UPDATE total SET count = 0 WHERE name = 'transfers';
+    RETURN NULL;
+  END IF;
+END;$$;
+CREATE CONSTRAINT TRIGGER transfer_count_mod
+  AFTER INSERT OR DELETE ON transfer
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW EXECUTE PROCEDURE transfer_count();
+-- TRUNCATE triggers must be FOR EACH STATEMENT
+CREATE TRIGGER transfer_count_trunc AFTER TRUNCATE ON transfer
+  FOR EACH STATEMENT EXECUTE PROCEDURE transfer_count();
+-- initialize the counter table
+UPDATE total SET count = (SELECT count(*) FROM transfer) WHERE name = 'transfers';
 COMMIT;
