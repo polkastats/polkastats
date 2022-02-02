@@ -339,7 +339,15 @@ export const processExtrinsic = async (
       const destination = JSON.parse(args)[0].id
         ? JSON.parse(args)[0].id
         : JSON.parse(args)[0].address20;
-      const amount = JSON.parse(args)[1];
+
+      let amount = '';
+      if (method === 'transferAll') {
+        amount = getTransferAllAmount(index, blockEvents);
+      } else if (method === 'forceTransfer') {
+        amount = JSON.parse(args)[2];
+      } else {
+        amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
+      }
       const feeAmount = JSON.parse(feeInfo).partialFee;
       const errorMessage = success
         ? ''
@@ -653,4 +661,13 @@ export const getExtrinsicError = (index: number, blockEvents: Vec<EventRecord>) 
         && event.section === 'system'
         && event.method === 'ExtrinsicFailed'
     )).event.data || '',
+);
+
+export const getTransferAllAmount = (index: number, blockEvents: any[]) => JSON.stringify(
+  blockEvents
+    .find(({ event, phase }: any) => (
+      (phase.toJSON()?.ApplyExtrinsic === index || phase.toJSON()?.applyExtrinsic === index)
+        && event.section === 'balances'
+        && event.method === 'Transfer'
+    )).event.data.toJSON()[2] || '',
 );

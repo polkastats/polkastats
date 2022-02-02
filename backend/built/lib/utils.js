@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExtrinsicError = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.updateTotalEvents = exports.updateTotalTransfers = exports.updateTotalExtrinsics = exports.updateTotalBlocks = exports.updateTotals = exports.getDisplayName = exports.getExtrinsicSuccess = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
+exports.getTransferAllAmount = exports.getExtrinsicError = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.updateTotalEvents = exports.updateTotalTransfers = exports.updateTotalExtrinsics = exports.updateTotalBlocks = exports.updateTotals = exports.getDisplayName = exports.getExtrinsicSuccess = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
 require("@polkadot/api-augment");
 const pino_1 = __importDefault(require("pino"));
@@ -320,7 +320,16 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
             const destination = JSON.parse(args)[0].id
                 ? JSON.parse(args)[0].id
                 : JSON.parse(args)[0].address20;
-            const amount = JSON.parse(args)[1];
+            let amount = '';
+            if (method === 'transferAll') {
+                amount = (0, exports.getTransferAllAmount)(index, blockEvents);
+            }
+            else if (method === 'forceTransfer') {
+                amount = JSON.parse(args)[2];
+            }
+            else {
+                amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
+            }
             const feeAmount = JSON.parse(feeInfo).partialFee;
             const errorMessage = success
                 ? ''
@@ -624,3 +633,11 @@ const getExtrinsicError = (index, blockEvents) => JSON.stringify(blockEvents
         && event.method === 'ExtrinsicFailed');
 }).event.data || '');
 exports.getExtrinsicError = getExtrinsicError;
+const getTransferAllAmount = (index, blockEvents) => JSON.stringify(blockEvents
+    .find(({ event, phase }) => {
+    var _a, _b;
+    return ((((_a = phase.toJSON()) === null || _a === void 0 ? void 0 : _a.ApplyExtrinsic) === index || ((_b = phase.toJSON()) === null || _b === void 0 ? void 0 : _b.applyExtrinsic) === index)
+        && event.section === 'balances'
+        && event.method === 'Transfer');
+}).event.data.toJSON()[2] || '');
+exports.getTransferAllAmount = getTransferAllAmount;
