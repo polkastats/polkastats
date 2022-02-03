@@ -12,6 +12,8 @@ import type { Vec } from '@polkadot/types-codec';
 import { Address, BlockHash, EventRecord } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { BigNumber } from 'bignumber.js';
+import { AnyTuple } from '@polkadot/types/types';
+import { GenericExtrinsic } from '@polkadot/types';
 
 const logger = pino();
 
@@ -393,7 +395,7 @@ export const processExtrinsic = async (
 };
 
 export const processEvents = async (
-  client: Client, blockNumber: number, blockEvents: Vec<EventRecord>, blockExtrinsics: any[], timestamp: number, loggerOptions: { crawler: string; },
+  client: Client, blockNumber: number, blockEvents: Vec<EventRecord>, blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>, timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
   const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
@@ -411,7 +413,7 @@ export const processEvents = async (
 };
 
 export const processEvent = async (
-  client: Client, blockNumber: number, indexedEvent: any, blockExtrinsics: any[], timestamp: number, loggerOptions: { crawler: string; },
+  client: Client, blockNumber: number, indexedEvent: any, blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>, timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const [index, { event, phase }] = indexedEvent;
   let sql = `INSERT INTO event (
@@ -444,13 +446,14 @@ export const processEvent = async (
   // Store staking reward
   if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
     // Store validator stash address and era index
+    console.log('DEBUG', JSON.stringify(blockExtrinsics.toHuman(), null, 2));
     const payoutStakersExtrinsic = blockExtrinsics
       .find(({ method }: any) => (
         method.toHuman().section === 'staking'
         && method.toHuman().method === 'payoutStakers'
       ));
-    const validator = JSON.parse(payoutStakersExtrinsic.args)[0];
-    const era = JSON.parse(payoutStakersExtrinsic.args)[1];
+    const validator = payoutStakersExtrinsic.args[0];
+    const era = payoutStakersExtrinsic.args[1];
     sql = `INSERT INTO staking_reward (
       block_number,
       event_index,
