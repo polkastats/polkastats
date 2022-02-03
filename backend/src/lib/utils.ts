@@ -447,9 +447,9 @@ export const processEvent = async (
   if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
     // Store validator stash address and era index
     const payoutStakersExtrinsic = blockExtrinsics
-      .find(({ method }: any) => (
-        method.toHuman().section === 'staking'
-        && method.toHuman().method === 'payoutStakers'
+      .find(({ method }) => (
+        method.section === 'staking'
+        && method.method === 'payoutStakers'
       ));
     const validator = payoutStakersExtrinsic.method.args[0];
     const era = payoutStakersExtrinsic.method.args[1];
