@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS extrinsic (
   fee_info TEXT NOT NULL,
   fee_details TEXT NOT NULL,
   success BOOLEAN NOT NULL,
+  error_message TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ) 
 );
@@ -88,6 +89,7 @@ CREATE TABLE IF NOT EXISTS signed_extrinsic (
   fee_info TEXT NOT NULL,
   fee_details TEXT NOT NULL,
   success BOOLEAN NOT NULL,
+  error_message TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ) 
 );

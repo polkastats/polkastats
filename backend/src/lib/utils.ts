@@ -241,9 +241,8 @@ export const processExtrinsic = async (
   const args = JSON.stringify(extrinsic.args);
   const hash = extrinsic.hash.toHex();
   const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
-  // TODO: refactor getExtrinsicSuccess to extract error if extrinsic failed
   // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
-  const success = module.exports.getExtrinsicSuccess(api, index, blockEvents);
+  const [success, errorMessage] = module.exports.getExtrinsicSuccessOrErrorMessage(api, index, blockEvents);
   let feeInfo = '';
   let feeDetails = '';
   if (isSigned) {
@@ -269,6 +268,7 @@ export const processExtrinsic = async (
       fee_info,
       fee_details,
       success,
+      error_message,
       timestamp
     ) VALUES (
       '${blockNumber}',
@@ -283,6 +283,7 @@ export const processExtrinsic = async (
       '${feeInfo}',
       '${feeDetails}',
       '${success}',
+      '${errorMessage}',
       '${timestamp}'
     )
     ON CONFLICT ON CONSTRAINT extrinsic_pkey 
@@ -309,6 +310,7 @@ export const processExtrinsic = async (
       fee_info,
       fee_details,
       success,
+      error_message,
       timestamp
     ) VALUES (
       '${blockNumber}',
@@ -322,6 +324,7 @@ export const processExtrinsic = async (
       '${feeInfo}',
       '${feeDetails}',
       '${success}',
+      '${errorMessage}',
       '${timestamp}'
     )
     ON CONFLICT ON CONSTRAINT signed_extrinsic_pkey 
@@ -349,9 +352,6 @@ export const processExtrinsic = async (
         amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
       }
       const feeAmount = JSON.parse(feeInfo).partialFee;
-      const errorMessage = success
-        ? ''
-        : module.exports.getExtrinsicError(index, blockEvents);
       sql = `INSERT INTO transfer (
           block_number,
           extrinsic_index,
@@ -547,8 +547,9 @@ export const processLog = async (client: Client, blockNumber: number, log: any, 
   }
 };
 
-export const getExtrinsicSuccess = (api: ApiPromise, index: number, blockEvents: Vec<EventRecord>) => {
+export const getExtrinsicSuccessOrErrorMessage = (api: ApiPromise, index: number, blockEvents: Vec<EventRecord>) => {
   let extrinsicSuccess = false;
+  let extrinsicErrorMessage = '';
   blockEvents
     .filter(({ phase }) =>
       phase.isApplyExtrinsic &&
@@ -557,9 +558,23 @@ export const getExtrinsicSuccess = (api: ApiPromise, index: number, blockEvents:
     .forEach(({ event }) => {
       if (api.events.system.ExtrinsicSuccess.is(event)) {
         extrinsicSuccess = true;
+      } else if (api.events.system.ExtrinsicFailed.is(event)) {
+        // extract the data for this event
+        const [dispatchError] = event.data;  
+        // decode the error
+        if (dispatchError.isModule) {
+          // for module errors, we have the section indexed, lookup
+          // (For specific known errors, we can also do a check against the
+          // api.errors.<module>.<ErrorName>.is(dispatchError.asModule) guard)
+          const decoded = api.registry.findMetaError(dispatchError.asModule);
+          extrinsicErrorMessage = `${decoded.section}.${decoded.name}`;
+        } else {
+          // Other, CannotLookup, BadOrigin, no extra info
+          extrinsicErrorMessage = dispatchError.toString();
+        }
       }
     });
-  return extrinsicSuccess;
+  return [extrinsicSuccess, extrinsicErrorMessage];
 };
 
 export const getDisplayName = (identity: DeriveAccountRegistration) => {
@@ -663,15 +678,6 @@ export const logHarvestError = async (client: Client, blockNumber: number, error
 export const chunker = (a: any[], n: number) => Array.from(
   { length: Math.ceil(a.length / n) },
   (_, i) => a.slice(i * n, i * n + n),
-);
-
-export const getExtrinsicError = (index: number, blockEvents: Vec<EventRecord>) => JSON.stringify(
-  blockEvents
-    .find(({ event, phase }: any) => (
-      (phase.toJSON()?.ApplyExtrinsic === index || phase.toJSON()?.applyExtrinsic === index)
-        && event.section === 'system'
-        && event.method === 'ExtrinsicFailed'
-    )).event.data || '',
 );
 
 export const getTransferAllAmount = (index: number, blockEvents: any[]) => JSON.stringify(
