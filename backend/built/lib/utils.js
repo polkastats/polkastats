@@ -375,19 +375,19 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     }
 });
 exports.processExtrinsic = processExtrinsic;
-const processEvents = (client, blockNumber, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processEvents = (client, blockNumber, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = new Date().getTime();
     const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
     const chunks = module.exports.chunker(indexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
-        yield Promise.all(chunk.map((indexedEvent) => module.exports.processEvent(client, blockNumber, indexedEvent, timestamp, loggerOptions)));
+        yield Promise.all(chunk.map((indexedEvent) => module.exports.processEvent(client, blockNumber, indexedEvent, blockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 });
 exports.processEvents = processEvents;
-const processEvent = (client, blockNumber, indexedEvent, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const [index, { event, phase }] = indexedEvent;
     let sql = `INSERT INTO event (
     block_number,
@@ -418,17 +418,26 @@ const processEvent = (client, blockNumber, indexedEvent, timestamp, loggerOption
     }
     // Store staking reward
     if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
-        // TODO: also store validator and era index
+        // Store validator stash address and era index
+        const payoutStakersExtrinsic = blockExtrinsics
+            .find(({ section, method }) => (section === 'staking'
+            && method === 'payoutStakers'));
+        const validator = JSON.parse(payoutStakersExtrinsic.args)[0];
+        const era = JSON.parse(payoutStakersExtrinsic.args)[1];
         sql = `INSERT INTO staking_reward (
       block_number,
       event_index,
       account_id,
+      validator_stash_address,
+      era,
       amount,
       timestamp
     ) VALUES (
       '${blockNumber}',
       '${index}',
       '${event.data[0]}',
+      '${validator}',
+      '${era}',
       '${new bignumber_js_1.BigNumber(event.data[1]).toString(10)}',
       '${timestamp}'
     )

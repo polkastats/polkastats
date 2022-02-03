@@ -168,6 +168,7 @@ const crawler = async () => {
             client,
             blockNumber,
             blockEvents,
+            block.extrinsics,
             timestamp,
             loggerOptions,
           ),

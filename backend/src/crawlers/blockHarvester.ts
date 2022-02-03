@@ -105,6 +105,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       client,
       blockNumber,
       blockEvents,
+      block.extrinsics,
       timestamp,
       loggerOptions,
     );

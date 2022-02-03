@@ -393,7 +393,7 @@ export const processExtrinsic = async (
 };
 
 export const processEvents = async (
-  client: Client, blockNumber: number, blockEvents: Vec<EventRecord>, timestamp: number, loggerOptions: { crawler: string; },
+  client: Client, blockNumber: number, blockEvents: Vec<EventRecord>, blockExtrinsics: any[], timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
   const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
@@ -401,7 +401,7 @@ export const processEvents = async (
   for (const chunk of chunks) {
     await Promise.all(
       chunk.map((indexedEvent: any) => module.exports.processEvent(
-        client, blockNumber, indexedEvent, timestamp, loggerOptions,
+        client, blockNumber, indexedEvent, blockExtrinsics, timestamp, loggerOptions,
       )),
     );
   }
@@ -411,7 +411,7 @@ export const processEvents = async (
 };
 
 export const processEvent = async (
-  client: Client, blockNumber: number, indexedEvent: any, timestamp: number, loggerOptions: { crawler: string; },
+  client: Client, blockNumber: number, indexedEvent: any, blockExtrinsics: any[], timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const [index, { event, phase }] = indexedEvent;
   let sql = `INSERT INTO event (
@@ -443,17 +443,28 @@ export const processEvent = async (
 
   // Store staking reward
   if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
-    // TODO: also store validator and era index
+    // Store validator stash address and era index
+    const payoutStakersExtrinsic = blockExtrinsics
+      .find(({ section, method }: any) => (
+          section === 'staking'
+          && method === 'payoutStakers'
+      ));
+    const validator = JSON.parse(payoutStakersExtrinsic.args)[0];
+    const era = JSON.parse(payoutStakersExtrinsic.args)[1];
     sql = `INSERT INTO staking_reward (
       block_number,
       event_index,
       account_id,
+      validator_stash_address,
+      era,
       amount,
       timestamp
     ) VALUES (
       '${blockNumber}',
       '${index}',
       '${event.data[0]}',
+      '${validator}',
+      '${era}',
       '${new BigNumber(event.data[1]).toString(10)}',
       '${timestamp}'
     )

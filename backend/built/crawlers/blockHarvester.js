@@ -82,7 +82,7 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
         // Store block extrinsics (async)
         (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp, loggerOptions);
         // Store module events (async)
-        (0, utils_1.processEvents)(client, blockNumber, blockEvents, timestamp, loggerOptions);
+        (0, utils_1.processEvents)(client, blockNumber, blockEvents, block.extrinsics, timestamp, loggerOptions);
         // Store block logs (async)
         (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp, loggerOptions);
         // Totals
