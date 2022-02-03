@@ -419,7 +419,6 @@ const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timest
     // Store staking reward
     if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
         // Store validator stash address and era index
-        console.log('DEBUG', JSON.stringify(blockExtrinsics.toHuman(), null, 2));
         const payoutStakersExtrinsic = blockExtrinsics
             .find(({ method }) => (method.toHuman().section === 'staking'
             && method.toHuman().method === 'payoutStakers'));
