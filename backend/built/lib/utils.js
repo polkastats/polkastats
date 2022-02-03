@@ -419,11 +419,12 @@ const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timest
     // Store staking reward
     if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
         // Store validator stash address and era index
+        console.log('DEBUG', JSON.stringify(blockExtrinsics.toHuman(), null, 2));
         const payoutStakersExtrinsic = blockExtrinsics
             .find(({ method }) => (method.toHuman().section === 'staking'
             && method.toHuman().method === 'payoutStakers'));
-        const validator = JSON.parse(payoutStakersExtrinsic.args)[0];
-        const era = JSON.parse(payoutStakersExtrinsic.args)[1];
+        const validator = payoutStakersExtrinsic.args[0];
+        const era = payoutStakersExtrinsic.args[1];
         sql = `INSERT INTO staking_reward (
       block_number,
       event_index,
