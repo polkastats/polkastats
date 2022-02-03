@@ -422,8 +422,8 @@ const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timest
         const payoutStakersExtrinsic = blockExtrinsics
             .find(({ method }) => (method.toHuman().section === 'staking'
             && method.toHuman().method === 'payoutStakers'));
-        const validator = payoutStakersExtrinsic.args[0];
-        const era = payoutStakersExtrinsic.args[1];
+        const validator = payoutStakersExtrinsic.method.args[0];
+        const era = payoutStakersExtrinsic.method.args[1];
         sql = `INSERT INTO staking_reward (
       block_number,
       event_index,
