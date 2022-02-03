@@ -236,7 +236,7 @@ export const processExtrinsic = async (
   const [index, extrinsic]  = indexedExtrinsic;
   const { isSigned } = extrinsic;
   const signer = isSigned ? extrinsic.signer.toString() : '';
-  const { section } = extrinsic.toHuman().method;
+  const { section } = extrinsic.toHuman().section;
   const { method } = extrinsic.toHuman().method;
   const args = JSON.stringify(extrinsic.args);
   const hash = extrinsic.hash.toHex();
@@ -446,8 +446,8 @@ export const processEvent = async (
     // Store validator stash address and era index
     const payoutStakersExtrinsic = blockExtrinsics
       .find(({ section, method }: any) => (
-          section === 'staking'
-          && method === 'payoutStakers'
+        section.toHuman() === 'staking'
+        && method.toHuman() === 'payoutStakers'
       ));
     const validator = JSON.parse(payoutStakersExtrinsic.args)[0];
     const era = JSON.parse(payoutStakersExtrinsic.args)[1];
