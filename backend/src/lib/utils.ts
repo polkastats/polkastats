@@ -522,8 +522,8 @@ export const processEvent = async (
           && record.event.section === 'staking'
           && record.event.method === 'PayoutStarted'
         ));
-        validator = payoutStartedEvent.event.data[0];
-        era = payoutStartedEvent.event.data[1];
+        era = payoutStartedEvent.event.data[0];
+        validator = payoutStartedEvent.event.data[1];
       }
       // TODO: support staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
     }
