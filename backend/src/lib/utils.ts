@@ -445,12 +445,10 @@ export const processEvent = async (
 
   // Store staking reward
   if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
-    // Store validator stash address and era index
-    console.log('DEBUG BLOCK:', blockNumber);
-    // console.log('DEBUG EXTRINSICS:', JSON.stringify(blockExtrinsics.toHuman(), null, 2));
-
     //
-    //   Possible cases guessing era and validator:
+    // Store validator stash address and era index
+    //
+    //   Possible cases:
     //
     // -> staking.payoutStakers - https://polkadot.js.org/docs/substrate/extrinsics/#payoutstakersvalidator_stash-accountid32-era-u32
     //
