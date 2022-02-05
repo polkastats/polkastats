@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS staking_reward (
   event_index INT NOT NULL,
   account_id TEXT NOT NULL,
   validator_stash_address TEXT DEFAULT NULL,
-  era INT NOT DEFAULT NULL,
+  era INT DEFAULT NULL,
   amount BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, event_index ) 
