@@ -380,15 +380,15 @@ const processEvents = (client, blockNumber, blockEvents, blockExtrinsics, timest
     const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
     const chunks = module.exports.chunker(indexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
-        yield Promise.all(chunk.map((indexedEvent) => module.exports.processEvent(client, blockNumber, indexedEvent, blockExtrinsics, timestamp, loggerOptions)));
+        yield Promise.all(chunk.map((indexedEvent) => module.exports.processEvent(client, blockNumber, indexedEvent, blockEvents, blockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 });
 exports.processEvents = processEvents;
-const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const [index, { event, phase }] = indexedEvent;
+const processEvent = (client, blockNumber, indexedEvent, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const [eventIndex, { event, phase }] = indexedEvent;
     let sql = `INSERT INTO event (
     block_number,
     event_index,
@@ -399,7 +399,7 @@ const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timest
     timestamp
   ) VALUES (
     '${blockNumber}',
-    '${index}',
+    '${eventIndex}',
     '${event.section}',
     '${event.method}',
     '${phase.toString()}',
@@ -411,22 +411,86 @@ const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timest
   ;`;
     try {
         yield client.query(sql);
-        logger.debug(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
+        logger.debug(loggerOptions, `Added event #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     }
     catch (error) {
-        logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+        logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
     }
     // Store staking reward
     if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
         // Store validator stash address and era index
         console.log('DEBUG BLOCK:', blockNumber);
         // console.log('DEBUG EXTRINSICS:', JSON.stringify(blockExtrinsics.toHuman(), null, 2));
+        //
+        //   Possible cases guessing era and validator:
+        //
+        // -> staking.payoutStakers - https://polkadot.js.org/docs/substrate/extrinsics/#payoutstakersvalidator_stash-accountid32-era-u32
+        //
+        //   Example args: ["E2mSyopQTSUosTtZSUZrn4VbrJtCYW8RxqxAUvdk2oxRBGn","0x00000951"]
+        //
+        // - staking.payoutValidator (DEPRECATED, NOT SUPPORTED)
+        //
+        //   Example args: ["0x00000289"]
+        //
+        // [ Make one validator's payout for one era., ,  - `who` is the controller account of the validator 
+        // to pay out.,  - `era` may not be lower than one following the most recently paid era. If it is higher,,    
+        // then it indicates an instruction to skip the payout of all previous eras., ,  WARNING: once an era 
+        // is payed for a validator such validator can't claim the payout of,  previous era., ,  
+        // WARNING: Incorrect arguments here can result in loss of payout. Be very careful., ,  # <weight>,  
+        // - Time complexity: O(1).,  - Contains a limited number of reads and writes.,  # </weight>]
+        //
+        // -> staking.payoutNominator (DEPRECATED, NOT SUPPORTED)
+        //
+        //   Example args: ["0x000002fd",[["FFdDXFK1VKG5QgjvqwxdVjo8hGrBveaBFfHnWyz1MAmLL82",7]]]
+        //
+        // [ **This extrinsic will be removed after `MigrationEra + HistoryDepth` has passed, giving,  opportunity for users to 
+        // claim all rewards before moving to Simple Payouts. After this,  time, you should use `payout_stakers` instead.**, ,  
+        // Make one nominator's payout for one era., ,  - `who` is the controller account of the nominator to pay out.,  - `era` may 
+        // not be lower than one following the most recently paid era. If it is higher,,    then it indicates an instruction to skip 
+        // the payout of all previous eras.,  - `validators` is the list of all validators that `who` had exposure to during `era`,,    
+        // alongside the index of `who` in the clipped exposure of the validator.,    I.e. each element is a tuple of,    
+        // `(validator, index of `who` in clipped exposure of validator)`.,    If it is incomplete, then less than the full reward 
+        // will be paid out.,    It must not exceed `MAX_NOMINATIONS`., ,  WARNING: once an era is payed for a validator such validator 
+        // can't claim the payout of,  previous era., ,  WARNING: Incorrect arguments here can result in loss of payout. Be very careful., 
+        // ,  # <weight>,  - Number of storage read of `O(validators)`; `validators` is the argument of the call,,    and is bounded 
+        // by `MAX_NOMINATIONS`.,  - Each storage read is `O(N)` size and decode complexity; `N` is the  maximum,    nominations that 
+        // can be given to a single validator.,  - Computation complexity: `O(MAX_NOMINATIONS * logN)`; `MAX_NOMINATIONS` is the,    
+        // maximum number of validators that may be nominated by a single nominator, it is,    bounded only economically 
+        // (all nominators are required to place a minimum stake).,  # </weight>]
+        //
+        // -> staking.payoutStakers, staking.payoutValidator or staking.payoutNominator included in a utility.batch or utility.batchAll extrinsic
+        //
+        // -> staking.payoutStakers included in a proxy.proxy extrinsic
+        //
+        let validator = null;
+        let era = null;
         const payoutStakersExtrinsic = blockExtrinsics
-            .find(({ method: { section, method } }) => (section === 'staking'
+            .find(({ method: { section, method } }) => (phase.asApplyExtrinsic.eq(eventIndex) // event phase
+            && section === 'staking'
             && method === 'payoutStakers'));
-        console.log('DEBUG EXTRINSIC:', JSON.stringify(payoutStakersExtrinsic.toHuman(), null, 2));
-        const validator = payoutStakersExtrinsic.method.args[0];
-        const era = payoutStakersExtrinsic.method.args[1];
+        if (payoutStakersExtrinsic) {
+            validator = payoutStakersExtrinsic.method.args[0];
+            era = payoutStakersExtrinsic.method.args[1];
+        }
+        else {
+            // Block: 11253017
+            // utility.batch
+            // Args example: [[{"callIndex":"0x0612","args":{"validator_stash":"FcjmeNzPk3vgdENm1rHeiMCxFK96beUoi2kb59FmCoZtkGF","era":3307}},{"callIndex":"0x0612","args":{"validator_stash":"FcjmeNzPk3vgdENm1rHeiMCxFK96beUoi2kb59FmCoZtkGF","era":3308}},{"callIndex":"0x0612","args":{"validator_stash":"FcjmeNzPk3vgdENm1rHeiMCxFK96beUoi2kb59FmCoZtkGF","era":3309}},{"callIndex":"0x0612","args":{"validator_stash":"FcjmeNzPk3vgdENm1rHeiMCxFK96beUoi2kb59FmCoZtkGF","era":3310}},{"callIndex":"0x0612","args":{"validator_stash":"Dm64aaAUyy5dvYCSmyzz3njGrWrVaki9F6BvUDSYjDDoqR2","era":3307}},{"callIndex":"0x0612","args":{"validator_stash":"Dm64aaAUyy5dvYCSmyzz3njGrWrVaki9F6BvUDSYjDDoqR2","era":3308}}]]
+            const utilityBatchExtrinsic = blockExtrinsics
+                .find(({ method: { section, method } }) => (phase.asApplyExtrinsic.eq(eventIndex) // event phase
+                && section === 'utility'
+                && method === 'batch'));
+            if (utilityBatchExtrinsic) {
+                // We know that utility.batch has some staking.payoutStakers extrinsic
+                // Then we need to do a lookup of the previous staking.payoutStarted event
+                const payoutStartedEvent = blockEvents.find((record, index) => (index < eventIndex
+                    && record.event.section === 'staking'
+                    && record.event.method === 'payoutStarted'));
+                validator = payoutStartedEvent.event.data[0];
+                era = payoutStartedEvent.event.data[1];
+            }
+            // TODO: support staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
+        }
         sql = `INSERT INTO staking_reward (
       block_number,
       event_index,
@@ -437,11 +501,11 @@ const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timest
       timestamp
     ) VALUES (
       '${blockNumber}',
-      '${index}',
+      '${eventIndex}',
       '${event.data[0]}',
       '${validator}',
       '${era}',
-      '${new bignumber_js_1.BigNumber(event.data[1]).toString(10)}',
+      '${new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10)}',
       '${timestamp}'
     )
     ON CONFLICT ON CONSTRAINT staking_reward_pkey 
@@ -449,10 +513,10 @@ const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timest
     ;`;
         try {
             yield client.query(sql);
-            logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
+            logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
         }
         catch (error) {
-            logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+            logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
         }
     }
     // Store staking slash
@@ -466,9 +530,9 @@ const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timest
       timestamp
     ) VALUES (
       '${blockNumber}',
-      '${index}',
+      '${eventIndex}',
       '${event.data[0]}',
-      '${new bignumber_js_1.BigNumber(event.data[1]).toString(10)}',
+      '${new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10)}',
       '${timestamp}'
     )
     ON CONFLICT ON CONSTRAINT staking_slash_pkey 
@@ -476,10 +540,10 @@ const processEvent = (client, blockNumber, indexedEvent, blockExtrinsics, timest
     ;`;
         try {
             yield client.query(sql);
-            logger.debug(loggerOptions, `Added staking slash #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);
+            logger.debug(loggerOptions, `Added staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
         }
         catch (error) {
-            logger.error(loggerOptions, `Error adding staking slash #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+            logger.error(loggerOptions, `Error adding staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
         }
     }
 });
