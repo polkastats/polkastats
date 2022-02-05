@@ -522,7 +522,7 @@ export const processEvent = async (
         const payoutStartedEvent = blockEvents.find((record, index) => (
           index < eventIndex
           && record.event.section === 'staking'
-          && record.event.method === 'payoutStarted'
+          && record.event.method === 'PayoutStarted'
         ));
         validator = payoutStartedEvent.event.data[0];
         era = payoutStartedEvent.event.data[1];
