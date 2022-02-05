@@ -530,26 +530,45 @@ export const processEvent = async (
       // TODO: support staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
     }
     
-    sql = `INSERT INTO staking_reward (
-      block_number,
-      event_index,
-      account_id,
-      validator_stash_address,
-      era,
-      amount,
-      timestamp
-    ) VALUES (
-      '${blockNumber}',
-      '${eventIndex}',
-      '${event.data[0]}',
-      '${validator}',
-      '${era}',
-      '${new BigNumber(event.data[1].toString()).toString(10)}',
-      '${timestamp}'
-    )
-    ON CONFLICT ON CONSTRAINT staking_reward_pkey 
-    DO NOTHING
-    ;`;
+    if (validator && era) {
+      sql = `INSERT INTO staking_reward (
+        block_number,
+        event_index,
+        account_id,
+        validator_stash_address,
+        era,
+        amount,
+        timestamp
+      ) VALUES (
+        '${blockNumber}',
+        '${eventIndex}',
+        '${event.data[0]}',
+        '${validator}',
+        '${era}',
+        '${new BigNumber(event.data[1].toString()).toString(10)}',
+        '${timestamp}'
+      )
+      ON CONFLICT ON CONSTRAINT staking_reward_pkey 
+      DO NOTHING
+      ;`;
+    } else {
+      sql = `INSERT INTO staking_reward (
+        block_number,
+        event_index,
+        account_id,
+        amount,
+        timestamp
+      ) VALUES (
+        '${blockNumber}',
+        '${eventIndex}',
+        '${event.data[0]}',
+        '${new BigNumber(event.data[1].toString()).toString(10)}',
+        '${timestamp}'
+      )
+      ON CONFLICT ON CONSTRAINT staking_reward_pkey 
+      DO NOTHING
+      ;`;
+    }
     try {
       await client.query(sql);
       logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
