@@ -525,7 +525,11 @@ export const processEvent = async (
         validator = payoutStartedEvent[1].event.data[1];        
       }
 
-      // TODO: support staking.payoutStakers extrinsics included in a proxy.proxy extrinsic
+      //
+      // TODO:
+      // -> support staking.payoutStakers extrinsics included in a proxy.proxy extrinsic
+      // -> support staking.payoutStakers extrinsics included in a batch included in a proxy.proxy extrinsic
+      //
     }
     
     if (validator && era) {
