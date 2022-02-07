@@ -446,31 +446,39 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
                 // We know that utility.batch has some staking.payoutStakers extrinsic
                 // Then we need to do a lookup of the previous staking.payoutStarted 
                 // event to get validator and era
-                const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (utilityBatchExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to some utility batch extrinsic
+                const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (utilityBatchExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to utility.batch extrinsic
                     && record.event.section === 'staking'
                     && record.event.method === 'PayoutStarted')).reverse();
-                const payoutStartedEvent = payoutStartedEvents.find(([index, _]) => index < eventIndex);
-                era = payoutStartedEvent[1].event.data[0];
-                validator = payoutStartedEvent[1].event.data[1];
+                if (payoutStartedEvents) {
+                    const payoutStartedEvent = payoutStartedEvents.find(([index, _]) => index < eventIndex);
+                    if (payoutStartedEvent) {
+                        [era, validator] = payoutStartedEvent[1].event.data;
+                    }
+                }
             }
-            //
-            // staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
-            //
-            const proxyProxyExtrinsicIndexes = indexedBlockExtrinsics
-                .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
-                && extrinsic.method.section === 'proxy'
-                && extrinsic.method.method === 'proxy'))
-                .map(([index, _]) => index);
-            if (proxyProxyExtrinsicIndexes.length > 0) {
-                // We know that proxy.proxy has some staking.payoutStakers extrinsic
-                // Then we need to do a lookup of the previous staking.payoutStarted 
-                // event to get validator and era
-                const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (proxyProxyExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) && // events should be related to some utility batch extrinsic
-                    record.event.section === 'staking' &&
-                    record.event.method === 'PayoutStarted')).reverse();
-                const payoutStartedEvent = payoutStartedEvents.find(([index, _]) => index < eventIndex);
-                era = payoutStartedEvent[1].event.data[0];
-                validator = payoutStartedEvent[1].event.data[1];
+            else {
+                //
+                // staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
+                //
+                const proxyProxyExtrinsicIndexes = indexedBlockExtrinsics
+                    .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
+                    && extrinsic.method.section === 'proxy'
+                    && extrinsic.method.method === 'proxy'))
+                    .map(([index, _]) => index);
+                if (proxyProxyExtrinsicIndexes.length > 0) {
+                    // We know that proxy.proxy has some staking.payoutStakers extrinsic
+                    // Then we need to do a lookup of the previous staking.payoutStarted 
+                    // event to get validator and era
+                    const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (proxyProxyExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) && // events should be related to proxy.proxy extrinsic
+                        record.event.section === 'staking' &&
+                        record.event.method === 'PayoutStarted')).reverse();
+                    if (payoutStartedEvents) {
+                        const payoutStartedEvent = payoutStartedEvents.find(([index, _]) => index < eventIndex);
+                        if (payoutStartedEvent) {
+                            [era, validator] = payoutStartedEvent[1].event.data;
+                        }
+                    }
+                }
             }
         }
         if (validator && era) {
