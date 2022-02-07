@@ -422,46 +422,6 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
         //
         // Store validator stash address and era index
         //
-        //   Possible cases:
-        //
-        // -> staking.payoutStakers - https://polkadot.js.org/docs/substrate/extrinsics/#payoutstakersvalidator_stash-accountid32-era-u32
-        //
-        //   Example args: ["E2mSyopQTSUosTtZSUZrn4VbrJtCYW8RxqxAUvdk2oxRBGn","0x00000951"]
-        //
-        // - staking.payoutValidator (DEPRECATED, NOT SUPPORTED)
-        //
-        //   Example args: ["0x00000289"]
-        //
-        // [ Make one validator's payout for one era., ,  - `who` is the controller account of the validator 
-        // to pay out.,  - `era` may not be lower than one following the most recently paid era. If it is higher,,    
-        // then it indicates an instruction to skip the payout of all previous eras., ,  WARNING: once an era 
-        // is payed for a validator such validator can't claim the payout of,  previous era., ,  
-        // WARNING: Incorrect arguments here can result in loss of payout. Be very careful., ,  # <weight>,  
-        // - Time complexity: O(1).,  - Contains a limited number of reads and writes.,  # </weight>]
-        //
-        // -> staking.payoutNominator (DEPRECATED, NOT SUPPORTED)
-        //
-        //   Example args: ["0x000002fd",[["FFdDXFK1VKG5QgjvqwxdVjo8hGrBveaBFfHnWyz1MAmLL82",7]]]
-        //
-        // [ **This extrinsic will be removed after `MigrationEra + HistoryDepth` has passed, giving,  opportunity for users to 
-        // claim all rewards before moving to Simple Payouts. After this,  time, you should use `payout_stakers` instead.**, ,  
-        // Make one nominator's payout for one era., ,  - `who` is the controller account of the nominator to pay out.,  - `era` may 
-        // not be lower than one following the most recently paid era. If it is higher,,    then it indicates an instruction to skip 
-        // the payout of all previous eras.,  - `validators` is the list of all validators that `who` had exposure to during `era`,,    
-        // alongside the index of `who` in the clipped exposure of the validator.,    I.e. each element is a tuple of,    
-        // `(validator, index of `who` in clipped exposure of validator)`.,    If it is incomplete, then less than the full reward 
-        // will be paid out.,    It must not exceed `MAX_NOMINATIONS`., ,  WARNING: once an era is payed for a validator such validator 
-        // can't claim the payout of,  previous era., ,  WARNING: Incorrect arguments here can result in loss of payout. Be very careful., 
-        // ,  # <weight>,  - Number of storage read of `O(validators)`; `validators` is the argument of the call,,    and is bounded 
-        // by `MAX_NOMINATIONS`.,  - Each storage read is `O(N)` size and decode complexity; `N` is the  maximum,    nominations that 
-        // can be given to a single validator.,  - Computation complexity: `O(MAX_NOMINATIONS * logN)`; `MAX_NOMINATIONS` is the,    
-        // maximum number of validators that may be nominated by a single nominator, it is,    bounded only economically 
-        // (all nominators are required to place a minimum stake).,  # </weight>]
-        //
-        // -> staking.payoutStakers, staking.payoutValidator or staking.payoutNominator included in a utility.batch or utility.batchAll extrinsic
-        //
-        // -> staking.payoutStakers included in a proxy.proxy extrinsic
-        //
         let validator = null;
         let era = null;
         const payoutStakersExtrinsic = indexedBlockExtrinsics
@@ -473,9 +433,13 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
             era = payoutStakersExtrinsic[1].method.args[1];
         }
         else {
+            // TODO: support era/validator extraction for staking.payoutValidator and staking.payoutNominator
+            //
+            // staking.payoutStakers extrinsic included in a utility.batch or utility.batchAll extrinsic
+            //
             const utilityBatchExtrinsicIndexes = indexedBlockExtrinsics
                 .filter(([_, extrinsic]) => (extrinsic.method.section === 'utility' &&
-                extrinsic.method.method === 'batch'))
+                (extrinsic.method.method === 'batch' || extrinsic.method.method === 'batchAll')))
                 .map(([index, _]) => index);
             if (utilityBatchExtrinsicIndexes.length > 0) {
                 // We know that utility.batch has some staking.payoutStakers extrinsic
@@ -489,10 +453,23 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
                 validator = payoutStartedEvent[1].event.data[1];
             }
             //
-            // TODO:
-            // -> support staking.payoutStakers extrinsics included in a proxy.proxy extrinsic
-            // -> support staking.payoutStakers extrinsics included in a batch included in a proxy.proxy extrinsic
+            // staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
             //
+            const proxyProxyExtrinsicIndexes = indexedBlockExtrinsics
+                .filter(([_, extrinsic]) => (extrinsic.method.section === 'proxy' &&
+                extrinsic.method.method === 'proxy'))
+                .map(([index, _]) => index);
+            if (proxyProxyExtrinsicIndexes.length > 0) {
+                // We know that proxy.proxy has some staking.payoutStakers extrinsic
+                // Then we need to do a lookup of the previous staking.payoutStarted 
+                // event to get validator and era
+                const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (proxyProxyExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) && // events should be related to some utility batch extrinsic
+                    record.event.section === 'staking' &&
+                    record.event.method === 'PayoutStarted')).reverse();
+                const payoutStartedEvent = payoutStartedEvents.find(([index, _]) => index < eventIndex);
+                era = payoutStartedEvent[1].event.data[0];
+                validator = payoutStartedEvent[1].event.data[1];
+            }
         }
         if (validator && era) {
             sql = `INSERT INTO staking_reward (
