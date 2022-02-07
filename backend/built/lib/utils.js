@@ -378,16 +378,17 @@ exports.processExtrinsic = processExtrinsic;
 const processEvents = (client, blockNumber, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = new Date().getTime();
     const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
+    const indexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
     const chunks = module.exports.chunker(indexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
-        yield Promise.all(chunk.map((indexedEvent) => module.exports.processEvent(client, blockNumber, indexedEvent, blockEvents, blockExtrinsics, timestamp, loggerOptions)));
+        yield Promise.all(chunk.map((indexedEvent) => module.exports.processEvent(client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 });
 exports.processEvents = processEvents;
-const processEvent = (client, blockNumber, indexedEvent, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const [eventIndex, { event, phase }] = indexedEvent;
     let sql = `INSERT INTO event (
     block_number,
@@ -463,32 +464,31 @@ const processEvent = (client, blockNumber, indexedEvent, blockEvents, blockExtri
         //
         let validator = null;
         let era = null;
-        const payoutStakersExtrinsic = blockExtrinsics
-            .find(({ method: { section, method } }) => (phase.asApplyExtrinsic.eq(eventIndex) // event phase
+        const payoutStakersExtrinsic = indexedBlockExtrinsics
+            .find(([_, { method: { section, method } }]) => (phase.asApplyExtrinsic.eq(eventIndex) // event phase
             && section === 'staking'
             && method === 'payoutStakers'));
         if (payoutStakersExtrinsic) {
-            validator = payoutStakersExtrinsic.method.args[0];
-            era = payoutStakersExtrinsic.method.args[1];
+            validator = payoutStakersExtrinsic[1].method.args[0];
+            era = payoutStakersExtrinsic[1].method.args[1];
         }
         else {
-            // Block: 11253017
-            // utility.batch
-            // Args example: [[{"callIndex":"0x0612","args":{"validator_stash":"FcjmeNzPk3vgdENm1rHeiMCxFK96beUoi2kb59FmCoZtkGF","era":3307}},{"callIndex":"0x0612","args":{"validator_stash":"FcjmeNzPk3vgdENm1rHeiMCxFK96beUoi2kb59FmCoZtkGF","era":3308}},{"callIndex":"0x0612","args":{"validator_stash":"FcjmeNzPk3vgdENm1rHeiMCxFK96beUoi2kb59FmCoZtkGF","era":3309}},{"callIndex":"0x0612","args":{"validator_stash":"FcjmeNzPk3vgdENm1rHeiMCxFK96beUoi2kb59FmCoZtkGF","era":3310}},{"callIndex":"0x0612","args":{"validator_stash":"Dm64aaAUyy5dvYCSmyzz3njGrWrVaki9F6BvUDSYjDDoqR2","era":3307}},{"callIndex":"0x0612","args":{"validator_stash":"Dm64aaAUyy5dvYCSmyzz3njGrWrVaki9F6BvUDSYjDDoqR2","era":3308}}]]
-            const utilityBatchExtrinsic = blockExtrinsics
-                .find(({ method: { section, method } }) => (phase.asApplyExtrinsic.eq(eventIndex) // event phase
-                && section === 'utility'
-                && method === 'batch'));
-            if (utilityBatchExtrinsic) {
+            const utilityBatchExtrinsicIndexes = indexedBlockExtrinsics
+                .filter(([_, extrinsic]) => (extrinsic.method.section === 'utility' &&
+                extrinsic.method.method === 'batch'))
+                .map(([index, _]) => index);
+            if (utilityBatchExtrinsicIndexes.length > 0) {
                 // We know that utility.batch has some staking.payoutStakers extrinsic
-                // Then we need to do a lookup of the previous staking.payoutStarted event
-                const payoutStartedEvent = blockEvents.find((record, index) => (index < eventIndex
-                    && record.event.section === 'staking'
-                    && record.event.method === 'PayoutStarted'));
-                era = payoutStartedEvent.event.data[0];
-                validator = payoutStartedEvent.event.data[1];
+                // Then we need to do a lookup of the previous staking.payoutStarted 
+                // event to get validator and era
+                const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (utilityBatchExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) && // events should be related to some utility batch extrinsic
+                    record.event.section === 'staking' &&
+                    record.event.method === 'PayoutStarted')).reverse();
+                const payoutStartedEvent = payoutStartedEvents.find(([index, _]) => index < eventIndex);
+                era = payoutStartedEvent[1].event.data[0];
+                validator = payoutStartedEvent[1].event.data[1];
             }
-            // TODO: support staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
+            // TODO: support staking.payoutStakers extrinsics included in a proxy.proxy extrinsic
         }
         if (validator && era) {
             sql = `INSERT INTO staking_reward (
