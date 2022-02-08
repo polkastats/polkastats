@@ -101,10 +101,10 @@ export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockN
   const startTime = new Date().getTime();
   const involvedAddresses: string[] = [];
   blockEvents
-    .forEach(({ event }) => {
+    .forEach(({ event }: any) => {
       event.data.forEach((arg: any) => {
         if (isValidAddressPolkadotAddress(arg)) {
-          involvedAddresses.push(arg);
+          involvedAddresses.push(arg.toHuman());
         }
       });
     });
