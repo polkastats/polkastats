@@ -119,7 +119,7 @@ const updateAccountsInfo = (api, client, blockNumber, timestamp, loggerOptions, 
         });
     });
     const uniqueAddresses = lodash_1.default.uniq(involvedAddresses);
-    yield Promise.all(uniqueAddresses.map((address) => (0, exports.updateAccountInfo)(api, client, blockNumber, timestamp, address.toString(), loggerOptions)));
+    yield Promise.all(uniqueAddresses.map((address) => (0, exports.updateAccountInfo)(api, client, blockNumber, timestamp, address, loggerOptions)));
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);

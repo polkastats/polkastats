@@ -99,7 +99,7 @@ export const isValidAddressPolkadotAddress = (address: string): boolean => {
 
 export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: Vec<EventRecord>) => {
   const startTime = new Date().getTime();
-  const involvedAddresses: any = [];
+  const involvedAddresses: string[] = [];
   blockEvents
     .forEach(({ event }) => {
       event.data.forEach((arg: any) => {
@@ -112,7 +112,7 @@ export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockN
   await Promise.all(
     uniqueAddresses.map(
       (address) => updateAccountInfo(
-        api, client, blockNumber, timestamp, address.toString(), loggerOptions,
+        api, client, blockNumber, timestamp, address, loggerOptions,
       ),
     ),
   );
