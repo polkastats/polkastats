@@ -5,7 +5,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex } from '@polkadot/util';
 import { Client, QueryResult } from 'pg';
-import _ from 'lodash';
+import _, { add } from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
 import { Address, BlockHash, EventRecord } from '@polkadot/types/interfaces';
@@ -126,6 +126,7 @@ export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNu
     api.derive.balances.all(address),
     api.derive.accounts.info(address),
   ]);
+  const accountId = balances.accountId.toHuman(); // ImOnline.HeartbeatReceived events return public key addresses but we want SS58 encoded address
   const availableBalance = balances.availableBalance.toString();
   const freeBalance = balances.freeBalance.toString();
   const lockedBalance = balances.lockedBalance.toString();
@@ -135,7 +136,7 @@ export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNu
   const JSONbalances = JSON.stringify(balances);
   const nonce = balances.accountNonce.toString();
   const data = [
-    address.toHuman(),
+    accountId,
     JSONIdentity,
     identityDisplay,
     identityDisplayParent,
