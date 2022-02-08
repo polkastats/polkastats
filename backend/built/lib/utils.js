@@ -60,7 +60,7 @@ const isNodeSynced = (api, loggerOptions) => __awaiter(void 0, void 0, void 0, f
 exports.isNodeSynced = isNodeSynced;
 const formatNumber = (number) => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 exports.formatNumber = formatNumber;
-const shortHash = (hash) => `${hash.substring(0, 5)}…${hash.substring(hash.length - 5, hash.length - 1)}`;
+const shortHash = (hash) => `${hash.substring(0, 6)}…${hash.substring(hash.length - 5, hash.length - 1)}`;
 exports.shortHash = shortHash;
 const wait = (ms) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve) => {
