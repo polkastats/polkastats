@@ -50,10 +50,10 @@ export const isNodeSynced = async (api: ApiPromise, loggerOptions: { crawler: st
 
 export const formatNumber = (number: number): string => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 
-export const shortHash = (hash: string): string => `${hash.substr(0, 6)}…${hash.substr(hash.length - 5, 4)}`;
+export const shortHash = (hash: string): string => `${hash.substring(0, 5)}…${hash.substring(hash.length - 5, hash.length - 1)}`;
 
-export const wait = async (ms: number ) => new Promise((resolve) => {
-  setTimeout(resolve, ms);
+export const wait = async (ms: number ): Promise<number> => new Promise((resolve) => {
+  return setTimeout(resolve, ms);
 });
 
 export const getClient = async (loggerOptions: { crawler: string; }): Promise<Client> => {
@@ -100,7 +100,7 @@ export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockN
   blockEvents
     .forEach(({ event }) => {
       event.data.forEach((arg: any) => {
-        if (module.exports.isValidAddressPolkadotAddress(arg)) {
+        if (isValidAddressPolkadotAddress(arg)) {
           involvedAddresses.push(arg);
         }
       });
@@ -118,7 +118,7 @@ export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockN
   logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 
-export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: Address, loggerOptions: { crawler: string; }) => {
+export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: string, loggerOptions: { crawler: string; }) => {
   const [balances, { identity }] = await Promise.all([
     api.derive.balances.all(address),
     api.derive.accounts.info(address),
