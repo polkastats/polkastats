@@ -351,6 +351,7 @@ export const processExtrinsic = async (
       let amount = '';
       if (method === 'transferAll') {
         amount = getTransferAllAmount(extrinsicIndex, blockEvents);
+        console.log('DEBUG AMOUNT:', amount, new BigNumber(amount).toString(10));
       } else if (method === 'forceTransfer') {
         amount = JSON.parse(args)[2];
       } else {

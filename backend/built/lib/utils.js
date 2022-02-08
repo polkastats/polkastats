@@ -327,6 +327,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
             let amount = '';
             if (method === 'transferAll') {
                 amount = (0, exports.getTransferAllAmount)(extrinsicIndex, blockEvents);
+                console.log('DEBUG AMOUNT:', amount, new bignumber_js_1.BigNumber(amount).toString(10));
             }
             else if (method === 'forceTransfer') {
                 amount = JSON.parse(args)[2];
