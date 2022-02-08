@@ -484,8 +484,7 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
         let validator = null;
         let era = null;
         const payoutStakersExtrinsic = indexedBlockExtrinsics
-            .find(([extrinsicIndex, { method: { section, method } }]) => (phase.isApplyExtrinsic // event phase
-            && phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
+            .find(([extrinsicIndex, { method: { section, method } }]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
             && section === 'staking'
             && method === 'payoutStakers'));
         if (payoutStakersExtrinsic) {
@@ -498,8 +497,7 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
             // staking.payoutStakers extrinsic included in a utility.batch or utility.batchAll extrinsic
             //
             const utilityBatchExtrinsicIndexes = indexedBlockExtrinsics
-                .filter(([extrinsicIndex, extrinsic]) => (phase.isApplyExtrinsic // event phase
-                && phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
+                .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
                 && extrinsic.method.section === 'utility'
                 && (extrinsic.method.method === 'batch' || extrinsic.method.method === 'batchAll')))
                 .map(([index, _]) => index);
@@ -507,7 +505,8 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
                 // We know that utility.batch has some staking.payoutStakers extrinsic
                 // Then we need to do a lookup of the previous staking.payoutStarted 
                 // event to get validator and era
-                const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (utilityBatchExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to utility.batch extrinsic
+                const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (record.phase.isApplyExtrinsic
+                    && utilityBatchExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to utility.batch extrinsic
                     && record.event.section === 'staking'
                     && record.event.method === 'PayoutStarted')).reverse();
                 if (payoutStartedEvents) {
@@ -522,8 +521,7 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
                 // staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
                 //
                 const proxyProxyExtrinsicIndexes = indexedBlockExtrinsics
-                    .filter(([extrinsicIndex, extrinsic]) => (phase.isApplyExtrinsic // event phase
-                    && phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
+                    .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
                     && extrinsic.method.section === 'proxy'
                     && extrinsic.method.method === 'proxy'))
                     .map(([index, _]) => index);
@@ -531,9 +529,10 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
                     // We know that proxy.proxy has some staking.payoutStakers extrinsic
                     // Then we need to do a lookup of the previous staking.payoutStarted 
                     // event to get validator and era
-                    const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (proxyProxyExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) && // events should be related to proxy.proxy extrinsic
-                        record.event.section === 'staking' &&
-                        record.event.method === 'PayoutStarted')).reverse();
+                    const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (record.phase.isApplyExtrinsic
+                        && proxyProxyExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to proxy.proxy extrinsic
+                        && record.event.section === 'staking'
+                        && record.event.method === 'PayoutStarted')).reverse();
                     if (payoutStartedEvents) {
                         const payoutStartedEvent = payoutStartedEvents.find(([index, _]) => index < eventIndex);
                         if (payoutStartedEvent) {
@@ -736,5 +735,5 @@ exports.chunker = chunker;
 const getTransferAllAmount = (index, blockEvents) => blockEvents
     .find(({ event, phase }) => ((phase.asApplyExtrinsic.eq(index))
     && event.section === 'balances'
-    && event.method === 'Transfer')).event.data[2];
+    && event.method === 'Transfer')).event.data[2].toString();
 exports.getTransferAllAmount = getTransferAllAmount;
