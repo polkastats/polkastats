@@ -114,7 +114,7 @@ const updateAccountsInfo = (api, client, blockNumber, timestamp, loggerOptions, 
         .forEach(({ event }) => {
         event.data.forEach((arg) => {
             if ((0, exports.isValidAddressPolkadotAddress)(arg)) {
-                involvedAddresses.push(arg.toHuman());
+                involvedAddresses.push(arg);
             }
         });
     });

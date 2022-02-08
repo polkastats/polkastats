@@ -8,7 +8,7 @@ import { Client, QueryResult } from 'pg';
 import _ from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
-import { BlockHash, EventRecord } from '@polkadot/types/interfaces';
+import { Address, BlockHash, EventRecord } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { BigNumber } from 'bignumber.js';
 import { AnyTuple } from '@polkadot/types/types';
@@ -99,12 +99,12 @@ export const isValidAddressPolkadotAddress = (address: string): boolean => {
 
 export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: Vec<EventRecord>) => {
   const startTime = new Date().getTime();
-  const involvedAddresses: string[] = [];
+  const involvedAddresses: any[] = [];
   blockEvents
     .forEach(({ event }: any) => {
       event.data.forEach((arg: any) => {
         if (isValidAddressPolkadotAddress(arg)) {
-          involvedAddresses.push(arg.toHuman());
+          involvedAddresses.push(arg);
         }
       });
     });
@@ -121,7 +121,7 @@ export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockN
   logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 
-export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: string, loggerOptions: { crawler: string; }) => {
+export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: Address, loggerOptions: { crawler: string; }) => {
   const [balances, { identity }] = await Promise.all([
     api.derive.balances.all(address),
     api.derive.accounts.info(address),
