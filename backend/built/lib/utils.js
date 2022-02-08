@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTransferAllAmount = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.updateTotalEvents = exports.updateTotalTransfers = exports.updateTotalExtrinsics = exports.updateTotalBlocks = exports.updateTotals = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
+exports.getTransferAllAmount = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
 require("@polkadot/api-augment");
 const pino_1 = __importDefault(require("pino"));
@@ -213,7 +213,7 @@ const processExtrinsics = (api, client, blockNumber, blockHash, extrinsics, bloc
 });
 exports.processExtrinsics = processExtrinsics;
 const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const [index, extrinsic] = indexedExtrinsic;
+    const [extrinsicIndex, extrinsic] = indexedExtrinsic;
     const { isSigned } = extrinsic;
     const signer = isSigned ? extrinsic.signer.toString() : '';
     const section = extrinsic.method.toHuman().section;
@@ -222,7 +222,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     const hash = extrinsic.hash.toHex();
     const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
     // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
-    const [success, errorMessage] = module.exports.getExtrinsicSuccessOrErrorMessage(api, index, blockEvents);
+    const [success, errorMessage] = module.exports.getExtrinsicSuccessOrErrorMessage(api, extrinsicIndex, blockEvents);
     let feeInfo = '';
     let feeDetails = '';
     if (isSigned) {
@@ -252,7 +252,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
       timestamp
     ) VALUES (
       '${blockNumber}',
-      '${index}',
+      '${extrinsicIndex}',
       '${isSigned}',
       '${signer}',
       '${section}',
@@ -271,10 +271,10 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     ;`;
     try {
         yield client.query(sql);
-        logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+        logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
     }
     catch (error) {
-        logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+        logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
     }
     if (isSigned) {
         // Store signed extrinsic
@@ -294,7 +294,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
       timestamp
     ) VALUES (
       '${blockNumber}',
-      '${index}',
+      '${extrinsicIndex}',
       '${signer}',
       '${section}',
       '${method}',
@@ -312,10 +312,10 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     ;`;
         try {
             yield client.query(sql);
-            logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+            logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
         }
         catch (error) {
-            logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+            logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
         }
         if (section === 'balances' && (method === 'forceTransfer' || method === 'transfer' || method === 'transferAll' || method === 'transferKeepAlive')) {
             // Store transfer
@@ -325,7 +325,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
                 : JSON.parse(args)[0].address20;
             let amount = '';
             if (method === 'transferAll') {
-                amount = (0, exports.getTransferAllAmount)(index, blockEvents);
+                amount = (0, exports.getTransferAllAmount)(extrinsicIndex, blockEvents);
             }
             else if (method === 'forceTransfer') {
                 amount = JSON.parse(args)[2];
@@ -349,7 +349,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
           timestamp
         ) VALUES (
           '${blockNumber}',
-          '${index}',
+          '${extrinsicIndex}',
           '${section}',
           '${method}',
           '${hash}',
@@ -366,15 +366,72 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
         ;`;
             try {
                 yield client.query(sql);
-                logger.debug(loggerOptions, `Added transfer ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+                logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
             }
             catch (error) {
-                logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+                logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
             }
         }
     }
 });
 exports.processExtrinsic = processExtrinsic;
+// TODO: Use in processExtrinsic for simple extrinsics and multiple extrinsics included in utility.batch and proxy.proxy
+const processTransfer = (client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash, signer, feeInfo, success, errorMessage, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    // Store transfer
+    const source = signer;
+    const destination = JSON.parse(args)[0].id
+        ? JSON.parse(args)[0].id
+        : JSON.parse(args)[0].address20;
+    let amount = '';
+    if (method === 'transferAll') {
+        amount = (0, exports.getTransferAllAmount)(extrinsicIndex, blockEvents);
+    }
+    else if (method === 'forceTransfer') {
+        amount = JSON.parse(args)[2];
+    }
+    else {
+        amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
+    }
+    const feeAmount = JSON.parse(feeInfo).partialFee;
+    const sql = `INSERT INTO transfer (
+      block_number,
+      extrinsic_index,
+      section,
+      method,
+      hash,
+      source,
+      destination,
+      amount,
+      fee_amount,      
+      success,
+      error_message,
+      timestamp
+    ) VALUES (
+      '${blockNumber}',
+      '${extrinsicIndex}',
+      '${section}',
+      '${method}',
+      '${hash}',
+      '${source}',
+      '${destination}',
+      '${new bignumber_js_1.BigNumber(amount).toString(10)}',
+      '${new bignumber_js_1.BigNumber(feeAmount).toString(10)}',
+      '${success}',
+      '${errorMessage}',
+      '${timestamp}'
+    )
+    ON CONFLICT ON CONSTRAINT transfer_pkey 
+    DO NOTHING;
+    ;`;
+    try {
+        yield client.query(sql);
+        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+    }
+    catch (error) {
+        logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+    }
+});
+exports.processTransfer = processTransfer;
 const processEvents = (client, blockNumber, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = new Date().getTime();
     const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
@@ -636,64 +693,6 @@ const getDisplayName = (identity) => {
     return identity.display || '';
 };
 exports.getDisplayName = getDisplayName;
-// TODO: Investigate https://dzone.com/articles/faster-postgresql-counting
-const updateTotals = (client, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    yield Promise.all([
-        module.exports.updateTotalBlocks(client, loggerOptions),
-        module.exports.updateTotalExtrinsics(client, loggerOptions),
-        module.exports.updateTotalTransfers(client, loggerOptions),
-        module.exports.updateTotalEvents(client, loggerOptions),
-    ]);
-});
-exports.updateTotals = updateTotals;
-const updateTotalBlocks = (client, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const sql = `
-    UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks';
-  `;
-    try {
-        yield client.query(sql);
-    }
-    catch (error) {
-        logger.error(loggerOptions, `Error updating totals: ${error}`);
-    }
-});
-exports.updateTotalBlocks = updateTotalBlocks;
-const updateTotalExtrinsics = (client, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const sql = `
-    UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
-  `;
-    try {
-        yield client.query(sql);
-    }
-    catch (error) {
-        logger.error(loggerOptions, `Error updating total extrinsics: ${error}`);
-    }
-});
-exports.updateTotalExtrinsics = updateTotalExtrinsics;
-const updateTotalTransfers = (client, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const sql = `
-    UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers';
-  `;
-    try {
-        yield client.query(sql);
-    }
-    catch (error) {
-        logger.error(loggerOptions, `Error updating totals transfers ${error}`);
-    }
-});
-exports.updateTotalTransfers = updateTotalTransfers;
-const updateTotalEvents = (client, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const sql = `
-    UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events';
-  `;
-    try {
-        yield client.query(sql);
-    }
-    catch (error) {
-        logger.error(loggerOptions, `Error updating total events: ${error}`);
-    }
-});
-exports.updateTotalEvents = updateTotalEvents;
 const updateFinalized = (client, finalizedBlock, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const sql = `
     UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock};
@@ -728,11 +727,9 @@ const logHarvestError = (client, blockNumber, error, loggerOptions) => __awaiter
 exports.logHarvestError = logHarvestError;
 const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
 exports.chunker = chunker;
+// TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proyx extrinsic?
 const getTransferAllAmount = (index, blockEvents) => JSON.stringify(blockEvents
-    .find(({ event, phase }) => {
-    var _a, _b;
-    return ((((_a = phase.toJSON()) === null || _a === void 0 ? void 0 : _a.ApplyExtrinsic) === index || ((_b = phase.toJSON()) === null || _b === void 0 ? void 0 : _b.applyExtrinsic) === index)
-        && event.section === 'balances'
-        && event.method === 'Transfer');
-}).event.data.toJSON()[2] || '');
+    .find(({ event, phase }) => ((phase.asApplyExtrinsic.eq(index))
+    && event.section === 'balances'
+    && event.method === 'Transfer')).event.data[2] || '');
 exports.getTransferAllAmount = getTransferAllAmount;

@@ -4,23 +4,22 @@ import pino from 'pino';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex } from '@polkadot/util';
-import { Client } from 'pg';
+import { Client, QueryResult } from 'pg';
 import _ from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
-import type { Vec } from '@polkadot/types-codec';
 import { Address, BlockHash, EventRecord } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { BigNumber } from 'bignumber.js';
 import { AnyTuple } from '@polkadot/types/types';
-import { GenericExtrinsic } from '@polkadot/types';
+import { GenericExtrinsic, Vec } from '@polkadot/types';
 
 const logger = pino();
 
 // Used for processing events and extrinsics
 const chunkSize = 100;
 
-export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCustomTypes: string | undefined) => {
+export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCustomTypes: string | undefined): Promise<ApiPromise> => {
   let api;
   logger.debug(loggerOptions, `Connecting to ${backendConfig.wsProviderUrl}`);
   const provider = new WsProvider(backendConfig.wsProviderUrl);
@@ -34,7 +33,7 @@ export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCus
   return api;
 };
 
-export const isNodeSynced = async (api: ApiPromise, loggerOptions: { crawler: string; }) => {
+export const isNodeSynced = async (api: ApiPromise, loggerOptions: { crawler: string; }): Promise<boolean> => {
   let node;
   try {
     node = await api.rpc.system.health();
@@ -49,22 +48,22 @@ export const isNodeSynced = async (api: ApiPromise, loggerOptions: { crawler: st
   return false;
 };
 
-export const formatNumber = (number: number) => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+export const formatNumber = (number: number): string => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 
-export const shortHash = (hash: string) => `${hash.substr(0, 6)}…${hash.substr(hash.length - 5, 4)}`;
+export const shortHash = (hash: string): string => `${hash.substr(0, 6)}…${hash.substr(hash.length - 5, 4)}`;
 
 export const wait = async (ms: number ) => new Promise((resolve) => {
   setTimeout(resolve, ms);
 });
 
-export const getClient = async (loggerOptions: { crawler: string; }) => {
+export const getClient = async (loggerOptions: { crawler: string; }): Promise<Client> => {
   logger.debug(loggerOptions, `Connecting to DB ${backendConfig.postgresConnParams.database} at ${backendConfig.postgresConnParams.host}:${backendConfig.postgresConnParams.port}`);
   const client = new Client(backendConfig.postgresConnParams);
   await client.connect();
   return client;
 };
 
-export const dbQuery = async (client: Client, sql: string, loggerOptions: { crawler: string; }) => {
+export const dbQuery = async (client: Client, sql: string, loggerOptions: { crawler: string; }): Promise<QueryResult<any>> | null => {
   try {
     return await client.query(sql);
   } catch (error) {
@@ -73,7 +72,7 @@ export const dbQuery = async (client: Client, sql: string, loggerOptions: { craw
   return null;
 };
 
-export const dbParamQuery = async (client: Client, sql: string, data: any[], loggerOptions: { crawler: string; }) => {
+export const dbParamQuery = async (client: Client, sql: string, data: any[], loggerOptions: { crawler: string; }): Promise<QueryResult<any>> | null => {
   try {
     return await client.query(sql, data);
   } catch (error) {
@@ -82,7 +81,7 @@ export const dbParamQuery = async (client: Client, sql: string, data: any[], log
   return null;
 };
 
-export const isValidAddressPolkadotAddress = (address: string) => {
+export const isValidAddressPolkadotAddress = (address: string): boolean => {
   try {
     encodeAddress(
       isHex(address)
@@ -235,7 +234,7 @@ export const processExtrinsic = async (
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
-  const [index, extrinsic]  = indexedExtrinsic;
+  const [extrinsicIndex, extrinsic]  = indexedExtrinsic;
   const { isSigned } = extrinsic;
   const signer = isSigned ? extrinsic.signer.toString() : '';
   const section = extrinsic.method.toHuman().section;
@@ -244,7 +243,7 @@ export const processExtrinsic = async (
   const hash = extrinsic.hash.toHex();
   const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
   // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
-  const [success, errorMessage] = module.exports.getExtrinsicSuccessOrErrorMessage(api, index, blockEvents);
+  const [success, errorMessage] = module.exports.getExtrinsicSuccessOrErrorMessage(api, extrinsicIndex, blockEvents);
   let feeInfo = '';
   let feeDetails = '';
   if (isSigned) {
@@ -274,7 +273,7 @@ export const processExtrinsic = async (
       timestamp
     ) VALUES (
       '${blockNumber}',
-      '${index}',
+      '${extrinsicIndex}',
       '${isSigned}',
       '${signer}',
       '${section}',
@@ -293,9 +292,9 @@ export const processExtrinsic = async (
     ;`;
   try {
     await client.query(sql);
-    logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+    logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
   } catch (error) {
-    logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+    logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
   }
 
   if (isSigned) {
@@ -316,7 +315,7 @@ export const processExtrinsic = async (
       timestamp
     ) VALUES (
       '${blockNumber}',
-      '${index}',
+      '${extrinsicIndex}',
       '${signer}',
       '${section}',
       '${method}',
@@ -334,9 +333,9 @@ export const processExtrinsic = async (
     ;`;
     try {
       await client.query(sql);
-      logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+      logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
     } catch (error) {
-      logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+      logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
     }
     if (section === 'balances' && (method === 'forceTransfer' || method === 'transfer' || method === 'transferAll' || method === 'transferKeepAlive')) {
       // Store transfer
@@ -347,7 +346,7 @@ export const processExtrinsic = async (
 
       let amount = '';
       if (method === 'transferAll') {
-        amount = getTransferAllAmount(index, blockEvents);
+        amount = getTransferAllAmount(extrinsicIndex, blockEvents);
       } else if (method === 'forceTransfer') {
         amount = JSON.parse(args)[2];
       } else {
@@ -369,7 +368,7 @@ export const processExtrinsic = async (
           timestamp
         ) VALUES (
           '${blockNumber}',
-          '${index}',
+          '${extrinsicIndex}',
           '${section}',
           '${method}',
           '${hash}',
@@ -386,11 +385,81 @@ export const processExtrinsic = async (
         ;`;
       try {
         await client.query(sql);
-        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${index} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
       } catch (error) {
-        logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+        logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
       }
     }
+  }
+};
+
+// TODO: Use in processExtrinsic for simple extrinsics and multiple extrinsics included in utility.batch and proxy.proxy
+export const processTransfer = async (
+  client: Client,
+  blockNumber: number,
+  extrinsicIndex: number,
+  blockEvents: Vec<EventRecord>,
+  section: string,
+  method: string,
+  args: string,
+  hash: BlockHash,
+  signer: any,
+  feeInfo: string,
+  success: boolean,
+  errorMessage: string,
+  timestamp: number,
+  loggerOptions: { crawler: string; }
+) => {
+  // Store transfer
+  const source = signer;
+  const destination = JSON.parse(args)[0].id
+    ? JSON.parse(args)[0].id
+    : JSON.parse(args)[0].address20;
+
+  let amount = '';
+  if (method === 'transferAll') {
+    amount = getTransferAllAmount(extrinsicIndex, blockEvents);
+  } else if (method === 'forceTransfer') {
+    amount = JSON.parse(args)[2];
+  } else {
+    amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
+  }
+  const feeAmount = JSON.parse(feeInfo).partialFee;
+  const sql = `INSERT INTO transfer (
+      block_number,
+      extrinsic_index,
+      section,
+      method,
+      hash,
+      source,
+      destination,
+      amount,
+      fee_amount,      
+      success,
+      error_message,
+      timestamp
+    ) VALUES (
+      '${blockNumber}',
+      '${extrinsicIndex}',
+      '${section}',
+      '${method}',
+      '${hash}',
+      '${source}',
+      '${destination}',
+      '${new BigNumber(amount).toString(10)}',
+      '${new BigNumber(feeAmount).toString(10)}',
+      '${success}',
+      '${errorMessage}',
+      '${timestamp}'
+    )
+    ON CONFLICT ON CONSTRAINT transfer_pkey 
+    DO NOTHING;
+    ;`;
+  try {
+    await client.query(sql);
+    logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+  } catch (error) {
+    logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
   }
 };
 
@@ -641,7 +710,7 @@ export const processLog = async (client: Client, blockNumber: number, log: any, 
   }
 };
 
-export const getExtrinsicSuccessOrErrorMessage = (api: ApiPromise, index: number, blockEvents: Vec<EventRecord>) => {
+export const getExtrinsicSuccessOrErrorMessage = (api: ApiPromise, index: number, blockEvents: Vec<EventRecord>): [boolean, string] => {
   let extrinsicSuccess = false;
   let extrinsicErrorMessage = '';
   blockEvents
@@ -671,7 +740,7 @@ export const getExtrinsicSuccessOrErrorMessage = (api: ApiPromise, index: number
   return [extrinsicSuccess, extrinsicErrorMessage];
 };
 
-export const getDisplayName = (identity: DeriveAccountRegistration) => {
+export const getDisplayName = (identity: DeriveAccountRegistration): string => {
   if (
     identity.displayParent
     && identity.displayParent !== ''
@@ -681,61 +750,6 @@ export const getDisplayName = (identity: DeriveAccountRegistration) => {
     return `${identity.displayParent} / ${identity.display}`;
   }
   return identity.display || '';
-};
-
-// TODO: Investigate https://dzone.com/articles/faster-postgresql-counting
-export const updateTotals = async (client: Client, loggerOptions: { crawler: string; }) => {
-  await Promise.all([
-    module.exports.updateTotalBlocks(client, loggerOptions),
-    module.exports.updateTotalExtrinsics(client, loggerOptions),
-    module.exports.updateTotalTransfers(client, loggerOptions),
-    module.exports.updateTotalEvents(client, loggerOptions),
-  ]);
-};
-
-export const updateTotalBlocks = async (client: Client, loggerOptions: { crawler: string; }) => {
-  const sql = `
-    UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks';
-  `;
-  try {
-    await client.query(sql);
-  } catch (error) {
-    logger.error(loggerOptions, `Error updating totals: ${error}`);
-  }
-};
-
-export const updateTotalExtrinsics = async (client: Client, loggerOptions: { crawler: string; }) => {
-  const sql = `
-    UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
-  `;
-  try {
-    await client.query(sql);
-  } catch (error) {
-    logger.error(loggerOptions, `Error updating total extrinsics: ${error}`);
-  }
-};
-
-export const updateTotalTransfers = async (client: Client, loggerOptions: { crawler: string; }) => {
-  const sql = `
-    UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers';
-  `;
-  try {
-    await client.query(sql);
-  } catch (error) {
-    logger.error(loggerOptions, `Error updating totals transfers ${error}`);
-  }
-};
-
-
-export const updateTotalEvents = async (client: Client, loggerOptions: { crawler: string; }) => {
-  const sql = `
-    UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events';
-  `;
-  try {
-    await client.query(sql);
-  } catch (error) {
-    logger.error(loggerOptions, `Error updating total events: ${error}`);
-  }
 };
 
 export const updateFinalized = async (client: Client, finalizedBlock: number, loggerOptions: { crawler: string; }) => {
@@ -769,16 +783,17 @@ export const logHarvestError = async (client: Client, blockNumber: number, error
   await module.exports.dbParamQuery(client, query, data, loggerOptions);
 };
 
-export const chunker = (a: [number, Vec<EventRecord>] | [number, Vec<GenericExtrinsic>], n: number) => Array.from(
+export const chunker = (a: [number, Vec<EventRecord>] | [number, Vec<GenericExtrinsic>], n: number): any[][] => Array.from(
   { length: Math.ceil(a.length / n) },
   (_, i) => a.slice(i * n, i * n + n),
 );
 
-export const getTransferAllAmount = (index: number, blockEvents: any[]) => JSON.stringify(
+// TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proyx extrinsic?
+export const getTransferAllAmount = (index: number, blockEvents: Vec<EventRecord>): string => JSON.stringify(
   blockEvents
-    .find(({ event, phase }: any) => (
-      (phase.toJSON()?.ApplyExtrinsic === index || phase.toJSON()?.applyExtrinsic === index)
+    .find(({ event, phase }) => (
+      (phase.asApplyExtrinsic.eq(index))
         && event.section === 'balances'
         && event.method === 'Transfer'
-    )).event.data.toJSON()[2] || '',
+    )).event.data[2] || '',
 );
