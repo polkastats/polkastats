@@ -8,7 +8,7 @@ import { Client, QueryResult } from 'pg';
 import _ from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
-import { Address, BlockHash, EventRecord } from '@polkadot/types/interfaces';
+import { BlockHash, EventRecord } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { BigNumber } from 'bignumber.js';
 import { AnyTuple } from '@polkadot/types/types';
@@ -18,6 +18,9 @@ const logger = pino();
 
 // Used for processing events and extrinsics
 const chunkSize = 100;
+
+type indexedBlockEvent = [number, EventRecord];
+type indexedBlockExtrinsic = [number, GenericExtrinsic<AnyTuple>];
 
 export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCustomTypes: string | undefined): Promise<ApiPromise> => {
   let api;
@@ -108,8 +111,8 @@ export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockN
   const uniqueAddresses = _.uniq(involvedAddresses);
   await Promise.all(
     uniqueAddresses.map(
-      (address) => module.exports.updateAccountInfo(
-        api, client, blockNumber, timestamp, address, loggerOptions,
+      (address) => updateAccountInfo(
+        api, client, blockNumber, timestamp, address.toString(), loggerOptions,
       ),
     ),
   );
@@ -197,17 +200,17 @@ export const processExtrinsics = async (
   client: Client,
   blockNumber: number,
   blockHash: BlockHash,
-  extrinsics: any[],
+  extrinsics: Vec<GenericExtrinsic<AnyTuple>>,
   blockEvents: Vec<EventRecord>,
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
-  const indexedExtrinsics = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
-  const chunks = module.exports.chunker(indexedExtrinsics, chunkSize);
+  const indexedExtrinsics: indexedBlockExtrinsic[] = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
+  const chunks = chunker(indexedExtrinsics, chunkSize);
   for (const chunk of chunks) {
     await Promise.all(
-      chunk.map((indexedExtrinsic: any) => module.exports.processExtrinsic(
+      chunk.map((indexedExtrinsic: indexedBlockExtrinsic) => processExtrinsic(
         api,
         client,
         blockNumber,
@@ -229,7 +232,7 @@ export const processExtrinsic = async (
   client: Client,
   blockNumber: number,
   blockHash: BlockHash,
-  indexedExtrinsic: any,
+  indexedExtrinsic: indexedBlockExtrinsic,
   blockEvents: Vec<EventRecord>,
   timestamp: number,
   loggerOptions: { crawler: string; },
@@ -237,13 +240,13 @@ export const processExtrinsic = async (
   const [extrinsicIndex, extrinsic]  = indexedExtrinsic;
   const { isSigned } = extrinsic;
   const signer = isSigned ? extrinsic.signer.toString() : '';
-  const section = extrinsic.method.toHuman().section;
-  const method = extrinsic.method.toHuman().method;
+  const section = extrinsic.method.section;
+  const method = extrinsic.method.method;
   const args = JSON.stringify(extrinsic.args);
   const hash = extrinsic.hash.toHex();
   const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
   // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
-  const [success, errorMessage] = module.exports.getExtrinsicSuccessOrErrorMessage(api, extrinsicIndex, blockEvents);
+  const [success, errorMessage] = getExtrinsicSuccessOrErrorMessage(api, extrinsicIndex, blockEvents);
   let feeInfo = '';
   let feeDetails = '';
   if (isSigned) {
@@ -292,7 +295,7 @@ export const processExtrinsic = async (
     ;`;
   try {
     await client.query(sql);
-    logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+    logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
   }
@@ -333,7 +336,7 @@ export const processExtrinsic = async (
     ;`;
     try {
       await client.query(sql);
-      logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+      logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
     }
@@ -385,7 +388,7 @@ export const processExtrinsic = async (
         ;`;
       try {
         await client.query(sql);
-        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
       } catch (error) {
         logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
       }
@@ -457,7 +460,7 @@ export const processTransfer = async (
     ;`;
   try {
     await client.query(sql);
-    logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+    logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${shortHash(hash.toString())}) ${section} ➡ ${method}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
   }
@@ -467,12 +470,12 @@ export const processEvents = async (
   client: Client, blockNumber: number, blockEvents: Vec<EventRecord>, blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>, timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
-  const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
-  const indexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
-  const chunks = module.exports.chunker(indexedBlockEvents, chunkSize);
+  const indexedBlockEvents: indexedBlockEvent[] = blockEvents.map((event, index) => ([index, event]));
+  const indexedBlockExtrinsics: indexedBlockExtrinsic[] = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
+  const chunks = chunker(indexedBlockEvents, chunkSize);
   for (const chunk of chunks) {
     await Promise.all(
-      chunk.map((indexedEvent: [number, EventRecord]) => module.exports.processEvent(
+      chunk.map((indexedEvent: indexedBlockEvent) => processEvent(
         client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
       )),
     );
@@ -483,7 +486,7 @@ export const processEvents = async (
 };
 
 export const processEvent = async (
-  client: Client, blockNumber: number, indexedEvent: [number, EventRecord], indexedBlockEvents: [[number, EventRecord]], indexedBlockExtrinsics: [[number, GenericExtrinsic<AnyTuple>]], timestamp: number, loggerOptions: { crawler: string; },
+  client: Client, blockNumber: number, indexedEvent: indexedBlockEvent, indexedBlockEvents: indexedBlockEvent[], indexedBlockExtrinsics: indexedBlockExtrinsic[], timestamp: number, loggerOptions: { crawler: string; },
 ) => {
   const [eventIndex, { event, phase }] = indexedEvent;
   let sql = `INSERT INTO event (
@@ -672,7 +675,7 @@ export const processEvent = async (
 export const processLogs = async (client: Client, blockNumber: number, logs: any[], timestamp: number, loggerOptions: { crawler: string; }) => {
   const startTime = new Date().getTime();
   await Promise.all(
-    logs.map((log, index) => module.exports.processLog(
+    logs.map((log, index) => processLog(
       client, blockNumber, log, index, timestamp, loggerOptions,
     )),
   );
@@ -780,10 +783,10 @@ export const logHarvestError = async (client: Client, blockNumber: number, error
       harvest_error_pkey 
       DO NOTHING
     ;`;
-  await module.exports.dbParamQuery(client, query, data, loggerOptions);
+  await dbParamQuery(client, query, data, loggerOptions);
 };
 
-export const chunker = (a: [number, Vec<EventRecord>] | [number, Vec<GenericExtrinsic>], n: number): any[][] => Array.from(
+export const chunker = (a: any[], n: number): any[] => Array.from(
   { length: Math.ceil(a.length / n) },
   (_, i) => a.slice(i * n, i * n + n),
 );

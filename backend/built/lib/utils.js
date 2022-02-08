@@ -119,7 +119,7 @@ const updateAccountsInfo = (api, client, blockNumber, timestamp, loggerOptions, 
         });
     });
     const uniqueAddresses = lodash_1.default.uniq(involvedAddresses);
-    yield Promise.all(uniqueAddresses.map((address) => module.exports.updateAccountInfo(api, client, blockNumber, timestamp, address, loggerOptions)));
+    yield Promise.all(uniqueAddresses.map((address) => (0, exports.updateAccountInfo)(api, client, blockNumber, timestamp, address.toString(), loggerOptions)));
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
@@ -203,9 +203,9 @@ exports.updateAccountInfo = updateAccountInfo;
 const processExtrinsics = (api, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = new Date().getTime();
     const indexedExtrinsics = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
-    const chunks = module.exports.chunker(indexedExtrinsics, chunkSize);
+    const chunks = (0, exports.chunker)(indexedExtrinsics, chunkSize);
     for (const chunk of chunks) {
-        yield Promise.all(chunk.map((indexedExtrinsic) => module.exports.processExtrinsic(api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
+        yield Promise.all(chunk.map((indexedExtrinsic) => (0, exports.processExtrinsic)(api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
@@ -216,13 +216,13 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     const [extrinsicIndex, extrinsic] = indexedExtrinsic;
     const { isSigned } = extrinsic;
     const signer = isSigned ? extrinsic.signer.toString() : '';
-    const section = extrinsic.method.toHuman().section;
-    const method = extrinsic.method.toHuman().method;
+    const section = extrinsic.method.section;
+    const method = extrinsic.method.method;
     const args = JSON.stringify(extrinsic.args);
     const hash = extrinsic.hash.toHex();
     const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
     // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
-    const [success, errorMessage] = module.exports.getExtrinsicSuccessOrErrorMessage(api, extrinsicIndex, blockEvents);
+    const [success, errorMessage] = (0, exports.getExtrinsicSuccessOrErrorMessage)(api, extrinsicIndex, blockEvents);
     let feeInfo = '';
     let feeDetails = '';
     if (isSigned) {
@@ -271,7 +271,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     ;`;
     try {
         yield client.query(sql);
-        logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+        logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${(0, exports.shortHash)(hash)}) ${section} ➡ ${method}`);
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
@@ -312,7 +312,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     ;`;
         try {
             yield client.query(sql);
-            logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+            logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${(0, exports.shortHash)(hash)}) ${section} ➡ ${method}`);
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
@@ -366,7 +366,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
         ;`;
             try {
                 yield client.query(sql);
-                logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+                logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${(0, exports.shortHash)(hash)}) ${section} ➡ ${method}`);
             }
             catch (error) {
                 logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
@@ -425,7 +425,7 @@ const processTransfer = (client, blockNumber, extrinsicIndex, blockEvents, secti
     ;`;
     try {
         yield client.query(sql);
-        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${module.exports.shortHash(hash)}) ${section} ➡ ${method}`);
+        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${(0, exports.shortHash)(hash.toString())}) ${section} ➡ ${method}`);
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
@@ -436,9 +436,9 @@ const processEvents = (client, blockNumber, blockEvents, blockExtrinsics, timest
     const startTime = new Date().getTime();
     const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
     const indexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
-    const chunks = module.exports.chunker(indexedBlockEvents, chunkSize);
+    const chunks = (0, exports.chunker)(indexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
-        yield Promise.all(chunk.map((indexedEvent) => module.exports.processEvent(client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
+        yield Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
@@ -617,7 +617,7 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
 exports.processEvent = processEvent;
 const processLogs = (client, blockNumber, logs, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = new Date().getTime();
-    yield Promise.all(logs.map((log, index) => module.exports.processLog(client, blockNumber, log, index, timestamp, loggerOptions)));
+    yield Promise.all(logs.map((log, index) => (0, exports.processLog)(client, blockNumber, log, index, timestamp, loggerOptions)));
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
@@ -722,7 +722,7 @@ const logHarvestError = (client, blockNumber, error, loggerOptions) => __awaiter
       harvest_error_pkey 
       DO NOTHING
     ;`;
-    yield module.exports.dbParamQuery(client, query, data, loggerOptions);
+    yield (0, exports.dbParamQuery)(client, query, data, loggerOptions);
 });
 exports.logHarvestError = logHarvestError;
 const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
