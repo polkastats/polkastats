@@ -324,7 +324,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
             const destination = JSON.parse(args)[0].id
                 ? JSON.parse(args)[0].id
                 : JSON.parse(args)[0].address20;
-            let amount = '';
+            let amount;
             if (method === 'transferAll') {
                 amount = (0, exports.getTransferAllAmount)(extrinsicIndex, blockEvents);
                 console.log('DEBUG AMOUNT:', amount, new bignumber_js_1.BigNumber(amount).toString(10));
@@ -384,7 +384,7 @@ const processTransfer = (client, blockNumber, extrinsicIndex, blockEvents, secti
     const destination = JSON.parse(args)[0].id
         ? JSON.parse(args)[0].id
         : JSON.parse(args)[0].address20;
-    let amount = '';
+    let amount;
     if (method === 'transferAll') {
         amount = (0, exports.getTransferAllAmount)(extrinsicIndex, blockEvents);
     }
@@ -484,7 +484,8 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
         let validator = null;
         let era = null;
         const payoutStakersExtrinsic = indexedBlockExtrinsics
-            .find(([extrinsicIndex, { method: { section, method } }]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
+            .find(([extrinsicIndex, { method: { section, method } }]) => (phase.isApplyExtrinsic // event phase
+            && phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
             && section === 'staking'
             && method === 'payoutStakers'));
         if (payoutStakersExtrinsic) {
@@ -497,7 +498,8 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
             // staking.payoutStakers extrinsic included in a utility.batch or utility.batchAll extrinsic
             //
             const utilityBatchExtrinsicIndexes = indexedBlockExtrinsics
-                .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
+                .filter(([extrinsicIndex, extrinsic]) => (phase.isApplyExtrinsic // event phase
+                && phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
                 && extrinsic.method.section === 'utility'
                 && (extrinsic.method.method === 'batch' || extrinsic.method.method === 'batchAll')))
                 .map(([index, _]) => index);
@@ -520,7 +522,8 @@ const processEvent = (client, blockNumber, indexedEvent, indexedBlockEvents, ind
                 // staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
                 //
                 const proxyProxyExtrinsicIndexes = indexedBlockExtrinsics
-                    .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
+                    .filter(([extrinsicIndex, extrinsic]) => (phase.isApplyExtrinsic // event phase
+                    && phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
                     && extrinsic.method.section === 'proxy'
                     && extrinsic.method.method === 'proxy'))
                     .map(([index, _]) => index);
@@ -729,9 +732,9 @@ const logHarvestError = (client, blockNumber, error, loggerOptions) => __awaiter
 exports.logHarvestError = logHarvestError;
 const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
 exports.chunker = chunker;
-// TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proyx extrinsic?
-const getTransferAllAmount = (index, blockEvents) => JSON.stringify(blockEvents
+// TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proyx extrinsic
+const getTransferAllAmount = (index, blockEvents) => blockEvents
     .find(({ event, phase }) => ((phase.asApplyExtrinsic.eq(index))
     && event.section === 'balances'
-    && event.method === 'Transfer')).event.data[2] || '');
+    && event.method === 'Transfer')).event.data[2];
 exports.getTransferAllAmount = getTransferAllAmount;
