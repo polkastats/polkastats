@@ -139,7 +139,7 @@ const updateAccountInfo = (api, client, blockNumber, timestamp, address, loggerO
     const JSONbalances = JSON.stringify(balances);
     const nonce = balances.accountNonce.toString();
     const data = [
-        address,
+        address.toHuman(),
         JSONIdentity,
         identityDisplay,
         identityDisplayParent,

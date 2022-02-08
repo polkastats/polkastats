@@ -135,7 +135,7 @@ export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNu
   const JSONbalances = JSON.stringify(balances);
   const nonce = balances.accountNonce.toString();
   const data = [
-    address,
+    address.toHuman(),
     JSONIdentity,
     identityDisplay,
     identityDisplayParent,
