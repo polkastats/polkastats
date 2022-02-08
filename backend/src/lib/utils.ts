@@ -53,7 +53,7 @@ export const isNodeSynced = async (api: ApiPromise, loggerOptions: { crawler: st
 
 export const formatNumber = (number: number): string => (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 
-export const shortHash = (hash: string): string => `${hash.substring(0, 5)}…${hash.substring(hash.length - 5, hash.length - 1)}`;
+export const shortHash = (hash: string): string => `${hash.substring(0, 6)}…${hash.substring(hash.length - 5, hash.length - 1)}`;
 
 export const wait = async (ms: number ): Promise<number> => new Promise((resolve) => {
   return setTimeout(resolve, ms);
