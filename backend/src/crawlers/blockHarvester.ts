@@ -89,35 +89,6 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
     // Get election status
     const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
 
-    // Store block extrinsics (async)
-    processExtrinsics(
-      api,
-      client,
-      blockNumber,
-      blockHash,
-      block.extrinsics,
-      blockEvents,
-      timestamp,
-      loggerOptions,
-    );
-    // Store module events (async)
-    processEvents(
-      client,
-      blockNumber,
-      blockEvents,
-      block.extrinsics,
-      timestamp,
-      loggerOptions,
-    );
-    // Store block logs (async)
-    processLogs(
-      client,
-      blockNumber,
-      blockHeader.digest.logs,
-      timestamp,
-      loggerOptions,
-    );
-
     // Totals
     const totalEvents = blockEvents.length;
     const totalExtrinsics = block.extrinsics.length;
@@ -169,6 +140,36 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
     } catch (error) {
       logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
     }
+
+    // Store block extrinsics (async)
+    processExtrinsics(
+      api,
+      client,
+      blockNumber,
+      blockHash,
+      block.extrinsics,
+      blockEvents,
+      timestamp,
+      loggerOptions,
+    );
+    // Store module events (async)
+    processEvents(
+      client,
+      blockNumber,
+      blockEvents,
+      block.extrinsics,
+      timestamp,
+      loggerOptions,
+    );
+    // Store block logs (async)
+    processLogs(
+      client,
+      blockNumber,
+      blockHeader.digest.logs,
+      timestamp,
+      loggerOptions,
+    );
+
   } catch (error) {
     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
     await logHarvestError(client, blockNumber, error, loggerOptions);

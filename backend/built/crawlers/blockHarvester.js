@@ -79,12 +79,6 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
         const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
         // Get election status
         const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
-        // Store block extrinsics (async)
-        (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp, loggerOptions);
-        // Store module events (async)
-        (0, utils_1.processEvents)(client, blockNumber, blockEvents, block.extrinsics, timestamp, loggerOptions);
-        // Store block logs (async)
-        (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp, loggerOptions);
         // Totals
         const totalEvents = blockEvents.length;
         const totalExtrinsics = block.extrinsics.length;
@@ -136,6 +130,12 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
         catch (error) {
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
         }
+        // Store block extrinsics (async)
+        (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp, loggerOptions);
+        // Store module events (async)
+        (0, utils_1.processEvents)(client, blockNumber, blockEvents, block.extrinsics, timestamp, loggerOptions);
+        // Store block logs (async)
+        (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp, loggerOptions);
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
