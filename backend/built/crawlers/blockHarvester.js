@@ -196,7 +196,7 @@ const harvestBlocks = (api, client, startBlock, endBlock) => __awaiter(void 0, v
         logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} [${completed.toFixed(config.statsPrecision)}%] `
             + `in ${((chunkProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s `
             + `min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)} `
-            + `cur/avg block/s: ${currentBlocksPerSecond.toFixed(config.statsPrecision)}/${avgBlocksPerSecond.toFixed(config.statsPrecision)}`);
+            + `cur/avg bps: ${currentBlocksPerSecond.toFixed(config.statsPrecision)}/${avgBlocksPerSecond.toFixed(config.statsPrecision)}`);
     }
 });
 const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* () {
