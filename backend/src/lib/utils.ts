@@ -349,9 +349,11 @@ export const processExtrinsic = async (
         : JSON.parse(args)[0].address20;
 
       let amount;
-      if (method === 'transferAll') {
+      if (method === 'transferAll' && success) {
         amount = getTransferAllAmount(extrinsicIndex, blockEvents);
-        console.log('DEBUG AMOUNT:', amount, new BigNumber(amount).toString(10));
+      } else  if (method === 'transferAll' && !success) {
+        // We can't get amount in this case cause no event is emitted
+        amount = 0;
       } else if (method === 'forceTransfer') {
         amount = JSON.parse(args)[2];
       } else {
@@ -422,8 +424,11 @@ export const processTransfer = async (
     : JSON.parse(args)[0].address20;
 
   let amount;
-  if (method === 'transferAll') {
+  if (method === 'transferAll' && success) {
     amount = getTransferAllAmount(extrinsicIndex, blockEvents);
+  } else  if (method === 'transferAll' && !success) {
+    // We can't get amount in this case cause no event is emitted
+    amount = 0;
   } else if (method === 'forceTransfer') {
     amount = JSON.parse(args)[2];
   } else {
@@ -795,10 +800,11 @@ export const chunker = (a: any[], n: number): any[] => Array.from(
   (_, i) => a.slice(i * n, i * n + n),
 );
 
-// TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proyx extrinsic
-export const getTransferAllAmount = (index: number, blockEvents: Vec<EventRecord>): any => blockEvents
+// TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proxy extrinsic
+export const getTransferAllAmount = (index: number, blockEvents: Vec<EventRecord>): string => blockEvents
   .find(({ event, phase }) => (
-    (phase.asApplyExtrinsic.eq(index))
+      phase.isApplyExtrinsic
+      && phase.asApplyExtrinsic.eq(index)
       && event.section === 'balances'
       && event.method === 'Transfer'
   )).event.data[2].toString();

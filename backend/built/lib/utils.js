@@ -325,9 +325,12 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
                 ? JSON.parse(args)[0].id
                 : JSON.parse(args)[0].address20;
             let amount;
-            if (method === 'transferAll') {
+            if (method === 'transferAll' && success) {
                 amount = (0, exports.getTransferAllAmount)(extrinsicIndex, blockEvents);
-                console.log('DEBUG AMOUNT:', amount, new bignumber_js_1.BigNumber(amount).toString(10));
+            }
+            else if (method === 'transferAll' && !success) {
+                // We can't get amount in this case cause no event is emitted
+                amount = 0;
             }
             else if (method === 'forceTransfer') {
                 amount = JSON.parse(args)[2];
@@ -385,8 +388,12 @@ const processTransfer = (client, blockNumber, extrinsicIndex, blockEvents, secti
         ? JSON.parse(args)[0].id
         : JSON.parse(args)[0].address20;
     let amount;
-    if (method === 'transferAll') {
+    if (method === 'transferAll' && success) {
         amount = (0, exports.getTransferAllAmount)(extrinsicIndex, blockEvents);
+    }
+    else if (method === 'transferAll' && !success) {
+        // We can't get amount in this case cause no event is emitted
+        amount = 0;
     }
     else if (method === 'forceTransfer') {
         amount = JSON.parse(args)[2];
@@ -731,9 +738,10 @@ const logHarvestError = (client, blockNumber, error, loggerOptions) => __awaiter
 exports.logHarvestError = logHarvestError;
 const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
 exports.chunker = chunker;
-// TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proyx extrinsic
+// TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proxy extrinsic
 const getTransferAllAmount = (index, blockEvents) => blockEvents
-    .find(({ event, phase }) => ((phase.asApplyExtrinsic.eq(index))
+    .find(({ event, phase }) => (phase.isApplyExtrinsic
+    && phase.asApplyExtrinsic.eq(index)
     && event.section === 'balances'
     && event.method === 'Transfer')).event.data[2].toString();
 exports.getTransferAllAmount = getTransferAllAmount;
