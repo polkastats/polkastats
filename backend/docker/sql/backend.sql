@@ -18,7 +18,12 @@ CREATE TABLE IF NOT EXISTS block (
   total_extrinsics INT NOT NULL,
   total_issuance NUMERIC(40,0) NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number )
+  PRIMARY KEY ( block_number ),
+  CONSTRAINT fk_extrinsic FOREIGN KEY (block_number) REFERENCES extrinsic(block_number),
+  CONSTRAINT fk_signed_extrinsic FOREIGN KEY (block_number) REFERENCES signed_extrinsic(block_number),
+  CONSTRAINT fk_transfer FOREIGN KEY (block_number) REFERENCES transfer(block_number),
+  CONSTRAINT fk_event FOREIGN KEY (block_number) REFERENCES event(block_number),
+  CONSTRAINT fk_log FOREIGN KEY (block_number) REFERENCES log(block_number)
 );
 
 CREATE TABLE IF NOT EXISTS harvest_error (  
