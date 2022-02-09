@@ -262,7 +262,7 @@ CREATE TABLE IF NOT EXISTS account  (
 CREATE TABLE IF NOT EXISTS runtime (  
   block_number BIGINT NOT NULL,
   spec_version TEXT NOT NULL,
-  metadata JSON NOT NULL,
+  metadata JSONB NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, spec_version )
 );
