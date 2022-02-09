@@ -268,8 +268,10 @@ CREATE TABLE IF NOT EXISTS total (
 INSERT INTO total (name, count) VALUES
   ('blocks', 0),
   ('extrinsics', 0),
+  ('signed_extrinsics', 0),
   ('transfers', 0),
   ('events', 0),
+  ('logs', 0),
   ('active_validator_count', 0),
   ('waiting_validator_count', 0),
   ('nominator_count', 0),
@@ -390,6 +392,32 @@ CREATE TRIGGER extrinsic_count_trunc AFTER TRUNCATE ON extrinsic
 UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
 COMMIT;
 
+-- Signed extrinsics
+START TRANSACTION;
+CREATE FUNCTION signed_extrinsic_count() RETURNS trigger LANGUAGE plpgsql AS
+$$BEGIN
+  IF TG_OP = 'INSERT' THEN
+    UPDATE total SET count = count + 1 WHERE name = 'signed_extrinsics';
+    RETURN NEW;
+  ELSIF TG_OP = 'DELETE' THEN
+    UPDATE total SET count = count - 1 WHERE name = 'signed_extrinsics';
+    RETURN OLD;
+  ELSE
+    UPDATE total SET count = 0 WHERE name = 'signed_extrinsics';
+    RETURN NULL;
+  END IF;
+END;$$;
+CREATE CONSTRAINT TRIGGER signed_extrinsic_count_mod
+  AFTER INSERT OR DELETE ON signed_extrinsic
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW EXECUTE PROCEDURE signed_extrinsic_count();
+-- TRUNCATE triggers must be FOR EACH STATEMENT
+CREATE TRIGGER signed_extrinsic_count_trunc AFTER TRUNCATE ON signed_extrinsic
+  FOR EACH STATEMENT EXECUTE PROCEDURE signed_extrinsic_count();
+-- initialize the counter table
+UPDATE total SET count = (SELECT count(*) FROM signed_extrinsic) WHERE name = 'signed_extrinsics';
+COMMIT;
+
 
 -- Events
 START TRANSACTION;
@@ -441,4 +469,30 @@ CREATE TRIGGER transfer_count_trunc AFTER TRUNCATE ON transfer
   FOR EACH STATEMENT EXECUTE PROCEDURE transfer_count();
 -- initialize the counter table
 UPDATE total SET count = (SELECT count(*) FROM transfer) WHERE name = 'transfers';
+COMMIT;
+
+-- Logs
+START TRANSACTION;
+CREATE FUNCTION log_count() RETURNS trigger LANGUAGE plpgsql AS
+$$BEGIN
+  IF TG_OP = 'INSERT' THEN
+    UPDATE total SET count = count + 1 WHERE name = 'logs';
+    RETURN NEW;
+  ELSIF TG_OP = 'DELETE' THEN
+    UPDATE total SET count = count - 1 WHERE name = 'logs';
+    RETURN OLD;
+  ELSE
+    UPDATE total SET count = 0 WHERE name = 'logs';
+    RETURN NULL;
+  END IF;
+END;$$;
+CREATE CONSTRAINT TRIGGER log_count_mod
+  AFTER INSERT OR DELETE ON log
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW EXECUTE PROCEDURE log_count();
+-- TRUNCATE triggers must be FOR EACH STATEMENT
+CREATE TRIGGER log_count_trunc AFTER TRUNCATE ON log
+  FOR EACH STATEMENT EXECUTE PROCEDURE log_count();
+-- initialize the counter table
+UPDATE total SET count = (SELECT count(*) FROM log) WHERE name = 'logs';
 COMMIT;
