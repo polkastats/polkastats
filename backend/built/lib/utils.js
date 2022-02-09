@@ -636,7 +636,7 @@ const processLogs = (client, blockNumber, logs, timestamp, loggerOptions) => __a
 exports.processLogs = processLogs;
 const processLog = (client, blockNumber, log, index, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const { type } = log;
-    const [[engine, data]] = Object.values(log.toJSON());
+    const [[engine, data]] = Object.values(log.toHuman());
     const sql = `INSERT INTO log (
       block_number,
       log_index,

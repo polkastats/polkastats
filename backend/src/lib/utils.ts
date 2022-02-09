@@ -695,7 +695,7 @@ export const processLogs = async (client: Client, blockNumber: number, logs: any
 
 export const processLog = async (client: Client, blockNumber: number, log: any, index: number, timestamp: number, loggerOptions: { crawler: string; }) => {
   const { type } = log;
-  const [[engine, data]] = Object.values(log.toJSON());
+  const [[engine, data]] = Object.values(log.toHuman());
   const sql = `INSERT INTO log (
       block_number,
       log_index,
