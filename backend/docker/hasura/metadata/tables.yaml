@@ -334,6 +334,19 @@
       allow_aggregations: true
 - table:
     schema: public
+    name: runtime
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - spec_version
+      - metadata
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
     name: signed_extrinsic
   object_relationships:
   - name: block
