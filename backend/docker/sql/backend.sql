@@ -18,12 +18,7 @@ CREATE TABLE IF NOT EXISTS block (
   total_extrinsics INT NOT NULL,
   total_issuance NUMERIC(40,0) NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number ),
-  CONSTRAINT fk_extrinsic FOREIGN KEY (block_number) REFERENCES extrinsic(block_number),
-  CONSTRAINT fk_signed_extrinsic FOREIGN KEY (block_number) REFERENCES signed_extrinsic(block_number),
-  CONSTRAINT fk_transfer FOREIGN KEY (block_number) REFERENCES transfer(block_number),
-  CONSTRAINT fk_event FOREIGN KEY (block_number) REFERENCES event(block_number),
-  CONSTRAINT fk_log FOREIGN KEY (block_number) REFERENCES log(block_number)
+  PRIMARY KEY ( block_number )
 );
 
 CREATE TABLE IF NOT EXISTS harvest_error (  
@@ -41,7 +36,8 @@ CREATE TABLE IF NOT EXISTS event (
   phase TEXT NOT NULL,
   data TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, event_index ) 
+  PRIMARY KEY ( block_number, event_index ),
+  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
 );
 
 CREATE TABLE IF NOT EXISTS staking_reward (  
@@ -79,7 +75,8 @@ CREATE TABLE IF NOT EXISTS extrinsic (
   success BOOLEAN NOT NULL,
   error_message TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, extrinsic_index ) 
+  PRIMARY KEY ( block_number, extrinsic_index ),
+  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
 );
 
 CREATE TABLE IF NOT EXISTS signed_extrinsic (  
@@ -96,7 +93,8 @@ CREATE TABLE IF NOT EXISTS signed_extrinsic (
   success BOOLEAN NOT NULL,
   error_message TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, extrinsic_index ) 
+  PRIMARY KEY ( block_number, extrinsic_index ),
+  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
 );
 
 CREATE TABLE IF NOT EXISTS transfer (  
@@ -112,7 +110,8 @@ CREATE TABLE IF NOT EXISTS transfer (
   success BOOLEAN NOT NULL,
   error_message TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, extrinsic_index ) 
+  PRIMARY KEY ( block_number, extrinsic_index ),
+  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
 );
 
 CREATE TABLE IF NOT EXISTS log  (  
@@ -122,7 +121,8 @@ CREATE TABLE IF NOT EXISTS log  (
   engine TEXT NOT NULL,
   data TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, log_index ) 
+  PRIMARY KEY ( block_number, log_index ),
+  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
 );
 
 CREATE TABLE IF NOT EXISTS ranking (
