@@ -343,64 +343,27 @@ export const processExtrinsic = async (
     }
     if (section === 'balances' && (method === 'forceTransfer' || method === 'transfer' || method === 'transferAll' || method === 'transferKeepAlive')) {
       // Store transfer
-      const source = signer;
-      const destination = JSON.parse(args)[0].id
-        ? JSON.parse(args)[0].id
-        : JSON.parse(args)[0].address20;
-
-      let amount;
-      if (method === 'transferAll' && success) {
-        amount = getTransferAllAmount(extrinsicIndex, blockEvents);
-      } else  if (method === 'transferAll' && !success) {
-        // We can't get amount in this case cause no event is emitted
-        amount = 0;
-      } else if (method === 'forceTransfer') {
-        amount = JSON.parse(args)[2];
-      } else {
-        amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
-      }
-      const feeAmount = JSON.parse(feeInfo).partialFee;
-      sql = `INSERT INTO transfer (
-          block_number,
-          extrinsic_index,
-          section,
-          method,
-          hash,
-          source,
-          destination,
-          amount,
-          fee_amount,      
-          success,
-          error_message,
-          timestamp
-        ) VALUES (
-          '${blockNumber}',
-          '${extrinsicIndex}',
-          '${section}',
-          '${method}',
-          '${hash}',
-          '${source}',
-          '${destination}',
-          '${new BigNumber(amount).toString(10)}',
-          '${new BigNumber(feeAmount).toString(10)}',
-          '${success}',
-          '${errorMessage}',
-          '${timestamp}'
-        )
-        ON CONFLICT ON CONSTRAINT transfer_pkey 
-        DO NOTHING;
-        ;`;
-      try {
-        await client.query(sql);
-        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
-      } catch (error) {
-        logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
-      }
+      processTransfer(
+        client,
+        blockNumber,
+        extrinsicIndex,
+        blockEvents,
+        section,
+        method,
+        args,
+        hash.toString(),
+        signer,
+        feeInfo,
+        success,
+        errorMessage,
+        timestamp,
+        loggerOptions
+      );
     }
   }
 };
 
-// TODO: Use in processExtrinsic for simple extrinsics and multiple extrinsics included in utility.batch and proxy.proxy
+// TODO: Use in multiple extrinsics included in utility.batch and proxy.proxy
 export const processTransfer = async (
   client: Client,
   blockNumber: number,
@@ -409,7 +372,7 @@ export const processTransfer = async (
   section: string,
   method: string,
   args: string,
-  hash: BlockHash,
+  hash: string,
   signer: any,
   feeInfo: string,
   success: boolean,
@@ -426,7 +389,7 @@ export const processTransfer = async (
   let amount;
   if (method === 'transferAll' && success) {
     amount = getTransferAllAmount(extrinsicIndex, blockEvents);
-  } else  if (method === 'transferAll' && !success) {
+  } else if (method === 'transferAll' && !success) {
     // We can't get amount in this case cause no event is emitted
     amount = 0;
   } else if (method === 'forceTransfer') {
