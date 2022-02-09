@@ -259,6 +259,14 @@ CREATE TABLE IF NOT EXISTS account  (
   PRIMARY KEY ( account_id )  
 );
 
+CREATE TABLE IF NOT EXISTS runtime (  
+  block_number BIGINT NOT NULL,
+  spec_version TEXT NOT NULL,
+  metadata JSON NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, spec_version )
+);
+
 CREATE TABLE IF NOT EXISTS total (  
   name TEXT,
   count BIGINT NOT NULL,
@@ -332,6 +340,7 @@ GRANT ALL PRIVILEGES ON TABLE era_points TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE era_points_avg TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE featured TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE runtime TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE total TO polkastats;
 
 --

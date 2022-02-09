@@ -154,6 +154,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
     );
     // Store module events (async)
     processEvents(
+      api,
       client,
       blockNumber,
       blockEvents,

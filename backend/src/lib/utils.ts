@@ -437,7 +437,13 @@ export const processTransfer = async (
 };
 
 export const processEvents = async (
-  client: Client, blockNumber: number, blockEvents: Vec<EventRecord>, blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>, timestamp: number, loggerOptions: { crawler: string; },
+  api: ApiPromise,
+  client: Client,
+  blockNumber: number,
+  blockEvents: Vec<EventRecord>,
+  blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>,
+  timestamp: number,
+  loggerOptions: { crawler: string; },
 ) => {
   const startTime = new Date().getTime();
   const indexedBlockEvents: indexedBlockEvent[] = blockEvents.map((event, index) => ([index, event]));
@@ -446,7 +452,7 @@ export const processEvents = async (
   for (const chunk of chunks) {
     await Promise.all(
       chunk.map((indexedEvent: indexedBlockEvent) => processEvent(
-        client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
+        api, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
       )),
     );
   }
@@ -456,7 +462,14 @@ export const processEvents = async (
 };
 
 export const processEvent = async (
-  client: Client, blockNumber: number, indexedEvent: indexedBlockEvent, indexedBlockEvents: indexedBlockEvent[], indexedBlockExtrinsics: indexedBlockExtrinsic[], timestamp: number, loggerOptions: { crawler: string; },
+  api: ApiPromise,
+  client: Client,
+  blockNumber: number,
+  indexedEvent: indexedBlockEvent,
+  indexedBlockEvents: indexedBlockEvent[],
+  indexedBlockExtrinsics: indexedBlockExtrinsic[],
+  timestamp: number,
+  loggerOptions: { crawler: string; },
 ) => {
   const [eventIndex, { event, phase }] = indexedEvent;
   let sql = `INSERT INTO event (
@@ -484,6 +497,34 @@ export const processEvent = async (
     logger.debug(loggerOptions, `Added event #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+  }
+
+  // Runtime upgrade
+  if (event.section === 'system' && event.method === 'CodeUpdated') {
+    const specVersion = api.consts.system.version;
+    const metadata = await api.rpc.state.getMetadata();
+    const data = [
+      blockNumber,
+      specVersion,
+      metadata.toJSON(),
+      timestamp,
+    ];
+    const query = `
+    INSERT INTO runtime (
+      block_number,
+      spec_version,
+      metadata,
+      timestamp
+    ) VALUES (
+      $1,
+      $2,
+      $3,
+      $4
+    )
+    ON CONFLICT ON CONSTRAINT runtime_pkey 
+    DO NOTHING
+    ;`;
+    await dbParamQuery(client, query, data, loggerOptions);
   }
 
   // Store staking reward

@@ -165,6 +165,7 @@ const crawler = async () => {
           ),
           // Store module events
           processEvents(
+            api,
             client,
             blockNumber,
             blockEvents,
