@@ -17,8 +17,7 @@ CREATE TABLE IF NOT EXISTS block (
   total_extrinsics INT NOT NULL,
   total_issuance NUMERIC(40,0) NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number ),
-  CONSTRAINT fk_runtime FOREIGN KEY (spec_version) REFERENCES runtime(spec_version)
+  PRIMARY KEY ( block_number )
 );
 
 CREATE TABLE IF NOT EXISTS harvest_error (  
