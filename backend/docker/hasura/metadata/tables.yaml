@@ -339,6 +339,7 @@
     permission:
       columns:
       - block_number
+      - spec_name
       - spec_version
       - runtime_version
       - metadata
