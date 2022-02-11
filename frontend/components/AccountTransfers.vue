@@ -1,20 +1,12 @@
 <template>
-  <div class="staking-rewards">
+  <div class="received-transfers">
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
-    <div v-else-if="stakingRewards.length === 0" class="text-center py-4">
-      <h5>{{ $t('components.staking_rewards.no_reward_found') }}</h5>
+    <div v-else-if="transfers.length === 0" class="text-center py-4">
+      <h5>{{ $t('components.transfers.no_transfer_found') }}</h5>
     </div>
     <div v-else>
-      <JsonCSV
-        :data="stakingRewards"
-        class="download-csv mb-2"
-        :name="`polkastats_staking_rewards_${accountId}.csv`"
-      >
-        <font-awesome-icon icon="file-csv" />
-        {{ $t('pages.accounts.download_csv') }}
-      </JsonCSV>
       <!-- Filter -->
       <b-row style="margin-bottom: 1rem">
         <b-col cols="12">
@@ -22,10 +14,18 @@
             id="filterInput"
             v-model="filter"
             type="search"
-            :placeholder="$t('components.staking_rewards.search')"
+            :placeholder="$t('components.transfers.search')"
           />
         </b-col>
       </b-row>
+      <JsonCSV
+        :data="transfers"
+        class="download-csv mb-2"
+        :name="`polkastats_transfers_${accountId}.csv`"
+      >
+        <font-awesome-icon icon="file-csv" />
+        {{ $t('pages.accounts.download_csv') }}
+      </JsonCSV>
       <div class="table-responsive">
         <b-table
           striped
@@ -33,7 +33,7 @@
           :fields="fields"
           :per-page="perPage"
           :current-page="currentPage"
-          :items="stakingRewards"
+          :items="transfers"
           :filter="filter"
           @filtered="onFiltered"
         >
@@ -48,33 +48,41 @@
               </nuxt-link>
             </p>
           </template>
-          <template #cell(validator_stash_address)="data">
+          <template #cell(from)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/validator/${data.item.validator_stash_address}`"
+                :to="`/account/${data.item.from}`"
                 :title="$t('pages.accounts.account_details')"
               >
-                <Identicon
-                  :address="data.item.validator_stash_address"
-                  :size="20"
-                />
-                {{ shortAddress(data.item.validator_stash_address) }}
+                <Identicon :address="data.item.from" :size="20" />
+                {{ shortAddress(data.item.from) }}
               </nuxt-link>
             </p>
           </template>
-          <template #cell(timestamp)="data">
+          <template #cell(to)="data">
             <p class="mb-0">
-              {{ getDateFromTimestamp(data.item.timestamp) }}
-            </p>
-          </template>
-          <template #cell(timeago)="data">
-            <p class="mb-0">
-              {{ fromNow(data.item.timestamp) }}
+              <nuxt-link
+                :to="`/account/${data.item.to}`"
+                :title="$t('pages.accounts.account_details')"
+              >
+                <Identicon :address="data.item.to" :size="20" />
+                {{ shortAddress(data.item.to) }}
+              </nuxt-link>
             </p>
           </template>
           <template #cell(amount)="data">
             <p class="mb-0">
-              {{ formatAmount(data.item.amount, 6) }}
+              {{ formatAmount(data.item.amount) }}
+            </p>
+          </template>
+          <template #cell(success)="data">
+            <p class="mb-0">
+              <font-awesome-icon
+                v-if="data.item.success"
+                icon="check"
+                class="text-success"
+              />
+              <font-awesome-icon v-else icon="times" class="text-danger" />
             </p>
           </template>
         </b-table>
@@ -83,7 +91,7 @@
             v-model="currentPage"
             :total-rows="totalRows"
             :per-page="perPage"
-            aria-controls="staking-rewards"
+            aria-controls="validators-table"
           />
           <b-button-group class="ml-2">
             <b-button
@@ -105,13 +113,15 @@
 import { gql } from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
 import commonMixin from '@/mixins/commonMixin.js'
+import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import { paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
-    Loading,
+    Identicon,
     JsonCSV,
+    Loading,
   },
   mixins: [commonMixin],
   props: {
@@ -123,7 +133,7 @@ export default {
   data() {
     return {
       loading: true,
-      stakingRewards: [],
+      transfers: [],
       filter: null,
       filterOn: [],
       tableOptions: paginationOptions,
@@ -139,29 +149,30 @@ export default {
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: true,
         },
+        // {
+        //   key: 'hash',
+        //   label: 'Hash',
+        //   class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
+        //   sortable: true,
+        // },
         {
-          key: 'timestamp',
-          label: 'Date',
+          key: 'from',
+          label: 'From',
           sortable: true,
         },
         {
-          key: 'era',
-          label: 'Era',
-          sortable: true,
-        },
-        {
-          key: 'validator_stash_address',
-          label: 'Validator',
-          sortable: true,
-        },
-        {
-          key: 'timeago',
-          label: 'Time ago',
+          key: 'to',
+          label: 'To',
           sortable: true,
         },
         {
           key: 'amount',
-          label: 'Reward',
+          label: 'Amount',
+          sortable: true,
+        },
+        {
+          key: 'success',
+          label: 'Success',
           sortable: true,
         },
       ],
@@ -180,17 +191,29 @@ export default {
   },
   apollo: {
     $subscribe: {
-      staking_rewards: {
+      transfer: {
         query: gql`
-          subscription staking_rewards($accountId: String!) {
-            staking_reward(
+          subscription transfer($accountId: String!) {
+            transfer(
               order_by: { block_number: desc }
-              where: { account_id: { _eq: $accountId } }
+              where: {
+                _or: [
+                  { source: { _eq: $accountId } }
+                  { destination: { _eq: $accountId } }
+                ]
+              }
             ) {
               block_number
-              validator_stash_address
-              era
+              extrinsic_index
+              section
+              method
+              hash
+              source
+              destination
               amount
+              fee_amount
+              success
+              error_message
               timestamp
             }
           }
@@ -204,8 +227,9 @@ export default {
           return !this.accountId
         },
         result({ data }) {
-          this.stakingRewards = data.staking_reward
-          this.totalRows = this.stakingRewards.length
+          console.log(data.transfer)
+          this.transfers = data.transfer
+          this.totalRows = this.transfers.length
           this.loading = false
         },
       },
@@ -213,3 +237,9 @@ export default {
   },
 }
 </script>
+
+<style>
+.sent-transfers {
+  background-color: white;
+}
+</style>

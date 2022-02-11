@@ -78,7 +78,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       apiAt.query.session.currentIndex()
         .then((res) => (res || 0)),
       apiAt.query.electionProviderMultiPhase.currentPhase(),
-      api.query.timestamp.now(),
+      apiAt.query.timestamp.now(),
     ]);
 
     const blockAuthor = blockHeader.author || '';

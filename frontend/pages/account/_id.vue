@@ -186,7 +186,7 @@
                   </template>
                   <Activities :account-id="accountId" />
                 </b-tab>
-                <b-tab>
+                <!-- <b-tab>
                   <template #title>
                     <h5>Sent transfers</h5>
                   </template>
@@ -197,6 +197,12 @@
                     <h5>Received transfers</h5>
                   </template>
                   <ReceivedTransfers :account-id="accountId" />
+                </b-tab> -->
+                <b-tab>
+                  <template #title>
+                    <h5>Transfers</h5>
+                  </template>
+                  <AccountTransfers :account-id="accountId" />
                 </b-tab>
                 <b-tab>
                   <template #title>
@@ -229,8 +235,9 @@ import { gql } from 'graphql-tag'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import Activities from '@/components/Activities.vue'
-import SentTransfers from '@/components/SentTransfers.vue'
-import ReceivedTransfers from '@/components/ReceivedTransfers.vue'
+// import SentTransfers from '@/components/SentTransfers.vue'
+// import ReceivedTransfers from '@/components/ReceivedTransfers.vue'
+import AccountTransfers from '@/components/AccountTransfers.vue'
 import StakingRewards from '@/components/StakingRewards.vue'
 import StakingSlashes from '@/components/StakingSlashes.vue'
 // import BalanceChart from '@/components/BalanceChart.vue'
@@ -242,8 +249,9 @@ export default {
     Identicon,
     Loading,
     Activities,
-    SentTransfers,
-    ReceivedTransfers,
+    // SentTransfers,
+    // ReceivedTransfers,
+    AccountTransfers,
     StakingRewards,
     StakingSlashes,
     // BalanceChart,
