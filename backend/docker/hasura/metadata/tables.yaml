@@ -72,7 +72,6 @@
       - active_era
       - current_index
       - is_election
-      - spec_name
       - spec_version
       - total_events
       - total_extrinsics
@@ -341,6 +340,7 @@
       columns:
       - block_number
       - spec_version
+      - runtime_version
       - metadata
       - timestamp
       filter: {}
