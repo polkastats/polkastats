@@ -266,7 +266,7 @@ CREATE TABLE IF NOT EXISTS runtime (
   runtime_version JSON NOT NULL,
   metadata JSON NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, spec_version )
+  PRIMARY KEY ( spec_version )
 );
 
 CREATE TABLE IF NOT EXISTS total (  
