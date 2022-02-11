@@ -21,6 +21,15 @@
 - table:
     schema: public
     name: block
+  object_relationships:
+  - name: runtime
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: runtime
+        column_mapping:
+          spec_version: spec_version
   array_relationships:
   - name: events
     using:
