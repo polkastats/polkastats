@@ -17,7 +17,11 @@ CREATE TABLE IF NOT EXISTS block (
   total_extrinsics INT NOT NULL,
   total_issuance NUMERIC(40,0) NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number )
+  PRIMARY KEY ( block_number ),
+  CONSTRAINT fk_runtime
+    FOREIGN KEY (spec_version)
+      REFERENCES runtime(spec_version)
+      ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS harvest_error (  
@@ -36,7 +40,10 @@ CREATE TABLE IF NOT EXISTS event (
   data TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, event_index ),
-  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
+  CONSTRAINT fk_block
+    FOREIGN KEY (block_number)
+      REFERENCES block(block_number)
+      ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS staking_reward (  
@@ -75,7 +82,10 @@ CREATE TABLE IF NOT EXISTS extrinsic (
   error_message TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ),
-  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
+  CONSTRAINT fk_block
+    FOREIGN KEY (block_number)
+      REFERENCES block(block_number)
+      ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS signed_extrinsic (  
@@ -93,7 +103,10 @@ CREATE TABLE IF NOT EXISTS signed_extrinsic (
   error_message TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ),
-  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
+  CONSTRAINT fk_block
+    FOREIGN KEY (block_number)
+      REFERENCES block(block_number)
+      ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS transfer (  
@@ -110,7 +123,10 @@ CREATE TABLE IF NOT EXISTS transfer (
   error_message TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ),
-  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
+  CONSTRAINT fk_block
+    FOREIGN KEY (block_number)
+      REFERENCES block(block_number)
+      ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS log  (  
@@ -121,7 +137,10 @@ CREATE TABLE IF NOT EXISTS log  (
   data TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, log_index ),
-  CONSTRAINT fk_block FOREIGN KEY (block_number) REFERENCES block(block_number)
+  CONSTRAINT fk_block
+    FOREIGN KEY (block_number)
+      REFERENCES block(block_number)
+      ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS ranking (
@@ -261,7 +280,7 @@ CREATE TABLE IF NOT EXISTS account  (
 CREATE TABLE IF NOT EXISTS runtime (  
   block_number BIGINT NOT NULL,
   spec_name TEXT NOT NULL,
-  spec_version TEXT NOT NULL,
+  spec_version INT NOT NULL,
   runtime_version JSON NOT NULL,
   metadata JSON NOT NULL,
   timestamp BIGINT NOT NULL,
