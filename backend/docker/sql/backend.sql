@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS block (
   active_era BIGINT NOT NULL,
   current_index BIGINT NOT NULL,
   is_election BOOLEAN NOT NULL,
-  spec_name TEXT NOT NULL,
   spec_version INT NOT NULL,
   total_events INT NOT NULL,
   total_extrinsics INT NOT NULL,
@@ -261,10 +260,13 @@ CREATE TABLE IF NOT EXISTS account  (
 
 CREATE TABLE IF NOT EXISTS runtime (  
   block_number BIGINT NOT NULL,
+  spec_name TEXT NOT NULL,
   spec_version TEXT NOT NULL,
-  metadata JSONB NOT NULL,
+  runtime_version JSON NOT NULL,
+  metadata JSON NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, spec_version )
+  PRIMARY KEY ( block_number, spec_version ),
+  CONSTRAINT fk_block FOREIGN KEY (spec_version) REFERENCES block(spec_version)
 );
 
 CREATE TABLE IF NOT EXISTS total (  

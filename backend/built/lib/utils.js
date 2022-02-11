@@ -386,20 +386,20 @@ const processTransfer = (client, blockNumber, extrinsicIndex, blockEvents, secti
     }
 });
 exports.processTransfer = processTransfer;
-const processEvents = (api, client, blockNumber, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processEvents = (api, runtimeVersion, client, blockNumber, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = new Date().getTime();
     const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
     const indexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
     const chunks = (0, exports.chunker)(indexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
-        yield Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(api, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
+        yield Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(api, runtimeVersion, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 });
 exports.processEvents = processEvents;
-const processEvent = (api, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processEvent = (api, runtimeVersion, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const [eventIndex, { event, phase }] = indexedEvent;
     let sql = `INSERT INTO event (
     block_number,
@@ -430,25 +430,32 @@ const processEvent = (api, client, blockNumber, indexedEvent, indexedBlockEvents
     }
     // Runtime upgrade
     if (event.section === 'system' && event.method === 'CodeUpdated') {
-        const specVersion = api.consts.system.version;
+        const specName = runtimeVersion.specName;
+        const specVersion = runtimeVersion.specVersion;
         const metadata = yield api.rpc.state.getMetadata();
         const data = [
             blockNumber,
+            specName,
             specVersion,
+            runtimeVersion.toJSON(),
             metadata.toJSON(),
             timestamp,
         ];
         const query = `
     INSERT INTO runtime (
       block_number,
+      spec_name,
       spec_version,
+      runtime_version,
       metadata,
       timestamp
     ) VALUES (
       $1,
       $2,
       $3,
-      $4
+      $4,
+      $5,
+      $6
     )
     ON CONFLICT ON CONSTRAINT runtime_pkey 
     DO NOTHING

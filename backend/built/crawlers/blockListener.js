@@ -95,7 +95,6 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
             active_era,
             current_index,
             is_election,
-            spec_name,
             spec_version,
             total_events,
             total_extrinsics,
@@ -113,7 +112,6 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
             '${activeEra}',
             '${currentIndex}',
             '${isElection}',
-            '${runtimeVersion.specName}',
             '${runtimeVersion.specVersion}',
             '${totalEvents}',
             '${totalExtrinsics}',
@@ -135,7 +133,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
                     // Get involved addresses from block events and update its balances
                     (0, utils_1.updateAccountsInfo)(api, client, blockNumber, timestamp, loggerOptions, blockEvents),
                     // Store module events
-                    (0, utils_1.processEvents)(api, client, blockNumber, blockEvents, block.extrinsics, timestamp, loggerOptions),
+                    (0, utils_1.processEvents)(api, runtimeVersion, client, blockNumber, blockEvents, block.extrinsics, timestamp, loggerOptions),
                     // Store block logs
                     (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp, loggerOptions),
                 ]);

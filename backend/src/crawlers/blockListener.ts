@@ -107,7 +107,6 @@ const crawler = async () => {
             active_era,
             current_index,
             is_election,
-            spec_name,
             spec_version,
             total_events,
             total_extrinsics,
@@ -125,7 +124,6 @@ const crawler = async () => {
             '${activeEra}',
             '${currentIndex}',
             '${isElection}',
-            '${runtimeVersion.specName}',
             '${runtimeVersion.specVersion}',
             '${totalEvents}',
             '${totalExtrinsics}',
@@ -166,6 +164,7 @@ const crawler = async () => {
           // Store module events
           processEvents(
             api,
+            runtimeVersion,
             client,
             blockNumber,
             blockEvents,

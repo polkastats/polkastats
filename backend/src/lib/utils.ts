@@ -8,7 +8,7 @@ import { Client, QueryResult } from 'pg';
 import _, { add } from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
-import { Address, BlockHash, EventRecord } from '@polkadot/types/interfaces';
+import { Address, BlockHash, EventRecord, RuntimeVersion } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { BigNumber } from 'bignumber.js';
 import { AnyTuple } from '@polkadot/types/types';
@@ -438,6 +438,7 @@ export const processTransfer = async (
 
 export const processEvents = async (
   api: ApiPromise,
+  runtimeVersion: RuntimeVersion,
   client: Client,
   blockNumber: number,
   blockEvents: Vec<EventRecord>,
@@ -452,7 +453,7 @@ export const processEvents = async (
   for (const chunk of chunks) {
     await Promise.all(
       chunk.map((indexedEvent: indexedBlockEvent) => processEvent(
-        api, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
+        api, runtimeVersion, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
       )),
     );
   }
@@ -463,6 +464,7 @@ export const processEvents = async (
 
 export const processEvent = async (
   api: ApiPromise,
+  runtimeVersion: RuntimeVersion,
   client: Client,
   blockNumber: number,
   indexedEvent: indexedBlockEvent,
@@ -501,25 +503,32 @@ export const processEvent = async (
 
   // Runtime upgrade
   if (event.section === 'system' && event.method === 'CodeUpdated') {
-    const specVersion = api.consts.system.version;
+    const specName = runtimeVersion.specName;
+    const specVersion = runtimeVersion.specVersion;
     const metadata = await api.rpc.state.getMetadata();
     const data = [
       blockNumber,
+      specName,
       specVersion,
+      runtimeVersion.toJSON(),
       metadata.toJSON(),
       timestamp,
     ];
     const query = `
     INSERT INTO runtime (
       block_number,
+      spec_name,
       spec_version,
+      runtime_version,
       metadata,
       timestamp
     ) VALUES (
       $1,
       $2,
       $3,
-      $4
+      $4,
+      $5,
+      $6
     )
     ON CONFLICT ON CONSTRAINT runtime_pkey 
     DO NOTHING

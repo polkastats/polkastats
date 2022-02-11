@@ -105,7 +105,6 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
         active_era,
         current_index,
         is_election,
-        spec_name,
         spec_version,
         total_events,
         total_extrinsics,
@@ -123,7 +122,6 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
         '${activeEra}',
         '${currentIndex}',
         '${isElection}',
-        '${runtimeVersion.specName}',
         '${runtimeVersion.specVersion}',
         '${totalEvents}',
         '${totalExtrinsics}',
@@ -155,6 +153,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
     // Store module events (async)
     processEvents(
       api,
+      runtimeVersion,
       client,
       blockNumber,
       blockEvents,

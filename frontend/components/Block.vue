@@ -116,12 +116,12 @@
                 </td>
               </tr>
 
-              <tr>
+              <!-- <tr>
                 <td>{{ $t('details.block.spec_name') }}</td>
                 <td class="text-right">
                   <p class="mb-0">{{ parsedBlock.spec_name }}</p>
                 </td>
-              </tr>
+              </tr> -->
               <tr>
                 <td>{{ $t('details.block.spec_version') }}</td>
                 <td class="text-right">
@@ -196,7 +196,6 @@ export default {
               state_root
               current_index
               active_era
-              spec_name
               spec_version
               timestamp
               total_events
