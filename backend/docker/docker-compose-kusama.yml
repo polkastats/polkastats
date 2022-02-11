@@ -92,8 +92,8 @@ services:
     image: hasura/graphql-engine:v1.3.3.cli-migrations-v2
     ports:
       - '8082:8080'
-    volumes:
-      - './hasura/metadata:/hasura-metadata'
+    # volumes:
+    #   - './hasura/metadata:/hasura-metadata'
     depends_on:
       - 'postgres'
     restart: always
