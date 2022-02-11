@@ -70,7 +70,7 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
             apiAt.query.session.currentIndex()
                 .then((res) => (res || 0)),
             apiAt.query.electionProviderMultiPhase.currentPhase(),
-            api.query.timestamp.now(),
+            apiAt.query.timestamp.now(),
         ]);
         const blockAuthor = blockHeader.author || '';
         const blockAuthorIdentity = yield api.derive.accounts.info(blockHeader.author);
