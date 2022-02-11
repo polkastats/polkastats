@@ -89,7 +89,7 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    location /api/v3 {
+    location /graphql {
         proxy_pass http://localhost:8082/v1/graphql;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;

@@ -6,8 +6,8 @@ export const network = {
   ss58Format: 2,
   coinGeckoDenom: 'kusama',
   nodeWs: 'wss://kusama-rpc.polkadot.network',
-  backendWs: 'wss://kusama.polkastats.io/api/v3',
-  backendHttp: 'https://kusama.polkastats.io/api/v3',
+  backendWs: 'wss://kusama.polkastats.io/graphql',
+  backendHttp: 'https://kusama.polkastats.io/graphql',
   googleAnalytics: 'UA-172854168-1',
   theme: '@/assets/scss/themes/polkastats.scss',
   // ranking
