@@ -42,7 +42,7 @@ const crawler = async () => {
         runtimeVersion,
         finalizedBlockHash,
         totalIssuance,
-        timestampMs,
+        timestamp,
       ] = await Promise.all([
         apiAt.query.staking.activeEra()
           .then((res: any) => (res.toJSON() ? res.toJSON().index : 0)),
@@ -93,8 +93,6 @@ const crawler = async () => {
         const totalExtrinsics = block.extrinsics.length;
 
         // Store new block
-        const timestamp = Math.floor(parseInt(timestampMs.toString(), 10) / 1000);
-
         sql = `INSERT INTO block (
             block_number,
             finalized,
@@ -149,7 +147,7 @@ const crawler = async () => {
             blockHash,
             block.extrinsics,
             blockEvents,
-            timestamp,
+            timestamp.toNumber(),
             loggerOptions,
           ),
           // Get involved addresses from block events and update its balances
@@ -157,7 +155,7 @@ const crawler = async () => {
             api,
             client,
             blockNumber,
-            timestamp,
+            timestamp.toNumber(),
             loggerOptions,
             blockEvents,
           ),
@@ -169,7 +167,7 @@ const crawler = async () => {
             blockNumber,
             blockEvents,
             block.extrinsics,
-            timestamp,
+            timestamp.toNumber(),
             loggerOptions,
           ),
           // Store block logs
@@ -177,7 +175,7 @@ const crawler = async () => {
             client,
             blockNumber,
             blockHeader.digest.logs,
-            timestamp,
+            timestamp.toNumber(),
             loggerOptions,
           ),
         ]);

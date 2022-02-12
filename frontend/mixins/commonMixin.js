@@ -88,7 +88,7 @@ export default {
         return `--`
       }
       const newDate = new Date()
-      newDate.setTime(timestamp * 1000)
+      newDate.setTime(timestamp)
       return newDate.toUTCString()
     },
     isValidAddressPolkadotAddress: (address) => {

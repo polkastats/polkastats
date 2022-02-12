@@ -59,7 +59,7 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
     try {
         const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
         const apiAt = yield api.at(blockHash);
-        const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestampMs,] = yield Promise.all([
+        const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestamp,] = yield Promise.all([
             api.rpc.chain.getBlock(blockHash),
             apiAt.query.system.events(),
             api.derive.chain.getHeader(blockHash),
@@ -75,7 +75,6 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
         const blockAuthor = blockHeader.author || '';
         const blockAuthorIdentity = yield api.derive.accounts.info(blockHeader.author);
         const blockAuthorName = (0, utils_1.getDisplayName)(blockAuthorIdentity.identity);
-        const timestamp = Math.floor(timestampMs.toNumber() / 1000);
         const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
         // Get election status
         const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
@@ -129,11 +128,11 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
         }
         // Store block extrinsics (async)
-        (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp, loggerOptions);
+        (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions);
         // Store module events (async)
-        (0, utils_1.processEvents)(api, runtimeVersion, client, blockNumber, blockEvents, block.extrinsics, timestamp, loggerOptions);
+        (0, utils_1.processEvents)(api, runtimeVersion, client, blockNumber, blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions);
         // Store block logs (async)
-        (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp, loggerOptions);
+        (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions);
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);

@@ -66,7 +66,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       activeEra,
       currentIndex,
       chainElectionStatus,
-      timestampMs,
+      timestamp,
     ] = await Promise.all([
       api.rpc.chain.getBlock(blockHash),
       apiAt.query.system.events(),
@@ -84,7 +84,6 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
     const blockAuthor = blockHeader.author || '';
     const blockAuthorIdentity = await api.derive.accounts.info(blockHeader.author);
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
-    const timestamp = Math.floor(timestampMs.toNumber() / 1000);
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
     // Get election status
     const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
@@ -147,7 +146,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       blockHash,
       block.extrinsics,
       blockEvents,
-      timestamp,
+      timestamp.toNumber(),
       loggerOptions,
     );
     // Store module events (async)
@@ -158,7 +157,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       blockNumber,
       blockEvents,
       block.extrinsics,
-      timestamp,
+      timestamp.toNumber(),
       loggerOptions,
     );
     // Store block logs (async)
@@ -166,7 +165,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       client,
       blockNumber,
       blockHeader.digest.logs,
-      timestamp,
+      timestamp.toNumber(),
       loggerOptions,
     );
 

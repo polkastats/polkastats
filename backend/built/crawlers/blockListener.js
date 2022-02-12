@@ -41,7 +41,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
             const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
             const apiAt = yield api.at(blockHash);
             // Parallelize
-            const [activeEra, currentIndex, { block }, extendedHeader, runtimeVersion, finalizedBlockHash, totalIssuance, timestampMs,] = yield Promise.all([
+            const [activeEra, currentIndex, { block }, extendedHeader, runtimeVersion, finalizedBlockHash, totalIssuance, timestamp,] = yield Promise.all([
                 apiAt.query.staking.activeEra()
                     .then((res) => (res.toJSON() ? res.toJSON().index : 0)),
                 apiAt.query.session.currentIndex()
@@ -82,7 +82,6 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
                 const totalEvents = blockEvents.length || 0;
                 const totalExtrinsics = block.extrinsics.length;
                 // Store new block
-                const timestamp = Math.floor(parseInt(timestampMs.toString(), 10) / 1000);
                 sql = `INSERT INTO block (
             block_number,
             finalized,
@@ -129,13 +128,13 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
                 }
                 yield Promise.all([
                     // Store block extrinsics
-                    (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp, loggerOptions),
+                    (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
                     // Get involved addresses from block events and update its balances
-                    (0, utils_1.updateAccountsInfo)(api, client, blockNumber, timestamp, loggerOptions, blockEvents),
+                    (0, utils_1.updateAccountsInfo)(api, client, blockNumber, timestamp.toNumber(), loggerOptions, blockEvents),
                     // Store module events
-                    (0, utils_1.processEvents)(api, runtimeVersion, client, blockNumber, blockEvents, block.extrinsics, timestamp, loggerOptions),
+                    (0, utils_1.processEvents)(api, runtimeVersion, client, blockNumber, blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
                     // Store block logs
-                    (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp, loggerOptions),
+                    (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
                 ]);
                 // Update finalized blocks
                 yield (0, utils_1.updateFinalized)(client, finalizedBlock, loggerOptions);
