@@ -266,102 +266,104 @@ export const actions = {
       }
     `
     const response = await client.query({ query })
-    const blockHeight = response.data.ranking[0].block_height
-    query = gql`
-      query ranking {
-        ranking (where: {block_height: {_eq: "${blockHeight}"}}) {
-          active
-          active_eras
-          active_rating
-          address_creation_rating
-          commission
-          commission_rating
-          dominated
-          era_points_percent
-          era_points_rating
-          governance_rating
-          identity_rating
-          name
-          nominators_rating
-          other_stake
-          part_of_cluster
-          cluster_name
-          show_cluster_member
-          payout_rating
-          rank
-          relative_performance
-          self_stake
-          slash_rating
-          stash_address
-          sub_accounts_rating
-          total_rating
-          total_stake
-          verified_identity
+    if (response.data.ranking[0]) {
+      const blockHeight = response.data.ranking[0].block_height
+      query = gql`
+        query ranking {
+          ranking (where: {block_height: {_eq: "${blockHeight}"}}) {
+            active
+            active_eras
+            active_rating
+            address_creation_rating
+            commission
+            commission_rating
+            dominated
+            era_points_percent
+            era_points_rating
+            governance_rating
+            identity_rating
+            name
+            nominators_rating
+            other_stake
+            part_of_cluster
+            cluster_name
+            show_cluster_member
+            payout_rating
+            rank
+            relative_performance
+            self_stake
+            slash_rating
+            stash_address
+            sub_accounts_rating
+            total_rating
+            total_stake
+            verified_identity
+          }
         }
-      }
-    `
-    const { data } = await client.query({ query })
-    const ranking = data.ranking.map((validator) => {
-      return {
-        active: validator.active,
-        activeEras: validator.active_eras,
-        activeRating: validator.active_rating,
-        addressCreationRating: validator.address_creation_rating,
-        commission: parseFloat(validator.commission),
-        commissionRating: validator.commission_rating,
-        dominated: validator.dominated,
-        eraPointsPercent: parseFloat(validator.era_points_percent),
-        eraPointsRating: validator.era_points_rating,
-        governanceRating: validator.governance_rating,
-        identityRating: validator.identity_rating,
-        name: validator.name,
-        nominatorsRating: validator.nominators_rating,
-        otherStake: validator.other_stake,
-        partOfCluster: validator.part_of_cluster,
-        clusterName: validator.cluster_name,
-        showClusterMember: validator.show_cluster_member,
-        payoutRating: validator.payout_rating,
-        rank: validator.rank,
-        relativePerformance: parseFloat(validator.relative_performance),
-        selfStake: validator.self_stake,
-        slashRating: validator.slash_rating,
-        stashAddress: validator.stash_address,
-        subAccountsRating: validator.sub_accounts_rating,
-        totalRating: validator.total_rating,
-        totalStake: validator.total_stake,
-        verifiedIdentity: validator.verified_identity,
-        customVRCScore:
-          validator.active_rating * metricWeights.active +
-          validator.commission_rating * metricWeights.commission +
-          validator.era_points_rating * metricWeights.eraPoints +
-          validator.governance_rating * metricWeights.governance +
-          validator.identity_rating * metricWeights.identity +
-          validator.nominators_rating * metricWeights.nominators +
-          validator.address_creation_rating * metricWeights.address +
-          validator.payout_rating * metricWeights.payout +
-          validator.slash_rating * metricWeights.slashes +
-          validator.sub_accounts_rating * metricWeights.subaccounts,
-        selected: selectedAddresses.includes(validator.stash_address),
-      }
-    })
-    const eraPointsAverage =
-      ranking.reduce(
-        (accumulator, { eraPointsPercent }) =>
-          accumulator + parseFloat(eraPointsPercent),
-        0
-      ) / ranking.filter(({ active }) => active === true).length
-    context.commit('updateList', {
-      ranking,
-      blockHeight,
-      eraPointsAverage,
-      loading: false,
-    })
-    const dataCollectionEndTime = new Date().getTime()
-    const dataCollectionTime = dataCollectionEndTime - startTime
-    // eslint-disable-next-line
-    console.log(
-      `data collection time: ${(dataCollectionTime / 1000).toFixed(3)}s`
-    )
+      `
+      const { data } = await client.query({ query })
+      const ranking = data.ranking.map((validator) => {
+        return {
+          active: validator.active,
+          activeEras: validator.active_eras,
+          activeRating: validator.active_rating,
+          addressCreationRating: validator.address_creation_rating,
+          commission: parseFloat(validator.commission),
+          commissionRating: validator.commission_rating,
+          dominated: validator.dominated,
+          eraPointsPercent: parseFloat(validator.era_points_percent),
+          eraPointsRating: validator.era_points_rating,
+          governanceRating: validator.governance_rating,
+          identityRating: validator.identity_rating,
+          name: validator.name,
+          nominatorsRating: validator.nominators_rating,
+          otherStake: validator.other_stake,
+          partOfCluster: validator.part_of_cluster,
+          clusterName: validator.cluster_name,
+          showClusterMember: validator.show_cluster_member,
+          payoutRating: validator.payout_rating,
+          rank: validator.rank,
+          relativePerformance: parseFloat(validator.relative_performance),
+          selfStake: validator.self_stake,
+          slashRating: validator.slash_rating,
+          stashAddress: validator.stash_address,
+          subAccountsRating: validator.sub_accounts_rating,
+          totalRating: validator.total_rating,
+          totalStake: validator.total_stake,
+          verifiedIdentity: validator.verified_identity,
+          customVRCScore:
+            validator.active_rating * metricWeights.active +
+            validator.commission_rating * metricWeights.commission +
+            validator.era_points_rating * metricWeights.eraPoints +
+            validator.governance_rating * metricWeights.governance +
+            validator.identity_rating * metricWeights.identity +
+            validator.nominators_rating * metricWeights.nominators +
+            validator.address_creation_rating * metricWeights.address +
+            validator.payout_rating * metricWeights.payout +
+            validator.slash_rating * metricWeights.slashes +
+            validator.sub_accounts_rating * metricWeights.subaccounts,
+          selected: selectedAddresses.includes(validator.stash_address),
+        }
+      })
+      const eraPointsAverage =
+        ranking.reduce(
+          (accumulator, { eraPointsPercent }) =>
+            accumulator + parseFloat(eraPointsPercent),
+          0
+        ) / ranking.filter(({ active }) => active === true).length
+      context.commit('updateList', {
+        ranking,
+        blockHeight,
+        eraPointsAverage,
+        loading: false,
+      })
+      const dataCollectionEndTime = new Date().getTime()
+      const dataCollectionTime = dataCollectionEndTime - startTime
+      // eslint-disable-next-line
+      console.log(
+        `data collection time: ${(dataCollectionTime / 1000).toFixed(3)}s`
+      )
+    }
   },
   loadSelected(context) {
     context.commit('loadSelected')
