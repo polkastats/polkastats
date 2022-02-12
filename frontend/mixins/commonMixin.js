@@ -110,7 +110,7 @@ export default {
       return true
     },
     fromNow: (timestamp) => {
-      const date = moment.unix(timestamp)
+      const date = moment.unix(timestamp / 1000)
       return moment(date).fromNow()
     },
   },
