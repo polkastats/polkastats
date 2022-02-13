@@ -149,18 +149,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.last-transfers .table th,
-.last-transfers .table td {
-  padding: 0.45rem;
-}
-.last-transfers .table thead th {
-  border-bottom: 0;
-}
-.last-transfers .identicon {
-  display: inline-block;
-  margin: 0 0.2rem 0 0;
-  cursor: copy;
-}
-</style>

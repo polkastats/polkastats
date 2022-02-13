@@ -85,18 +85,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.last-extrinsics .table th,
-.last-extrinsics .table td {
-  padding: 0.45rem;
-}
-.last-extrinsics .table thead th {
-  border-bottom: 0;
-}
-.last-extrinsics .identicon {
-  display: inline-block;
-  margin: 0 0.2rem 0 0;
-  cursor: copy;
-}
-</style>

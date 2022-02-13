@@ -104,18 +104,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.extrinsic-events .table th,
-.extrinsic-events .table td {
-  padding: 0.45rem;
-}
-.extrinsic-events .table thead th {
-  border-bottom: 0;
-}
-.extrinsic-events .identicon {
-  display: inline-block;
-  margin: 0 0.2rem 0 0;
-  cursor: copy;
-}
-</style>
