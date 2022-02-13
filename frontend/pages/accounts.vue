@@ -406,8 +406,8 @@ export default {
               where: {
                 _or: [
                   { account_id: { _like: $filter } }
-                  { identity_display: { _like: $filter } }
-                  { identity_display_parent: { _like: $filter } }
+                  { identity_display: { _ilike: $filter } }
+                  { identity_display_parent: { _ilike: $filter } }
                 ]
               }
               order_by: { free_balance: desc }
