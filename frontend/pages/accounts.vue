@@ -97,11 +97,23 @@
                     :to="`/account/${data.item.account_id}`"
                     :title="$t('pages.accounts.account_details')"
                   >
-                    <h4>{{ shortAddress(data.item.account_id) }}</h4>
+                    <h4>
+                      <span
+                        v-if="data.item.identity_display_parent"
+                        class="mb-0"
+                      >
+                        {{ data.item.identity_display_parent }}/{{
+                          data.item.identity_display
+                        }}
+                      </span>
+                      <span v-else-if="data.item.identity_display" class="mb-0">
+                        {{ data.item.identity_display }}
+                      </span>
+                      <span v-else class="mb-0">
+                        {{ shortAddress(data.item.account_id) }}
+                      </span>
+                    </h4>
                   </nuxt-link>
-                  <p v-if="data.item.identity_display" class="mb-0">
-                    {{ data.item.identity_display }}
-                  </p>
                   <table class="table table-striped mt-4">
                     <tbody>
                       <tr>
@@ -144,7 +156,17 @@
                     :to="`/account/${data.item.account_id}`"
                     :title="$t('pages.accounts.account_details')"
                   >
-                    {{ shortAddress(data.item.account_id) }}
+                    <span v-if="data.item.identity_display_parent" class="mb-0">
+                      {{ data.item.identity_display_parent }}/{{
+                        data.item.identity_display
+                      }}
+                    </span>
+                    <span v-else-if="data.item.identity_display" class="mb-0">
+                      {{ data.item.identity_display }}
+                    </span>
+                    <span v-else class="mb-0">
+                      {{ shortAddress(data.item.account_id) }}
+                    </span>
                   </nuxt-link>
                 </div>
               </template>
