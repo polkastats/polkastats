@@ -48,25 +48,25 @@
               </nuxt-link>
             </p>
           </template>
-          <template #cell(from)="data">
+          <template #cell(source)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/account/${data.item.from}`"
+                :to="`/account/${data.item.source}`"
                 :title="$t('pages.accounts.account_details')"
               >
-                <Identicon :address="data.item.from" :size="20" />
-                {{ shortAddress(data.item.from) }}
+                <Identicon :address="data.item.source" :size="20" />
+                {{ shortAddress(data.item.source) }}
               </nuxt-link>
             </p>
           </template>
-          <template #cell(to)="data">
+          <template #cell(destination)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/account/${data.item.to}`"
+                :to="`/account/${data.item.destination}`"
                 :title="$t('pages.accounts.account_details')"
               >
-                <Identicon :address="data.item.to" :size="20" />
-                {{ shortAddress(data.item.to) }}
+                <Identicon :address="data.item.destination" :size="20" />
+                {{ shortAddress(data.item.destination) }}
               </nuxt-link>
             </p>
           </template>
@@ -149,19 +149,13 @@ export default {
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: true,
         },
-        // {
-        //   key: 'hash',
-        //   label: 'Hash',
-        //   class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
-        //   sortable: true,
-        // },
         {
-          key: 'from',
+          key: 'source',
           label: 'From',
           sortable: true,
         },
         {
-          key: 'to',
+          key: 'destination',
           label: 'To',
           sortable: true,
         },
@@ -227,7 +221,6 @@ export default {
           return !this.accountId
         },
         result({ data }) {
-          console.log(data.transfer)
           this.transfers = data.transfer
           this.totalRows = this.transfers.length
           this.loading = false

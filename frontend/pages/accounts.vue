@@ -27,50 +27,7 @@
               />
             </b-col>
           </b-row>
-          <!-- Mobile sorting -->
-          <div class="row d-block d-sm-block d-md-block d-lg-none d-xl-none">
-            <b-col lg="6" class="my-1">
-              <b-form-group
-                :label="$t('pages.accounts.sort')"
-                label-cols-sm="3"
-                label-align-sm="right"
-                label-size="sm"
-                label-for="sortBySelect"
-                class="mb-4"
-              >
-                <b-input-group size="sm">
-                  <b-form-select
-                    id="sortBySelect"
-                    v-model="sortBy"
-                    :options="sortOptions"
-                    class="w-75"
-                  >
-                    <template #first>
-                      <option value="">-- none --</option>
-                    </template>
-                  </b-form-select>
-                  <b-form-select
-                    v-model="sortDesc"
-                    size="sm"
-                    :disabled="!sortBy"
-                    class="w-25"
-                  >
-                    <option :value="false">Asc</option>
-                    <option :value="true">Desc</option>
-                  </b-form-select>
-                </b-input-group>
-              </b-form-group>
-            </b-col>
-          </div>
-          <JsonCSV
-            :data="accountsJSON"
-            class="download-csv mb-2"
-            name="subsocial_accounts.csv"
-          >
-            <font-awesome-icon icon="file-csv" />
-            {{ $t('pages.accounts.download_csv') }}
-          </JsonCSV>
-          <!-- Table with sorting and pagination-->
+          <!-- Table with pagination-->
           <div>
             <b-table
               id="accounts-table"
@@ -79,9 +36,6 @@
               :fields="fields"
               :items="parsedAccounts"
             >
-              <template #cell(rank)="data">
-                <p class="text-right mb-0">#{{ data.item.rank }}</p>
-              </template>
               <template #cell(account_id)="data">
                 <div
                   class="
@@ -89,9 +43,6 @@
                     text-center
                   "
                 >
-                  <p class="mb-2">
-                    {{ $t('pages.accounts.rank') }} #{{ data.item.rank }}
-                  </p>
                   <Identicon :address="data.item.account_id" :size="40" />
                   <nuxt-link
                     :to="`/account/${data.item.account_id}`"
@@ -185,27 +136,9 @@
                   {{ formatAmount(data.item.available_balance) }}
                 </p>
               </template>
-              <template #cell(favorite)="data">
-                <p class="text-center mb-0">
-                  <a
-                    class="favorite"
-                    @click="toggleFavorite(data.item.account_id)"
-                  >
-                    <font-awesome-icon
-                      v-if="data.item.favorite"
-                      v-b-tooltip.hover
-                      icon="star"
-                      style="color: #f1bd23; cursor: pointer"
-                      :title="$t('pages.accounts.remove_from_favorites')"
-                    />
-                    <font-awesome-icon
-                      v-else
-                      v-b-tooltip.hover
-                      icon="star"
-                      style="color: #e6dfdf; cursor: pointer"
-                      :title="$t('pages.accounts.add_to_favorites')"
-                    />
-                  </a>
+              <template #cell(nonce)="data">
+                <p class="text-right mb-0">
+                  {{ data.item.nonce }}
                 </p>
               </template>
             </b-table>
@@ -262,7 +195,6 @@
 </template>
 <script>
 import { gql } from 'graphql-tag'
-import JsonCSV from 'vue-json-csv'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
@@ -272,7 +204,6 @@ export default {
   components: {
     Loading,
     Identicon,
-    JsonCSV,
   },
   mixins: [commonMixin],
   data() {
@@ -283,42 +214,36 @@ export default {
         ? parseInt(localStorage.paginationOptions)
         : 10,
       currentPage: 1,
-      sortBy: `favorite`,
+      sortBy: `free_balance`,
       sortDesc: true,
       filter: null,
       filterOn: [],
       totalRows: 1,
       agggregateRows: 1,
       fields: [
-        {
-          key: 'rank',
-          label: this.$t('pages.accounts.rank'),
-          sortable: true,
-          class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
-        },
-        { key: 'account_id', label: 'Account', sortable: true },
+        { key: 'account_id', label: 'Account', sortable: false },
         {
           key: 'free_balance',
           label: this.$t('pages.accounts.free_balance'),
-          sortable: true,
+          sortable: false,
           class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
         {
           key: 'locked_balance',
           label: this.$t('pages.accounts.locked_balance'),
-          sortable: true,
+          sortable: false,
           class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
         {
           key: 'available_balance',
           label: this.$t('pages.accounts.available_balance'),
-          sortable: true,
+          sortable: false,
           class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
         {
-          key: 'favorite',
-          label: '⭐',
-          sortable: true,
+          key: 'nonce',
+          label: 'Nonce',
+          sortable: false,
           class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
       ],
@@ -360,24 +285,8 @@ export default {
           return { text: f.label, value: f.key }
         })
     },
-    accountsJSON() {
-      return this.parsedAccounts
-    },
   },
-  watch: {
-    favorites(val) {
-      this.$cookies.set('favorites', val, {
-        path: '/',
-        maxAge: 60 * 60 * 24 * 7,
-      })
-    },
-  },
-  created() {
-    // get favorites from cookie
-    if (this.$cookies.get('favorites')) {
-      this.favorites = this.$cookies.get('favorites')
-    }
-  },
+  created() {},
   methods: {
     setPageSize(num) {
       localStorage.paginationOptions = num
@@ -418,6 +327,7 @@ export default {
               available_balance
               free_balance
               locked_balance
+              nonce
             }
           }
         `,
