@@ -242,6 +242,11 @@ h1 {
   cursor: pointer;
   text-align: right;
 }
+
+.page-accounts table td,
+.page-accounts table th {
+  padding: 0.45rem;
+}
 @media (max-width: 767.98px) {
   .page-accounts .table.b-table.b-table-stacked-md > tbody > tr > [data-label]::before {
     display: none;
