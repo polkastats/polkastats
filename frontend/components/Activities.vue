@@ -192,7 +192,7 @@ export default {
       extrinsic: {
         query: gql`
           subscription extrinsic($signer: String!) {
-            extrinsic(
+            signed_extrinsic(
               order_by: { block_number: desc }
               where: { signer: { _eq: $signer } }
             ) {
@@ -214,7 +214,7 @@ export default {
           return !this.accountId
         },
         result({ data }) {
-          this.activities = data.extrinsic
+          this.activities = data.signed_extrinsic
           this.totalRows = this.activities.length
           this.loading = false
         },
