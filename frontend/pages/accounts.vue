@@ -377,11 +377,17 @@ export default {
     $subscribe: {
       accounts: {
         query: gql`
-          query account($accountId: String, $perPage: Int!, $offset: Int!) {
+          query account($filter: String, $perPage: Int!, $offset: Int!) {
             account(
               limit: $perPage
               offset: $offset
-              where: { account_id: { _eq: $accountId } }
+              where: {
+                _or: [
+                  { account_id: { _like: $filter } }
+                  { identity_display: { _like: $filter } }
+                  { identity_display_parent: { _like: $filter } }
+                ]
+              }
               order_by: { free_balance: desc }
             ) {
               account_id
@@ -395,7 +401,7 @@ export default {
         `,
         variables() {
           return {
-            accountId: this.filter ? this.filter : undefined,
+            filter: this.filter ? `%${this.filter}%` : undefined,
             perPage: this.perPage,
             offset: (this.currentPage - 1) * this.perPage,
           }
