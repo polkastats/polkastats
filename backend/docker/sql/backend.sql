@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS transfer (
   hash TEXT NOT NULL,
   source TEXT NOT NULL,
   destination TEXT NOT NULL,
-  amount BIGINT NOT NULL,
+  amount NUMERIC(40,0) NOT NULL,
   fee_amount BIGINT NOT NULL,
   success BOOLEAN NOT NULL,
   error_message TEXT DEFAULT NULL,
@@ -182,9 +182,9 @@ CREATE TABLE IF NOT EXISTS ranking (
   governance_rating INT NOT NULL,
   payout_history TEXT NOT NULL,
   payout_rating INT NOT NULL,
-  self_stake BIGINT NOT NULL,
-  other_stake BIGINT NOT NULL,
-  total_stake BIGINT NOT NULL,
+  self_stake NUMERIC(40,0) NOT NULL,
+  other_stake NUMERIC(40,0) NOT NULL,
+  total_stake NUMERIC(40,0) NOT NULL,
   stake_history TEXT NOT NULL,
   total_rating INT NOT NULL,
   dominated BOOLEAN NOT NULL,
@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS era_commission_avg (
 CREATE TABLE IF NOT EXISTS era_self_stake (  
   stash_address TEXT NOT NULL,
   era INT NOT NULL,
-  self_stake BIGINT NOT NULL,
+  self_stake NUMERIC(40,0) NOT NULL,
   PRIMARY KEY ( stash_address, era )
 );
 
@@ -264,9 +264,9 @@ CREATE TABLE IF NOT EXISTS account  (
   identity_display TEXT NOT NULL,
   identity_display_parent TEXT NOT NULL,
   balances TEXT NOT NULL,
-  available_balance BIGINT NOT NULL,
-  free_balance BIGINT NOT NULL,
-  locked_balance BIGINT NOT NULL,
+  available_balance NUMERIC(40,0) NOT NULL,
+  free_balance NUMERIC(40,0) NOT NULL,
+  locked_balance NUMERIC(40,0) NOT NULL,
   nonce BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   block_height BIGINT NOT NULL,
