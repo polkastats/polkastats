@@ -25,7 +25,7 @@ export default {
         return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
       }
     },
-    formatAmount(amount, precission = 2) {
+    formatAmount(amount, precission = 3) {
       return `${new BigNumber(amount)
         .div(new BigNumber(10).pow(network.tokenDecimals))
         .toFixed(precission)} ${network.tokenSymbol}`
