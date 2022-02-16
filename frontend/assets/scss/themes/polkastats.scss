@@ -669,3 +669,8 @@ section .section-title {
   margin: 0 0.2rem 0 0;
   cursor: copy;
 }
+
+.form-control:focus,
+.custom-select:focus {
+  border-color: #001c71;
+}
