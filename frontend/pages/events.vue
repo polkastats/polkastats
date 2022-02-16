@@ -13,48 +13,55 @@
           </b-col>
         </b-row>
         <div class="last-events">
+          <!-- Filter -->
+          <b-row style="margin-bottom: 1rem">
+            <b-col cols="12">
+              <b-form-input
+                id="filterInput"
+                v-model="filter"
+                type="search"
+                :placeholder="$t('pages.events.search_placeholder')"
+                @change="loading = true"
+              />
+            </b-col>
+          </b-row>
+          <b-row style="margin-bottom: 1rem">
+            <b-col cols="4">
+              <b-form-select
+                v-model="selectedRuntimeVersion"
+                :options="runtimeSpecVersionOptions"
+                @change="
+                  selectedPalletName = null
+                  loading = true
+                "
+              ></b-form-select>
+            </b-col>
+            <b-col cols="4">
+              <b-form-select
+                v-model="selectedPalletName"
+                :options="palletNameOptions"
+                @change="
+                  selectedPalletEvent = null
+                  loading = true
+                "
+              ></b-form-select>
+            </b-col>
+            <b-col cols="4">
+              <b-form-select
+                v-model="selectedPalletEvent"
+                :options="palletEventOptions"
+                @change="loading = true"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+          <p>
+            runtime: {{ selectedRuntimeVersion }} / module:
+            {{ selectedPalletName }} / event: {{ selectedPalletEvent }}
+          </p>
           <div v-if="loading" class="text-center py-4">
             <Loading />
           </div>
           <template v-else>
-            <!-- Filter -->
-            <b-row style="margin-bottom: 1rem">
-              <b-col cols="12">
-                <b-form-input
-                  id="filterInput"
-                  v-model="filter"
-                  type="search"
-                  :placeholder="$t('pages.events.search_placeholder')"
-                />
-              </b-col>
-            </b-row>
-            <b-row style="margin-bottom: 1rem">
-              <b-col cols="4">
-                <b-form-select
-                  v-model="selectedRuntimeVersion"
-                  :options="runtimeSpecVersionOptions"
-                  @change="selectedPalletName = null"
-                ></b-form-select>
-              </b-col>
-              <b-col cols="4">
-                <b-form-select
-                  v-model="selectedPalletName"
-                  :options="palletNameOptions"
-                  @change="selectedPalletEvent = null"
-                  @click="selectedPalletEvent = null"
-                ></b-form-select>
-              </b-col>
-              <b-col cols="4">
-                <b-form-select
-                  v-model="selectedPalletEvent"
-                  :options="palletEventOptions"
-                ></b-form-select>
-              </b-col>
-            </b-row>
-            <p>
-              runtime: {{ selectedRuntimeVersion }} / module:
-              {{ selectedPalletName }} / event: {{ selectedPalletEvent }}
-            </p>
             <div class="table-responsive">
               <b-table striped hover :fields="fields" :items="events">
                 <template #cell(block_number)="data">
@@ -210,6 +217,7 @@ export default {
     },
     palletNameOptions() {
       const palletNames = this.palletsAndEvents
+        .filter(({ events }) => events.length !== 0)
         .map(({ name }) => name)
         .sort()
         .map((palletName) => ({
