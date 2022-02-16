@@ -113,5 +113,14 @@ export default {
       const date = moment.unix(timestamp / 1000)
       return moment(date).fromNow()
     },
+    uncapitalize: (str) => {
+      return str.charAt(0).toLowerCase() + str.slice(1)
+    },
+    snakeToCamel: (str) => {
+      if (!/[_-]/.test(str)) return str
+      return str
+        .toLowerCase()
+        .replace(/([-_])([a-z])/g, (_match, _p1, p2) => p2.toUpperCase())
+    },
   },
 }

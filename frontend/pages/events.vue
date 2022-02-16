@@ -248,12 +248,6 @@ export default {
       localStorage.paginationOptions = num
       this.perPage = parseInt(num)
     },
-    capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1)
-    },
-    uncapitalize(str) {
-      return str.charAt(0).toLowerCase() + str.slice(1)
-    },
   },
   apollo: {
     $subscribe: {
