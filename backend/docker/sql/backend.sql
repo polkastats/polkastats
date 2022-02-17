@@ -57,6 +57,8 @@ CREATE TABLE IF NOT EXISTS staking_slash (
   block_number BIGINT NOT NULL,
   event_index INT NOT NULL,
   account_id TEXT NOT NULL,
+  validator_stash_address TEXT DEFAULT NULL,
+  era INT DEFAULT NULL,
   amount BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, event_index ) 

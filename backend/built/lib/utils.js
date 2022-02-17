@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTransferAllAmount = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
+exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
 require("@polkadot/api-augment");
 const pino_1 = __importDefault(require("pino"));
@@ -386,20 +386,20 @@ const processTransfer = (client, blockNumber, extrinsicIndex, blockEvents, secti
     }
 });
 exports.processTransfer = processTransfer;
-const processEvents = (api, runtimeVersion, client, blockNumber, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processEvents = (api, runtimeVersion, client, blockNumber, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = new Date().getTime();
     const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
     const indexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
     const chunks = (0, exports.chunker)(indexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
-        yield Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(api, runtimeVersion, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
+        yield Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(api, runtimeVersion, client, blockNumber, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 });
 exports.processEvents = processEvents;
-const processEvent = (api, runtimeVersion, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processEvent = (api, runtimeVersion, client, blockNumber, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
     const [eventIndex, { event, phase }] = indexedEvent;
     let sql = `INSERT INTO event (
     block_number,
@@ -576,19 +576,27 @@ const processEvent = (api, runtimeVersion, client, blockNumber, indexedEvent, in
             logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
         }
     }
-    // Store staking slash
+    //
+    // TODO: store validator and era index
+    // -> era is previous era
+    // -> validator account id is in staking.Slashed event
+    //
+    // Store validator staking slash
     if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
-        // TODO: also store validator and era index
         sql = `INSERT INTO staking_slash (
       block_number,
       event_index,
       account_id,
+      validator_stash_address,
+      era,
       amount,
       timestamp
     ) VALUES (
       '${blockNumber}',
       '${eventIndex}',
       '${event.data[0]}',
+      '${event.data[0]}',
+      '${activeEra - 1}',
       '${new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10)}',
       '${timestamp}'
     )
@@ -597,10 +605,41 @@ const processEvent = (api, runtimeVersion, client, blockNumber, indexedEvent, in
     ;`;
         try {
             yield client.query(sql);
-            logger.debug(loggerOptions, `Added staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+            logger.debug(loggerOptions, `Added validator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
         }
         catch (error) {
-            logger.error(loggerOptions, `Error adding staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+            logger.error(loggerOptions, `Error adding validator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+        }
+    }
+    // Store nominator staking slash
+    if (event.section === 'balances' && (event.method === 'Slash' || event.method === 'Slashed')) {
+        const validator_stash_address = (0, exports.getSlashedValidatorAccount)(eventIndex, indexedBlockEvents);
+        sql = `INSERT INTO staking_slash (
+      block_number,
+      event_index,
+      account_id,
+      validator_stash_address,
+      era,
+      amount,
+      timestamp
+    ) VALUES (
+      '${blockNumber}',
+      '${eventIndex}',
+      '${event.data[0]}',
+      '${validator_stash_address}',
+      '${activeEra - 1}',
+      '${new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10)}',
+      '${timestamp}'
+    )
+    ON CONFLICT ON CONSTRAINT staking_slash_pkey 
+    DO NOTHING
+    ;`;
+        try {
+            yield client.query(sql);
+            logger.debug(loggerOptions, `Added nominator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+        }
+        catch (error) {
+            logger.error(loggerOptions, `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
         }
     }
 });
@@ -724,3 +763,14 @@ const getTransferAllAmount = (index, blockEvents) => blockEvents
     && event.section === 'balances'
     && event.method === 'Transfer')).event.data[2].toString();
 exports.getTransferAllAmount = getTransferAllAmount;
+const getSlashedValidatorAccount = (index, indexedBlockEvents) => {
+    let validatorAccountId = '';
+    for (let i = index; i >= 0; i--) {
+        const { event } = indexedBlockEvents[i][1];
+        if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
+            return validatorAccountId = event.data[0].toString();
+        }
+    }
+    return validatorAccountId;
+};
+exports.getSlashedValidatorAccount = getSlashedValidatorAccount;

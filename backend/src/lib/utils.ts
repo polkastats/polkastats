@@ -441,6 +441,7 @@ export const processEvents = async (
   runtimeVersion: RuntimeVersion,
   client: Client,
   blockNumber: number,
+  activeEra: number,
   blockEvents: Vec<EventRecord>,
   blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>,
   timestamp: number,
@@ -453,7 +454,7 @@ export const processEvents = async (
   for (const chunk of chunks) {
     await Promise.all(
       chunk.map((indexedEvent: indexedBlockEvent) => processEvent(
-        api, runtimeVersion, client, blockNumber, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
+        api, runtimeVersion, client, blockNumber, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
       )),
     );
   }
@@ -467,6 +468,7 @@ export const processEvent = async (
   runtimeVersion: RuntimeVersion,
   client: Client,
   blockNumber: number,
+  activeEra: number,
   indexedEvent: indexedBlockEvent,
   indexedBlockEvents: indexedBlockEvent[],
   indexedBlockExtrinsics: indexedBlockExtrinsic[],
@@ -666,19 +668,30 @@ export const processEvent = async (
       logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
     }
   }
-  // Store staking slash
+  
+
+  //
+  // TODO: store validator and era index
+  // -> era is previous era
+  // -> validator account id is in staking.Slashed event
+  //
+
+  // Store validator staking slash
   if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
-    // TODO: also store validator and era index
     sql = `INSERT INTO staking_slash (
       block_number,
       event_index,
       account_id,
+      validator_stash_address,
+      era,
       amount,
       timestamp
     ) VALUES (
       '${blockNumber}',
       '${eventIndex}',
       '${event.data[0]}',
+      '${event.data[0]}',
+      '${activeEra - 1}',
       '${new BigNumber(event.data[1].toString()).toString(10)}',
       '${timestamp}'
     )
@@ -687,9 +700,40 @@ export const processEvent = async (
     ;`;
     try {
       await client.query(sql);
-      logger.debug(loggerOptions, `Added staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+      logger.debug(loggerOptions, `Added validator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     } catch (error) {
-      logger.error(loggerOptions, `Error adding staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+      logger.error(loggerOptions, `Error adding validator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+    }
+  }
+
+  // Store nominator staking slash
+  if (event.section === 'balances' && (event.method === 'Slash' || event.method === 'Slashed')) {
+    const validator_stash_address = getSlashedValidatorAccount(eventIndex, indexedBlockEvents);
+    sql = `INSERT INTO staking_slash (
+      block_number,
+      event_index,
+      account_id,
+      validator_stash_address,
+      era,
+      amount,
+      timestamp
+    ) VALUES (
+      '${blockNumber}',
+      '${eventIndex}',
+      '${event.data[0]}',
+      '${validator_stash_address}',
+      '${activeEra - 1}',
+      '${new BigNumber(event.data[1].toString()).toString(10)}',
+      '${timestamp}'
+    )
+    ON CONFLICT ON CONSTRAINT staking_slash_pkey 
+    DO NOTHING
+    ;`;
+    try {
+      await client.query(sql);
+      logger.debug(loggerOptions, `Added nominator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+    } catch (error) {
+      logger.error(loggerOptions, `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
     }
   }
 };
@@ -821,3 +865,15 @@ export const getTransferAllAmount = (index: number, blockEvents: Vec<EventRecord
       && event.section === 'balances'
       && event.method === 'Transfer'
   )).event.data[2].toString();
+
+
+export const getSlashedValidatorAccount = (index: number, indexedBlockEvents: indexedBlockEvent[]): string => {
+  let validatorAccountId = '';
+  for (let i = index; i >= 0; i-- ) {
+    const { event } = indexedBlockEvents[i][1];
+    if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
+      return validatorAccountId = event.data[0].toString();
+    }
+  }
+  return validatorAccountId;
+}

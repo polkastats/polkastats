@@ -407,6 +407,8 @@
       - block_number
       - event_index
       - account_id
+      - validator_stash_address
+      - era
       - amount
       - timestamp
       filter: {}

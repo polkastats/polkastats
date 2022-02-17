@@ -155,6 +155,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       runtimeVersion,
       client,
       blockNumber,
+      parseInt(activeEra.toString()),
       blockEvents,
       block.extrinsics,
       timestamp.toNumber(),
