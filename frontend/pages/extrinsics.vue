@@ -367,7 +367,7 @@ export default {
           // get pallets and extrinsics from runtime metadata
           this.metadata = data.runtime[0].metadata
           const palletsAndExtrinsics = []
-          this.metadata.metadata.v14.pallets.forEach((pallet) => {
+          this.metadata.pallets.forEach((pallet) => {
             const callsId = pallet.calls?.type || null
             const calls = []
             const palletAndExtrinsics = {
@@ -376,7 +376,7 @@ export default {
               calls,
             }
             if (callsId) {
-              this.metadata.metadata.v14.lookup.types
+              this.metadata.lookup.types
                 .filter(
                   ({ id, type }) => type.path.includes('Call') && id === callsId
                 )

@@ -348,7 +348,7 @@ export default {
           // get pallets and events from runtime metadata
           this.metadata = data.runtime[0].metadata
           const palletsAndEvents = []
-          this.metadata.metadata.v14.pallets.forEach((pallet) => {
+          this.metadata.pallets.forEach((pallet) => {
             const eventsId = pallet.events?.type || null
             const events = []
             const palletAndEvents = {
@@ -357,7 +357,7 @@ export default {
               events,
             }
             if (eventsId) {
-              this.metadata.metadata.v14.lookup.types
+              this.metadata.lookup.types
                 .filter(
                   ({ id, type }) =>
                     type.path.includes('Event') && id === eventsId
