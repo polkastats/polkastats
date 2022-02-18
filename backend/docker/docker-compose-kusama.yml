@@ -135,7 +135,7 @@ services:
       #   sequential: Slower but less resource-intensive
       #
       BLOCK_HARVESTER_MODE: 'chunks'
-      BLOCK_HARVESTER_CHUNK_SIZE: '100'
+      BLOCK_HARVESTER_CHUNK_SIZE: '20'
       BLOCK_HARVESTER_STATS_PRECISION: '2'
       LOG_LEVEL: 'debug'
       BLOCK_HARVESTER_START_DELAY_MS: '60000' # 1 min
