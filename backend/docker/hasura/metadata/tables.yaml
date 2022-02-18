@@ -350,7 +350,8 @@
       - block_number
       - spec_name
       - spec_version
-      - runtime_version
+      - metadata_version
+      - metadata_magic_number
       - metadata
       - timestamp
       filter: {}

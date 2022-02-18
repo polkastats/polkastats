@@ -165,6 +165,7 @@ const crawler = async () => {
             runtimeVersion,
             client,
             blockNumber,
+            blockHash,
             parseInt(activeEra.toString()),
             blockEvents,
             block.extrinsics,

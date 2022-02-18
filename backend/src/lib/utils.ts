@@ -441,6 +441,7 @@ export const processEvents = async (
   runtimeVersion: RuntimeVersion,
   client: Client,
   blockNumber: number,
+  blockHash: BlockHash,
   activeEra: number,
   blockEvents: Vec<EventRecord>,
   blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>,
@@ -454,7 +455,7 @@ export const processEvents = async (
   for (const chunk of chunks) {
     await Promise.all(
       chunk.map((indexedEvent: indexedBlockEvent) => processEvent(
-        api, runtimeVersion, client, blockNumber, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
+        api, runtimeVersion, client, blockNumber, blockHash, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
       )),
     );
   }
@@ -468,6 +469,7 @@ export const processEvent = async (
   runtimeVersion: RuntimeVersion,
   client: Client,
   blockNumber: number,
+  blockHash: BlockHash,
   activeEra: number,
   indexedEvent: indexedBlockEvent,
   indexedBlockEvents: indexedBlockEvent[],
@@ -505,15 +507,16 @@ export const processEvent = async (
 
   // Runtime upgrade
   if (event.section === 'system' && event.method === 'CodeUpdated') {
-    const specName = runtimeVersion.specName;
+    const specName = runtimeVersion.toJSON().specName;
     const specVersion = runtimeVersion.specVersion;
-    const metadata = await api.rpc.state.getMetadata();
+    const metadata = await api.rpc.state.getMetadata(blockHash);
     const data = [
       blockNumber,
       specName,
       specVersion,
-      runtimeVersion.toJSON(),
-      metadata.toJSON(),
+      metadata.version,
+      metadata.magicNumber,
+      metadata.asLatest.toJSON(),
       timestamp,
     ];
     const query = `
@@ -521,7 +524,8 @@ export const processEvent = async (
       block_number,
       spec_name,
       spec_version,
-      runtime_version,
+      metadata_version,
+      metadata_magic_number,
       metadata,
       timestamp
     ) VALUES (
@@ -530,7 +534,8 @@ export const processEvent = async (
       $3,
       $4,
       $5,
-      $6
+      $6,
+      $7
     )
     ON CONFLICT ON CONSTRAINT runtime_pkey 
     DO NOTHING
