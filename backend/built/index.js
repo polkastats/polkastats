@@ -38,14 +38,11 @@ const child_process_1 = require("child_process");
 const utils_1 = require("./lib/utils");
 const backend_config_1 = require("./backend.config");
 // import * as Tracing from '@sentry/tracing';
-const logger = (0, pino_1.default)();
 Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    // We recommend adjusting this value in production
     tracesSampleRate: 1.0,
 });
+const logger = (0, pino_1.default)();
 const runCrawler = (crawler) => __awaiter(void 0, void 0, void 0, function* () {
     const child = (0, child_process_1.spawn)('node', [`${crawler}`]);
     child.stdout.pipe(process.stdout);
@@ -66,5 +63,6 @@ const runCrawlers = () => __awaiter(void 0, void 0, void 0, function* () {
 runCrawlers().catch((error) => {
     // eslint-disable-next-line no-console
     console.error(error);
+    Sentry.captureException(error);
     process.exit(-1);
 });

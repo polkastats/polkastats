@@ -1,11 +1,12 @@
 // @ts-check
+import * as Sentry from '@sentry/node';
 import '@polkadot/api-augment';
 import pino from 'pino';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex } from '@polkadot/util';
 import { Client, QueryResult } from 'pg';
-import _, { add } from 'lodash';
+import _ from 'lodash';
 import fs from 'fs';
 import { backendConfig } from '../backend.config';
 import { Address, BlockHash, EventRecord, RuntimeVersion } from '@polkadot/types/interfaces';
@@ -13,6 +14,11 @@ import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { BigNumber } from 'bignumber.js';
 import { AnyTuple } from '@polkadot/types/types';
 import { GenericExtrinsic, Vec } from '@polkadot/types';
+
+Sentry.init({
+  dsn: backendConfig.sentryDSN,
+  tracesSampleRate: 1.0,
+});
 
 const logger = pino();
 
@@ -40,8 +46,9 @@ export const isNodeSynced = async (api: ApiPromise, loggerOptions: { crawler: st
   let node;
   try {
     node = await api.rpc.system.health();
-  } catch {
+  } catch (error) {
     logger.error(loggerOptions, "Can't query node status");
+    Sentry.captureException(error);
   }
   if (node && node.isSyncing.eq(false)) {
     logger.debug(loggerOptions, 'Node is synced!');
@@ -71,6 +78,7 @@ export const dbQuery = async (client: Client, sql: string, loggerOptions: { craw
     return await client.query(sql);
   } catch (error) {
     logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
   }
   return null;
 };
@@ -80,6 +88,7 @@ export const dbParamQuery = async (client: Client, sql: string, data: any[], log
     return await client.query(sql, data);
   } catch (error) {
     logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
   }
   return null;
 };
@@ -93,6 +102,7 @@ export const isValidAddressPolkadotAddress = (address: string): boolean => {
     );
     return true;
   } catch (error) {
+    Sentry.captureException(error);
     return false;
   }
 };
@@ -193,6 +203,7 @@ export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNu
     logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
   } catch (error) {
     logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
   }
 };
 
@@ -299,6 +310,7 @@ export const processExtrinsic = async (
     logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
   }
 
   if (isSigned) {
@@ -340,6 +352,7 @@ export const processExtrinsic = async (
       logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+      Sentry.captureException(error);
     }
     if (section === 'balances' && (method === 'forceTransfer' || method === 'transfer' || method === 'transferAll' || method === 'transferKeepAlive')) {
       // Store transfer
@@ -433,6 +446,7 @@ export const processTransfer = async (
     logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${shortHash(hash.toString())}) ${section} ➡ ${method}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
   }
 };
 
@@ -503,6 +517,7 @@ export const processEvent = async (
     logger.debug(loggerOptions, `Added event #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+    Sentry.captureException(error);
   }
 
   // Runtime upgrade
@@ -671,6 +686,7 @@ export const processEvent = async (
       logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+      Sentry.captureException(error);
     }
   }
   
@@ -708,6 +724,7 @@ export const processEvent = async (
       logger.debug(loggerOptions, `Added validator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding validator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+      Sentry.captureException(error);
     }
   }
 
@@ -739,6 +756,7 @@ export const processEvent = async (
       logger.debug(loggerOptions, `Added nominator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+      Sentry.captureException(error);
     }
   }
 };
@@ -781,6 +799,7 @@ export const processLog = async (client: Client, blockNumber: number, log: any, 
     logger.debug(loggerOptions, `Added log ${blockNumber}-${index}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
   }
 };
 
@@ -834,6 +853,7 @@ export const updateFinalized = async (client: Client, finalizedBlock: number, lo
     await client.query(sql);
   } catch (error) {
     logger.error(loggerOptions, `Error updating finalized blocks: ${error}`);
+    Sentry.captureException(error);
   }
 };
 

@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,10 +32,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
+const Sentry = __importStar(require("@sentry/node"));
 require("@polkadot/api-augment");
 const pino_1 = __importDefault(require("pino"));
 const utils_1 = require("../lib/utils");
 const backend_config_1 = require("../backend.config");
+Sentry.init({
+    dsn: backend_config_1.backendConfig.sentryDSN,
+    tracesSampleRate: 1.0,
+});
 const crawlerName = 'blockHarvester';
 const logger = (0, pino_1.default)({
     level: backend_config_1.backendConfig.logLevel,
@@ -126,6 +150,7 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
+            Sentry.captureException(error);
         }
         // Store block extrinsics (async)
         (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions);
@@ -137,6 +162,7 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
     catch (error) {
         logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
         yield (0, utils_1.logHarvestError)(client, blockNumber, error, loggerOptions);
+        Sentry.captureException(error);
     }
 });
 // eslint-disable-next-line no-unused-vars
@@ -250,9 +276,15 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     logger.debug(loggerOptions, 'Disconnecting from API');
-    yield api.disconnect().catch((error) => logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`));
+    yield api.disconnect().catch((error) => {
+        logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
+    });
     logger.debug(loggerOptions, 'Disconnecting from DB');
-    yield client.end().catch((error) => logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`));
+    yield client.end().catch((error) => {
+        logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
+    });
     // Log execution time
     const endTime = new Date().getTime();
     logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
@@ -262,5 +294,6 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
 crawler(true).catch((error) => {
     // eslint-disable-next-line no-console
     console.error(error);
+    Sentry.captureException(error);
     process.exit(-1);
 });

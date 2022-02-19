@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14,6 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
+const Sentry = __importStar(require("@sentry/node"));
 require("@polkadot/api-augment");
 const pino_1 = __importDefault(require("pino"));
 const api_1 = require("@polkadot/api");
@@ -24,6 +44,10 @@ const lodash_1 = __importDefault(require("lodash"));
 const fs_1 = __importDefault(require("fs"));
 const backend_config_1 = require("../backend.config");
 const bignumber_js_1 = require("bignumber.js");
+Sentry.init({
+    dsn: backend_config_1.backendConfig.sentryDSN,
+    tracesSampleRate: 1.0,
+});
 const logger = (0, pino_1.default)();
 // Used for processing events and extrinsics
 const chunkSize = 100;
@@ -47,8 +71,9 @@ const isNodeSynced = (api, loggerOptions) => __awaiter(void 0, void 0, void 0, f
     try {
         node = yield api.rpc.system.health();
     }
-    catch (_a) {
+    catch (error) {
         logger.error(loggerOptions, "Can't query node status");
+        Sentry.captureException(error);
     }
     if (node && node.isSyncing.eq(false)) {
         logger.debug(loggerOptions, 'Node is synced!');
@@ -81,6 +106,7 @@ const dbQuery = (client, sql, loggerOptions) => __awaiter(void 0, void 0, void 0
     }
     catch (error) {
         logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
     }
     return null;
 });
@@ -91,6 +117,7 @@ const dbParamQuery = (client, sql, data, loggerOptions) => __awaiter(void 0, voi
     }
     catch (error) {
         logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
     }
     return null;
 });
@@ -103,6 +130,7 @@ const isValidAddressPolkadotAddress = (address) => {
         return true;
     }
     catch (error) {
+        Sentry.captureException(error);
         return false;
     }
 };
@@ -198,6 +226,7 @@ const updateAccountInfo = (api, client, blockNumber, timestamp, address, loggerO
     }
     catch (error) {
         logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
     }
 });
 exports.updateAccountInfo = updateAccountInfo;
@@ -276,6 +305,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
     }
     if (isSigned) {
         // Store signed extrinsic
@@ -317,6 +347,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+            Sentry.captureException(error);
         }
         if (section === 'balances' && (method === 'forceTransfer' || method === 'transfer' || method === 'transferAll' || method === 'transferKeepAlive')) {
             // Store transfer
@@ -383,6 +414,7 @@ const processTransfer = (client, blockNumber, extrinsicIndex, blockEvents, secti
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
     }
 });
 exports.processTransfer = processTransfer;
@@ -427,6 +459,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+        Sentry.captureException(error);
     }
     // Runtime upgrade
     if (event.section === 'system' && event.method === 'CodeUpdated') {
@@ -577,6 +610,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+            Sentry.captureException(error);
         }
     }
     //
@@ -612,6 +646,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding validator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+            Sentry.captureException(error);
         }
     }
     // Store nominator staking slash
@@ -643,6 +678,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+            Sentry.captureException(error);
         }
     }
 });
@@ -682,6 +718,7 @@ const processLog = (client, blockNumber, log, index, timestamp, loggerOptions) =
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
     }
 });
 exports.processLog = processLog;
@@ -734,6 +771,7 @@ const updateFinalized = (client, finalizedBlock, loggerOptions) => __awaiter(voi
     }
     catch (error) {
         logger.error(loggerOptions, `Error updating finalized blocks: ${error}`);
+        Sentry.captureException(error);
     }
 });
 exports.updateFinalized = updateFinalized;

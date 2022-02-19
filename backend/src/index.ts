@@ -6,16 +6,12 @@ import { wait } from './lib/utils';
 import { backendConfig } from './backend.config';
 // import * as Tracing from '@sentry/tracing';
 
-const logger = pino();
-
 Sentry.init({
   dsn: backendConfig.sentryDSN,
-
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
 });
+
+const logger = pino();
 
 const runCrawler = async (crawler: string) => {
   const child = spawn('node', [`${crawler}`]);
@@ -42,5 +38,6 @@ const runCrawlers = async () => {
 runCrawlers().catch((error) => {
   // eslint-disable-next-line no-console
   console.error(error);
+  Sentry.captureException(error);
   process.exit(-1);
 });

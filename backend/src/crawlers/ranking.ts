@@ -1,4 +1,5 @@
 // @ts-check
+import * as Sentry from '@sentry/node';
 import { BigNumber } from 'bignumber.js';
 import pino from 'pino';
 const axios = require('axios').default;
@@ -7,6 +8,11 @@ import { backendConfig } from '../backend.config';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { Client } from 'pg';
 import { EraIndex } from '@polkadot/types/interfaces';
+
+Sentry.init({
+  dsn: backendConfig.sentryDSN,
+  tracesSampleRate: 1.0,
+});
 
 const crawlerName = 'ranking';
 const logger = pino({
@@ -25,6 +31,7 @@ const getThousandValidators = async () => {
     return response.data;
   } catch (error) {
     logger.error(loggerOptions, `Error fetching Thousand Validator Program stats: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
     return [];
   }
 };
@@ -1246,6 +1253,7 @@ const crawler = async (delayedStart: boolean) => {
     logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
   } catch (error) {
     logger.error(loggerOptions, `General error in ranking crawler: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
   }
   setTimeout(
     () => crawler(false),

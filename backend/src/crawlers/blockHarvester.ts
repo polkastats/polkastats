@@ -1,10 +1,16 @@
 // @ts-check
+import * as Sentry from '@sentry/node';
 import '@polkadot/api-augment';
 import { ApiPromise } from '@polkadot/api';
 import pino from 'pino';
 import { getClient, dbQuery, getPolkadotAPI, isNodeSynced, shortHash, processExtrinsics, processEvents, processLogs, getDisplayName, wait, logHarvestError } from '../lib/utils';
 import { backendConfig } from '../backend.config';
 import { Client } from 'pg';
+
+Sentry.init({
+  dsn: backendConfig.sentryDSN,
+  tracesSampleRate: 1.0,
+});
 
 const crawlerName = 'blockHarvester';
 const logger = pino({
@@ -136,6 +142,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
       logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
+      Sentry.captureException(error);
     }
 
     // Store block extrinsics (async)
@@ -174,6 +181,7 @@ const harvestBlock = async (api: ApiPromise, client: Client, blockNumber: number
   } catch (error) {
     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
     await logHarvestError(client, blockNumber, error, loggerOptions);
+    Sentry.captureException(error);
   }
 };
 
@@ -321,9 +329,15 @@ const crawler = async (delayedStart: boolean) => {
     }
   }
   logger.debug(loggerOptions, 'Disconnecting from API');
-  await api.disconnect().catch((error) => logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`));
+  await api.disconnect().catch((error) => {
+    logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`)
+    Sentry.captureException(error);
+  });
   logger.debug(loggerOptions, 'Disconnecting from DB');
-  await client.end().catch((error) => logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`));
+  await client.end().catch((error) => {
+    logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
+  });
 
   // Log execution time
   const endTime = new Date().getTime();
@@ -338,5 +352,6 @@ const crawler = async (delayedStart: boolean) => {
 crawler(true).catch((error) => {
   // eslint-disable-next-line no-console
   console.error(error);
+  Sentry.captureException(error);
   process.exit(-1);
 });

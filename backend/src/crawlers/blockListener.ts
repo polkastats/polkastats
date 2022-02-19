@@ -1,7 +1,13 @@
 // @ts-check
+import * as Sentry from '@sentry/node';
 import pino from 'pino';
 import { dbQuery, getClient, getPolkadotAPI, isNodeSynced, wait, shortHash, processExtrinsics, processEvents, processLogs, getDisplayName, updateFinalized, updateAccountsInfo, logHarvestError } from '../lib/utils';
 import { backendConfig } from '../backend.config';
+
+Sentry.init({
+  dsn: backendConfig.sentryDSN,
+  tracesSampleRate: 1.0,
+});
 
 const crawlerName = 'blockListener';
 const logger = pino({
@@ -136,6 +142,7 @@ const crawler = async () => {
           await dbQuery(client, sql, loggerOptions);
         } catch (error) {
           logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
+          Sentry.captureException(error);
         }
 
         await Promise.all([
@@ -191,6 +198,7 @@ const crawler = async () => {
     } catch (error) {
       logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
       await logHarvestError(client, blockNumber, error, loggerOptions);
+      Sentry.captureException(error);
     }
   });
 };
@@ -198,5 +206,6 @@ const crawler = async () => {
 crawler().catch((error) => {
   // eslint-disable-next-line no-console
   console.error(error);
+  Sentry.captureException(error);
   process.exit(-1);
 });

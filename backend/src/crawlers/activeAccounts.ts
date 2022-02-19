@@ -1,10 +1,16 @@
 // @ts-check
+import * as Sentry from '@sentry/node';
 import '@polkadot/api-augment';
 import { ApiPromise } from '@polkadot/api';
 import pino from 'pino';
 import { wait, getClient, getPolkadotAPI, isNodeSynced, dbParamQuery } from '../lib/utils';
 import { backendConfig } from '../backend.config';
 import { Client } from 'pg';
+
+Sentry.init({
+  dsn: backendConfig.sentryDSN,
+  tracesSampleRate: 1.0,
+});
 
 const crawlerName = 'activeAccounts';
 const logger = pino({
@@ -136,10 +142,16 @@ const crawler = async (delayedStart: boolean) => {
   }
 
   logger.debug(loggerOptions, 'Disconnecting from API');
-  await api.disconnect().catch((error) => logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`));
+  await api.disconnect().catch((error) => {
+    logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
+  });
 
   logger.debug(loggerOptions, 'Disconnecting from DB');
-  await client.end().catch((error) => logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`));
+  await client.end().catch((error) => {
+    logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
+  });
 
   const endTime = new Date().getTime();
   logger.info(loggerOptions, `Processed ${accountIds.length} active accounts in ${((endTime - startTime) / 1000).toFixed(0)}s`);
