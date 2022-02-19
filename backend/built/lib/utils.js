@@ -140,9 +140,10 @@ const updateAccountsInfo = (api, client, blockNumber, timestamp, loggerOptions, 
     const involvedAddresses = [];
     blockEvents
         .forEach(({ event }) => {
-        event.data.forEach((arg) => {
-            if ((0, exports.isValidAddressPolkadotAddress)(arg)) {
-                involvedAddresses.push(arg);
+        const types = event.typeDef;
+        event.data.forEach((data, index) => {
+            if (types[index].type === 'AccountId32') {
+                involvedAddresses.push(data.toString());
             }
         });
     });

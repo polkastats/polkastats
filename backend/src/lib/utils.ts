@@ -109,12 +109,13 @@ export const isValidAddressPolkadotAddress = (address: string): boolean => {
 
 export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: Vec<EventRecord>) => {
   const startTime = new Date().getTime();
-  const involvedAddresses: any[] = [];
+  const involvedAddresses: string[] = [];
   blockEvents
-    .forEach(({ event }: any) => {
-      event.data.forEach((arg: any) => {
-        if (isValidAddressPolkadotAddress(arg)) {
-          involvedAddresses.push(arg);
+    .forEach(({ event }: EventRecord) => {
+      const types = event.typeDef;
+      event.data.forEach((data, index) => {
+        if (types[index].type === 'AccountId32') {
+          involvedAddresses.push(data.toString());
         }
       });
     });
@@ -131,7 +132,7 @@ export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockN
   logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 
-export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: Address, loggerOptions: { crawler: string; }) => {
+export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: string, loggerOptions: { crawler: string; }) => {
   const [balances, { identity }] = await Promise.all([
     api.derive.balances.all(address),
     api.derive.accounts.info(address),
