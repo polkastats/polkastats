@@ -3,7 +3,7 @@ const { ApiPromise, WsProvider } = require('@polkadot/api');
 
 async function main() {
   // Initialise the provider to connect to the local node
-  const provider = new WsProvider('wss://kusama-rpc.polkadot.io/');
+  const provider = new WsProvider('ws://substrate-node:9944');
 
   // Create the API and wait until ready
   const api = await ApiPromise.create({ provider });
