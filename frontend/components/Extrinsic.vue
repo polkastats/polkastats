@@ -70,7 +70,16 @@
         <tr>
           <td>Documentation</td>
           <td>
-            {{ extrinsic.doc }}
+            <!-- {{ extrinsic.doc.split(/, ,/) }} -->
+            <span
+              v-for="(line, index) in extrinsic.doc
+                .replace(/\[/g, '')
+                .replace(/\]/g, '')
+                .split(/,/)"
+              :key="`doc-${index}`"
+            >
+              {{ line }}<br
+            /></span>
           </td>
         </tr>
         <tr>
@@ -129,6 +138,12 @@ export default {
     extrinsic: {
       type: Object,
       default: undefined,
+    },
+  },
+  methods: {
+    setPageSize(num) {
+      localStorage.paginationOptions = num
+      this.perPage = parseInt(num)
     },
   },
 }
