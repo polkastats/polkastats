@@ -118,7 +118,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
                 const blockAuthor = extendedHeader.author || '';
                 const [blockAuthorIdentity, blockEvents, chainElectionStatus,] = yield Promise.all([
                     api.derive.accounts.info(blockAuthor),
-                    apiAt.query.system.events(),
+                    api.query.system.events.at(blockHash),
                     api.query.electionProviderMultiPhase.currentPhase(),
                 ]);
                 const blockAuthorName = (0, utils_1.getDisplayName)(blockAuthorIdentity.identity);

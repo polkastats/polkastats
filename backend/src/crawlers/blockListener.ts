@@ -109,7 +109,7 @@ const crawler = async () => {
           chainElectionStatus,
         ] = await Promise.all([
           api.derive.accounts.info(blockAuthor),
-          apiAt.query.system.events(),
+          api.query.system.events.at(blockHash),
           api.query.electionProviderMultiPhase.currentPhase(),
         ]);
         const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
