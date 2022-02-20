@@ -1264,5 +1264,6 @@ const crawler = async (delayedStart: boolean) => {
 crawler(true).catch((error) => {
   // eslint-disable-next-line no-console
   console.error(error);
+  Sentry.captureException(error);
   process.exit(-1);
 });
