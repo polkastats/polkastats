@@ -1,6 +1,6 @@
 // Required imports
-import '@polkadot/api-augment';
-import { ApiPromise, WsProvider } from '@polkadot/api';
+require('@polkadot/api-augment');
+const { ApiPromise, WsProvider } = require('@polkadot/api');
 
 async function main() {
   // Initialise the provider to connect to the local node
