@@ -1,9 +1,8 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import '@polkadot/api-augment';
-import { ApiPromise } from '@polkadot/api';
 import pino from 'pino';
 import { getClient, dbQuery, getPolkadotAPI, isNodeSynced, shortHash, processExtrinsics, processEvents, processLogs, getDisplayName, wait, logHarvestError } from '../lib/utils';
+import { ApiPromise } from '@polkadot/api';
 import { backendConfig } from '../backend.config';
 import { Client } from 'pg';
 
