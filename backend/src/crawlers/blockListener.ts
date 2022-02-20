@@ -39,8 +39,30 @@ const crawler = async () => {
     const blockNumber = blockHeader.number.toNumber();
     try {
       const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-      const apiAt = await api.at(blockHash);
+      // const apiAt = await api.at(blockHash);
       // Parallelize
+      // const [
+      //   activeEra,
+      //   currentIndex,
+      //   { block },
+      //   extendedHeader,
+      //   runtimeVersion,
+      //   finalizedBlockHash,
+      //   totalIssuance,
+      //   timestamp,
+      // ] = await Promise.all([
+      //   apiAt.query.staking.activeEra()
+      //     .then((res: any) => (res.toJSON() ? res.toJSON().index : 0)),
+      //   apiAt.query.session.currentIndex()
+      //     .then((res) => (res || 0)),
+      //   api.rpc.chain.getBlock(blockHash),
+      //   api.derive.chain.getHeader(blockHash),
+      //   api.rpc.state.getRuntimeVersion(blockHash),
+      //   api.rpc.chain.getFinalizedHead(),
+      //   apiAt.query.balances.totalIssuance(),
+      //   apiAt.query.timestamp.now(),
+      // ]);
+
       const [
         activeEra,
         currentIndex,
@@ -51,16 +73,16 @@ const crawler = async () => {
         totalIssuance,
         timestamp,
       ] = await Promise.all([
-        apiAt.query.staking.activeEra()
+        api.query.staking.activeEra.at(blockHash)
           .then((res: any) => (res.toJSON() ? res.toJSON().index : 0)),
-        apiAt.query.session.currentIndex()
+        api.query.session.currentIndex.at(blockHash)
           .then((res) => (res || 0)),
         api.rpc.chain.getBlock(blockHash),
         api.derive.chain.getHeader(blockHash),
         api.rpc.state.getRuntimeVersion(blockHash),
         api.rpc.chain.getFinalizedHead(),
-        apiAt.query.balances.totalIssuance(),
-        apiAt.query.timestamp.now(),
+        api.query.balances.totalIssuance.at(blockHash),
+        api.query.timestamp.now.at(blockHash),
       ]);
 
       const finalizedBlockHeader = await api.rpc.chain.getHeader(finalizedBlockHash);

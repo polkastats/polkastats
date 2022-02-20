@@ -82,19 +82,43 @@ const harvestBlock = (api, client, blockNumber) => __awaiter(void 0, void 0, voi
     const startTime = new Date().getTime();
     try {
         const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
-        const apiAt = yield api.at(blockHash);
+        // const apiAt = await api.at(blockHash);
+        // const [
+        //   { block },
+        //   blockEvents,
+        //   blockHeader,
+        //   totalIssuance,
+        //   runtimeVersion,
+        //   activeEra,
+        //   currentIndex,
+        //   chainElectionStatus,
+        //   timestamp,
+        // ] = await Promise.all([
+        //   api.rpc.chain.getBlock(blockHash),
+        //   apiAt.query.system.events(),
+        //   api.derive.chain.getHeader(blockHash),
+        //   apiAt.query.balances.totalIssuance(),
+        //   api.rpc.state.getRuntimeVersion(blockHash),
+        //   apiAt.query.staking.activeEra()
+        //     .then((res: any) => (res.toJSON() ? res.toJSON().index : 0)),
+        //   apiAt.query.session.currentIndex()
+        //     .then((res) => (res || 0)),
+        //   apiAt.query.electionProviderMultiPhase.currentPhase(),
+        //   apiAt.query.timestamp.now(),
+        // ]);
+        const apiAt = yield api;
         const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestamp,] = yield Promise.all([
             api.rpc.chain.getBlock(blockHash),
-            apiAt.query.system.events(),
+            api.query.system.events.at(blockHash),
             api.derive.chain.getHeader(blockHash),
-            apiAt.query.balances.totalIssuance(),
+            api.query.balances.totalIssuance.at(blockHash),
             api.rpc.state.getRuntimeVersion(blockHash),
-            apiAt.query.staking.activeEra()
+            api.query.staking.activeEra.at(blockHash)
                 .then((res) => (res.toJSON() ? res.toJSON().index : 0)),
-            apiAt.query.session.currentIndex()
+            api.query.session.currentIndex.at(blockHash)
                 .then((res) => (res || 0)),
-            apiAt.query.electionProviderMultiPhase.currentPhase(),
-            apiAt.query.timestamp.now(),
+            api.query.electionProviderMultiPhase.currentPhase.at(blockHash),
+            api.query.timestamp.now.at(blockHash),
         ]);
         const blockAuthor = blockHeader.author || '';
         const blockAuthorIdentity = yield api.derive.accounts.info(blockHeader.author);
