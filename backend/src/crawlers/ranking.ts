@@ -1,6 +1,5 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import '@polkadot/api-augment';
 import { BigNumber } from 'bignumber.js';
 import pino from 'pino';
 const axios = require('axios').default;

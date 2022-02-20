@@ -35,6 +35,7 @@ exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.chun
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 const pino_1 = __importDefault(require("pino"));
+require("@polkadot/api-augment");
 const api_1 = require("@polkadot/api");
 const keyring_1 = require("@polkadot/keyring");
 const util_1 = require("@polkadot/util");
