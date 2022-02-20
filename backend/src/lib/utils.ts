@@ -1,6 +1,5 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import '@polkadot/api-augment';
 import pino from 'pino';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
