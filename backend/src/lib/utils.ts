@@ -1071,7 +1071,7 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
 
 // eslint-disable-next-line no-unused-vars
 export const harvestBlocksSeq = async (config: any, api: ApiPromise, client: Client, startBlock: number, endBlock: number, loggerOptions: { crawler: string; }) => {
-  const reverseOrder = false;
+  const reverseOrder = true;
   const blocks = reverseOrder
     ? reverseRange(startBlock, endBlock, 1)
     : range(startBlock, endBlock, 1);
@@ -1104,7 +1104,10 @@ export const harvestBlocksSeq = async (config: any, api: ApiPromise, client: Cli
 };
 
 export const harvestBlocks = async (config: any, api: ApiPromise, client: Client, startBlock: number, endBlock: number, loggerOptions: { crawler: string; }) => {
-  const blocks = range(startBlock, endBlock, 1);
+  const reverseOrder = true;
+  const blocks = reverseOrder
+    ? reverseRange(startBlock, endBlock, 1)
+    : range(startBlock, endBlock, 1);
 
   const chunks = chunker(blocks, config.chunkSize);
   logger.info(loggerOptions, `Processing chunks of ${config.chunkSize} blocks`);

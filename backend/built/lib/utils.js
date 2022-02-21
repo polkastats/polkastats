@@ -943,7 +943,7 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
 exports.harvestBlock = harvestBlock;
 // eslint-disable-next-line no-unused-vars
 const harvestBlocksSeq = (config, api, client, startBlock, endBlock, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const reverseOrder = false;
+    const reverseOrder = true;
     const blocks = reverseOrder
         ? (0, exports.reverseRange)(startBlock, endBlock, 1)
         : (0, exports.range)(startBlock, endBlock, 1);
@@ -971,7 +971,10 @@ const harvestBlocksSeq = (config, api, client, startBlock, endBlock, loggerOptio
 });
 exports.harvestBlocksSeq = harvestBlocksSeq;
 const harvestBlocks = (config, api, client, startBlock, endBlock, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const blocks = (0, exports.range)(startBlock, endBlock, 1);
+    const reverseOrder = true;
+    const blocks = reverseOrder
+        ? (0, exports.reverseRange)(startBlock, endBlock, 1)
+        : (0, exports.range)(startBlock, endBlock, 1);
     const chunks = (0, exports.chunker)(blocks, config.chunkSize);
     logger.info(loggerOptions, `Processing chunks of ${config.chunkSize} blocks`);
     const chunkProcessingTimes = [];
