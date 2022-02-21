@@ -854,42 +854,19 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
     const startTime = new Date().getTime();
     try {
         const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
-        // const apiAt = await api.at(blockHash);
-        // const [
-        //   { block },
-        //   blockEvents,
-        //   blockHeader,
-        //   totalIssuance,
-        //   runtimeVersion,
-        //   activeEra,
-        //   currentIndex,
-        //   chainElectionStatus,
-        //   timestamp,
-        // ] = await Promise.all([
-        //   api.rpc.chain.getBlock(blockHash),
-        //   apiAt.query.system.events(),
-        //   api.derive.chain.getHeader(blockHash),
-        //   apiAt.query.balances.totalIssuance(),
-        //   api.rpc.state.getRuntimeVersion(blockHash),
-        //   apiAt.query.staking.activeEra()
-        //     .then((res: any) => (res.toJSON() ? res.toJSON().index : 0)),
-        //   apiAt.query.session.currentIndex()
-        //     .then((res) => (res || 0)),
-        //   apiAt.query.electionProviderMultiPhase.currentPhase(),
-        //   apiAt.query.timestamp.now(),
-        // ]);
+        const apiAt = yield api.at(blockHash);
         const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestamp,] = yield Promise.all([
             api.rpc.chain.getBlock(blockHash),
-            api.query.system.events.at(blockHash),
+            apiAt.query.system.events(),
             api.derive.chain.getHeader(blockHash),
-            api.query.balances.totalIssuance.at(blockHash),
+            apiAt.query.balances.totalIssuance(),
             api.rpc.state.getRuntimeVersion(blockHash),
-            api.query.staking.activeEra.at(blockHash)
+            apiAt.query.staking.activeEra()
                 .then((res) => (res.toJSON() ? res.toJSON().index : 0)),
-            api.query.session.currentIndex.at(blockHash)
+            apiAt.query.session.currentIndex()
                 .then((res) => (res || 0)),
-            api.query.electionProviderMultiPhase.currentPhase.at(blockHash),
-            api.query.timestamp.now.at(blockHash),
+            apiAt.query.electionProviderMultiPhase.currentPhase(),
+            apiAt.query.timestamp.now(),
         ]);
         const blockAuthor = blockHeader.author || '';
         const blockAuthorIdentity = yield api.derive.accounts.info(blockHeader.author);
@@ -947,12 +924,14 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
             Sentry.captureException(error);
         }
-        // Store block extrinsics (async)
-        (0, exports.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions);
-        // Store module events (async)
-        (0, exports.processEvents)(api, runtimeVersion, client, blockNumber, blockHash, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions);
-        // Store block logs (async)
-        (0, exports.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions);
+        yield Promise.all([
+            // Store block extrinsics (async)
+            (0, exports.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
+            // Store module events (async)
+            (0, exports.processEvents)(api, runtimeVersion, client, blockNumber, blockHash, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
+            // Store block logs (async)
+            (0, exports.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
+        ]);
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
