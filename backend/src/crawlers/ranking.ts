@@ -1,6 +1,7 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
 import { BigNumber } from 'bignumber.js';
+import '@polkadot/api-augment/kusama';
 import pino from 'pino';
 const axios = require('axios').default;
 import { getClient, getPolkadotAPI, isNodeSynced, wait, dbQuery, dbParamQuery } from '../lib/utils';

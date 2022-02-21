@@ -1,5 +1,6 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
+import '@polkadot/api-augment/kusama';
 import pino from 'pino';
 import { getClient, dbQuery, getPolkadotAPI, isNodeSynced, wait, healthCheck,  harvestBlocks, harvestBlocksSeq, } from '../lib/utils';
 import { backendConfig } from '../backend.config';

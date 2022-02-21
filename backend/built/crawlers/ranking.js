@@ -34,6 +34,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 const bignumber_js_1 = require("bignumber.js");
+require("@polkadot/api-augment/kusama");
 const pino_1 = __importDefault(require("pino"));
 const axios = require('axios').default;
 const utils_1 = require("../lib/utils");
