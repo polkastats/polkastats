@@ -919,7 +919,7 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
         try {
             yield (0, exports.dbQuery)(client, sqlInsert, loggerOptions);
             const endTime = new Date().getTime();
-            logger.debug(loggerOptions, `Added block #${blockNumber} (${(0, exports.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+            logger.info(loggerOptions, `Added block #${blockNumber} (${(0, exports.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);

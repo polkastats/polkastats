@@ -1021,7 +1021,7 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
     try {
       await dbQuery(client, sqlInsert, loggerOptions);
       const endTime = new Date().getTime();
-      logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+      logger.info(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
       Sentry.captureException(error);
