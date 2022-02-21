@@ -31,7 +31,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
+exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.healthCheck = exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.range = exports.reverseRange = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 const pino_1 = __importDefault(require("pino"));
@@ -798,6 +798,14 @@ const logHarvestError = (client, blockNumber, error, loggerOptions) => __awaiter
 exports.logHarvestError = logHarvestError;
 const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
 exports.chunker = chunker;
+// Return a reverse ordered array filled from range
+const reverseRange = (start, stop, step) => Array
+    .from({ length: (stop - start) / step + 1 }, (_, i) => stop - (i * step));
+exports.reverseRange = reverseRange;
+// Return filled array from range
+const range = (start, stop, step) => Array
+    .from({ length: (stop - start) / step + 1 }, (_, i) => start + (i * step));
+exports.range = range;
 // TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proxy extrinsic
 const getTransferAllAmount = (index, blockEvents) => blockEvents
     .find(({ event, phase }) => (phase.isApplyExtrinsic
@@ -816,3 +824,202 @@ const getSlashedValidatorAccount = (index, indexedBlockEvents) => {
     return validatorAccountId;
 };
 exports.getSlashedValidatorAccount = getSlashedValidatorAccount;
+const healthCheck = (config, client, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const startTime = new Date().getTime();
+    logger.info(loggerOptions, 'Starting health check');
+    const query = `
+    SELECT
+      b.block_number,
+      b.total_events,
+      (SELECT COUNT(*) FROM event AS ev WHERE ev.block_number = b.block_number) AS table_total_events,
+      b.total_extrinsics,
+      (SELECT COUNT(*) FROM extrinsic AS ex WHERE ex.block_number = b.block_number) table_total_extrinsics
+    FROM
+      block AS b
+    WHERE
+      b.total_events > (SELECT COUNT(*) FROM event AS ev WHERE ev.block_number = b.block_number)
+    OR
+      b.total_extrinsics > (SELECT COUNT(*) FROM extrinsic AS ex WHERE ex.block_number = b.block_number) 
+    ;`;
+    const res = yield (0, exports.dbQuery)(client, query, loggerOptions);
+    for (const row of res.rows) {
+        logger.info(loggerOptions, `Health check failed for block #${row.block_number}, deleting block from block table!`);
+        yield (0, exports.dbQuery)(client, `DELETE FROM block WHERE block_number = '${row.block_number}';`, loggerOptions);
+    }
+    const endTime = new Date().getTime();
+    logger.debug(loggerOptions, `Health check finished in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+});
+exports.healthCheck = healthCheck;
+const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const startTime = new Date().getTime();
+    try {
+        const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
+        // const apiAt = await api.at(blockHash);
+        // const [
+        //   { block },
+        //   blockEvents,
+        //   blockHeader,
+        //   totalIssuance,
+        //   runtimeVersion,
+        //   activeEra,
+        //   currentIndex,
+        //   chainElectionStatus,
+        //   timestamp,
+        // ] = await Promise.all([
+        //   api.rpc.chain.getBlock(blockHash),
+        //   apiAt.query.system.events(),
+        //   api.derive.chain.getHeader(blockHash),
+        //   apiAt.query.balances.totalIssuance(),
+        //   api.rpc.state.getRuntimeVersion(blockHash),
+        //   apiAt.query.staking.activeEra()
+        //     .then((res: any) => (res.toJSON() ? res.toJSON().index : 0)),
+        //   apiAt.query.session.currentIndex()
+        //     .then((res) => (res || 0)),
+        //   apiAt.query.electionProviderMultiPhase.currentPhase(),
+        //   apiAt.query.timestamp.now(),
+        // ]);
+        const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestamp,] = yield Promise.all([
+            api.rpc.chain.getBlock(blockHash),
+            api.query.system.events.at(blockHash),
+            api.derive.chain.getHeader(blockHash),
+            api.query.balances.totalIssuance.at(blockHash),
+            api.rpc.state.getRuntimeVersion(blockHash),
+            api.query.staking.activeEra.at(blockHash)
+                .then((res) => (res.toJSON() ? res.toJSON().index : 0)),
+            api.query.session.currentIndex.at(blockHash)
+                .then((res) => (res || 0)),
+            api.query.electionProviderMultiPhase.currentPhase.at(blockHash),
+            api.query.timestamp.now.at(blockHash),
+        ]);
+        const blockAuthor = blockHeader.author || '';
+        const blockAuthorIdentity = yield api.derive.accounts.info(blockHeader.author);
+        const blockAuthorName = (0, exports.getDisplayName)(blockAuthorIdentity.identity);
+        const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
+        // Get election status
+        const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
+        // Totals
+        const totalEvents = blockEvents.length;
+        const totalExtrinsics = block.extrinsics.length;
+        const sqlInsert = `INSERT INTO block (
+        block_number,
+        finalized,
+        block_author,
+        block_author_name,
+        block_hash,
+        parent_hash,
+        extrinsics_root,
+        state_root,
+        active_era,
+        current_index,
+        is_election,
+        spec_version,
+        total_events,
+        total_extrinsics,
+        total_issuance,
+        timestamp
+      ) VALUES (
+        '${blockNumber}',
+        false,
+        '${blockAuthor}',
+        '${blockAuthorName}',
+        '${blockHash}',
+        '${parentHash}',
+        '${extrinsicsRoot}',
+        '${stateRoot}',
+        '${activeEra}',
+        '${currentIndex}',
+        '${isElection}',
+        '${runtimeVersion.specVersion}',
+        '${totalEvents}',
+        '${totalExtrinsics}',
+        '${totalIssuance.toString()}',
+        '${timestamp}'
+      )
+      ON CONFLICT ON CONSTRAINT block_pkey 
+      DO NOTHING
+      ;`;
+        try {
+            yield (0, exports.dbQuery)(client, sqlInsert, loggerOptions);
+            const endTime = new Date().getTime();
+            logger.debug(loggerOptions, `Added block #${blockNumber} (${(0, exports.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+        }
+        catch (error) {
+            logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
+            Sentry.captureException(error);
+        }
+        // Store block extrinsics (async)
+        (0, exports.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions);
+        // Store module events (async)
+        (0, exports.processEvents)(api, runtimeVersion, client, blockNumber, blockHash, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions);
+        // Store block logs (async)
+        (0, exports.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions);
+    }
+    catch (error) {
+        logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
+        yield (0, exports.logHarvestError)(client, blockNumber, error, loggerOptions);
+        Sentry.captureException(error);
+    }
+});
+exports.harvestBlock = harvestBlock;
+// eslint-disable-next-line no-unused-vars
+const harvestBlocksSeq = (config, api, client, startBlock, endBlock, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const reverseOrder = false;
+    const blocks = reverseOrder
+        ? (0, exports.reverseRange)(startBlock, endBlock, 1)
+        : (0, exports.range)(startBlock, endBlock, 1);
+    const blockProcessingTimes = [];
+    let maxTimeMs = 0;
+    let minTimeMs = 1000000;
+    let avgTimeMs = 0;
+    for (const blockNumber of blocks) {
+        const blockStartTime = Date.now();
+        yield (0, exports.harvestBlock)(config, api, client, blockNumber, loggerOptions);
+        const blockEndTime = new Date().getTime();
+        // Cook some stats
+        const blockProcessingTimeMs = blockEndTime - blockStartTime;
+        if (blockProcessingTimeMs < minTimeMs) {
+            minTimeMs = blockProcessingTimeMs;
+        }
+        if (blockProcessingTimeMs > maxTimeMs) {
+            maxTimeMs = blockProcessingTimeMs;
+        }
+        blockProcessingTimes.push(blockProcessingTimeMs);
+        avgTimeMs = blockProcessingTimes.reduce((sum, blockProcessingTime) => sum + blockProcessingTime, 0) / blockProcessingTimes.length;
+        const completed = ((blocks.indexOf(blockNumber) + 1) * 100) / blocks.length;
+        logger.info(loggerOptions, `Processed block #${blockNumber} ${blocks.indexOf(blockNumber) + 1}/${blocks.length} [${completed.toFixed(config.statsPrecision)}%] in ${((blockProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)}`);
+    }
+});
+exports.harvestBlocksSeq = harvestBlocksSeq;
+const harvestBlocks = (config, api, client, startBlock, endBlock, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const blocks = (0, exports.range)(startBlock, endBlock, 1);
+    const chunks = (0, exports.chunker)(blocks, config.chunkSize);
+    logger.info(loggerOptions, `Processing chunks of ${config.chunkSize} blocks`);
+    const chunkProcessingTimes = [];
+    let maxTimeMs = 0;
+    let minTimeMs = 1000000;
+    let avgTimeMs = 0;
+    let avgBlocksPerSecond = 0;
+    for (const chunk of chunks) {
+        const chunkStartTime = Date.now();
+        yield Promise.all(chunk.map((blockNumber) => (0, exports.harvestBlock)(config, api, client, blockNumber, loggerOptions)));
+        const chunkEndTime = new Date().getTime();
+        // Cook some stats
+        const chunkProcessingTimeMs = chunkEndTime - chunkStartTime;
+        if (chunkProcessingTimeMs < minTimeMs) {
+            minTimeMs = chunkProcessingTimeMs;
+        }
+        if (chunkProcessingTimeMs > maxTimeMs) {
+            maxTimeMs = chunkProcessingTimeMs;
+        }
+        chunkProcessingTimes.push(chunkProcessingTimeMs);
+        avgTimeMs = chunkProcessingTimes.reduce((sum, chunkProcessingTime) => sum + chunkProcessingTime, 0) / chunkProcessingTimes.length;
+        avgBlocksPerSecond = 1 / ((avgTimeMs / 1000) / config.chunkSize);
+        const currentBlocksPerSecond = 1 / ((chunkProcessingTimeMs / 1000) / config.chunkSize);
+        const completed = ((chunks.indexOf(chunk) + 1) * 100) / chunks.length;
+        logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} [${completed.toFixed(config.statsPrecision)}%] `
+            + `in ${((chunkProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s `
+            + `min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)} `
+            + `cur/avg bps: ${currentBlocksPerSecond.toFixed(config.statsPrecision)}/${avgBlocksPerSecond.toFixed(config.statsPrecision)}`);
+    }
+});
+exports.harvestBlocks = harvestBlocks;
