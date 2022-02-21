@@ -862,7 +862,8 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
             apiAt.query.balances.totalIssuance(),
             api.rpc.state.getRuntimeVersion(blockHash),
             apiAt.query.staking.activeEra()
-                .then((res) => (res.toJSON() ? res.toJSON().index : 0)),
+                .then((res) => (res.toJSON() ? res.toJSON().index : 0))
+                .catch((e) => { console.log(e); return 0; }),
             apiAt.query.session.currentIndex()
                 .then((res) => (res || 0)),
             apiAt.query.electionProviderMultiPhase.currentPhase(),

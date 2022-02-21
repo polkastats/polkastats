@@ -67,7 +67,8 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
             // Parallelize
             const [activeEra, currentIndex, { block }, extendedHeader, runtimeVersion, finalizedBlockHash, totalIssuance, timestamp,] = yield Promise.all([
                 apiAt.query.staking.activeEra()
-                    .then((res) => (res.toJSON() ? res.toJSON().index : 0)),
+                    .then((res) => (res.toJSON() ? res.toJSON().index : 0))
+                    .catch((e) => { console.log(e); return 0; }),
                 apiAt.query.session.currentIndex()
                     .then((res) => (res || 0)),
                 api.rpc.chain.getBlock(blockHash),

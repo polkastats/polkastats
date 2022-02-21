@@ -51,7 +51,8 @@ const crawler = async () => {
         timestamp,
       ] = await Promise.all([
         apiAt.query.staking.activeEra()
-          .then((res: any) => (res.toJSON() ? res.toJSON().index : 0)),
+          .then((res: any) => (res.toJSON() ? res.toJSON().index : 0))
+          .catch((e) => { console.log(e); return 0 }),
         apiAt.query.session.currentIndex()
           .then((res) => (res || 0)),
         api.rpc.chain.getBlock(blockHash),
