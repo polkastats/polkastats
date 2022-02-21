@@ -35,7 +35,7 @@ exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = export
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 const pino_1 = __importDefault(require("pino"));
-require("@polkadot/api-augment");
+require("@polkadot/api-augment/kusama");
 const api_1 = require("@polkadot/api");
 const keyring_1 = require("@polkadot/keyring");
 const util_1 = require("@polkadot/util");
