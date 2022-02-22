@@ -18,15 +18,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -55,25 +46,25 @@ const logger = (0, pino_1.default)({
 });
 // Used for processing events and extrinsics
 const chunkSize = 100;
-const getPolkadotAPI = (loggerOptions, apiCustomTypes) => __awaiter(void 0, void 0, void 0, function* () {
+const getPolkadotAPI = async (loggerOptions, apiCustomTypes) => {
     let api;
     logger.debug(loggerOptions, `Connecting to ${backend_config_1.backendConfig.wsProviderUrl}`);
     const provider = new api_1.WsProvider(backend_config_1.backendConfig.wsProviderUrl);
     if (apiCustomTypes && apiCustomTypes !== '') {
         const types = JSON.parse(fs_1.default.readFileSync(`./src/types/${apiCustomTypes}`, 'utf8'));
-        api = yield api_1.ApiPromise.create({ provider, types });
+        api = await api_1.ApiPromise.create({ provider, types });
     }
     else {
-        api = yield api_1.ApiPromise.create({ provider });
+        api = await api_1.ApiPromise.create({ provider });
     }
-    yield api.isReady;
+    await api.isReady;
     return api;
-});
+};
 exports.getPolkadotAPI = getPolkadotAPI;
-const isNodeSynced = (api, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const isNodeSynced = async (api, loggerOptions) => {
     let node;
     try {
-        node = yield api.rpc.system.health();
+        node = await api.rpc.system.health();
     }
     catch (error) {
         logger.error(loggerOptions, "Can't query node status");
@@ -85,36 +76,36 @@ const isNodeSynced = (api, loggerOptions) => __awaiter(void 0, void 0, void 0, f
     }
     logger.debug(loggerOptions, 'Node is NOT synced!');
     return false;
-});
+};
 exports.isNodeSynced = isNodeSynced;
-const getClient = (loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const getClient = async (loggerOptions) => {
     logger.debug(loggerOptions, `Connecting to DB ${backend_config_1.backendConfig.postgresConnParams.database} at ${backend_config_1.backendConfig.postgresConnParams.host}:${backend_config_1.backendConfig.postgresConnParams.port}`);
     const client = new pg_1.Client(backend_config_1.backendConfig.postgresConnParams);
-    yield client.connect();
+    await client.connect();
     return client;
-});
+};
 exports.getClient = getClient;
-const dbQuery = (client, sql, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const dbQuery = async (client, sql, loggerOptions) => {
     try {
-        return yield client.query(sql);
+        return await client.query(sql);
     }
     catch (error) {
         logger.error(loggerOptions, `SQL: ${sql} ERROR: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
     }
     return null;
-});
+};
 exports.dbQuery = dbQuery;
-const dbParamQuery = (client, sql, data, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const dbParamQuery = async (client, sql, data, loggerOptions) => {
     try {
-        return yield client.query(sql, data);
+        return await client.query(sql, data);
     }
     catch (error) {
         logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
     }
     return null;
-});
+};
 exports.dbParamQuery = dbParamQuery;
 const isValidAddressPolkadotAddress = (address) => {
     try {
@@ -129,7 +120,7 @@ const isValidAddressPolkadotAddress = (address) => {
     }
 };
 exports.isValidAddressPolkadotAddress = isValidAddressPolkadotAddress;
-const updateAccountsInfo = (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => __awaiter(void 0, void 0, void 0, function* () {
+const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
     const startTime = new Date().getTime();
     const involvedAddresses = [];
     blockEvents
@@ -142,14 +133,14 @@ const updateAccountsInfo = (api, client, blockNumber, timestamp, loggerOptions, 
         });
     });
     const uniqueAddresses = lodash_1.default.uniq(involvedAddresses);
-    yield Promise.all(uniqueAddresses.map((address) => (0, exports.updateAccountInfo)(api, client, blockNumber, timestamp, address, loggerOptions)));
+    await Promise.all(uniqueAddresses.map((address) => (0, exports.updateAccountInfo)(api, client, blockNumber, timestamp, address, loggerOptions)));
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
-});
+};
 exports.updateAccountsInfo = updateAccountsInfo;
-const updateAccountInfo = (api, client, blockNumber, timestamp, address, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const [balances, { identity }] = yield Promise.all([
+const updateAccountInfo = async (api, client, blockNumber, timestamp, address, loggerOptions) => {
+    const [balances, { identity }] = await Promise.all([
         api.derive.balances.all(address),
         api.derive.accounts.info(address),
     ]);
@@ -216,28 +207,28 @@ const updateAccountInfo = (api, client, blockNumber, timestamp, address, loggerO
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
     try {
-        yield client.query(query, data);
+        await client.query(query, data);
         logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
     }
     catch (error) {
         logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
     }
-});
+};
 exports.updateAccountInfo = updateAccountInfo;
-const processExtrinsics = (api, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processExtrinsics = async (api, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     const indexedExtrinsics = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
     const chunks = (0, utils_1.chunker)(indexedExtrinsics, chunkSize);
     for (const chunk of chunks) {
-        yield Promise.all(chunk.map((indexedExtrinsic) => (0, exports.processExtrinsic)(api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
+        await Promise.all(chunk.map((indexedExtrinsic) => (0, exports.processExtrinsic)(api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
-});
+};
 exports.processExtrinsics = processExtrinsics;
-const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processExtrinsic = async (api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions) => {
     const [extrinsicIndex, extrinsic] = indexedExtrinsic;
     const { isSigned } = extrinsic;
     const signer = isSigned ? extrinsic.signer.toString() : '';
@@ -251,7 +242,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     let feeInfo = '';
     let feeDetails = '';
     if (isSigned) {
-        [feeInfo, feeDetails] = yield Promise.all([
+        [feeInfo, feeDetails] = await Promise.all([
             api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
                 .then((result) => JSON.stringify(result.toJSON()))
                 .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '',
@@ -295,7 +286,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     DO NOTHING;
     ;`;
     try {
-        yield client.query(sql);
+        await client.query(sql);
         logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${(0, utils_1.shortHash)(hash)}) ${section} ➡ ${method}`);
     }
     catch (error) {
@@ -337,7 +328,7 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
     DO NOTHING;
     ;`;
         try {
-            yield client.query(sql);
+            await client.query(sql);
             logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${(0, utils_1.shortHash)(hash)}) ${section} ➡ ${method}`);
         }
         catch (error) {
@@ -349,10 +340,10 @@ const processExtrinsic = (api, client, blockNumber, blockHash, indexedExtrinsic,
             (0, exports.processTransfer)(client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash.toString(), signer, feeInfo, success, errorMessage, timestamp, loggerOptions);
         }
     }
-});
+};
 exports.processExtrinsic = processExtrinsic;
 // TODO: Use in multiple extrinsics included in utility.batch and proxy.proxy
-const processTransfer = (client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash, signer, feeInfo, success, errorMessage, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash, signer, feeInfo, success, errorMessage, timestamp, loggerOptions) => {
     // Store transfer
     const source = signer;
     const destination = JSON.parse(args)[0].id
@@ -404,29 +395,29 @@ const processTransfer = (client, blockNumber, extrinsicIndex, blockEvents, secti
     DO NOTHING;
     ;`;
     try {
-        yield client.query(sql);
+        await client.query(sql);
         logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${(0, utils_1.shortHash)(hash.toString())}) ${section} ➡ ${method}`);
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
     }
-});
+};
 exports.processTransfer = processTransfer;
-const processEvents = (api, runtimeVersion, client, blockNumber, blockHash, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processEvents = async (api, runtimeVersion, client, blockNumber, blockHash, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
     const indexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
     const chunks = (0, utils_1.chunker)(indexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
-        yield Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(api, runtimeVersion, client, blockNumber, blockHash, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
+        await Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(api, runtimeVersion, client, blockNumber, blockHash, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
-});
+};
 exports.processEvents = processEvents;
-const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processEvent = async (api, runtimeVersion, client, blockNumber, blockHash, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => {
     const [eventIndex, { event, phase }] = indexedEvent;
     let sql = `INSERT INTO event (
     block_number,
@@ -449,7 +440,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
   DO NOTHING
   ;`;
     try {
-        yield client.query(sql);
+        await client.query(sql);
         logger.debug(loggerOptions, `Added event #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     }
     catch (error) {
@@ -460,7 +451,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
     if (event.section === 'system' && event.method === 'CodeUpdated') {
         const specName = runtimeVersion.toJSON().specName;
         const specVersion = runtimeVersion.specVersion;
-        const metadata = yield api.rpc.state.getMetadata(blockHash);
+        const metadata = await api.rpc.state.getMetadata(blockHash);
         const data = [
             blockNumber,
             specName,
@@ -491,7 +482,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
     ON CONFLICT ON CONSTRAINT runtime_pkey 
     DO NOTHING
     ;`;
-        yield (0, exports.dbParamQuery)(client, query, data, loggerOptions);
+        await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
     }
     // Store staking reward
     if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
@@ -600,7 +591,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
       ;`;
         }
         try {
-            yield client.query(sql);
+            await client.query(sql);
             logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
         }
         catch (error) {
@@ -636,7 +627,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
     DO NOTHING
     ;`;
         try {
-            yield client.query(sql);
+            await client.query(sql);
             logger.debug(loggerOptions, `Added validator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
         }
         catch (error) {
@@ -668,7 +659,7 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
     DO NOTHING
     ;`;
         try {
-            yield client.query(sql);
+            await client.query(sql);
             logger.debug(loggerOptions, `Added nominator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
         }
         catch (error) {
@@ -676,17 +667,17 @@ const processEvent = (api, runtimeVersion, client, blockNumber, blockHash, activ
             Sentry.captureException(error);
         }
     }
-});
+};
 exports.processEvent = processEvent;
-const processLogs = (client, blockNumber, logs, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processLogs = async (client, blockNumber, logs, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
-    yield Promise.all(logs.map((log, index) => (0, exports.processLog)(client, blockNumber, log, index, timestamp, loggerOptions)));
+    await Promise.all(logs.map((log, index) => (0, exports.processLog)(client, blockNumber, log, index, timestamp, loggerOptions)));
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
-});
+};
 exports.processLogs = processLogs;
-const processLog = (client, blockNumber, log, index, timestamp, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processLog = async (client, blockNumber, log, index, timestamp, loggerOptions) => {
     const { type } = log;
     const [[engine, data]] = Object.values(log.toHuman());
     const sql = `INSERT INTO log (
@@ -708,14 +699,14 @@ const processLog = (client, blockNumber, log, index, timestamp, loggerOptions) =
     DO NOTHING;
     ;`;
     try {
-        yield client.query(sql);
+        await client.query(sql);
         logger.debug(loggerOptions, `Added log ${blockNumber}-${index}`);
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
     }
-});
+};
 exports.processLog = processLog;
 const getExtrinsicSuccessOrErrorMessage = (api, index, blockEvents) => {
     let extrinsicSuccess = false;
@@ -757,20 +748,20 @@ const getDisplayName = (identity) => {
     return identity.display || '';
 };
 exports.getDisplayName = getDisplayName;
-const updateFinalized = (client, finalizedBlock, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const updateFinalized = async (client, finalizedBlock, loggerOptions) => {
     const sql = `
     UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock};
   `;
     try {
-        yield client.query(sql);
+        await client.query(sql);
     }
     catch (error) {
         logger.error(loggerOptions, `Error updating finalized blocks: ${error}`);
         Sentry.captureException(error);
     }
-});
+};
 exports.updateFinalized = updateFinalized;
-const logHarvestError = (client, blockNumber, error, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const logHarvestError = async (client, blockNumber, error, loggerOptions) => {
     const timestamp = new Date().getTime();
     const errorString = error.toString().replace(/'/g, "''");
     const data = [
@@ -787,8 +778,8 @@ const logHarvestError = (client, blockNumber, error, loggerOptions) => __awaiter
       harvest_error_pkey 
       DO NOTHING
     ;`;
-    yield (0, exports.dbParamQuery)(client, query, data, loggerOptions);
-});
+    await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
+};
 exports.logHarvestError = logHarvestError;
 // TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proxy extrinsic
 const getTransferAllAmount = (index, blockEvents) => blockEvents
@@ -808,7 +799,7 @@ const getSlashedValidatorAccount = (index, indexedBlockEvents) => {
     return validatorAccountId;
 };
 exports.getSlashedValidatorAccount = getSlashedValidatorAccount;
-const healthCheck = (config, client, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const healthCheck = async (config, client, loggerOptions) => {
     const startTime = new Date().getTime();
     logger.info(loggerOptions, 'Starting health check');
     const query = `
@@ -825,21 +816,21 @@ const healthCheck = (config, client, loggerOptions) => __awaiter(void 0, void 0,
     OR
       b.total_extrinsics > (SELECT COUNT(*) FROM extrinsic AS ex WHERE ex.block_number = b.block_number) 
     ;`;
-    const res = yield (0, exports.dbQuery)(client, query, loggerOptions);
+    const res = await (0, exports.dbQuery)(client, query, loggerOptions);
     for (const row of res.rows) {
         logger.info(loggerOptions, `Health check failed for block #${row.block_number}, deleting block from block table!`);
-        yield (0, exports.dbQuery)(client, `DELETE FROM block WHERE block_number = '${row.block_number}';`, loggerOptions);
+        await (0, exports.dbQuery)(client, `DELETE FROM block WHERE block_number = '${row.block_number}';`, loggerOptions);
     }
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Health check finished in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
-});
+};
 exports.healthCheck = healthCheck;
-const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => {
     const startTime = new Date().getTime();
     try {
-        const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
-        const apiAt = yield api.at(blockHash);
-        const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestamp,] = yield Promise.all([
+        const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
+        const apiAt = await api.at(blockHash);
+        const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestamp,] = await Promise.all([
             api.rpc.chain.getBlock(blockHash),
             apiAt.query.system.events(),
             api.derive.chain.getHeader(blockHash),
@@ -854,7 +845,7 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
             apiAt.query.timestamp.now(),
         ]);
         const blockAuthor = blockHeader.author || '';
-        const blockAuthorIdentity = yield api.derive.accounts.info(blockHeader.author);
+        const blockAuthorIdentity = await api.derive.accounts.info(blockHeader.author);
         const blockAuthorName = (0, exports.getDisplayName)(blockAuthorIdentity.identity);
         const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
         // Get election status
@@ -901,7 +892,7 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
       DO NOTHING
       ;`;
         try {
-            yield (0, exports.dbQuery)(client, sqlInsert, loggerOptions);
+            await (0, exports.dbQuery)(client, sqlInsert, loggerOptions);
             const endTime = new Date().getTime();
             logger.debug(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
         }
@@ -909,7 +900,7 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
             Sentry.captureException(error);
         }
-        yield Promise.all([
+        await Promise.all([
             // Store block extrinsics (async)
             (0, exports.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
             // Store module events (async)
@@ -920,13 +911,13 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
-        yield (0, exports.logHarvestError)(client, blockNumber, error, loggerOptions);
+        await (0, exports.logHarvestError)(client, blockNumber, error, loggerOptions);
         Sentry.captureException(error);
     }
-});
+};
 exports.harvestBlock = harvestBlock;
 // eslint-disable-next-line no-unused-vars
-const harvestBlocksSeq = (config, api, client, startBlock, endBlock, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const harvestBlocksSeq = async (config, api, client, startBlock, endBlock, loggerOptions) => {
     const reverseOrder = true;
     const blocks = reverseOrder
         ? (0, utils_1.reverseRange)(startBlock, endBlock, 1)
@@ -937,7 +928,7 @@ const harvestBlocksSeq = (config, api, client, startBlock, endBlock, loggerOptio
     let avgTimeMs = 0;
     for (const blockNumber of blocks) {
         const blockStartTime = Date.now();
-        yield (0, exports.harvestBlock)(config, api, client, blockNumber, loggerOptions);
+        await (0, exports.harvestBlock)(config, api, client, blockNumber, loggerOptions);
         const blockEndTime = new Date().getTime();
         // Cook some stats
         const blockProcessingTimeMs = blockEndTime - blockStartTime;
@@ -952,9 +943,9 @@ const harvestBlocksSeq = (config, api, client, startBlock, endBlock, loggerOptio
         const completed = ((blocks.indexOf(blockNumber) + 1) * 100) / blocks.length;
         logger.info(loggerOptions, `Processed block #${blockNumber} ${blocks.indexOf(blockNumber) + 1}/${blocks.length} [${completed.toFixed(config.statsPrecision)}%] in ${((blockProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)}`);
     }
-});
+};
 exports.harvestBlocksSeq = harvestBlocksSeq;
-const harvestBlocks = (config, api, client, startBlock, endBlock, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const harvestBlocks = async (config, api, client, startBlock, endBlock, loggerOptions) => {
     const reverseOrder = true;
     const blocks = reverseOrder
         ? (0, utils_1.reverseRange)(startBlock, endBlock, 1)
@@ -968,7 +959,7 @@ const harvestBlocks = (config, api, client, startBlock, endBlock, loggerOptions)
     let avgBlocksPerSecond = 0;
     for (const chunk of chunks) {
         const chunkStartTime = Date.now();
-        yield Promise.all(chunk.map((blockNumber) => (0, exports.harvestBlock)(config, api, client, blockNumber, loggerOptions)));
+        await Promise.all(chunk.map((blockNumber) => (0, exports.harvestBlock)(config, api, client, blockNumber, loggerOptions)));
         const chunkEndTime = new Date().getTime();
         // Cook some stats
         const chunkProcessingTimeMs = chunkEndTime - chunkStartTime;
@@ -988,17 +979,17 @@ const harvestBlocks = (config, api, client, startBlock, endBlock, loggerOptions)
             + `min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)} `
             + `cur/avg bps: ${currentBlocksPerSecond.toFixed(config.statsPrecision)}/${avgBlocksPerSecond.toFixed(config.statsPrecision)}`);
     }
-});
+};
 exports.harvestBlocks = harvestBlocks;
 const getAccountIdFromArgs = (account) => account
     .map(({ args }) => args)
     .map(([e]) => e.toHuman());
 exports.getAccountIdFromArgs = getAccountIdFromArgs;
-const fetchAccountIds = (api) => __awaiter(void 0, void 0, void 0, function* () { return (0, exports.getAccountIdFromArgs)(yield api.query.system.account.keys()); });
+const fetchAccountIds = async (api) => (0, exports.getAccountIdFromArgs)(await api.query.system.account.keys());
 exports.fetchAccountIds = fetchAccountIds;
-const processAccountsChunk = (api, client, accountId, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
     const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
-    const [block, identity, balances] = yield Promise.all([
+    const [block, identity, balances] = await Promise.all([
         api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
         api.derive.accounts.identity(accountId),
         api.derive.balances.all(accountId),
@@ -1064,15 +1055,15 @@ const processAccountsChunk = (api, client, accountId, loggerOptions) => __awaite
       block_height = EXCLUDED.block_height
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
-    yield (0, exports.dbParamQuery)(client, query, data, loggerOptions);
-});
+    await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
+};
 exports.processAccountsChunk = processAccountsChunk;
 //
 // staking
 //
-const getThousandValidators = (loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const getThousandValidators = async (loggerOptions) => {
     try {
-        const response = yield axios_1.default.get('https://kusama.w3f.community/candidates');
+        const response = await axios_1.default.get('https://kusama.w3f.community/candidates');
         return response.data;
     }
     catch (error) {
@@ -1080,7 +1071,7 @@ const getThousandValidators = (loggerOptions) => __awaiter(void 0, void 0, void 
         Sentry.captureException(error);
         return [];
     }
-});
+};
 exports.getThousandValidators = getThousandValidators;
 const isVerifiedIdentity = (identity) => {
     if (identity.judgements.length === 0) {
@@ -1227,7 +1218,7 @@ const getClusterInfo = (hasSubIdentity, validators, validatorIdentity) => {
     };
 };
 exports.getClusterInfo = getClusterInfo;
-const addNewFeaturedValidator = (config, client, ranking, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const addNewFeaturedValidator = async (config, client, ranking, loggerOptions) => {
     // rules:
     // - maximum commission is 10%
     // - at least 20 KSM own stake
@@ -1235,7 +1226,7 @@ const addNewFeaturedValidator = (config, client, ranking, loggerOptions) => __aw
     // get previously featured
     const alreadyFeatured = [];
     const sql = 'SELECT stash_address, timestamp FROM featured';
-    const res = yield (0, exports.dbQuery)(client, sql, loggerOptions);
+    const res = await (0, exports.dbQuery)(client, sql, loggerOptions);
     res.rows.forEach((validator) => alreadyFeatured.push(validator.stash_address));
     // get candidates that meet the rules
     const featuredCandidates = ranking
@@ -1247,11 +1238,11 @@ const addNewFeaturedValidator = (config, client, ranking, loggerOptions) => __aw
     const shuffled = [...featuredCandidates].sort(() => 0.5 - Math.random());
     const randomRank = shuffled[0];
     const featured = ranking.find((validator) => validator.rank === randomRank);
-    yield (0, exports.dbQuery)(client, `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`, loggerOptions);
+    await (0, exports.dbQuery)(client, `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`, loggerOptions);
     logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
-});
+};
 exports.addNewFeaturedValidator = addNewFeaturedValidator;
-const insertRankingValidator = (client, validator, blockHeight, startTime, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const insertRankingValidator = async (client, validator, blockHeight, startTime, loggerOptions) => {
     const sql = `INSERT INTO ranking (
       block_height,
       rank,
@@ -1406,10 +1397,10 @@ const insertRankingValidator = (client, validator, blockHeight, startTime, logge
         `${validator.dominated}`,
         `${startTime}`,
     ];
-    yield (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
-});
+    await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
+};
 exports.insertRankingValidator = insertRankingValidator;
-const insertEraValidatorStats = (client, validator, activeEra, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const insertEraValidatorStats = async (client, validator, activeEra, loggerOptions) => {
     let sql = `INSERT INTO era_vrc_score (
       stash_address,
       era,
@@ -1426,7 +1417,7 @@ const insertEraValidatorStats = (client, validator, activeEra, loggerOptions) =>
         activeEra,
         validator.totalRating,
     ];
-    yield (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
+    await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     for (const commissionHistoryItem of validator.commissionHistory) {
         if (commissionHistoryItem.commission) {
             sql = `INSERT INTO era_commission (
@@ -1445,7 +1436,7 @@ const insertEraValidatorStats = (client, validator, activeEra, loggerOptions) =>
                 commissionHistoryItem.era,
                 commissionHistoryItem.commission,
             ];
-            yield (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
+            await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     for (const perfHistoryItem of validator.relativePerformanceHistory) {
@@ -1466,7 +1457,7 @@ const insertEraValidatorStats = (client, validator, activeEra, loggerOptions) =>
                 perfHistoryItem.era,
                 perfHistoryItem.relativePerformance,
             ];
-            yield (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
+            await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     for (const stakefHistoryItem of validator.stakeHistory) {
@@ -1487,7 +1478,7 @@ const insertEraValidatorStats = (client, validator, activeEra, loggerOptions) =>
                 stakefHistoryItem.era,
                 stakefHistoryItem.self,
             ];
-            yield (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
+            await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     for (const eraPointsHistoryItem of validator.eraPointsHistory) {
@@ -1508,14 +1499,14 @@ const insertEraValidatorStats = (client, validator, activeEra, loggerOptions) =>
                 eraPointsHistoryItem.era,
                 eraPointsHistoryItem.points,
             ];
-            yield (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
+            await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
-});
+};
 exports.insertEraValidatorStats = insertEraValidatorStats;
-const getAddressCreation = (client, address, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const getAddressCreation = async (client, address, loggerOptions) => {
     const query = "SELECT block_number FROM event WHERE method = 'NewAccount' AND data LIKE $1";
-    const res = yield (0, exports.dbParamQuery)(client, query, [`%${address}%`], loggerOptions);
+    const res = await (0, exports.dbParamQuery)(client, query, [`%${address}%`], loggerOptions);
     if (res) {
         if (res.rows.length > 0) {
             if (res.rows[0].block_number) {
@@ -1525,13 +1516,13 @@ const getAddressCreation = (client, address, loggerOptions) => __awaiter(void 0,
     }
     // if not found we assume that it's included in genesis
     return 0;
-});
+};
 exports.getAddressCreation = getAddressCreation;
-const getLastEraInDb = (client, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const getLastEraInDb = async (client, loggerOptions) => {
     // TODO: check also:
     // era_points_avg, era_relative_performance_avg, era_self_stake_avg
     const query = 'SELECT era FROM era_commission_avg ORDER BY era DESC LIMIT 1';
-    const res = yield (0, exports.dbQuery)(client, query, loggerOptions);
+    const res = await (0, exports.dbQuery)(client, query, loggerOptions);
     if (res) {
         if (res.rows.length > 0) {
             if (res.rows[0].era) {
@@ -1540,42 +1531,42 @@ const getLastEraInDb = (client, loggerOptions) => __awaiter(void 0, void 0, void
         }
     }
     return 0;
-});
+};
 exports.getLastEraInDb = getLastEraInDb;
-const insertEraValidatorStatsAvg = (client, eraIndex, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
     const era = new bignumber_js_1.BigNumber(eraIndex.toString()).toString(10);
     let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = '${era}' AND commission != 100`;
-    let res = yield (0, exports.dbQuery)(client, sql, loggerOptions);
+    let res = await (0, exports.dbQuery)(client, sql, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].commission_avg) {
             sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ('${era}', '${res.rows[0].commission_avg}') ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
-            yield (0, exports.dbQuery)(client, sql, loggerOptions);
+            await (0, exports.dbQuery)(client, sql, loggerOptions);
         }
     }
     sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = '${era}'`;
-    res = yield (0, exports.dbQuery)(client, sql, loggerOptions);
+    res = await (0, exports.dbQuery)(client, sql, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].self_stake_avg) {
             const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
             sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ('${era}', '${selfStakeAvg}') ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
-            yield (0, exports.dbQuery)(client, sql, loggerOptions);
+            await (0, exports.dbQuery)(client, sql, loggerOptions);
         }
     }
     sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = '${era}'`;
-    res = yield (0, exports.dbQuery)(client, sql, loggerOptions);
+    res = await (0, exports.dbQuery)(client, sql, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].relative_performance_avg) {
             sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ('${era}', '${res.rows[0].relative_performance_avg}') ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
-            yield (0, exports.dbQuery)(client, sql, loggerOptions);
+            await (0, exports.dbQuery)(client, sql, loggerOptions);
         }
     }
     sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = '${era}'`;
-    res = yield (0, exports.dbQuery)(client, sql, loggerOptions);
+    res = await (0, exports.dbQuery)(client, sql, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].points_avg) {
             sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ('${era}', '${res.rows[0].points_avg}') ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
-            yield (0, exports.dbQuery)(client, sql, loggerOptions);
+            await (0, exports.dbQuery)(client, sql, loggerOptions);
         }
     }
-});
+};
 exports.insertEraValidatorStatsAvg = insertEraValidatorStatsAvg;

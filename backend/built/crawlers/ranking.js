@@ -18,15 +18,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -50,19 +41,19 @@ const loggerOptions = {
     crawler: crawlerName,
 };
 const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
-const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* () {
+const crawler = async (delayedStart) => {
     if (delayedStart) {
         logger.info(loggerOptions, `Delaying ranking crawler start for ${config.startDelay / 1000}s`);
-        yield (0, utils_1.wait)(config.startDelay);
+        await (0, utils_1.wait)(config.startDelay);
     }
     logger.info(loggerOptions, 'Starting ranking crawler');
     const startTime = new Date().getTime();
-    const client = yield (0, chain_1.getClient)(loggerOptions);
-    const api = yield (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
-    let synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
+    const client = await (0, chain_1.getClient)(loggerOptions);
+    const api = await (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
+    let synced = await (0, chain_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
-        yield (0, utils_1.wait)(10000);
-        synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
+        await (0, utils_1.wait)(10000);
+        synced = await (0, chain_1.isNodeSynced)(api, loggerOptions);
     }
     const clusters = [];
     const stakingQueryFlags = {
@@ -82,17 +73,17 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
     // data collection
     //
     try {
-        const lastEraInDb = yield (0, chain_1.getLastEraInDb)(client, loggerOptions);
+        const lastEraInDb = await (0, chain_1.getLastEraInDb)(client, loggerOptions);
         logger.debug(loggerOptions, `Last era in DB is ${lastEraInDb}`);
         // thousand validators program data
         logger.debug(loggerOptions, 'Fetching thousand validator program validators ...');
-        const thousandValidators = yield (0, chain_1.getThousandValidators)(loggerOptions);
+        const thousandValidators = await (0, chain_1.getThousandValidators)(loggerOptions);
         logger.debug(loggerOptions, `Got info of ${thousandValidators.length} validators from Thousand Validators program API`);
         // chain data
         logger.debug(loggerOptions, 'Fetching chain data ...');
         const withActive = false;
         logger.debug(loggerOptions, 'Step #1');
-        const [erasHistoric, chainCurrentEra, chainActiveEra] = yield Promise.all([
+        const [erasHistoric, chainCurrentEra, chainActiveEra] = await Promise.all([
             api.derive.staking.erasHistoric(withActive),
             api.query.staking.currentEra(),
             api.query.staking.activeEra(),
@@ -100,7 +91,7 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         const eraIndexes = erasHistoric.slice(Math.max(erasHistoric.length - config.historySize, 0));
         const { maxNominatorRewardedPerValidator } = api.consts.staking;
         logger.debug(loggerOptions, 'Step #2');
-        const [{ block }, validatorAddresses, waitingInfo, nominators, councilVotes, proposals, referendums,] = yield Promise.all([
+        const [{ block }, validatorAddresses, waitingInfo, nominators, councilVotes, proposals, referendums,] = await Promise.all([
             api.rpc.chain.getBlock(),
             api.query.session.validators(),
             api.derive.staking.waitingInfo(stakingQueryFlags),
@@ -111,31 +102,39 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         ]);
         logger.debug(loggerOptions, 'Step #3');
         // eslint-disable-next-line no-underscore-dangle
-        const erasPoints = yield api.derive.staking._erasPoints(eraIndexes, withActive);
+        const erasPoints = await api.derive.staking._erasPoints(eraIndexes, withActive);
         logger.debug(loggerOptions, 'Step #4');
         let erasPreferences = [];
         for (const eraIndex of eraIndexes) {
-            const eraPrefs = yield api.derive.staking.eraPrefs(eraIndex);
+            const eraPrefs = await api.derive.staking.eraPrefs(eraIndex);
             erasPreferences = erasPreferences.concat(eraPrefs);
         }
         logger.debug(loggerOptions, 'Step #5');
         let erasSlashes = [];
         for (const eraIndex of eraIndexes) {
-            const eraSlashes = yield api.derive.staking.eraSlashes(eraIndex);
+            const eraSlashes = await api.derive.staking.eraSlashes(eraIndex);
             erasSlashes = erasSlashes.concat(eraSlashes);
         }
         logger.debug(loggerOptions, 'Step #6');
         let erasExposure = [];
         for (const eraIndex of eraIndexes) {
-            const eraExposure = yield api.derive.staking.eraExposure(eraIndex);
+            const eraExposure = await api.derive.staking.eraExposure(eraIndex);
             erasExposure = erasExposure.concat(eraExposure);
         }
         logger.debug(loggerOptions, 'Step #7');
-        validators = yield Promise.all(validatorAddresses.map((authorityId) => api.derive.staking.query(authorityId, stakingQueryFlags)));
+        validators = await Promise.all(validatorAddresses.map((authorityId) => api.derive.staking.query(authorityId, stakingQueryFlags)));
         logger.debug(loggerOptions, 'Step #8');
-        validators = yield Promise.all(validators.map((validator) => api.derive.accounts.info(validator.accountId).then(({ identity }) => (Object.assign(Object.assign({}, validator), { identity, active: true })))));
+        validators = await Promise.all(validators.map((validator) => api.derive.accounts.info(validator.accountId).then(({ identity }) => ({
+            ...validator,
+            identity,
+            active: true,
+        }))));
         logger.debug(loggerOptions, 'Step #9');
-        intentions = yield Promise.all(waitingInfo.info.map((intention) => api.derive.accounts.info(intention.accountId).then(({ identity }) => (Object.assign(Object.assign({}, intention), { identity, active: false })))));
+        intentions = await Promise.all(waitingInfo.info.map((intention) => api.derive.accounts.info(intention.accountId).then(({ identity }) => ({
+            ...intention,
+            identity,
+            active: false,
+        }))));
         const dataCollectionEndTime = new Date().getTime();
         const dataCollectionTime = dataCollectionEndTime - startTime;
         logger.debug(loggerOptions, 'Done!');
@@ -175,7 +174,7 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         logger.debug(loggerOptions, `Current era is ${currentEra}`);
         logger.debug(loggerOptions, `Active era is ${activeEra}`);
         logger.debug(loggerOptions, `Minimum amount to stake is ${minimumStake}`);
-        yield Promise.all([
+        await Promise.all([
             (0, chain_1.dbQuery)(client, `UPDATE total SET count = '${activeValidatorCount}' WHERE name = 'active_validator_count'`, loggerOptions),
             (0, chain_1.dbQuery)(client, `UPDATE total SET count = '${waitingValidatorCount}' WHERE name = 'waiting_validator_count'`, loggerOptions),
             (0, chain_1.dbQuery)(client, `UPDATE total SET count = '${nominatorCount}' WHERE name = 'nominator_count'`, loggerOptions),
@@ -206,10 +205,10 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         const stashAddressesCreation = [];
         for (const validator of validators) {
             const stashAddress = validator.stashId.toString();
-            stashAddressesCreation[stashAddress] = yield (0, chain_1.getAddressCreation)(client, stashAddress, loggerOptions);
+            stashAddressesCreation[stashAddress] = await (0, chain_1.getAddressCreation)(client, stashAddress, loggerOptions);
             if (validator.identity.parent) {
                 const stashParentAddress = validator.identity.parent.toString();
-                stashAddressesCreation[stashParentAddress] = yield (0, chain_1.getAddressCreation)(client, stashParentAddress, loggerOptions);
+                stashAddressesCreation[stashParentAddress] = await (0, chain_1.getAddressCreation)(client, stashParentAddress, loggerOptions);
             }
         }
         let ranking = validators
@@ -449,8 +448,13 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
                 / (maxPerformance - minPerformance)).toFixed(6);
             const dominated = false;
             const relativePerformanceHistory = [];
-            return Object.assign(Object.assign({ rank: rank + 1, relativePerformance,
-                relativePerformanceHistory }, validator), { dominated });
+            return {
+                rank: rank + 1,
+                relativePerformance,
+                relativePerformanceHistory,
+                ...validator,
+                dominated,
+            };
         });
         // populate minMaxEraPerformance
         eraIndexes.forEach((eraIndex) => {
@@ -498,8 +502,11 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
                     break;
                 }
             }
-            return Object.assign(Object.assign({}, validator), { relativePerformanceHistory,
-                dominated });
+            return {
+                ...validator,
+                relativePerformanceHistory,
+                dominated,
+            };
         });
         const dominatedEnd = new Date().getTime();
         logger.debug(loggerOptions, `Found ${ranking.filter(({ dominated }) => dominated).length} dominated validators in ${((dominatedEnd - dominatedStart) / 1000).toFixed(3)}s`);
@@ -545,35 +552,35 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         // We want to store era stats only when there's a new consolidated era in chain history
         if (parseInt(activeEra, 10) - 1 > parseInt(lastEraInDb, 10)) {
             logger.debug(loggerOptions, 'Storing era stats in db...');
-            yield Promise.all(ranking.map((validator) => (0, chain_1.insertEraValidatorStats)(client, validator, activeEra, loggerOptions)));
+            await Promise.all(ranking.map((validator) => (0, chain_1.insertEraValidatorStats)(client, validator, activeEra, loggerOptions)));
             logger.debug(loggerOptions, 'Storing era stats averages in db...');
-            yield Promise.all(eraIndexes.map((eraIndex) => (0, chain_1.insertEraValidatorStatsAvg)(client, eraIndex, loggerOptions)));
+            await Promise.all(eraIndexes.map((eraIndex) => (0, chain_1.insertEraValidatorStatsAvg)(client, eraIndex, loggerOptions)));
         }
         else {
             logger.debug(loggerOptions, 'Updating era averages is not needed!');
         }
         logger.debug(loggerOptions, `Storing ${ranking.length} validators in db...`);
-        yield Promise.all(ranking.map((validator) => (0, chain_1.insertRankingValidator)(client, validator, blockHeight, startTime, loggerOptions)));
+        await Promise.all(ranking.map((validator) => (0, chain_1.insertRankingValidator)(client, validator, blockHeight, startTime, loggerOptions)));
         logger.debug(loggerOptions, 'Cleaning old data');
-        yield (0, chain_1.dbQuery)(client, `DELETE FROM ranking WHERE block_height != '${blockHeight}';`, loggerOptions);
+        await (0, chain_1.dbQuery)(client, `DELETE FROM ranking WHERE block_height != '${blockHeight}';`, loggerOptions);
         // featured validator
         const sql = 'SELECT stash_address, timestamp FROM featured ORDER BY timestamp DESC LIMIT 1';
-        const res = yield (0, chain_1.dbQuery)(client, sql, loggerOptions);
+        const res = await (0, chain_1.dbQuery)(client, sql, loggerOptions);
         if (res.rows.length === 0) {
-            yield (0, chain_1.addNewFeaturedValidator)(config, client, ranking, loggerOptions);
+            await (0, chain_1.addNewFeaturedValidator)(config, client, ranking, loggerOptions);
         }
         else {
             const currentFeatured = res.rows[0];
             const currentTimestamp = new Date().getTime();
             if (currentTimestamp - currentFeatured.timestamp > config.featuredTimespan) {
                 // timespan passed, let's add a new featured validator
-                yield (0, chain_1.addNewFeaturedValidator)(config, client, ranking, loggerOptions);
+                await (0, chain_1.addNewFeaturedValidator)(config, client, ranking, loggerOptions);
             }
         }
         logger.debug(loggerOptions, 'Disconnecting from API');
-        yield api.disconnect().catch((error) => logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`));
+        await api.disconnect().catch((error) => logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`));
         logger.debug(loggerOptions, 'Disconnecting from DB');
-        yield client.end().catch((error) => logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`));
+        await client.end().catch((error) => logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`));
         const endTime = new Date().getTime();
         const dataProcessingTime = endTime - dataCollectionEndTime;
         logger.info(loggerOptions, `Added ${ranking.length} validators in ${((dataCollectionTime + dataProcessingTime) / 1000).toFixed(3)}s`);
@@ -584,7 +591,7 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         Sentry.captureException(error);
     }
     setTimeout(() => crawler(false), config.pollingTime);
-});
+};
 crawler(true).catch((error) => {
     logger.error(loggerOptions, `Crawler error: ${error}`);
     Sentry.captureException(error);

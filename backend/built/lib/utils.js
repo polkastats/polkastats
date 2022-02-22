@@ -1,21 +1,10 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.range = exports.reverseRange = exports.chunker = exports.getRandom = exports.wait = exports.shortHash = void 0;
 const shortHash = (hash) => `${hash.substring(0, 6)}…${hash.substring(hash.length - 5, hash.length - 1)}`;
 exports.shortHash = shortHash;
-const wait = (ms) => __awaiter(void 0, void 0, void 0, function* () {
-    return new Promise((resolve) => {
-        return setTimeout(resolve, ms);
-    });
+const wait = async (ms) => new Promise((resolve) => {
+    return setTimeout(resolve, ms);
 });
 exports.wait = wait;
 // from https://stackoverflow.com/questions/19269545/how-to-get-a-number-of-random-elements-from-an-array

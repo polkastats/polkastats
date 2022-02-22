@@ -18,15 +18,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -45,7 +36,7 @@ Sentry.init({
 const logger = (0, pino_1.default)({
     level: backend_config_1.backendConfig.logLevel,
 });
-const runCrawler = (crawler) => __awaiter(void 0, void 0, void 0, function* () {
+const runCrawler = async (crawler) => {
     const child = (0, child_process_1.spawn)('node', [`${crawler}`]);
     child.stdout.pipe(process.stdout);
     child.stderr.pipe(process.stderr);
@@ -53,15 +44,15 @@ const runCrawler = (crawler) => __awaiter(void 0, void 0, void 0, function* () {
         // attempt to restart crawler
         runCrawler(crawler);
     });
-});
-const runCrawlers = () => __awaiter(void 0, void 0, void 0, function* () {
+};
+const runCrawlers = async () => {
     logger.debug('Starting backend, waiting 10s...');
-    yield (0, utils_1.wait)(10000);
+    await (0, utils_1.wait)(10000);
     logger.debug('Running crawlers');
-    yield Promise.all(backend_config_1.backendConfig.crawlers
+    await Promise.all(backend_config_1.backendConfig.crawlers
         .filter(({ enabled }) => enabled)
         .map(({ crawler }) => runCrawler(crawler)));
-});
+};
 runCrawlers().catch((error) => {
     logger.debug(`Error while trying to run crawlers: ${error}`);
     Sentry.captureException(error);
