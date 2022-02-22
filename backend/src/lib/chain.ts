@@ -4,7 +4,8 @@ import '@polkadot/api-augment/kusama';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex } from '@polkadot/util';
-import { BlockHash, EventRecord, RuntimeVersion, EraIndex } from '@polkadot/types/interfaces';
+import { BlockHash, RuntimeVersion, EraIndex } from '@polkadot/types/interfaces';
+import { FrameSystemEventRecord } from '@polkadot/types/lookup';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { AnyTuple } from '@polkadot/types/types';
 import { GenericExtrinsic, Vec } from '@polkadot/types';
@@ -29,7 +30,7 @@ const logger = pino({
 // Used for processing events and extrinsics
 const chunkSize = 100;
 
-type indexedBlockEvent = [number, EventRecord];
+type indexedBlockEvent = [number, FrameSystemEventRecord];
 type indexedBlockExtrinsic = [number, GenericExtrinsic<AnyTuple>];
 
 export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCustomTypes: string | undefined): Promise<ApiPromise> => {
@@ -103,11 +104,11 @@ export const isValidAddressPolkadotAddress = (address: string): boolean => {
   }
 };
 
-export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: Vec<EventRecord>) => {
+export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: Vec<FrameSystemEventRecord>) => {
   const startTime = new Date().getTime();
   const involvedAddresses: string[] = [];
   blockEvents
-    .forEach(({ event }: EventRecord) => {
+    .forEach(({ event }: FrameSystemEventRecord) => {
       const types = event.typeDef;
       event.data.forEach((data, index) => {
         if (types[index].type === 'AccountId32') {
@@ -210,7 +211,7 @@ export const processExtrinsics = async (
   blockNumber: number,
   blockHash: BlockHash,
   extrinsics: Vec<GenericExtrinsic<AnyTuple>>,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: Vec<FrameSystemEventRecord>,
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
@@ -242,7 +243,7 @@ export const processExtrinsic = async (
   blockNumber: number,
   blockHash: BlockHash,
   indexedExtrinsic: indexedBlockExtrinsic,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: Vec<FrameSystemEventRecord>,
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
@@ -378,7 +379,7 @@ export const processTransfer = async (
   client: Client,
   blockNumber: number,
   extrinsicIndex: number,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: Vec<FrameSystemEventRecord>,
   section: string,
   method: string,
   args: string,
@@ -454,7 +455,7 @@ export const processEvents = async (
   blockNumber: number,
   blockHash: BlockHash,
   activeEra: number,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: Vec<FrameSystemEventRecord>,
   blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>,
   timestamp: number,
   loggerOptions: { crawler: string; },
@@ -800,7 +801,7 @@ export const processLog = async (client: Client, blockNumber: number, log: any, 
   }
 };
 
-export const getExtrinsicSuccessOrErrorMessage = (api: ApiPromise, index: number, blockEvents: Vec<EventRecord>): [boolean, string] => {
+export const getExtrinsicSuccessOrErrorMessage = (api: ApiPromise, index: number, blockEvents: Vec<FrameSystemEventRecord>): [boolean, string] => {
   let extrinsicSuccess = false;
   let extrinsicErrorMessage = '';
   blockEvents
@@ -875,7 +876,7 @@ export const logHarvestError = async (client: Client, blockNumber: number, error
 };
 
 // TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proxy extrinsic
-export const getTransferAllAmount = (index: number, blockEvents: Vec<EventRecord>): string => blockEvents
+export const getTransferAllAmount = (index: number, blockEvents: Vec<FrameSystemEventRecord>): string => blockEvents
   .find(({ event, phase }) => (
       phase.isApplyExtrinsic
       && phase.asApplyExtrinsic.eq(index)
