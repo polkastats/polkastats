@@ -21,6 +21,7 @@
     "@polkadot/api": "^7.9.1",
     "@polkadot/api-augment": "^7.9.1",
     "@polkadot/keyring": "^8.4.1",
+    "@polkadot/rpc-augment": "^7.9.1",
     "@polkadot/types-augment": "^7.9.1",
     "@polkadot/util": "^8.4.1",
     "@polkadot/util-crypto": "^8.4.1",

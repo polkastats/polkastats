@@ -2546,7 +2546,7 @@
     "@polkadot/util" "8.4.1"
     "@substrate/ss58-registry" "^1.14.0"
 
-"@polkadot/rpc-augment@7.9.1":
+"@polkadot/rpc-augment@7.9.1", "@polkadot/rpc-augment@^7.9.1":
   version "7.9.1"
   resolved "https://registry.yarnpkg.com/@polkadot/rpc-augment/-/rpc-augment-7.9.1.tgz#f10272ebb44ea256a3d8b42bbcf4964205f1291f"
   integrity sha512-8rI0cfNT7A6rdrk7lBRcB/1Qm8x6yarDTVUaRuqTBLzjgr/4WExg1h7sjjFOLVPE6T+SXBY0RKjRKglTcolv5g==
