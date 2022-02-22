@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
-require("@polkadot/api-augment/kusama");
+require("@polkadot/api-augment");
 const chain_1 = require("./lib/chain");
 const utils_1 = require("./lib/utils");
 const backend_config_1 = require("./backend.config");

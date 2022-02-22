@@ -1,5 +1,5 @@
 // @ts-check
-import '@polkadot/api-augment/kusama';
+import '@polkadot/api-augment';
 import {
   getClient,
   getPolkadotAPI,
