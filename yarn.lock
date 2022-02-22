@@ -2587,7 +2587,7 @@
     mock-socket "^9.1.2"
     nock "^13.2.4"
 
-"@polkadot/types-augment@7.9.1":
+"@polkadot/types-augment@7.9.1", "@polkadot/types-augment@^7.9.1":
   version "7.9.1"
   resolved "https://registry.yarnpkg.com/@polkadot/types-augment/-/types-augment-7.9.1.tgz#a7ba01d89d6a80fa3a403c31c26ecad28e6dbcfa"
   integrity sha512-2dl7CzgEBgGSjcqNcH2F2ZIlGVkf/mtbvu8ObmVw4z/ojpRLv26MO2TexF6fUMAFi7uNnq4r4yB9NsAxdUv2ZQ==
