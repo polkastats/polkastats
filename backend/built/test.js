@@ -16,29 +16,7 @@ const api_1 = require("@polkadot/api");
 const startBlock = 11404400;
 const endBlock = 11404500;
 const chunkSize = 10;
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const api = yield getPolkadotAPI();
-        yield harvestBlocks(api, startBlock, endBlock);
-    });
-}
-main().catch(console.error).finally(() => process.exit());
-const harvestBlocks = (api, startBlock, endBlock) => __awaiter(void 0, void 0, void 0, function* () {
-    const blocks = range(startBlock, endBlock, 1);
-    const chunks = chunker(blocks, chunkSize);
-    for (const chunk of chunks) {
-        yield Promise.all(chunk.map((blockNumber) => (0, exports.harvestBlock)(api, blockNumber)));
-    }
-});
-const getPolkadotAPI = () => __awaiter(void 0, void 0, void 0, function* () {
-    const wsNode = 'ws://substrate-node:9944';
-    const provider = new api_1.WsProvider(wsNode);
-    const api = yield api_1.ApiPromise.create({ provider });
-    yield api.isReady;
-    return api;
-});
 const harvestBlock = (api, blockNumber) => __awaiter(void 0, void 0, void 0, function* () {
-    const startTime = new Date().getTime();
     try {
         const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
         const apiAt = yield api.at(blockHash);
@@ -63,6 +41,27 @@ const harvestBlock = (api, blockNumber) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.harvestBlock = harvestBlock;
-const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
 const range = (start, stop, step) => Array
     .from({ length: (stop - start) / step + 1 }, (_, i) => start + (i * step));
+const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
+const harvestBlocks = (api, startBlock, endBlock) => __awaiter(void 0, void 0, void 0, function* () {
+    const blocks = range(startBlock, endBlock, 1);
+    const chunks = chunker(blocks, chunkSize);
+    for (const chunk of chunks) {
+        yield Promise.all(chunk.map((blockNumber) => (0, exports.harvestBlock)(api, blockNumber)));
+    }
+});
+const getPolkadotAPI = () => __awaiter(void 0, void 0, void 0, function* () {
+    const wsNode = 'ws://substrate-node:9944';
+    const provider = new api_1.WsProvider(wsNode);
+    const api = yield api_1.ApiPromise.create({ provider });
+    yield api.isReady;
+    return api;
+});
+function main() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const api = yield getPolkadotAPI();
+        yield harvestBlocks(api, startBlock, endBlock);
+    });
+}
+main().catch(console.error).finally(() => process.exit());
