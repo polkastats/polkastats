@@ -11,15 +11,17 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-const logger = pino();
+const logger = pino({
+  level: backendConfig.logLevel,
+});
 
 const runCrawler = async (crawler: string) => {
   const child = spawn('node', [`${crawler}`]);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
-  child.on('close', (exitCode) => {
-    logger.debug(`Crawler ${crawler} exit with code: ${exitCode}`);
-    return -1;
+  child.on('close', () => {
+    // attempt to restart crawler
+    runCrawler(crawler);
   });
 };
 
@@ -30,14 +32,13 @@ const runCrawlers = async () => {
   logger.debug('Running crawlers');
   await Promise.all(
     backendConfig.crawlers
-      .filter((crawler) => crawler.enabled)
+      .filter(({ enabled }) => enabled)
       .map(({ crawler }) => runCrawler(crawler)),
   );
 };
 
 runCrawlers().catch((error) => {
-  // eslint-disable-next-line no-console
-  console.error(error);
+  logger.debug(`Error while trying to run crawlers: ${error}`);
   Sentry.captureException(error);
   process.exit(-1);
 });

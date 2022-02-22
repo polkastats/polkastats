@@ -33,15 +33,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
-require("@polkadot/api-augment/kusama");
-const pino_1 = __importDefault(require("pino"));
 const utils_1 = require("../lib/utils");
+const pino_1 = __importDefault(require("pino"));
 const backend_config_1 = require("../backend.config");
+const crawlerName = 'blockListener';
 Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
 });
-const crawlerName = 'blockListener';
 const logger = (0, pino_1.default)({
     level: backend_config_1.backendConfig.logLevel,
 });
@@ -177,8 +176,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
     }));
 });
 crawler().catch((error) => {
-    // eslint-disable-next-line no-console
-    console.error(error);
+    logger.error(loggerOptions, `Crawler error: ${error}`);
     Sentry.captureException(error);
     process.exit(-1);
 });

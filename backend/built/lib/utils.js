@@ -31,24 +31,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.healthCheck = exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.range = exports.reverseRange = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
+exports.processAccountsChunk = exports.fetchAccountIds = exports.getAccountIdFromArgs = exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.healthCheck = exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.range = exports.reverseRange = exports.chunker = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.wait = exports.shortHash = exports.formatNumber = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 require("@polkadot/api-augment/kusama");
-const pino_1 = __importDefault(require("pino"));
 const api_1 = require("@polkadot/api");
 const keyring_1 = require("@polkadot/keyring");
 const util_1 = require("@polkadot/util");
+const pino_1 = __importDefault(require("pino"));
 const pg_1 = require("pg");
 const lodash_1 = __importDefault(require("lodash"));
 const fs_1 = __importDefault(require("fs"));
-const backend_config_1 = require("../backend.config");
 const bignumber_js_1 = require("bignumber.js");
+const backend_config_1 = require("../backend.config");
 Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
 });
-const logger = (0, pino_1.default)();
+const logger = (0, pino_1.default)({
+    level: backend_config_1.backendConfig.logLevel,
+});
 // Used for processing events and extrinsics
 const chunkSize = 100;
 const getPolkadotAPI = (loggerOptions, apiCustomTypes) => __awaiter(void 0, void 0, void 0, function* () {
@@ -919,7 +921,7 @@ const harvestBlock = (config, api, client, blockNumber, loggerOptions) => __awai
         try {
             yield (0, exports.dbQuery)(client, sqlInsert, loggerOptions);
             const endTime = new Date().getTime();
-            logger.info(loggerOptions, `Added block #${blockNumber} (${(0, exports.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+            logger.debug(loggerOptions, `Added block #${blockNumber} (${(0, exports.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
@@ -1006,3 +1008,80 @@ const harvestBlocks = (config, api, client, startBlock, endBlock, loggerOptions)
     }
 });
 exports.harvestBlocks = harvestBlocks;
+const getAccountIdFromArgs = (account) => account
+    .map(({ args }) => args)
+    .map(([e]) => e.toHuman());
+exports.getAccountIdFromArgs = getAccountIdFromArgs;
+const fetchAccountIds = (api) => __awaiter(void 0, void 0, void 0, function* () { return (0, exports.getAccountIdFromArgs)(yield api.query.system.account.keys()); });
+exports.fetchAccountIds = fetchAccountIds;
+const processAccountsChunk = (api, client, accountId, loggerOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
+    const [block, identity, balances] = yield Promise.all([
+        api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
+        api.derive.accounts.identity(accountId),
+        api.derive.balances.all(accountId),
+    ]);
+    const availableBalance = balances.availableBalance.toString();
+    const freeBalance = balances.freeBalance.toString();
+    const lockedBalance = balances.lockedBalance.toString();
+    const identityDisplay = identity.display ? identity.display.toString() : '';
+    const identityDisplayParent = identity.displayParent ? identity.displayParent.toString() : '';
+    const JSONIdentity = identity.display ? JSON.stringify(identity) : '';
+    const JSONbalances = JSON.stringify(balances);
+    const nonce = balances.accountNonce.toString();
+    const data = [
+        accountId,
+        JSONIdentity,
+        identityDisplay,
+        identityDisplayParent,
+        JSONbalances,
+        availableBalance,
+        freeBalance,
+        lockedBalance,
+        nonce,
+        timestamp,
+        block,
+    ];
+    const query = `
+    INSERT INTO account (
+      account_id,
+      identity,
+      identity_display,
+      identity_display_parent,
+      balances,
+      available_balance,
+      free_balance,
+      locked_balance,
+      nonce,
+      timestamp,
+      block_height
+    ) VALUES (
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7,
+      $8,
+      $9,
+      $10,
+      $11
+    )
+    ON CONFLICT (account_id)
+    DO UPDATE SET
+      identity = EXCLUDED.identity,
+      identity_display = EXCLUDED.identity_display,
+      identity_display_parent = EXCLUDED.identity_display_parent,
+      balances = EXCLUDED.balances,
+      available_balance = EXCLUDED.available_balance,
+      free_balance = EXCLUDED.free_balance,
+      locked_balance = EXCLUDED.locked_balance,
+      nonce = EXCLUDED.nonce,
+      timestamp = EXCLUDED.timestamp,
+      block_height = EXCLUDED.block_height
+    WHERE EXCLUDED.block_height > account.block_height
+  ;`;
+    yield (0, exports.dbParamQuery)(client, query, data, loggerOptions);
+});
+exports.processAccountsChunk = processAccountsChunk;

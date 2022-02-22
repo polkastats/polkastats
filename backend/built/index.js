@@ -42,14 +42,16 @@ Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
 });
-const logger = (0, pino_1.default)();
+const logger = (0, pino_1.default)({
+    level: backend_config_1.backendConfig.logLevel,
+});
 const runCrawler = (crawler) => __awaiter(void 0, void 0, void 0, function* () {
     const child = (0, child_process_1.spawn)('node', [`${crawler}`]);
     child.stdout.pipe(process.stdout);
     child.stderr.pipe(process.stderr);
-    child.on('close', (exitCode) => {
-        logger.debug(`Crawler ${crawler} exit with code: ${exitCode}`);
-        return -1;
+    child.on('close', () => {
+        // attempt to restart crawler
+        runCrawler(crawler);
     });
 });
 const runCrawlers = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -57,12 +59,11 @@ const runCrawlers = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, utils_1.wait)(10000);
     logger.debug('Running crawlers');
     yield Promise.all(backend_config_1.backendConfig.crawlers
-        .filter((crawler) => crawler.enabled)
+        .filter(({ enabled }) => enabled)
         .map(({ crawler }) => runCrawler(crawler)));
 });
 runCrawlers().catch((error) => {
-    // eslint-disable-next-line no-console
-    console.error(error);
+    logger.debug(`Error while trying to run crawlers: ${error}`);
     Sentry.captureException(error);
     process.exit(-1);
 });

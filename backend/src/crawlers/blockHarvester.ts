@@ -1,16 +1,16 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import '@polkadot/api-augment/kusama';
-import pino from 'pino';
 import { getClient, dbQuery, getPolkadotAPI, isNodeSynced, wait, healthCheck,  harvestBlocks, harvestBlocksSeq, } from '../lib/utils';
+import pino from 'pino';
 import { backendConfig } from '../backend.config';
+
+const crawlerName = 'blockHarvester';
 
 Sentry.init({
   dsn: backendConfig.sentryDSN,
   tracesSampleRate: 1.0,
 });
 
-const crawlerName = 'blockHarvester';
 const logger = pino({
   level: backendConfig.logLevel,
 });
@@ -112,8 +112,7 @@ const crawler = async (delayedStart: boolean) => {
 };
 
 crawler(true).catch((error) => {
-  // eslint-disable-next-line no-console
-  console.error(error);
+  logger.error(loggerOptions, `Crawler error: ${error}`);
   Sentry.captureException(error);
   process.exit(-1);
 });

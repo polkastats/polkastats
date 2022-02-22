@@ -33,17 +33,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
-const bignumber_js_1 = require("bignumber.js");
-require("@polkadot/api-augment/kusama");
-const pino_1 = __importDefault(require("pino"));
-const axios = require('axios').default;
 const utils_1 = require("../lib/utils");
+const bignumber_js_1 = require("bignumber.js");
+const pino_1 = __importDefault(require("pino"));
+const axios_1 = __importDefault(require("axios"));
 const backend_config_1 = require("../backend.config");
+const crawlerName = 'ranking';
 Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
 });
-const crawlerName = 'ranking';
 const logger = (0, pino_1.default)({
     level: backend_config_1.backendConfig.logLevel,
 });
@@ -53,7 +52,7 @@ const loggerOptions = {
 const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
 const getThousandValidators = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const response = yield axios.get('https://kusama.w3f.community/candidates');
+        const response = yield axios_1.default.get('https://kusama.w3f.community/candidates');
         return response.data;
     }
     catch (error) {
@@ -1084,8 +1083,7 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
     setTimeout(() => crawler(false), config.pollingTime);
 });
 crawler(true).catch((error) => {
-    // eslint-disable-next-line no-console
-    console.error(error);
+    logger.error(loggerOptions, `Crawler error: ${error}`);
     Sentry.captureException(error);
     process.exit(-1);
 });

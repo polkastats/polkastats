@@ -13,7 +13,7 @@ exports.backendConfig = {
         password: process.env.POSTGRES_PASSWORD || 'polkastats',
         port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
     },
-    logLevel: process.env.LOG_LEVEL || 'debug',
+    logLevel: process.env.LOG_LEVEL || 'info',
     sentryDSN: process.env.SENTRY_DSN || '',
     crawlers: [
         {

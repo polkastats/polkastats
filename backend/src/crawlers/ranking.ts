@@ -1,27 +1,29 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import { BigNumber } from 'bignumber.js';
-import '@polkadot/api-augment/kusama';
-import pino from 'pino';
-const axios = require('axios').default;
 import { getClient, getPolkadotAPI, isNodeSynced, wait, dbQuery, dbParamQuery } from '../lib/utils';
-import { backendConfig } from '../backend.config';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
-import { Client } from 'pg';
 import { EraIndex } from '@polkadot/types/interfaces';
+import { BigNumber } from 'bignumber.js';
+import pino from 'pino';
+import axios from 'axios';
+import { Client } from 'pg';
+import { backendConfig } from '../backend.config';
+
+const crawlerName = 'ranking';
 
 Sentry.init({
   dsn: backendConfig.sentryDSN,
   tracesSampleRate: 1.0,
 });
 
-const crawlerName = 'ranking';
 const logger = pino({
   level: backendConfig.logLevel,
 });
+
 const loggerOptions = {
   crawler: crawlerName,
 };
+
 const config = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
@@ -1263,8 +1265,7 @@ const crawler = async (delayedStart: boolean) => {
 };
 
 crawler(true).catch((error) => {
-  // eslint-disable-next-line no-console
-  console.error(error);
+  logger.error(loggerOptions, `Crawler error: ${error}`);
   Sentry.captureException(error);
   process.exit(-1);
 });
