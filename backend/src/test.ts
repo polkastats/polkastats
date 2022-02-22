@@ -1,7 +1,6 @@
 // @ts-check
 import '@polkadot/api-augment/kusama';
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import fs from 'fs';
 import {
   getClient,
   isNodeSynced,
