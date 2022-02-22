@@ -4,7 +4,6 @@ import {
   getClient,
   getPolkadotAPI,
   isNodeSynced,
-  healthCheck,
   harvestBlocks,
 } from './lib/chain';
 import { wait } from './lib/utils';
@@ -26,9 +25,6 @@ const config = backendConfig.crawlers.find(
 async function main() {
 
   const client = await getClient(loggerOptions);
-
-  // Delete blocks that don't have all its events or extrinsics in db
-  await healthCheck(config, client, loggerOptions);
 
   const api = await getPolkadotAPI(loggerOptions, config.apiCustomTypes);
   let synced = await isNodeSynced(api, loggerOptions);

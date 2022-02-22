@@ -24,8 +24,6 @@ const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name =
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const client = yield (0, chain_1.getClient)(loggerOptions);
-        // Delete blocks that don't have all its events or extrinsics in db
-        yield (0, chain_1.healthCheck)(config, client, loggerOptions);
         const api = yield (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
         let synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
         while (!synced) {
