@@ -9,59 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.harvestBlock = void 0;
 // @ts-check
-require("@polkadot/api-augment/kusama");
-const api_1 = require("@polkadot/api");
+const chain_1 = require("./lib/chain");
+const utils_1 = require("./lib/utils");
+const backend_config_1 = require("./backend.config");
 const startBlock = 11404400;
 const endBlock = 11404500;
-const chunkSize = 10;
-const harvestBlock = (api, blockNumber) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const blockHash = yield api.rpc.chain.getBlockHash(blockNumber);
-        const apiAt = yield api.at(blockHash);
-        const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestamp,] = yield Promise.all([
-            api.rpc.chain.getBlock(blockHash),
-            apiAt.query.system.events(),
-            api.derive.chain.getHeader(blockHash),
-            apiAt.query.balances.totalIssuance(),
-            api.rpc.state.getRuntimeVersion(blockHash),
-            apiAt.query.staking.activeEra()
-                .then((res) => (res.toJSON() ? res.toJSON().index : 0))
-                .catch((e) => { console.log(e); return 0; }),
-            apiAt.query.session.currentIndex()
-                .then((res) => (res || 0)),
-            apiAt.query.electionProviderMultiPhase.currentPhase(),
-            apiAt.query.timestamp.now(),
-        ]);
-        console.log(blockNumber);
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
-exports.harvestBlock = harvestBlock;
-const range = (start, stop, step) => Array
-    .from({ length: (stop - start) / step + 1 }, (_, i) => start + (i * step));
-const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
-const harvestBlocks = (api, startBlock, endBlock) => __awaiter(void 0, void 0, void 0, function* () {
-    const blocks = range(startBlock, endBlock, 1);
-    const chunks = chunker(blocks, chunkSize);
-    for (const chunk of chunks) {
-        yield Promise.all(chunk.map((blockNumber) => (0, exports.harvestBlock)(api, blockNumber)));
-    }
-});
-const getPolkadotAPI = () => __awaiter(void 0, void 0, void 0, function* () {
-    const wsNode = 'ws://substrate-node:9944';
-    const provider = new api_1.WsProvider(wsNode);
-    const api = yield api_1.ApiPromise.create({ provider });
-    yield api.isReady;
-    return api;
-});
+const crawlerName = 'blockHarvester';
+const loggerOptions = {
+    crawler: crawlerName,
+};
+const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const api = yield getPolkadotAPI();
-        yield harvestBlocks(api, startBlock, endBlock);
+        const client = yield (0, chain_1.getClient)(loggerOptions);
+        const api = yield (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
+        let synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
+        while (!synced) {
+            yield (0, utils_1.wait)(10000);
+            synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
+        }
+        yield (0, chain_1.harvestBlocks)(config, api, client, startBlock, endBlock, loggerOptions);
     });
 }
 main().catch(console.error).finally(() => process.exit());
