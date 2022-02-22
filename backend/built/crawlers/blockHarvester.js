@@ -33,6 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
+const chain_1 = require("../lib/chain");
 const utils_1 = require("../lib/utils");
 const pino_1 = __importDefault(require("pino"));
 const backend_config_1 = require("../backend.config");
@@ -55,14 +56,14 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
     }
     logger.info(loggerOptions, 'Starting block harvester...');
     const startTime = new Date().getTime();
-    const client = yield (0, utils_1.getClient)(loggerOptions);
+    const client = yield (0, chain_1.getClient)(loggerOptions);
     // Delete blocks that don't have all its events or extrinsics in db
-    yield (0, utils_1.healthCheck)(config, client, loggerOptions);
-    const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
-    let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
+    yield (0, chain_1.healthCheck)(config, client, loggerOptions);
+    const api = yield (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
+    let synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
         yield (0, utils_1.wait)(10000);
-        synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
+        synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
     }
     // Get gaps from block table
     // Thanks to @miguelmota: https://gist.github.com/miguelmota/6d40be2ecb083507de1d073443154610
@@ -89,15 +90,15 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
   )
   ORDER BY gap_start DESC
   `;
-    const res = yield (0, utils_1.dbQuery)(client, sqlSelect, loggerOptions);
+    const res = yield (0, chain_1.dbQuery)(client, sqlSelect, loggerOptions);
     for (const row of res.rows) {
         if (!(row.gap_start === 0 && row.gap_end === 0)) {
             logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
             if (config.mode === 'chunks') {
-                yield (0, utils_1.harvestBlocks)(config, api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10), loggerOptions);
+                yield (0, chain_1.harvestBlocks)(config, api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10), loggerOptions);
             }
             else {
-                yield (0, utils_1.harvestBlocksSeq)(config, api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10), loggerOptions);
+                yield (0, chain_1.harvestBlocksSeq)(config, api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10), loggerOptions);
             }
         }
     }

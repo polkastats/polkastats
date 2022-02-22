@@ -1,6 +1,15 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import { getClient, dbQuery, getPolkadotAPI, isNodeSynced, wait, healthCheck,  harvestBlocks, harvestBlocksSeq, } from '../lib/utils';
+import {
+  getClient,
+  dbQuery,
+  getPolkadotAPI,
+  isNodeSynced,
+  healthCheck,
+  harvestBlocks,
+  harvestBlocksSeq,
+} from '../lib/chain';
+import { wait } from '../lib/utils';
 import pino from 'pino';
 import { backendConfig } from '../backend.config';
 

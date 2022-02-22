@@ -33,6 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
+const chain_1 = require("../lib/chain");
 const utils_1 = require("../lib/utils");
 const pino_1 = __importDefault(require("pino"));
 const backend_config_1 = require("../backend.config");
@@ -50,12 +51,12 @@ const loggerOptions = {
 const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
 const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
     logger.info(loggerOptions, 'Starting block listener crawler...');
-    const client = yield (0, utils_1.getClient)(loggerOptions);
-    const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
-    let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
+    const client = yield (0, chain_1.getClient)(loggerOptions);
+    const api = yield (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
+    let synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
         yield (0, utils_1.wait)(10000);
-        synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
+        synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
     }
     // Subscribe to new blocks
     yield api.rpc.chain.subscribeNewHeads((blockHeader) => __awaiter(void 0, void 0, void 0, function* () {
@@ -83,15 +84,15 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
             const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
             // Handle chain reorganizations
             let sql = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
-            let res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
+            let res = yield (0, chain_1.dbQuery)(client, sql, loggerOptions);
             if (res && res.rows.length > 0) {
                 // Chain reorganization detected! We need to update block_author, block_hash and state_root
                 logger.debug(loggerOptions, `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
                 const blockAuthor = extendedHeader.author;
                 const blockAuthorIdentity = yield api.derive.accounts.info(blockAuthor);
-                const blockAuthorName = (0, utils_1.getDisplayName)(blockAuthorIdentity.identity);
+                const blockAuthorName = (0, chain_1.getDisplayName)(blockAuthorIdentity.identity);
                 sql = `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
-                res = yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
+                res = yield (0, chain_1.dbQuery)(client, sql, loggerOptions);
             }
             else {
                 const blockAuthor = extendedHeader.author || '';
@@ -100,7 +101,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
                     apiAt.query.system.events(),
                     api.query.electionProviderMultiPhase.currentPhase(),
                 ]);
-                const blockAuthorName = (0, utils_1.getDisplayName)(blockAuthorIdentity.identity);
+                const blockAuthorName = (0, chain_1.getDisplayName)(blockAuthorIdentity.identity);
                 // Get election status
                 const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
                 // Totals
@@ -146,7 +147,7 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
           DO NOTHING
           ;`;
                 try {
-                    yield (0, utils_1.dbQuery)(client, sql, loggerOptions);
+                    yield (0, chain_1.dbQuery)(client, sql, loggerOptions);
                 }
                 catch (error) {
                     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
@@ -154,23 +155,23 @@ const crawler = () => __awaiter(void 0, void 0, void 0, function* () {
                 }
                 yield Promise.all([
                     // Store block extrinsics
-                    (0, utils_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
+                    (0, chain_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
                     // Get involved addresses from block events and update its balances
-                    (0, utils_1.updateAccountsInfo)(api, client, blockNumber, timestamp.toNumber(), loggerOptions, blockEvents),
+                    (0, chain_1.updateAccountsInfo)(api, client, blockNumber, timestamp.toNumber(), loggerOptions, blockEvents),
                     // Store module events
-                    (0, utils_1.processEvents)(api, runtimeVersion, client, blockNumber, blockHash, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
+                    (0, chain_1.processEvents)(api, runtimeVersion, client, blockNumber, blockHash, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
                     // Store block logs
-                    (0, utils_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
+                    (0, chain_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
                 ]);
                 // Update finalized blocks
-                yield (0, utils_1.updateFinalized)(client, finalizedBlock, loggerOptions);
+                yield (0, chain_1.updateFinalized)(client, finalizedBlock, loggerOptions);
                 const endTime = new Date().getTime();
                 logger.info(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
             }
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
-            yield (0, utils_1.logHarvestError)(client, blockNumber, error, loggerOptions);
+            yield (0, chain_1.logHarvestError)(client, blockNumber, error, loggerOptions);
             Sentry.captureException(error);
         }
     }));

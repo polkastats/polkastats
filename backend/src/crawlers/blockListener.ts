@@ -1,6 +1,19 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import { dbQuery, getClient, getPolkadotAPI, isNodeSynced, wait, shortHash, processExtrinsics, processEvents, processLogs, getDisplayName, updateFinalized, updateAccountsInfo, logHarvestError } from '../lib/utils';
+import {
+  dbQuery,
+  getClient,
+  getPolkadotAPI,
+  isNodeSynced,
+  processExtrinsics,
+  processEvents,
+  processLogs,
+  getDisplayName,
+  updateFinalized,
+  updateAccountsInfo,
+  logHarvestError,
+} from '../lib/chain';
+import { wait, shortHash } from '../lib/utils';
 import pino from 'pino';
 import { backendConfig } from '../backend.config';
 

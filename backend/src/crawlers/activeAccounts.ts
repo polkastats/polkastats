@@ -1,6 +1,13 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import { wait, getClient, getPolkadotAPI, isNodeSynced, dbParamQuery, chunker, fetchAccountIds, processAccountsChunk } from '../lib/utils';
+import {
+  getClient,
+  getPolkadotAPI,
+  isNodeSynced,
+  fetchAccountIds,
+  processAccountsChunk
+} from '../lib/chain';
+import { chunker, wait } from '../lib/utils';
 import pino from 'pino';
 import { backendConfig } from '../backend.config';
 

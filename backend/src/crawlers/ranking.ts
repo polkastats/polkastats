@@ -1,12 +1,25 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import { getClient, getPolkadotAPI, isNodeSynced, wait, dbQuery, dbParamQuery } from '../lib/utils';
-import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
-import { EraIndex } from '@polkadot/types/interfaces';
+import { getClient,
+  getPolkadotAPI,
+  isNodeSynced,
+  dbQuery,
+  getLastEraInDb,
+  getThousandValidators,
+  getAddressCreation,
+  parseIdentity,
+  getClusterInfo,
+  getCommissionHistory,
+  getCommissionRating,
+  getPayoutRating,
+  insertEraValidatorStats,
+  insertEraValidatorStatsAvg,
+  insertRankingValidator,
+  addNewFeaturedValidator
+} from '../lib/chain';
+import { wait, getRandom } from '../lib/utils';
 import { BigNumber } from 'bignumber.js';
 import pino from 'pino';
-import axios from 'axios';
-import { Client } from 'pg';
 import { backendConfig } from '../backend.config';
 
 const crawlerName = 'ranking';
@@ -27,531 +40,6 @@ const loggerOptions = {
 const config = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
-
-const getThousandValidators = async () => {
-  try {
-    const response = await axios.get('https://kusama.w3f.community/candidates');
-    return response.data;
-  } catch (error) {
-    logger.error(loggerOptions, `Error fetching Thousand Validator Program stats: ${JSON.stringify(error)}`);
-    Sentry.captureException(error);
-    return [];
-  }
-};
-
-const isVerifiedIdentity = (identity: DeriveAccountRegistration) => {
-  if (identity.judgements.length === 0) {
-    return false;
-  }
-  return identity.judgements
-    .filter(([, judgement]) => !judgement.isFeePaid)
-    .some(([, judgement]) => judgement.isKnownGood || judgement.isReasonable);
-};
-
-const getName = (identity: DeriveAccountRegistration) => {
-  if (
-    identity.displayParent
-    && identity.displayParent !== ''
-    && identity.display
-    && identity.display !== ''
-  ) {
-    return `${identity.displayParent}/${identity.display}`;
-  }
-  return identity.display || '';
-};
-
-const getClusterName = (identity: DeriveAccountRegistration) => identity.displayParent || '';
-
-const subIdentity = (identity: DeriveAccountRegistration) => {
-  if (
-    identity.displayParent
-    && identity.displayParent !== ''
-    && identity.display
-    && identity.display !== ''
-  ) {
-    return true;
-  }
-  return false;
-};
-
-const getIdentityRating = (name: string, verifiedIdentity: boolean, hasAllFields: any) => {
-  if (verifiedIdentity && hasAllFields) {
-    return 3;
-  } if (verifiedIdentity && !hasAllFields) {
-    return 2;
-  } if (name !== '') {
-    return 1;
-  }
-  return 0;
-};
-
-const parseIdentity = (identity: DeriveAccountRegistration) => {
-  const verifiedIdentity = isVerifiedIdentity(identity);
-  const hasSubIdentity = subIdentity(identity);
-  const name = getName(identity);
-  const hasAllFields = identity.display
-    && identity.legal
-    && identity.web
-    && identity.email
-    && identity.twitter
-    && identity.riot;
-  const identityRating = getIdentityRating(name, verifiedIdentity, hasAllFields);
-  return {
-    verifiedIdentity,
-    hasSubIdentity,
-    name,
-    identityRating,
-  };
-};
-
-const getCommissionHistory = (accountId: string | number, erasPreferences: any[]) => {
-  const commissionHistory: any = [];
-  erasPreferences.forEach(({ era, validators }) => {
-    if (validators[accountId]) {
-      commissionHistory.push({
-        era: new BigNumber(era.toString()).toString(10),
-        commission: (validators[accountId].commission / 10000000).toFixed(2),
-      });
-    } else {
-      commissionHistory.push({
-        era: new BigNumber(era.toString()).toString(10),
-        commission: null,
-      });
-    }
-  });
-  return commissionHistory;
-};
-
-const getCommissionRating = (commission: number, commissionHistory: any[]) => {
-  if (commission !== 100 && commission !== 0) {
-    if (commission > 10) {
-      return 1;
-    }
-    if (commission >= 5) {
-      if (
-        commissionHistory.length > 1
-        && commissionHistory[0] > commissionHistory[commissionHistory.length - 1]
-      ) {
-        return 3;
-      }
-      return 2;
-    }
-    if (commission < 5) {
-      return 3;
-    }
-  }
-  return 0;
-};
-
-const getPayoutRating = (payoutHistory: any[]) => {
-  const pendingEras = payoutHistory.filter((era) => era.status === 'pending').length;
-  if (pendingEras <= config.erasPerDay) {
-    return 3;
-  } if (pendingEras <= 3 * config.erasPerDay) {
-    return 2;
-  } if (pendingEras < 7 * config.erasPerDay) {
-    return 1;
-  }
-  return 0;
-};
-
-const getClusterInfo = (hasSubIdentity: boolean, validators: any[], validatorIdentity: DeriveAccountRegistration) => {
-  if (!hasSubIdentity) {
-    // string detection
-    // samples: DISC-SOFT-01, BINANCE_KSM_9, SNZclient-1
-    if (validatorIdentity.display) {
-      const stringSize = 6;
-      const clusterMembers = validators.filter(
-        ({ identity }) => (identity.display || '').substring(0, stringSize)
-            === validatorIdentity.display.substring(0, stringSize),
-      ).length;
-      const clusterName = validatorIdentity.display
-        .replace(/\d{1,2}$/g, '')
-        .replace(/-$/g, '')
-        .replace(/_$/g, '');
-      return {
-        clusterName,
-        clusterMembers,
-      };
-    }
-    return {
-      clusterName: '',
-      clusterMembers: 0,
-    };
-  }
-
-  const clusterMembers = validators.filter(
-    ({ identity }) => identity.displayParent === validatorIdentity.displayParent,
-  ).length;
-  const clusterName = getClusterName(validatorIdentity);
-  return {
-    clusterName,
-    clusterMembers,
-  };
-};
-
-// from https://stackoverflow.com/questions/19269545/how-to-get-a-number-of-random-elements-from-an-array
-const getRandom = (arr: any[], n: number) => {
-  const shuffled = [...arr].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, n);
-};
-
-const addNewFeaturedValidator = async (client: Client, ranking: any[]) => {
-  // rules:
-  // - maximum commission is 10%
-  // - at least 20 KSM own stake
-  // - no previously featured
-
-  // get previously featured
-  const alreadyFeatured: any = [];
-  const sql = 'SELECT stash_address, timestamp FROM featured';
-  const res = await dbQuery(client, sql, loggerOptions);
-  res.rows.forEach((validator) => alreadyFeatured.push(validator.stash_address));
-  // get candidates that meet the rules
-  const featuredCandidates = ranking
-    .filter((validator) => validator.commission <= 10
-      && validator.selfStake.div(10 ** config.tokenDecimals).gte(20)
-      && !validator.active && !alreadyFeatured.includes(validator.stashAddress))
-    .map(({ rank }) => rank);
-  // get random featured validator of the week
-  const shuffled = [...featuredCandidates].sort(() => 0.5 - Math.random());
-  const randomRank = shuffled[0];
-  const featured = ranking.find((validator) => validator.rank === randomRank);
-  await dbQuery(
-    client,
-    `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`,
-    loggerOptions,
-  );
-  logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
-};
-
-const insertRankingValidator = async (client: Client, validator: any, blockHeight: number, startTime: number) => {
-  const sql = `INSERT INTO ranking (
-    block_height,
-    rank,
-    active,
-    active_rating,
-    name,
-    identity,
-    has_sub_identity,
-    sub_accounts_rating,
-    verified_identity,
-    identity_rating,
-    stash_address,
-    stash_address_creation_block,
-    stash_parent_address_creation_block,
-    address_creation_rating,
-    controller_address,
-    included_thousand_validators,
-    thousand_validator,
-    part_of_cluster,
-    cluster_name,
-    cluster_members,
-    show_cluster_member,
-    nominators,
-    nominators_rating,
-    commission,
-    commission_history,
-    commission_rating,
-    active_eras,
-    era_points_history,
-    era_points_percent,
-    era_points_rating,
-    performance,
-    performance_history,
-    relative_performance,
-    relative_performance_history,
-    slashed,
-    slash_rating,
-    slashes,
-    council_backing,
-    active_in_governance,
-    governance_rating,
-    payout_history,
-    payout_rating,
-    self_stake,
-    other_stake,
-    total_stake,
-    stake_history,
-    total_rating,
-    dominated,
-    timestamp
-  ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7,
-    $8,
-    $9,
-    $10,
-    $11,
-    $12,
-    $13,
-    $14,
-    $15,
-    $16,
-    $17,
-    $18,
-    $19,
-    $20,
-    $21,
-    $22,
-    $23,
-    $24,
-    $25,
-    $26,
-    $27,
-    $28,
-    $29,
-    $30,
-    $31,
-    $32,
-    $33,
-    $34,
-    $35,
-    $36,
-    $37,
-    $38,
-    $39,
-    $40,
-    $41,
-    $42,
-    $43,
-    $44,
-    $45,
-    $46,
-    $47,
-    $48,
-    $49
-  )
-  ON CONFLICT ON CONSTRAINT ranking_pkey 
-  DO NOTHING`;
-  const data = [
-    `${blockHeight}`,
-    `${validator.rank}`,
-    `${validator.active}`,
-    `${validator.activeRating}`,
-    `${validator.name}`,
-    `${JSON.stringify(validator.identity)}`,
-    `${validator.hasSubIdentity}`,
-    `${validator.subAccountsRating}`,
-    `${validator.verifiedIdentity}`,
-    `${validator.identityRating}`,
-    `${validator.stashAddress}`,
-    `${validator.stashCreatedAtBlock}`,
-    `${validator.stashParentCreatedAtBlock}`,
-    `${validator.addressCreationRating}`,
-    `${validator.controllerAddress}`,
-    `${validator.includedThousandValidators}`,
-    `${JSON.stringify(validator.thousandValidator)}`,
-    `${validator.partOfCluster}`,
-    `${validator.clusterName}`,
-    `${validator.clusterMembers}`,
-    `${validator.showClusterMember}`,
-    `${validator.nominators}`,
-    `${validator.nominatorsRating}`,
-    `${validator.commission}`,
-    `${JSON.stringify(validator.commissionHistory)}`,
-    `${validator.commissionRating}`,
-    `${validator.activeEras}`,
-    `${JSON.stringify(validator.eraPointsHistory)}`,
-    `${validator.eraPointsPercent}`,
-    `${validator.eraPointsRating}`,
-    `${validator.performance}`,
-    `${JSON.stringify(validator.performanceHistory)}`,
-    `${validator.relativePerformance}`,
-    `${JSON.stringify(validator.relativePerformanceHistory)}`,
-    `${validator.slashed}`,
-    `${validator.slashRating}`,
-    `${JSON.stringify(validator.slashes)}`,
-    `${validator.councilBacking}`,
-    `${validator.activeInGovernance}`,
-    `${validator.governanceRating}`,
-    `${JSON.stringify(validator.payoutHistory)}`,
-    `${validator.payoutRating}`,
-    `${validator.selfStake}`,
-    `${validator.otherStake}`,
-    `${validator.totalStake}`,
-    `${JSON.stringify(validator.stakeHistory)}`,
-    `${validator.totalRating}`,
-    `${validator.dominated}`,
-    `${startTime}`,
-  ];
-  await dbParamQuery(client, sql, data, loggerOptions);
-};
-
-const insertEraValidatorStats = async (client: Client, validator: any, activeEra: any) => {
-  let sql = `INSERT INTO era_vrc_score (
-    stash_address,
-    era,
-    vrc_score
-  ) VALUES (
-    $1,
-    $2,
-    $3
-  )
-  ON CONFLICT ON CONSTRAINT era_vrc_score_pkey 
-  DO NOTHING;`;
-  let data = [
-    validator.stashAddress,
-    activeEra,
-    validator.totalRating,
-  ];
-  await dbParamQuery(client, sql, data, loggerOptions);
-  for (const commissionHistoryItem of validator.commissionHistory) {
-    if (commissionHistoryItem.commission) {
-      sql = `INSERT INTO era_commission (
-        stash_address,
-        era,
-        commission
-      ) VALUES (
-        $1,
-        $2,
-        $3
-      )
-      ON CONFLICT ON CONSTRAINT era_commission_pkey 
-      DO NOTHING;`;
-      data = [
-        validator.stashAddress,
-        commissionHistoryItem.era,
-        commissionHistoryItem.commission,
-      ];
-      await dbParamQuery(client, sql, data, loggerOptions);
-    }
-  }
-  for (const perfHistoryItem of validator.relativePerformanceHistory) {
-    if (perfHistoryItem.relativePerformance && perfHistoryItem.relativePerformance > 0) {
-      sql = `INSERT INTO era_relative_performance (
-        stash_address,
-        era,
-        relative_performance
-      ) VALUES (
-        $1,
-        $2,
-        $3
-      )
-      ON CONFLICT ON CONSTRAINT era_relative_performance_pkey 
-      DO NOTHING;`;
-      data = [
-        validator.stashAddress,
-        perfHistoryItem.era,
-        perfHistoryItem.relativePerformance,
-      ];
-      await dbParamQuery(client, sql, data, loggerOptions);
-    }
-  }
-  for (const stakefHistoryItem of validator.stakeHistory) {
-    if (stakefHistoryItem.self && stakefHistoryItem.self !== 0) {
-      sql = `INSERT INTO era_self_stake (
-        stash_address,
-        era,
-        self_stake
-      ) VALUES (
-        $1,
-        $2,
-        $3
-      )
-      ON CONFLICT ON CONSTRAINT era_self_stake_pkey 
-      DO NOTHING;`;
-      data = [
-        validator.stashAddress,
-        stakefHistoryItem.era,
-        stakefHistoryItem.self,
-      ];
-      await dbParamQuery(client, sql, data, loggerOptions);
-    }
-  }
-  for (const eraPointsHistoryItem of validator.eraPointsHistory) {
-    if (eraPointsHistoryItem.points && eraPointsHistoryItem.points !== 0) {
-      sql = `INSERT INTO era_points (
-        stash_address,
-        era,
-        points
-      ) VALUES (
-        $1,
-        $2,
-        $3
-      )
-      ON CONFLICT ON CONSTRAINT era_points_pkey 
-      DO NOTHING;`;
-      data = [
-        validator.stashAddress,
-        eraPointsHistoryItem.era,
-        eraPointsHistoryItem.points,
-      ];
-      await dbParamQuery(client, sql, data, loggerOptions);
-    }
-  }
-};
-
-const getAddressCreation = async (client: Client, address: any) => {
-  const query = "SELECT block_number FROM event WHERE method = 'NewAccount' AND data LIKE $1";
-  const res = await dbParamQuery(client, query, [`%${address}%`], loggerOptions);
-  if (res) {
-    if (res.rows.length > 0) {
-      if (res.rows[0].block_number) {
-        return res.rows[0].block_number;
-      }
-    }
-  }
-  // if not found we assume that it's included in genesis
-  return 0;
-};
-
-const getLastEraInDb = async (client: Client) => {
-  // TODO: check also:
-  // era_points_avg, era_relative_performance_avg, era_self_stake_avg
-  const query = 'SELECT era FROM era_commission_avg ORDER BY era DESC LIMIT 1';
-  const res = await dbQuery(client, query, loggerOptions);
-  if (res) {
-    if (res.rows.length > 0) {
-      if (res.rows[0].era) {
-        return res.rows[0].era;
-      }
-    }
-  }
-  return 0;
-};
-
-const insertEraValidatorStatsAvg = async (client: Client, eraIndex: EraIndex) => {
-  const era = new BigNumber(eraIndex.toString()).toString(10);
-  let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = '${era}' AND commission != 100`;
-  let res = await dbQuery(client, sql, loggerOptions);
-  if (res.rows.length > 0) {
-    if (res.rows[0].commission_avg) {
-      sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ('${era}', '${res.rows[0].commission_avg}') ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
-      await dbQuery(client, sql, loggerOptions);
-    }
-  }
-  sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = '${era}'`;
-  res = await dbQuery(client, sql, loggerOptions);
-  if (res.rows.length > 0) {
-    if (res.rows[0].self_stake_avg) {
-      const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
-      sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ('${era}', '${selfStakeAvg}') ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
-      await dbQuery(client, sql, loggerOptions);
-    }
-  }
-  sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = '${era}'`;
-  res = await dbQuery(client, sql, loggerOptions);
-  if (res.rows.length > 0) {
-    if (res.rows[0].relative_performance_avg) {
-      sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ('${era}', '${res.rows[0].relative_performance_avg}') ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
-      await dbQuery(client, sql, loggerOptions);
-    }
-  }
-  sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = '${era}'`;
-  res = await dbQuery(client, sql, loggerOptions);
-  if (res.rows.length > 0) {
-    if (res.rows[0].points_avg) {
-      sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ('${era}', '${res.rows[0].points_avg}') ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
-      await dbQuery(client, sql, loggerOptions);
-    }
-  }
-};
 
 const crawler = async (delayedStart: boolean) => {
   if (delayedStart) {
@@ -591,12 +79,12 @@ const crawler = async (delayedStart: boolean) => {
   //
 
   try {
-    const lastEraInDb = await getLastEraInDb(client);
+    const lastEraInDb = await getLastEraInDb(client, loggerOptions);
     logger.debug(loggerOptions, `Last era in DB is ${lastEraInDb}`);
 
     // thousand validators program data
     logger.debug(loggerOptions, 'Fetching thousand validator program validators ...');
-    const thousandValidators = await getThousandValidators();
+    const thousandValidators = await getThousandValidators(loggerOptions);
     logger.debug(loggerOptions, `Got info of ${thousandValidators.length} validators from Thousand Validators program API`);
 
     // chain data
@@ -791,11 +279,11 @@ const crawler = async (delayedStart: boolean) => {
     const stashAddressesCreation: any = [];
     for (const validator of validators) {
       const stashAddress = validator.stashId.toString();
-      stashAddressesCreation[stashAddress] = await getAddressCreation(client, stashAddress);
+      stashAddressesCreation[stashAddress] = await getAddressCreation(client, stashAddress, loggerOptions);
       if (validator.identity.parent) {
         const stashParentAddress = validator.identity.parent.toString();
         stashAddressesCreation[stashParentAddress] = await getAddressCreation(
-          client, stashParentAddress,
+          client, stashParentAddress, loggerOptions
         );
       }
     }
@@ -1003,7 +491,7 @@ const crawler = async (delayedStart: boolean) => {
         );
         const eraPointsPercent = (eraPointsHistoryValidator * 100) / eraPointsHistoryTotalsSum;
         const eraPointsRating = eraPointsHistoryValidator > eraPointsAverage ? 2 : 0;
-        const payoutRating = getPayoutRating(payoutHistory);
+        const payoutRating = getPayoutRating(config, payoutHistory);
 
         // stake
         const selfStake = active
@@ -1208,11 +696,11 @@ const crawler = async (delayedStart: boolean) => {
     if (parseInt(activeEra, 10) - 1 > parseInt(lastEraInDb, 10)) {
       logger.debug(loggerOptions, 'Storing era stats in db...');
       await Promise.all(
-        ranking.map((validator: any) => insertEraValidatorStats(client, validator, activeEra)),
+        ranking.map((validator: any) => insertEraValidatorStats(client, validator, activeEra, loggerOptions)),
       );
       logger.debug(loggerOptions, 'Storing era stats averages in db...');
       await Promise.all(
-        eraIndexes.map((eraIndex) => insertEraValidatorStatsAvg(client, eraIndex)),
+        eraIndexes.map((eraIndex) => insertEraValidatorStatsAvg(client, eraIndex, loggerOptions)),
       );
     } else {
       logger.debug(loggerOptions, 'Updating era averages is not needed!');
@@ -1220,7 +708,7 @@ const crawler = async (delayedStart: boolean) => {
 
     logger.debug(loggerOptions, `Storing ${ranking.length} validators in db...`);
     await Promise.all(
-      ranking.map((validator: any) => insertRankingValidator(client, validator, blockHeight, startTime)),
+      ranking.map((validator: any) => insertRankingValidator(client, validator, blockHeight, startTime, loggerOptions)),
     );
 
     logger.debug(loggerOptions, 'Cleaning old data');
@@ -1234,13 +722,13 @@ const crawler = async (delayedStart: boolean) => {
     const sql = 'SELECT stash_address, timestamp FROM featured ORDER BY timestamp DESC LIMIT 1';
     const res = await dbQuery(client, sql, loggerOptions);
     if (res.rows.length === 0) {
-      await addNewFeaturedValidator(client, ranking);
+      await addNewFeaturedValidator(config, client, ranking, loggerOptions);
     } else {
       const currentFeatured = res.rows[0];
       const currentTimestamp = new Date().getTime();
       if (currentTimestamp - currentFeatured.timestamp > config.featuredTimespan) {
         // timespan passed, let's add a new featured validator
-        await addNewFeaturedValidator(client, ranking);
+        await addNewFeaturedValidator(config, client, ranking, loggerOptions);
       }
     }
 

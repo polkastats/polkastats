@@ -33,6 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
+const chain_1 = require("../lib/chain");
 const utils_1 = require("../lib/utils");
 const pino_1 = __importDefault(require("pino"));
 const backend_config_1 = require("../backend.config");
@@ -55,21 +56,21 @@ const crawler = (delayedStart) => __awaiter(void 0, void 0, void 0, function* ()
         yield (0, utils_1.wait)(config.startDelay);
     }
     logger.debug(loggerOptions, 'Running active accounts crawler...');
-    const client = yield (0, utils_1.getClient)(loggerOptions);
-    const api = yield (0, utils_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
-    let synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
+    const client = yield (0, chain_1.getClient)(loggerOptions);
+    const api = yield (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
+    let synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
         yield (0, utils_1.wait)(10000);
-        synced = yield (0, utils_1.isNodeSynced)(api, loggerOptions);
+        synced = yield (0, chain_1.isNodeSynced)(api, loggerOptions);
     }
     const startTime = new Date().getTime();
-    const accountIds = yield (0, utils_1.fetchAccountIds)(api);
+    const accountIds = yield (0, chain_1.fetchAccountIds)(api);
     logger.info(loggerOptions, `Got ${accountIds.length} active accounts`);
     const chunks = (0, utils_1.chunker)(accountIds, chunkSize);
     logger.info(loggerOptions, `Processing chunks of ${chunkSize} accounts`);
     for (const chunk of chunks) {
         const chunkStartTime = Date.now();
-        yield Promise.all(chunk.map((accountId) => (0, utils_1.processAccountsChunk)(api, client, accountId, loggerOptions)));
+        yield Promise.all(chunk.map((accountId) => (0, chain_1.processAccountsChunk)(api, client, accountId, loggerOptions)));
         const chunkEndTime = new Date().getTime();
         logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) / 1000).toFixed(3)}s`);
     }
