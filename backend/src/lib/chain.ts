@@ -1,6 +1,5 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import '@polkadot/api-augment/kusama';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex } from '@polkadot/util';
