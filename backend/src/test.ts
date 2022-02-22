@@ -1,7 +1,9 @@
 // @ts-check
+import '@polkadot/api-augment/kusama';
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import fs from 'fs';
 import {
   getClient,
-  getPolkadotAPI,
   isNodeSynced,
   harvestBlocks,
 } from './lib/chain';
@@ -20,6 +22,14 @@ const loggerOptions = {
 const config = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
+
+const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCustomTypes: string | undefined): Promise<ApiPromise> => {
+  let api;
+  const provider = new WsProvider(backendConfig.wsProviderUrl);
+  api = await ApiPromise.create({ provider });
+  await api.isReady;
+  return api;
+};
 
 async function main() {
 
