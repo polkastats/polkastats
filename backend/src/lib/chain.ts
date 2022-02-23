@@ -1109,7 +1109,7 @@ export const storeMetadata = async (
   blockHash: string,
   specName: string,
   specVersion: number,
-  timestamp: u64,
+  timestamp: number,
   loggerOptions: { crawler: string; }
 ) => {
   let metadata;
