@@ -25,7 +25,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.insertEraValidatorStatsAvg = exports.getLastEraInDb = exports.getAddressCreation = exports.insertEraValidatorStats = exports.insertRankingValidator = exports.addNewFeaturedValidator = exports.getClusterInfo = exports.getPayoutRating = exports.getCommissionRating = exports.getCommissionHistory = exports.parseIdentity = exports.getIdentityRating = exports.subIdentity = exports.getClusterName = exports.getName = exports.isVerifiedIdentity = exports.getThousandValidators = exports.processAccountsChunk = exports.fetchAccountIds = exports.getAccountIdFromArgs = exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.healthCheck = exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
-require("@polkadot/api-augment/kusama");
+require("@polkadot/api-augment");
 const api_1 = require("@polkadot/api");
 const keyring_1 = require("@polkadot/keyring");
 const util_1 = require("@polkadot/util");
@@ -404,20 +404,20 @@ const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents,
     }
 };
 exports.processTransfer = processTransfer;
-const processEvents = async (api, runtimeVersion, client, blockNumber, blockHash, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => {
+const processEvents = async (client, blockNumber, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
     const indexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
     const chunks = (0, utils_1.chunker)(indexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
-        await Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(api, runtimeVersion, client, blockNumber, blockHash, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
+        await Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(client, blockNumber, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 exports.processEvents = processEvents;
-const processEvent = async (api, runtimeVersion, client, blockNumber, blockHash, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => {
+const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => {
     const [eventIndex, { event, phase }] = indexedEvent;
     let sql = `INSERT INTO event (
     block_number,
@@ -446,43 +446,6 @@ const processEvent = async (api, runtimeVersion, client, blockNumber, blockHash,
     catch (error) {
         logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
         Sentry.captureException(error);
-    }
-    // Runtime upgrade
-    if (event.section === 'system' && event.method === 'CodeUpdated') {
-        const specName = runtimeVersion.toJSON().specName;
-        const specVersion = runtimeVersion.specVersion;
-        const metadata = await api.rpc.state.getMetadata(blockHash);
-        const data = [
-            blockNumber,
-            specName,
-            specVersion,
-            metadata.version,
-            metadata.magicNumber,
-            metadata.asLatest.toJSON(),
-            timestamp,
-        ];
-        const query = `
-    INSERT INTO runtime (
-      block_number,
-      spec_name,
-      spec_version,
-      metadata_version,
-      metadata_magic_number,
-      metadata,
-      timestamp
-    ) VALUES (
-      $1,
-      $2,
-      $3,
-      $4,
-      $5,
-      $6,
-      $7
-    )
-    ON CONFLICT ON CONSTRAINT runtime_pkey 
-    DO NOTHING
-    ;`;
-        await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
     }
     // Store staking reward
     if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
@@ -900,11 +863,52 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
             Sentry.captureException(error);
         }
+        // Runtime upgrade
+        const runtimeUpgrade = blockEvents
+            .find(({ event, phase }) => (phase.isApplyExtrinsic
+            && event.section === 'system'
+            && event.method === 'CodeUpdated'));
+        if (runtimeUpgrade) {
+            const specName = runtimeVersion.toJSON().specName;
+            const specVersion = runtimeVersion.specVersion;
+            const metadata = await api.rpc.state.getMetadata(blockHash);
+            const data = [
+                blockNumber,
+                specName,
+                specVersion,
+                metadata.version,
+                metadata.magicNumber,
+                metadata.asLatest.toJSON(),
+                timestamp,
+            ];
+            const query = `
+      INSERT INTO runtime (
+        block_number,
+        spec_name,
+        spec_version,
+        metadata_version,
+        metadata_magic_number,
+        metadata,
+        timestamp
+      ) VALUES (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7
+      )
+      ON CONFLICT ON CONSTRAINT runtime_pkey 
+      DO NOTHING
+      ;`;
+            await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
+        }
         await Promise.all([
             // Store block extrinsics (async)
             (0, exports.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
             // Store module events (async)
-            (0, exports.processEvents)(api, runtimeVersion, client, blockNumber, blockHash, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
+            (0, exports.processEvents)(client, blockNumber, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
             // Store block logs (async)
             (0, exports.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
         ]);

@@ -150,7 +150,7 @@ const crawler = async () => {
                     // Get involved addresses from block events and update its balances
                     (0, chain_1.updateAccountsInfo)(api, client, blockNumber, timestamp.toNumber(), loggerOptions, blockEvents),
                     // Store module events
-                    (0, chain_1.processEvents)(api, runtimeVersion, client, blockNumber, blockHash, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
+                    (0, chain_1.processEvents)(client, blockNumber, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
                     // Store block logs
                     (0, chain_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
                 ]);

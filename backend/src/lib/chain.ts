@@ -1,6 +1,6 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import '@polkadot/api-augment/kusama';
+import '@polkadot/api-augment';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex } from '@polkadot/util';
@@ -448,11 +448,8 @@ export const processTransfer = async (
 };
 
 export const processEvents = async (
-  api: ApiPromise,
-  runtimeVersion: RuntimeVersion,
   client: Client,
   blockNumber: number,
-  blockHash: BlockHash,
   activeEra: number,
   blockEvents: Vec<EventRecord>,
   blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>,
@@ -466,7 +463,7 @@ export const processEvents = async (
   for (const chunk of chunks) {
     await Promise.all(
       chunk.map((indexedEvent: indexedBlockEvent) => processEvent(
-        api, runtimeVersion, client, blockNumber, blockHash, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
+        client, blockNumber, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions,
       )),
     );
   }
@@ -476,11 +473,8 @@ export const processEvents = async (
 };
 
 export const processEvent = async (
-  api: ApiPromise,
-  runtimeVersion: RuntimeVersion,
   client: Client,
   blockNumber: number,
-  blockHash: BlockHash,
   activeEra: number,
   indexedEvent: indexedBlockEvent,
   indexedBlockEvents: indexedBlockEvent[],
@@ -515,44 +509,6 @@ export const processEvent = async (
   } catch (error) {
     logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
     Sentry.captureException(error);
-  }
-
-  // Runtime upgrade
-  if (event.section === 'system' && event.method === 'CodeUpdated') {
-    const specName = runtimeVersion.toJSON().specName;
-    const specVersion = runtimeVersion.specVersion;
-    const metadata = await api.rpc.state.getMetadata(blockHash);
-    const data = [
-      blockNumber,
-      specName,
-      specVersion,
-      metadata.version,
-      metadata.magicNumber,
-      metadata.asLatest.toJSON(),
-      timestamp,
-    ];
-    const query = `
-    INSERT INTO runtime (
-      block_number,
-      spec_name,
-      spec_version,
-      metadata_version,
-      metadata_magic_number,
-      metadata,
-      timestamp
-    ) VALUES (
-      $1,
-      $2,
-      $3,
-      $4,
-      $5,
-      $6,
-      $7
-    )
-    ON CONFLICT ON CONSTRAINT runtime_pkey 
-    DO NOTHING
-    ;`;
-    await dbParamQuery(client, query, data, loggerOptions);
   }
 
   // Store staking reward
@@ -1010,6 +966,50 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
       Sentry.captureException(error);
     }
 
+    // Runtime upgrade
+    const runtimeUpgrade = blockEvents
+      .find(({ event, phase }) => (
+          phase.isApplyExtrinsic
+          && event.section === 'system'
+          && event.method === 'CodeUpdated'
+      ));
+    if (runtimeUpgrade) {
+      const specName = runtimeVersion.toJSON().specName;
+      const specVersion = runtimeVersion.specVersion;
+      const metadata = await api.rpc.state.getMetadata(blockHash);
+      const data = [
+        blockNumber,
+        specName,
+        specVersion,
+        metadata.version,
+        metadata.magicNumber,
+        metadata.asLatest.toJSON(),
+        timestamp,
+      ];
+      const query = `
+      INSERT INTO runtime (
+        block_number,
+        spec_name,
+        spec_version,
+        metadata_version,
+        metadata_magic_number,
+        metadata,
+        timestamp
+      ) VALUES (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7
+      )
+      ON CONFLICT ON CONSTRAINT runtime_pkey 
+      DO NOTHING
+      ;`;
+      await dbParamQuery(client, query, data, loggerOptions);
+    }
+
     await Promise.all([
       // Store block extrinsics (async)
       processExtrinsics(
@@ -1024,11 +1024,8 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
       ),
       // Store module events (async)
       processEvents(
-        api,
-        runtimeVersion,
         client,
         blockNumber,
-        blockHash,
         parseInt(activeEra.toString()),
         blockEvents,
         block.extrinsics,

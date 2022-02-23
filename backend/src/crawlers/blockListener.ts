@@ -185,11 +185,8 @@ const crawler = async () => {
           ),
           // Store module events
           processEvents(
-            api,
-            runtimeVersion,
             client,
             blockNumber,
-            blockHash,
             parseInt(activeEra.toString()),
             blockEvents,
             block.extrinsics,
