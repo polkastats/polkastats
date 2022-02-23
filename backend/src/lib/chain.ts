@@ -246,7 +246,7 @@ export const processExtrinsic = async (
   timestamp: number,
   loggerOptions: { crawler: string; },
 ) => {
-  const [extrinsicIndex, extrinsic]  = indexedExtrinsic;
+  const [extrinsicIndex, extrinsic] = indexedExtrinsic;
   const { isSigned } = extrinsic;
   const signer = isSigned ? extrinsic.signer.toString() : '';
   const section = extrinsic.method.section;
@@ -522,12 +522,12 @@ export const processEvent = async (
     let era = null;
 
     const payoutStakersExtrinsic = indexedBlockExtrinsics
-      .find(([extrinsicIndex, { method: { section, method} }]) => (
+      .find(([extrinsicIndex, { method: { section, method } }]) => (
         phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
         && section === 'staking'
         && method === 'payoutStakers'
       ));
-    
+
     if (payoutStakersExtrinsic) {
       validator = payoutStakersExtrinsic[1].method.args[0];
       era = payoutStakersExtrinsic[1].method.args[1];
@@ -594,7 +594,7 @@ export const processEvent = async (
         }
       }
     }
-    
+
     if (validator && era) {
       sql = `INSERT INTO staking_reward (
         block_number,
@@ -642,7 +642,7 @@ export const processEvent = async (
       Sentry.captureException(error);
     }
   }
-  
+
 
   //
   // TODO: store validator and era index
@@ -769,7 +769,7 @@ export const getExtrinsicSuccessOrErrorMessage = (api: ApiPromise, index: number
         extrinsicSuccess = true;
       } else if (api.events.system.ExtrinsicFailed.is(event)) {
         // extract the data for this event
-        const [dispatchError] = event.data;  
+        const [dispatchError] = event.data;
         // decode the error
         if (dispatchError.isModule) {
           // for module errors, we have the section indexed, lookup
@@ -833,16 +833,16 @@ export const logHarvestError = async (client: Client, blockNumber: number, error
 // TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proxy extrinsic
 export const getTransferAllAmount = (index: number, blockEvents: Vec<EventRecord>): string => blockEvents
   .find(({ event, phase }) => (
-      phase.isApplyExtrinsic
-      && phase.asApplyExtrinsic.eq(index)
-      && event.section === 'balances'
-      && event.method === 'Transfer'
+    phase.isApplyExtrinsic
+    && phase.asApplyExtrinsic.eq(index)
+    && event.section === 'balances'
+    && event.method === 'Transfer'
   )).event.data[2].toString();
 
 
 export const getSlashedValidatorAccount = (index: number, indexedBlockEvents: indexedBlockEvent[]): string => {
   let validatorAccountId = '';
-  for (let i = index; i >= 0; i-- ) {
+  for (let i = index; i >= 0; i--) {
     const { event } = indexedBlockEvents[i][1];
     if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
       return validatorAccountId = event.data[0].toString();
@@ -881,7 +881,7 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
   const startTime = new Date().getTime();
   try {
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-    
+
     const apiAt = await api.at(blockHash);
     const [
       { block },
@@ -972,47 +972,12 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
     if (runtimeUpgrade) {
       const specName = runtimeVersion.toJSON().specName;
       const specVersion = runtimeVersion.specVersion;
-      // See: https://github.com/polkadot-js/api/issues/4596
+      
+      // this fucks type augmentation when crawling backwards, see: https://github.com/polkadot-js/api/issues/4596
       // const metadata = await api.rpc.state.getMetadata(blockHash);
-      let metadata;
-      try {
-        const response = await axios.get(`${backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
-        metadata = response.data;
-      } catch (error) {
-        logger.error(loggerOptions, `Error fetching metadata at ${blockHash}: ${JSON.stringify(error)}`);
-        Sentry.captureException(error);
-      }
-      const data = [
-        blockNumber,
-        specName,
-        specVersion,
-        metadata.version,
-        metadata.magicNumber,
-        metadata.metadata,
-        timestamp,
-      ];
-      const query = `
-      INSERT INTO runtime (
-        block_number,
-        spec_name,
-        spec_version,
-        metadata_version,
-        metadata_magic_number,
-        metadata,
-        timestamp
-      ) VALUES (
-        $1,
-        $2,
-        $3,
-        $4,
-        $5,
-        $6,
-        $7
-      )
-      ON CONFLICT ON CONSTRAINT runtime_pkey 
-      DO NOTHING
-      ;`;
-      await dbParamQuery(client, query, data, loggerOptions);
+      
+      // getting metadata from sidecar is our best option
+      await storeMetadata(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
     }
 
     await Promise.all([
@@ -1137,6 +1102,55 @@ export const harvestBlocks = async (config: any, api: ApiPromise, client: Client
     );
   }
 };
+
+export const storeMetadata = async (
+  client: Client,
+  blockNumber: number,
+  blockHash: string,
+  specName: string,
+  specVersion: number,
+  timestamp: u64,
+  loggerOptions: { crawler: string; }
+) => {
+  let metadata;
+  try {
+    const response = await axios.get(`${backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
+    metadata = response.data;
+  } catch (error) {
+    logger.error(loggerOptions, `Error fetching metadata at ${blockHash}: ${JSON.stringify(error)}`);
+    Sentry.captureException(error);
+  }
+  const data = [
+    blockNumber,
+    specName,
+    specVersion,
+    metadata.version,
+    metadata.magicNumber,
+    metadata.metadata,
+    timestamp,
+  ];
+  const query = `
+    INSERT INTO runtime (
+      block_number,
+      spec_name,
+      spec_version,
+      metadata_version,
+      metadata_magic_number,
+      metadata,
+      timestamp
+    ) VALUES (
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7
+    )
+    ON CONFLICT ON CONSTRAINT runtime_pkey 
+    DO NOTHING;`;
+  await dbParamQuery(client, query, data, loggerOptions);
+}
 
 export const getAccountIdFromArgs = (account: any[]) => account
   .map(({ args }) => args)

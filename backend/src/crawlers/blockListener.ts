@@ -12,6 +12,7 @@ import {
   updateFinalized,
   updateAccountsInfo,
   logHarvestError,
+  storeMetadata,
 } from '../lib/chain';
 import { wait, shortHash } from '../lib/utils';
 import pino from 'pino';
@@ -49,6 +50,7 @@ const crawler = async () => {
   }
 
   // Subscribe to new blocks
+  let iteration = 0;
   await api.rpc.chain.subscribeNewHeads(async (blockHeader) => {
     const startTime = new Date().getTime();
     const blockNumber = blockHeader.number.toNumber();
@@ -78,6 +80,14 @@ const crawler = async () => {
         apiAt.query.balances.totalIssuance(),
         apiAt.query.timestamp.now(),
       ]);
+
+      // store current runtime metadata
+      if (iteration === 0) {
+        const specName = runtimeVersion.toJSON().specName;
+        const specVersion = runtimeVersion.specVersion;
+        await storeMetadata(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
+      }
+      iteration++;
 
       const finalizedBlockHeader = await api.rpc.chain.getHeader(finalizedBlockHash);
       const finalizedBlock = finalizedBlockHeader.number.toNumber();
