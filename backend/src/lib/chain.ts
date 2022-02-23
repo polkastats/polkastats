@@ -1116,8 +1116,9 @@ export const storeMetadata = async (
   try {
     const response = await axios.get(`${backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
     metadata = response.data;
+    logger.debug(loggerOptions, `Got runtime metadata at ${blockHash}!`);
   } catch (error) {
-    logger.error(loggerOptions, `Error fetching metadata at ${blockHash}: ${JSON.stringify(error)}`);
+    logger.error(loggerOptions, `Error fetching runtime metadata at ${blockHash}: ${JSON.stringify(error)}`);
     Sentry.captureException(error);
   }
   const data = [
