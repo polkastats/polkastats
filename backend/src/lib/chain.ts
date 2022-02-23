@@ -1150,7 +1150,7 @@ export const storeMetadata = async (
     )
     ON CONFLICT (spec_version)
     DO UPDATE SET
-      block_number = EXCLUDED.block_number,
+      block_number = EXCLUDED.block_number
     WHERE EXCLUDED.block_number < runtime.block_number;`;
   await dbParamQuery(client, query, data, loggerOptions);
 }
