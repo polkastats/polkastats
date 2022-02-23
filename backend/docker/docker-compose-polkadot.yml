@@ -163,7 +163,7 @@ services:
   #
   # Substrate API Sidecar
   #
-  api:
+  sidecar:
     image: parity/substrate-api-sidecar
     ports:
       - '9090:8080'
