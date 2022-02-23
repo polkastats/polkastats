@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertEraValidatorStatsAvg = exports.getLastEraInDb = exports.getAddressCreation = exports.insertEraValidatorStats = exports.insertRankingValidator = exports.addNewFeaturedValidator = exports.getClusterInfo = exports.getPayoutRating = exports.getCommissionRating = exports.getCommissionHistory = exports.parseIdentity = exports.getIdentityRating = exports.subIdentity = exports.getClusterName = exports.getName = exports.isVerifiedIdentity = exports.getThousandValidators = exports.processAccountsChunk = exports.fetchAccountIds = exports.getAccountIdFromArgs = exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.healthCheck = exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
+exports.insertEraValidatorStatsAvg = exports.getLastEraInDb = exports.getAddressCreation = exports.insertEraValidatorStats = exports.insertRankingValidator = exports.addNewFeaturedValidator = exports.getClusterInfo = exports.getPayoutRating = exports.getCommissionRating = exports.getCommissionHistory = exports.parseIdentity = exports.getIdentityRating = exports.subIdentity = exports.getClusterName = exports.getName = exports.isVerifiedIdentity = exports.getThousandValidators = exports.processAccountsChunk = exports.fetchAccountIds = exports.getAccountIdFromArgs = exports.storeMetadata = exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.healthCheck = exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 require("@polkadot/api-augment");
@@ -869,48 +869,10 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         if (runtimeUpgrade) {
             const specName = runtimeVersion.toJSON().specName;
             const specVersion = runtimeVersion.specVersion;
-            // See: https://github.com/polkadot-js/api/issues/4596
+            // this fucks type augmentation when crawling backwards, see: https://github.com/polkadot-js/api/issues/4596
             // const metadata = await api.rpc.state.getMetadata(blockHash);
-            let metadata;
-            try {
-                const response = await axios_1.default.get(`${backend_config_1.backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
-                metadata = response.data;
-            }
-            catch (error) {
-                logger.error(loggerOptions, `Error fetching metadata at ${blockHash}: ${JSON.stringify(error)}`);
-                Sentry.captureException(error);
-            }
-            const data = [
-                blockNumber,
-                specName,
-                specVersion,
-                metadata.version,
-                metadata.magicNumber,
-                metadata.metadata,
-                timestamp,
-            ];
-            const query = `
-      INSERT INTO runtime (
-        block_number,
-        spec_name,
-        spec_version,
-        metadata_version,
-        metadata_magic_number,
-        metadata,
-        timestamp
-      ) VALUES (
-        $1,
-        $2,
-        $3,
-        $4,
-        $5,
-        $6,
-        $7
-      )
-      ON CONFLICT ON CONSTRAINT runtime_pkey 
-      DO NOTHING
-      ;`;
-            await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
+            // getting metadata from sidecar is our best option
+            await (0, exports.storeMetadata)(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
         }
         await Promise.all([
             // Store block extrinsics (async)
@@ -993,6 +955,48 @@ const harvestBlocks = async (config, api, client, startBlock, endBlock, loggerOp
     }
 };
 exports.harvestBlocks = harvestBlocks;
+const storeMetadata = async (client, blockNumber, blockHash, specName, specVersion, timestamp, loggerOptions) => {
+    let metadata;
+    try {
+        const response = await axios_1.default.get(`${backend_config_1.backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
+        metadata = response.data;
+    }
+    catch (error) {
+        logger.error(loggerOptions, `Error fetching metadata at ${blockHash}: ${JSON.stringify(error)}`);
+        Sentry.captureException(error);
+    }
+    const data = [
+        blockNumber,
+        specName,
+        specVersion,
+        metadata.version,
+        metadata.magicNumber,
+        metadata.metadata,
+        timestamp,
+    ];
+    const query = `
+    INSERT INTO runtime (
+      block_number,
+      spec_name,
+      spec_version,
+      metadata_version,
+      metadata_magic_number,
+      metadata,
+      timestamp
+    ) VALUES (
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7
+    )
+    ON CONFLICT ON CONSTRAINT runtime_pkey 
+    DO NOTHING;`;
+    await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
+};
+exports.storeMetadata = storeMetadata;
 const getAccountIdFromArgs = (account) => account
     .map(({ args }) => args)
     .map(([e]) => e.toHuman());
