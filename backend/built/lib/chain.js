@@ -970,7 +970,7 @@ const storeMetadata = async (client, blockNumber, blockHash, specName, specVersi
         blockNumber,
         specName,
         specVersion,
-        Object.keys(metadata.metadata)[0],
+        Object.keys(metadata.metadata)[0].replace(/["]+/g, ''),
         metadata.magicNumber,
         metadata.metadata,
         timestamp,

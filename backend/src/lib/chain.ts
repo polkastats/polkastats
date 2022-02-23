@@ -1125,7 +1125,7 @@ export const storeMetadata = async (
     blockNumber,
     specName,
     specVersion,
-    Object.keys(metadata.metadata)[0],
+    Object.keys(metadata.metadata)[0].replace(/["]+/g, ''),
     metadata.magicNumber,
     metadata.metadata,
     timestamp,
