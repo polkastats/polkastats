@@ -993,8 +993,10 @@ const storeMetadata = async (client, blockNumber, blockHash, specName, specVersi
       $6,
       $7
     )
-    ON CONFLICT ON CONSTRAINT runtime_pkey 
-    DO NOTHING;`;
+    ON CONFLICT (spec_version)
+    DO UPDATE SET
+      block_number = EXCLUDED.block_number,
+    WHERE EXCLUDED.block_number != runtime.block_number;`;
     await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
 };
 exports.storeMetadata = storeMetadata;
