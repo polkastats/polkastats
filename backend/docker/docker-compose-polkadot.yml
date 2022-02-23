@@ -170,6 +170,8 @@ services:
     depends_on:
       - 'substrate-node'
     restart: always
+    environment:
+      - SAS_SUBSTRATE_WS_URL=ws://substrate-node:9944    
 
 #
 # Persistent volumes
