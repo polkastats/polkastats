@@ -865,9 +865,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         }
         // Runtime upgrade
         const runtimeUpgrade = blockEvents
-            .find(({ event, phase }) => (phase.isApplyExtrinsic
-            && event.section === 'system'
-            && event.method === 'CodeUpdated'));
+            .find(({ event }) => api.events.system.CodeUpdated.is(event));
         if (runtimeUpgrade) {
             const specName = runtimeVersion.toJSON().specName;
             const specVersion = runtimeVersion.specVersion;

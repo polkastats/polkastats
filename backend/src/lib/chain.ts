@@ -968,11 +968,7 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
 
     // Runtime upgrade
     const runtimeUpgrade = blockEvents
-      .find(({ event, phase }) => (
-          phase.isApplyExtrinsic
-          && event.section === 'system'
-          && event.method === 'CodeUpdated'
-      ));
+      .find(({ event }) => api.events.system.CodeUpdated.is(event));
     if (runtimeUpgrade) {
       const specName = runtimeVersion.toJSON().specName;
       const specVersion = runtimeVersion.specVersion;
