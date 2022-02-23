@@ -351,6 +351,7 @@ export default {
         query: gql`
           subscription runtime($specVersion: Int!) {
             runtime(where: { spec_version: { _eq: $specVersion } }, limit: 1) {
+              metadata_version
               metadata
             }
           }
@@ -365,7 +366,8 @@ export default {
         },
         result({ data }) {
           // get pallets and extrinsics from runtime metadata
-          this.metadata = data.runtime[0].metadata
+          const metadataVersion = data.runtime[0].metadata_version
+          this.metadata = data.runtime[0].metadata[metadataVersion]
           const palletsAndExtrinsics = []
           this.metadata.pallets.forEach((pallet) => {
             const callsId = pallet.calls?.type || null
