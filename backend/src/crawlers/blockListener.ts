@@ -52,6 +52,7 @@ const crawler = async () => {
   // Subscribe to new blocks
   let iteration = 0;
   await api.rpc.chain.subscribeNewHeads(async (blockHeader) => {
+    iteration++;
     const startTime = new Date().getTime();
     const blockNumber = blockHeader.number.toNumber();
     try {
@@ -82,12 +83,11 @@ const crawler = async () => {
       ]);
 
       // store current runtime metadata
-      if (iteration === 0) {
+      if (iteration === 1) {
         const specName = runtimeVersion.toJSON().specName;
         const specVersion = runtimeVersion.specVersion;
         await storeMetadata(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
       }
-      iteration++;
 
       const finalizedBlockHeader = await api.rpc.chain.getHeader(finalizedBlockHash);
       const finalizedBlock = finalizedBlockHeader.number.toNumber();
