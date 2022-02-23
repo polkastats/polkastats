@@ -160,6 +160,17 @@ services:
       - NODE_ENV=production
       - NODE_PORT=8000
 
+  #
+  # Substrate API Sidecar
+  #
+  api:
+    image: parity/substrate-api-sidecar
+    ports:
+      - '9090:8080'
+    depends_on:
+      - 'substrate-node'
+    restart: always
+
 #
 # Persistent volumes
 #
