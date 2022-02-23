@@ -173,7 +173,7 @@ services:
     restart: always
     environment:
       - SAS_SUBSTRATE_WS_URL=ws://substrate-node:9944
-      - SAS_EXPRESS_BIND_HOST=127.0.0.1
+      - SAS_EXPRESS_BIND_HOST=sidecar
       - SAS_EXPRESS_PORT=9090
 
 #
