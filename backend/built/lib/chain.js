@@ -869,14 +869,24 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         if (runtimeUpgrade) {
             const specName = runtimeVersion.toJSON().specName;
             const specVersion = runtimeVersion.specVersion;
-            const metadata = await api.rpc.state.getMetadata(blockHash);
+            // See: https://github.com/polkadot-js/api/issues/4596
+            // const metadata = await api.rpc.state.getMetadata(blockHash);
+            let metadata;
+            try {
+                const response = await axios_1.default.get(`${backend_config_1.backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
+                metadata = response.data;
+            }
+            catch (error) {
+                logger.error(loggerOptions, `Error fetching metadata at ${blockHash}: ${JSON.stringify(error)}`);
+                Sentry.captureException(error);
+            }
             const data = [
                 blockNumber,
                 specName,
                 specVersion,
                 metadata.version,
                 metadata.magicNumber,
-                metadata.asLatest.toJSON(),
+                metadata.metadata,
                 timestamp,
             ];
             const query = `

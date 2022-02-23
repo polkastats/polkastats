@@ -15,6 +15,7 @@ exports.backendConfig = {
     },
     logLevel: process.env.LOG_LEVEL || 'info',
     sentryDSN: process.env.SENTRY_DSN || '',
+    substrateApiSidecar: 'ws://substrate-node:9090',
     crawlers: [
         {
             name: 'blockListener',
