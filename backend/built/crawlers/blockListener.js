@@ -154,7 +154,7 @@ const crawler = async () => {
                 }
                 await Promise.all([
                     // Store block extrinsics
-                    (0, chain_1.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
+                    (0, chain_1.processExtrinsics)(api, apiAt, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
                     // Get involved addresses from block events and update its balances
                     (0, chain_1.updateAccountsInfo)(api, client, blockNumber, timestamp.toNumber(), loggerOptions, blockEvents),
                     // Store module events

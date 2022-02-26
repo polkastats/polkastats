@@ -4,7 +4,7 @@ import '@polkadot/api-augment';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex } from '@polkadot/util';
-import { BlockHash, EventRecord, RuntimeVersion, EraIndex } from '@polkadot/types/interfaces';
+import { BlockHash, EventRecord, EraIndex } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { AnyTuple } from '@polkadot/types/types';
 import { GenericExtrinsic, Vec } from '@polkadot/types';
@@ -16,6 +16,7 @@ import fs from 'fs';
 import { BigNumber } from 'bignumber.js';
 import { chunker, range, reverseRange, shortHash } from './utils';
 import { backendConfig } from '../backend.config';
+import { ApiDecoration } from '@polkadot/api/types';
 
 Sentry.init({
   dsn: backendConfig.sentryDSN,
@@ -206,6 +207,7 @@ export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNu
 
 export const processExtrinsics = async (
   api: ApiPromise,
+  apiAt: ApiDecoration<"promise">,
   client: Client,
   blockNumber: number,
   blockHash: BlockHash,
@@ -221,6 +223,7 @@ export const processExtrinsics = async (
     await Promise.all(
       chunk.map((indexedExtrinsic: indexedBlockExtrinsic) => processExtrinsic(
         api,
+        apiAt,
         client,
         blockNumber,
         blockHash,
@@ -238,6 +241,7 @@ export const processExtrinsics = async (
 
 export const processExtrinsic = async (
   api: ApiPromise,
+  apiAt: ApiDecoration<"promise">,
   client: Client,
   blockNumber: number,
   blockHash: BlockHash,
@@ -756,7 +760,7 @@ export const processLog = async (client: Client, blockNumber: number, log: any, 
   }
 };
 
-export const getExtrinsicSuccessOrErrorMessage = (api: ApiPromise, index: number, blockEvents: Vec<EventRecord>): [boolean, string] => {
+export const getExtrinsicSuccessOrErrorMessage = (apiAt: ApiDecoration<"promise">, index: number, blockEvents: Vec<EventRecord>): [boolean, string] => {
   let extrinsicSuccess = false;
   let extrinsicErrorMessage = '';
   blockEvents
@@ -765,12 +769,12 @@ export const getExtrinsicSuccessOrErrorMessage = (api: ApiPromise, index: number
       phase.asApplyExtrinsic.eq(index)
     )
     .forEach(({ event }) => {
-      if (api.events.system.ExtrinsicSuccess.is(event)) {
+      if (apiAt.events.system.ExtrinsicSuccess.is(event)) {
         extrinsicSuccess = true;
-      } else if (api.events.system.ExtrinsicFailed.is(event)) {
+      } else if (apiAt.events.system.ExtrinsicFailed.is(event)) {
         const [dispatchError] = event.data;
         if (dispatchError.isModule) {
-          const decoded = blockEvents.registry.findMetaError(dispatchError.asModule);
+          const decoded = apiAt.registry.findMetaError(dispatchError.asModule);
           extrinsicErrorMessage = `${decoded.name}: ${decoded.docs}`;
         } else {
           extrinsicErrorMessage = dispatchError.toString();
@@ -962,22 +966,23 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
 
     // Runtime upgrade
     const runtimeUpgrade = blockEvents
-      .find(({ event }) => api.events.system.CodeUpdated.is(event));
+      .find(({ event }) => apiAt.events.system.CodeUpdated.is(event));
     if (runtimeUpgrade) {
       const specName = runtimeVersion.toJSON().specName;
       const specVersion = runtimeVersion.specVersion;
       
-      // this fucks type augmentation when crawling backwards, see: https://github.com/polkadot-js/api/issues/4596
+      // TODO: enable again
+      // see: https://github.com/polkadot-js/api/issues/4596
       // const metadata = await api.rpc.state.getMetadata(blockHash);
       
-      // getting metadata from sidecar is our best option
       await storeMetadata(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
     }
 
     await Promise.all([
-      // Store block extrinsics (async)
+      // Store block extrinsics
       processExtrinsics(
         api,
+        apiAt,
         client,
         blockNumber,
         blockHash,
@@ -986,7 +991,7 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
         timestamp.toNumber(),
         loggerOptions,
       ),
-      // Store module events (async)
+      // Store module events
       processEvents(
         client,
         blockNumber,
@@ -996,7 +1001,7 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
         timestamp.toNumber(),
         loggerOptions,
       ),
-      // Store block logs (async)
+      // Store block logs
       processLogs(
         client,
         blockNumber,

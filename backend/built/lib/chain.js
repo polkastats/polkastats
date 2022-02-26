@@ -216,19 +216,19 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
     }
 };
 exports.updateAccountInfo = updateAccountInfo;
-const processExtrinsics = async (api, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => {
+const processExtrinsics = async (api, apiAt, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     const indexedExtrinsics = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
     const chunks = (0, utils_1.chunker)(indexedExtrinsics, chunkSize);
     for (const chunk of chunks) {
-        await Promise.all(chunk.map((indexedExtrinsic) => (0, exports.processExtrinsic)(api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
+        await Promise.all(chunk.map((indexedExtrinsic) => (0, exports.processExtrinsic)(api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
     logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 exports.processExtrinsics = processExtrinsics;
-const processExtrinsic = async (api, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions) => {
+const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions) => {
     const [extrinsicIndex, extrinsic] = indexedExtrinsic;
     const { isSigned } = extrinsic;
     const signer = isSigned ? extrinsic.signer.toString() : '';
@@ -671,20 +671,20 @@ const processLog = async (client, blockNumber, log, index, timestamp, loggerOpti
     }
 };
 exports.processLog = processLog;
-const getExtrinsicSuccessOrErrorMessage = (api, index, blockEvents) => {
+const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents) => {
     let extrinsicSuccess = false;
     let extrinsicErrorMessage = '';
     blockEvents
         .filter(({ phase }) => phase.isApplyExtrinsic &&
         phase.asApplyExtrinsic.eq(index))
         .forEach(({ event }) => {
-        if (api.events.system.ExtrinsicSuccess.is(event)) {
+        if (apiAt.events.system.ExtrinsicSuccess.is(event)) {
             extrinsicSuccess = true;
         }
-        else if (api.events.system.ExtrinsicFailed.is(event)) {
+        else if (apiAt.events.system.ExtrinsicFailed.is(event)) {
             const [dispatchError] = event.data;
             if (dispatchError.isModule) {
-                const decoded = blockEvents.registry.findMetaError(dispatchError.asModule);
+                const decoded = apiAt.registry.findMetaError(dispatchError.asModule);
                 extrinsicErrorMessage = `${decoded.name}: ${decoded.docs}`;
             }
             else {
@@ -859,21 +859,21 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         }
         // Runtime upgrade
         const runtimeUpgrade = blockEvents
-            .find(({ event }) => api.events.system.CodeUpdated.is(event));
+            .find(({ event }) => apiAt.events.system.CodeUpdated.is(event));
         if (runtimeUpgrade) {
             const specName = runtimeVersion.toJSON().specName;
             const specVersion = runtimeVersion.specVersion;
-            // this fucks type augmentation when crawling backwards, see: https://github.com/polkadot-js/api/issues/4596
+            // TODO: enable again
+            // see: https://github.com/polkadot-js/api/issues/4596
             // const metadata = await api.rpc.state.getMetadata(blockHash);
-            // getting metadata from sidecar is our best option
             await (0, exports.storeMetadata)(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
         }
         await Promise.all([
-            // Store block extrinsics (async)
-            (0, exports.processExtrinsics)(api, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
-            // Store module events (async)
+            // Store block extrinsics
+            (0, exports.processExtrinsics)(api, apiAt, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
+            // Store module events
             (0, exports.processEvents)(client, blockNumber, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
-            // Store block logs (async)
+            // Store block logs
             (0, exports.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
         ]);
     }

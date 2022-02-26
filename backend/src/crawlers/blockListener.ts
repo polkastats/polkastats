@@ -176,6 +176,7 @@ const crawler = async () => {
           // Store block extrinsics
           processExtrinsics(
             api,
+            apiAt,
             client,
             blockNumber,
             blockHash,
