@@ -682,18 +682,12 @@ const getExtrinsicSuccessOrErrorMessage = (api, index, blockEvents) => {
             extrinsicSuccess = true;
         }
         else if (api.events.system.ExtrinsicFailed.is(event)) {
-            // extract the data for this event
             const [dispatchError] = event.data;
-            // decode the error
             if (dispatchError.isModule) {
-                // for module errors, we have the section indexed, lookup
-                // (For specific known errors, we can also do a check against the
-                // api.errors.<module>.<ErrorName>.is(dispatchError.asModule) guard)
-                const decoded = api.registry.findMetaError(dispatchError.asModule);
-                extrinsicErrorMessage = `${decoded.section}.${decoded.name}`;
+                const decoded = blockEvents.registry.findMetaError(dispatchError.asModule);
+                extrinsicErrorMessage = `${decoded.name}: ${decoded.docs}`;
             }
             else {
-                // Other, CannotLookup, BadOrigin, no extra info
                 extrinsicErrorMessage = dispatchError.toString();
             }
         }
