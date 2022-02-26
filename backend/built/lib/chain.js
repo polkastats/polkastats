@@ -1665,7 +1665,7 @@ exports.getLastEraInDb = getLastEraInDb;
 const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
     const era = new bignumber_js_1.BigNumber(eraIndex.toString()).toString(10);
     let data = [era];
-    let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = $1 AND commission != 100`;
+    let sql = 'SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = $1 AND commission != 100';
     let res = await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].commission_avg) {
@@ -1673,11 +1673,11 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
                 era,
                 res.rows[0].commission_avg
             ];
-            sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
+            sql = 'INSERT INTO era_commission_avg (era, commission_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
-    sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = $1'`;
+    sql = 'SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = $1';
     data = [era];
     res = await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
@@ -1687,11 +1687,11 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
                 era,
                 selfStakeAvg
             ];
-            sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
+            sql = 'INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
-    sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = $1`;
+    sql = 'SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = $1';
     data = [era];
     res = await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
@@ -1700,11 +1700,11 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
                 era,
                 res.rows[0].relative_performance_avg
             ];
-            sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
+            sql = 'INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
-    sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = $1`;
+    sql = 'SELECT AVG(points) AS points_avg FROM era_points WHERE era = $1';
     data = [era];
     res = await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
@@ -1713,7 +1713,7 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
                 era,
                 res.rows[0].points_avg
             ];
-            sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
+            sql = 'INSERT INTO era_points_avg (era, points_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
