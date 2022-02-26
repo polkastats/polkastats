@@ -259,7 +259,7 @@ export const processExtrinsic = async (
   const hash = extrinsic.hash.toHex();
   const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
   // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
-  const [success, errorMessage] = getExtrinsicSuccessOrErrorMessage(api, extrinsicIndex, blockEvents);
+  const [success, errorMessage] = getExtrinsicSuccessOrErrorMessage(apiAt, extrinsicIndex, blockEvents);
   let feeInfo = '';
   let feeDetails = '';
   if (isSigned) {
@@ -272,7 +272,23 @@ export const processExtrinsic = async (
         .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '',
     ]);
   }
-  let sql = `INSERT INTO extrinsic (
+  const data = [
+    blockNumber,
+    extrinsicIndex,
+    isSigned,
+    signer,
+    section,
+    method,
+    args,
+    hash,
+    doc,
+    feeInfo,
+    feeDetails,
+    success,
+    errorMessage,
+    timestamp
+  ];
+  const sql = `INSERT INTO extrinsic (
       block_number,
       extrinsic_index,
       is_signed,
@@ -288,26 +304,26 @@ export const processExtrinsic = async (
       error_message,
       timestamp
     ) VALUES (
-      '${blockNumber}',
-      '${extrinsicIndex}',
-      '${isSigned}',
-      '${signer}',
-      '${section}',
-      '${method}',
-      '${args}',
-      '${hash}',
-      '${doc}',
-      '${feeInfo}',
-      '${feeDetails}',
-      '${success}',
-      '${errorMessage}',
-      '${timestamp}'
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7,
+      $8,
+      $9,
+      $10,
+      $11,
+      $12,
+      $13,
+      $14
     )
     ON CONFLICT ON CONSTRAINT extrinsic_pkey 
     DO NOTHING;
     ;`;
   try {
-    await client.query(sql);
+    await client.query(sql, data);
     logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
@@ -315,8 +331,23 @@ export const processExtrinsic = async (
   }
 
   if (isSigned) {
+    const data = [
+      blockNumber,
+      extrinsicIndex,
+      signer,
+      section,
+      method,
+      args,
+      hash,
+      doc,
+      feeInfo,
+      feeDetails,
+      success,
+      errorMessage,
+      timestamp
+    ];
     // Store signed extrinsic
-    sql = `INSERT INTO signed_extrinsic (
+    const sql = `INSERT INTO signed_extrinsic (
       block_number,
       extrinsic_index,
       signer,
@@ -331,25 +362,25 @@ export const processExtrinsic = async (
       error_message,
       timestamp
     ) VALUES (
-      '${blockNumber}',
-      '${extrinsicIndex}',
-      '${signer}',
-      '${section}',
-      '${method}',
-      '${args}',
-      '${hash}',
-      '${doc}',
-      '${feeInfo}',
-      '${feeDetails}',
-      '${success}',
-      '${errorMessage}',
-      '${timestamp}'
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7,
+      $8,
+      $9,
+      $10,
+      $11,
+      $12,
+      $13
     )
     ON CONFLICT ON CONSTRAINT signed_extrinsic_pkey 
     DO NOTHING;
     ;`;
     try {
-      await client.query(sql);
+      await client.query(sql, data);
       logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
@@ -412,6 +443,20 @@ export const processTransfer = async (
     amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
   }
   const feeAmount = JSON.parse(feeInfo).partialFee;
+  const data = [
+    blockNumber,
+    extrinsicIndex,
+    section,
+    method,
+    hash,
+    source,
+    destination,
+    new BigNumber(amount).toString(10),
+    new BigNumber(feeAmount).toString(10),
+    success,
+    errorMessage,
+    timestamp
+  ];
   const sql = `INSERT INTO transfer (
       block_number,
       extrinsic_index,
@@ -426,24 +471,24 @@ export const processTransfer = async (
       error_message,
       timestamp
     ) VALUES (
-      '${blockNumber}',
-      '${extrinsicIndex}',
-      '${section}',
-      '${method}',
-      '${hash}',
-      '${source}',
-      '${destination}',
-      '${new BigNumber(amount).toString(10)}',
-      '${new BigNumber(feeAmount).toString(10)}',
-      '${success}',
-      '${errorMessage}',
-      '${timestamp}'
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7,
+      $8,
+      $9,
+      $10,
+      $11,
+      $12
     )
     ON CONFLICT ON CONSTRAINT transfer_pkey 
     DO NOTHING;
     ;`;
   try {
-    await client.query(sql);
+    await client.query(sql, data);
     logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${shortHash(hash.toString())}) ${section} ➡ ${method}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
@@ -487,7 +532,16 @@ export const processEvent = async (
   loggerOptions: { crawler: string; },
 ) => {
   const [eventIndex, { event, phase }] = indexedEvent;
-  let sql = `INSERT INTO event (
+  const data = [
+    blockNumber,
+    eventIndex,
+    event.section,
+    event.method,
+    phase.toString(),
+    JSON.stringify(event.data),
+    timestamp
+  ];
+  const sql = `INSERT INTO event (
     block_number,
     event_index,
     section,
@@ -496,19 +550,19 @@ export const processEvent = async (
     data,
     timestamp
   ) VALUES (
-    '${blockNumber}',
-    '${eventIndex}',
-    '${event.section}',
-    '${event.method}',
-    '${phase.toString()}',
-    '${JSON.stringify(event.data)}',
-    '${timestamp}'
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7
   )
   ON CONFLICT ON CONSTRAINT event_pkey 
   DO NOTHING
   ;`;
   try {
-    await client.query(sql);
+    await client.query(sql, data);
     logger.debug(loggerOptions, `Added event #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
@@ -524,6 +578,8 @@ export const processEvent = async (
 
     let validator = null;
     let era = null;
+    let sql;
+    let data = [];
 
     const payoutStakersExtrinsic = indexedBlockExtrinsics
       .find(([extrinsicIndex, { method: { section, method } }]) => (
@@ -600,6 +656,15 @@ export const processEvent = async (
     }
 
     if (validator && era) {
+      data = [
+        blockNumber,
+        eventIndex,
+        event.data[0],
+        validator,
+        era,
+        new BigNumber(event.data[1].toString()).toString(10),
+        timestamp
+      ];
       sql = `INSERT INTO staking_reward (
         block_number,
         event_index,
@@ -609,18 +674,25 @@ export const processEvent = async (
         amount,
         timestamp
       ) VALUES (
-        '${blockNumber}',
-        '${eventIndex}',
-        '${event.data[0]}',
-        '${validator}',
-        '${era}',
-        '${new BigNumber(event.data[1].toString()).toString(10)}',
-        '${timestamp}'
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7
       )
       ON CONFLICT ON CONSTRAINT staking_reward_pkey 
       DO NOTHING
       ;`;
     } else {
+      data = [
+        blockNumber,
+        eventIndex,
+        event.data[0],
+        new BigNumber(event.data[1].toString()).toString(10),
+        timestamp
+      ];
       sql = `INSERT INTO staking_reward (
         block_number,
         event_index,
@@ -628,18 +700,18 @@ export const processEvent = async (
         amount,
         timestamp
       ) VALUES (
-        '${blockNumber}',
-        '${eventIndex}',
-        '${event.data[0]}',
-        '${new BigNumber(event.data[1].toString()).toString(10)}',
-        '${timestamp}'
+        $1,
+        $2,
+        $3,
+        $4,
+        $5
       )
       ON CONFLICT ON CONSTRAINT staking_reward_pkey 
       DO NOTHING
       ;`;
     }
     try {
-      await client.query(sql);
+      await client.query(sql, data);
       logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
@@ -656,7 +728,16 @@ export const processEvent = async (
 
   // Store validator staking slash
   if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
-    sql = `INSERT INTO staking_slash (
+    const data = [
+      blockNumber,
+      eventIndex,
+      event.data[0],
+      event.data[0],
+      activeEra - 1,
+      new BigNumber(event.data[1].toString()).toString(10),
+      timestamp
+    ];
+    const sql = `INSERT INTO staking_slash (
       block_number,
       event_index,
       account_id,
@@ -665,19 +746,19 @@ export const processEvent = async (
       amount,
       timestamp
     ) VALUES (
-      '${blockNumber}',
-      '${eventIndex}',
-      '${event.data[0]}',
-      '${event.data[0]}',
-      '${activeEra - 1}',
-      '${new BigNumber(event.data[1].toString()).toString(10)}',
-      '${timestamp}'
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7
     )
     ON CONFLICT ON CONSTRAINT staking_slash_pkey 
     DO NOTHING
     ;`;
     try {
-      await client.query(sql);
+      await client.query(sql, data);
       logger.debug(loggerOptions, `Added validator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding validator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
@@ -688,7 +769,16 @@ export const processEvent = async (
   // Store nominator staking slash
   if (event.section === 'balances' && (event.method === 'Slash' || event.method === 'Slashed')) {
     const validator_stash_address = getSlashedValidatorAccount(eventIndex, indexedBlockEvents);
-    sql = `INSERT INTO staking_slash (
+    const data = [
+      blockNumber,
+      eventIndex,
+      event.data[0],
+      validator_stash_address,
+      activeEra - 1,
+      new BigNumber(event.data[1].toString()).toString(10),
+      timestamp
+    ];
+    const sql = `INSERT INTO staking_slash (
       block_number,
       event_index,
       account_id,
@@ -697,19 +787,19 @@ export const processEvent = async (
       amount,
       timestamp
     ) VALUES (
-      '${blockNumber}',
-      '${eventIndex}',
-      '${event.data[0]}',
-      '${validator_stash_address}',
-      '${activeEra - 1}',
-      '${new BigNumber(event.data[1].toString()).toString(10)}',
-      '${timestamp}'
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7
     )
     ON CONFLICT ON CONSTRAINT staking_slash_pkey 
     DO NOTHING
     ;`;
     try {
-      await client.query(sql);
+      await client.query(sql, data);
       logger.debug(loggerOptions, `Added nominator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     } catch (error) {
       logger.error(loggerOptions, `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
@@ -732,7 +822,15 @@ export const processLogs = async (client: Client, blockNumber: number, logs: any
 
 export const processLog = async (client: Client, blockNumber: number, log: any, index: number, timestamp: number, loggerOptions: { crawler: string; }) => {
   const { type } = log;
-  const [[engine, data]] = Object.values(log.toHuman());
+  const [[engine, logData]] = Object.values(log.toHuman());
+  const data = [
+    blockNumber,
+    index,
+    type,
+    engine,
+    logData,
+    timestamp
+  ];
   const sql = `INSERT INTO log (
       block_number,
       log_index,
@@ -741,18 +839,18 @@ export const processLog = async (client: Client, blockNumber: number, log: any, 
       data,
       timestamp
     ) VALUES (
-      '${blockNumber}',
-      '${index}',
-      '${type}',
-      '${engine}',
-      '${data}',
-      '${timestamp}'
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6
     )
     ON CONFLICT ON CONSTRAINT log_pkey 
     DO NOTHING;
     ;`;
   try {
-    await client.query(sql);
+    await client.query(sql, data);
     logger.debug(loggerOptions, `Added log ${blockNumber}-${index}`);
   } catch (error) {
     logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
@@ -798,10 +896,10 @@ export const getDisplayName = (identity: DeriveAccountRegistration): string => {
 
 export const updateFinalized = async (client: Client, finalizedBlock: number, loggerOptions: { crawler: string; }) => {
   const sql = `
-    UPDATE block SET finalized = true WHERE finalized = false AND block_number <= ${finalizedBlock};
+    UPDATE block SET finalized = true WHERE finalized = false AND block_number <= $1;
   `;
   try {
-    await client.query(sql);
+    await client.query(sql, [finalizedBlock]);
   } catch (error) {
     logger.error(loggerOptions, `Error updating finalized blocks: ${error}`);
     Sentry.captureException(error);
@@ -917,7 +1015,25 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
     const totalEvents = blockEvents.length;
     const totalExtrinsics = block.extrinsics.length;
 
-    const sqlInsert = `INSERT INTO block (
+    const data = [
+      blockNumber,
+      false,
+      blockAuthor,
+      blockAuthorName,
+      blockHash,
+      parentHash,
+      extrinsicsRoot,
+      stateRoot,
+      activeEra,
+      currentIndex,
+      isElection,
+      runtimeVersion.specVersion,
+      totalEvents,
+      totalExtrinsics,
+      totalIssuance.toString(),
+      timestamp
+    ];
+    const sql = `INSERT INTO block (
         block_number,
         finalized,
         block_author,
@@ -935,28 +1051,28 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
         total_issuance,
         timestamp
       ) VALUES (
-        '${blockNumber}',
-        false,
-        '${blockAuthor}',
-        '${blockAuthorName}',
-        '${blockHash}',
-        '${parentHash}',
-        '${extrinsicsRoot}',
-        '${stateRoot}',
-        '${activeEra}',
-        '${currentIndex}',
-        '${isElection}',
-        '${runtimeVersion.specVersion}',
-        '${totalEvents}',
-        '${totalExtrinsics}',
-        '${totalIssuance.toString()}',
-        '${timestamp}'
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7,
+        $8,
+        $9,
+        $10,
+        $11,
+        $12,
+        $13,
+        $14,
+        $15,
+        $16
       )
       ON CONFLICT ON CONSTRAINT block_pkey 
       DO NOTHING
       ;`;
     try {
-      await dbQuery(client, sqlInsert, loggerOptions);
+      await dbParamQuery(client, sql, data, loggerOptions);
       const endTime = new Date().getTime();
       logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
     } catch (error) {
@@ -1531,55 +1647,55 @@ export const insertRankingValidator = async (client: Client, validator: any, blo
     ON CONFLICT ON CONSTRAINT ranking_pkey 
     DO NOTHING`;
   const data = [
-    `${blockHeight}`,
-    `${validator.rank}`,
-    `${validator.active}`,
-    `${validator.activeRating}`,
-    `${validator.name}`,
-    `${JSON.stringify(validator.identity)}`,
-    `${validator.hasSubIdentity}`,
-    `${validator.subAccountsRating}`,
-    `${validator.verifiedIdentity}`,
-    `${validator.identityRating}`,
-    `${validator.stashAddress}`,
-    `${validator.stashCreatedAtBlock}`,
-    `${validator.stashParentCreatedAtBlock}`,
-    `${validator.addressCreationRating}`,
-    `${validator.controllerAddress}`,
-    `${validator.includedThousandValidators}`,
-    `${JSON.stringify(validator.thousandValidator)}`,
-    `${validator.partOfCluster}`,
-    `${validator.clusterName}`,
-    `${validator.clusterMembers}`,
-    `${validator.showClusterMember}`,
-    `${validator.nominators}`,
-    `${validator.nominatorsRating}`,
-    `${validator.commission}`,
-    `${JSON.stringify(validator.commissionHistory)}`,
-    `${validator.commissionRating}`,
-    `${validator.activeEras}`,
-    `${JSON.stringify(validator.eraPointsHistory)}`,
-    `${validator.eraPointsPercent}`,
-    `${validator.eraPointsRating}`,
-    `${validator.performance}`,
-    `${JSON.stringify(validator.performanceHistory)}`,
-    `${validator.relativePerformance}`,
-    `${JSON.stringify(validator.relativePerformanceHistory)}`,
-    `${validator.slashed}`,
-    `${validator.slashRating}`,
-    `${JSON.stringify(validator.slashes)}`,
-    `${validator.councilBacking}`,
-    `${validator.activeInGovernance}`,
-    `${validator.governanceRating}`,
-    `${JSON.stringify(validator.payoutHistory)}`,
-    `${validator.payoutRating}`,
-    `${validator.selfStake}`,
-    `${validator.otherStake}`,
-    `${validator.totalStake}`,
-    `${JSON.stringify(validator.stakeHistory)}`,
-    `${validator.totalRating}`,
-    `${validator.dominated}`,
-    `${startTime}`,
+    blockHeight,
+    validator.rank,
+    validator.active,
+    validator.activeRating,
+    validator.name,
+    JSON.stringify(validator.identity),
+    validator.hasSubIdentity,
+    validator.subAccountsRating,
+    validator.verifiedIdentity,
+    validator.identityRating,
+    validator.stashAddress,
+    validator.stashCreatedAtBlock,
+    validator.stashParentCreatedAtBlock,
+    validator.addressCreationRating,
+    validator.controllerAddress,
+    validator.includedThousandValidators,
+    JSON.stringify(validator.thousandValidator),
+    validator.partOfCluster,
+    validator.clusterName,
+    validator.clusterMembers,
+    validator.showClusterMember,
+    validator.nominators,
+    validator.nominatorsRating,
+    validator.commission,
+    JSON.stringify(validator.commissionHistory),
+    validator.commissionRating,
+    validator.activeEras,
+    JSON.stringify(validator.eraPointsHistory),
+    validator.eraPointsPercent,
+    validator.eraPointsRating,
+    validator.performance,
+    JSON.stringify(validator.performanceHistory),
+    validator.relativePerformance,
+    JSON.stringify(validator.relativePerformanceHistory),
+    validator.slashed,
+    validator.slashRating,
+    JSON.stringify(validator.slashes),
+    validator.councilBacking,
+    validator.activeInGovernance,
+    validator.governanceRating,
+    JSON.stringify(validator.payoutHistory),
+    validator.payoutRating,
+    validator.selfStake,
+    validator.otherStake,
+    validator.totalStake,
+    JSON.stringify(validator.stakeHistory),
+    validator.totalRating,
+    validator.dominated,
+    startTime,
   ];
   await dbParamQuery(client, sql, data, loggerOptions);
 };
@@ -1719,37 +1835,57 @@ export const getLastEraInDb = async (client: Client, loggerOptions: { crawler: s
 
 export const insertEraValidatorStatsAvg = async (client: Client, eraIndex: EraIndex, loggerOptions: { crawler: string; }) => {
   const era = new BigNumber(eraIndex.toString()).toString(10);
-  let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = '${era}' AND commission != 100`;
-  let res = await dbQuery(client, sql, loggerOptions);
+  let data = [era];
+  let sql = `SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = $1 AND commission != 100`;
+  let res = await dbParamQuery(client, sql, data, loggerOptions);
   if (res.rows.length > 0) {
     if (res.rows[0].commission_avg) {
-      sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ('${era}', '${res.rows[0].commission_avg}') ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
-      await dbQuery(client, sql, loggerOptions);
+      data = [
+        era,
+        res.rows[0].commission_avg
+      ];
+      sql = `INSERT INTO era_commission_avg (era, commission_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;`;
+      await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
-  sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = '${era}'`;
-  res = await dbQuery(client, sql, loggerOptions);
+  sql = `SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = $1'`;
+  data = [era];
+  res = await dbParamQuery(client, sql, data, loggerOptions);
   if (res.rows.length > 0) {
     if (res.rows[0].self_stake_avg) {
       const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
-      sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ('${era}', '${selfStakeAvg}') ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
-      await dbQuery(client, sql, loggerOptions);
+      data = [
+        era,
+        selfStakeAvg
+      ];
+      sql = `INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;`;
+      await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
-  sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = '${era}'`;
-  res = await dbQuery(client, sql, loggerOptions);
+  sql = `SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = $1`;
+  data = [era];
+  res = await dbParamQuery(client, sql, data, loggerOptions);
   if (res.rows.length > 0) {
     if (res.rows[0].relative_performance_avg) {
-      sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ('${era}', '${res.rows[0].relative_performance_avg}') ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
-      await dbQuery(client, sql, loggerOptions);
+      data = [
+        era,
+        res.rows[0].relative_performance_avg
+      ];
+      sql = `INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;`;
+      await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
-  sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = '${era}'`;
-  res = await dbQuery(client, sql, loggerOptions);
+  sql = `SELECT AVG(points) AS points_avg FROM era_points WHERE era = $1`;
+  data = [era];
+  res = await dbParamQuery(client, sql, data, loggerOptions);
   if (res.rows.length > 0) {
     if (res.rows[0].points_avg) {
-      sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ('${era}', '${res.rows[0].points_avg}') ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
-      await dbQuery(client, sql, loggerOptions);
+      data = [
+        era,
+        res.rows[0].points_avg
+      ];
+      sql = `INSERT INTO era_points_avg (era, points_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;`;
+      await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
 };
