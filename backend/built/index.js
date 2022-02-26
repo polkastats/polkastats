@@ -44,6 +44,10 @@ const runCrawler = async (crawler) => {
         // attempt to restart crawler
         runCrawler(crawler);
     });
+    child.on('exit', () => {
+        // attempt to restart crawler
+        runCrawler(crawler);
+    });
 };
 const runCrawlers = async () => {
     logger.debug('Starting backend, waiting 10s...');

@@ -23,6 +23,10 @@ const runCrawler = async (crawler: string) => {
     // attempt to restart crawler
     runCrawler(crawler);
   });
+  child.on('exit', () => {
+    // attempt to restart crawler
+    runCrawler(crawler);
+  });
 };
 
 const runCrawlers = async () => {
