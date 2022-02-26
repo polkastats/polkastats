@@ -150,7 +150,9 @@ const crawler = async () => {
                 }
                 catch (error) {
                     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
-                    Sentry.captureException(error);
+                    const scope = new Sentry.Scope();
+                    scope.setTag('blockNumber', blockNumber);
+                    Sentry.captureException(error, scope);
                 }
                 await Promise.all([
                     // Store block extrinsics

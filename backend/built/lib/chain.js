@@ -307,7 +307,9 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
-        Sentry.captureException(error);
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
     }
     if (isSigned) {
         const data = [
@@ -382,7 +384,7 @@ const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents,
         : JSON.parse(args)[0].address20;
     let amount;
     if (method === 'transferAll' && success) {
-        amount = (0, exports.getTransferAllAmount)(extrinsicIndex, blockEvents);
+        amount = (0, exports.getTransferAllAmount)(blockNumber, extrinsicIndex, blockEvents);
     }
     else if (method === 'transferAll' && !success) {
         // We can't get amount in this case cause no event is emitted
@@ -445,7 +447,9 @@ const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents,
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
-        Sentry.captureException(error);
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
     }
 };
 exports.processTransfer = processTransfer;
@@ -631,7 +635,9 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
-            Sentry.captureException(error);
+            const scope = new Sentry.Scope();
+            scope.setTag('blockNumber', blockNumber);
+            Sentry.captureException(error, scope);
         }
     }
     //
@@ -717,7 +723,9 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
-            Sentry.captureException(error);
+            const scope = new Sentry.Scope();
+            scope.setTag('blockNumber', blockNumber);
+            Sentry.captureException(error, scope);
         }
     }
 };
@@ -765,7 +773,9 @@ const processLog = async (client, blockNumber, log, index, timestamp, loggerOpti
     }
     catch (error) {
         logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
-        Sentry.captureException(error);
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
     }
 };
 exports.processLog = processLog;
@@ -837,11 +847,23 @@ const logHarvestError = async (client, blockNumber, error, loggerOptions) => {
 };
 exports.logHarvestError = logHarvestError;
 // TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proxy extrinsic
-const getTransferAllAmount = (index, blockEvents) => blockEvents
-    .find(({ event, phase }) => (phase.isApplyExtrinsic
-    && phase.asApplyExtrinsic.eq(index)
-    && event.section === 'balances'
-    && event.method === 'Transfer')).event.data[2].toString();
+const getTransferAllAmount = (blockNumber, index, blockEvents) => {
+    try {
+        return blockEvents
+            .find(({ event, phase }) => (phase.isApplyExtrinsic
+            && phase.asApplyExtrinsic.eq(index)
+            && event.section === 'balances'
+            && event.method === 'Transfer')).event.data[2].toString();
+    }
+    catch (error) {
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
+    }
+    finally {
+        return '0';
+    }
+};
 exports.getTransferAllAmount = getTransferAllAmount;
 const getSlashedValidatorAccount = (index, indexedBlockEvents) => {
     let validatorAccountId = '';
@@ -971,7 +993,9 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
-            Sentry.captureException(error);
+            const scope = new Sentry.Scope();
+            scope.setTag('blockNumber', blockNumber);
+            Sentry.captureException(error, scope);
         }
         // Runtime upgrade
         const runtimeUpgrade = blockEvents
@@ -996,7 +1020,9 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
     catch (error) {
         logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
         await (0, exports.logHarvestError)(client, blockNumber, error, loggerOptions);
-        Sentry.captureException(error);
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
     }
 };
 exports.harvestBlock = harvestBlock;
@@ -1074,7 +1100,9 @@ const storeMetadata = async (client, blockNumber, blockHash, specName, specVersi
     }
     catch (error) {
         logger.error(loggerOptions, `Error fetching runtime metadata at ${blockHash}: ${JSON.stringify(error)}`);
-        Sentry.captureException(error);
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
     }
     const data = [
         blockNumber,
