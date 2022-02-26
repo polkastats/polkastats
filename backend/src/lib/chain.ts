@@ -659,8 +659,8 @@ export const processEvent = async (
       data = [
         blockNumber,
         eventIndex,
-        event.data[0],
-        validator,
+        event.data[0].toString(),
+        validator.toString(),
         era,
         new BigNumber(event.data[1].toString()).toString(10),
         timestamp
@@ -689,7 +689,7 @@ export const processEvent = async (
       data = [
         blockNumber,
         eventIndex,
-        event.data[0],
+        event.data[0].toString(),
         new BigNumber(event.data[1].toString()).toString(10),
         timestamp
       ];
@@ -731,8 +731,8 @@ export const processEvent = async (
     const data = [
       blockNumber,
       eventIndex,
-      event.data[0],
-      event.data[0],
+      event.data[0].toString(),
+      event.data[0].toString(),
       activeEra - 1,
       new BigNumber(event.data[1].toString()).toString(10),
       timestamp
@@ -772,7 +772,7 @@ export const processEvent = async (
     const data = [
       blockNumber,
       eventIndex,
-      event.data[0],
+      event.data[0].toString(),
       validator_stash_address,
       activeEra - 1,
       new BigNumber(event.data[1].toString()).toString(10),

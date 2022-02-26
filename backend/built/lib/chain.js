@@ -573,8 +573,8 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
             data = [
                 blockNumber,
                 eventIndex,
-                event.data[0],
-                validator,
+                event.data[0].toString(),
+                validator.toString(),
                 era,
                 new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
                 timestamp
@@ -604,7 +604,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
             data = [
                 blockNumber,
                 eventIndex,
-                event.data[0],
+                event.data[0].toString(),
                 new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
                 timestamp
             ];
@@ -644,8 +644,8 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
         const data = [
             blockNumber,
             eventIndex,
-            event.data[0],
-            event.data[0],
+            event.data[0].toString(),
+            event.data[0].toString(),
             activeEra - 1,
             new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
             timestamp
@@ -685,7 +685,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
         const data = [
             blockNumber,
             eventIndex,
-            event.data[0],
+            event.data[0].toString(),
             validator_stash_address,
             activeEra - 1,
             new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
