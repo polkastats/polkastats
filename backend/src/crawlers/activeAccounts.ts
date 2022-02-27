@@ -10,6 +10,7 @@ import {
 import { chunker, wait } from '../lib/utils';
 import pino from 'pino';
 import { backendConfig } from '../backend.config';
+import { CrawlerConfig } from '../lib/types';
 
 const crawlerName = 'activeAccounts';
 
@@ -26,7 +27,7 @@ const loggerOptions = {
   crawler: crawlerName,
 };
 
-const config = backendConfig.crawlers.find(
+const config: CrawlerConfig = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
 

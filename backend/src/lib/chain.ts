@@ -8,6 +8,7 @@ import { BlockHash, EventRecord, EraIndex } from '@polkadot/types/interfaces';
 import { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import { AnyTuple } from '@polkadot/types/types';
 import { GenericExtrinsic, Vec } from '@polkadot/types';
+import { ApiDecoration } from '@polkadot/api/types';
 import axios from 'axios';
 import pino from 'pino';
 import { Client, QueryResult } from 'pg';
@@ -16,7 +17,7 @@ import fs from 'fs';
 import { BigNumber } from 'bignumber.js';
 import { chunker, range, reverseRange, shortHash } from './utils';
 import { backendConfig } from '../backend.config';
-import { ApiDecoration } from '@polkadot/api/types';
+import { ClusterInfo, CommisionHistoryItem, CrawlerConfig, IdentityInfo, LoggerOptions } from './types';
 
 Sentry.init({
   dsn: backendConfig.sentryDSN,
@@ -33,7 +34,7 @@ const chunkSize = 100;
 type indexedBlockEvent = [number, EventRecord];
 type indexedBlockExtrinsic = [number, GenericExtrinsic<AnyTuple>];
 
-export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCustomTypes: string | undefined): Promise<ApiPromise> => {
+export const getPolkadotAPI = async (loggerOptions: LoggerOptions, apiCustomTypes: string | undefined): Promise<ApiPromise> => {
   let api;
   logger.debug(loggerOptions, `Connecting to ${backendConfig.wsProviderUrl}`);
   const provider = new WsProvider(backendConfig.wsProviderUrl);
@@ -47,7 +48,7 @@ export const getPolkadotAPI = async (loggerOptions: { crawler: string; }, apiCus
   return api;
 };
 
-export const isNodeSynced = async (api: ApiPromise, loggerOptions: { crawler: string; }): Promise<boolean> => {
+export const isNodeSynced = async (api: ApiPromise, loggerOptions: LoggerOptions): Promise<boolean> => {
   let node;
   try {
     node = await api.rpc.system.health();
@@ -63,14 +64,14 @@ export const isNodeSynced = async (api: ApiPromise, loggerOptions: { crawler: st
   return false;
 };
 
-export const getClient = async (loggerOptions: { crawler: string; }): Promise<Client> => {
+export const getClient = async (loggerOptions: LoggerOptions): Promise<Client> => {
   logger.debug(loggerOptions, `Connecting to DB ${backendConfig.postgresConnParams.database} at ${backendConfig.postgresConnParams.host}:${backendConfig.postgresConnParams.port}`);
   const client = new Client(backendConfig.postgresConnParams);
   await client.connect();
   return client;
 };
 
-export const dbQuery = async (client: Client, sql: string, loggerOptions: { crawler: string; }): Promise<QueryResult<any>> | null => {
+export const dbQuery = async (client: Client, sql: string, loggerOptions: LoggerOptions): Promise<QueryResult<any>> | null => {
   try {
     return await client.query(sql);
   } catch (error) {
@@ -80,7 +81,7 @@ export const dbQuery = async (client: Client, sql: string, loggerOptions: { craw
   return null;
 };
 
-export const dbParamQuery = async (client: Client, sql: string, data: any[], loggerOptions: { crawler: string; }): Promise<QueryResult<any>> | null => {
+export const dbParamQuery = async (client: Client, sql: string, data: any[], loggerOptions: LoggerOptions): Promise<QueryResult<any>> | null => {
   try {
     return await client.query(sql, data);
   } catch (error) {
@@ -104,7 +105,7 @@ export const isValidAddressPolkadotAddress = (address: string): boolean => {
   }
 };
 
-export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: { crawler: string; }, blockEvents: Vec<EventRecord>) => {
+export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: LoggerOptions, blockEvents: Vec<EventRecord>): Promise<void> => {
   const startTime = new Date().getTime();
   const involvedAddresses: string[] = [];
   blockEvents
@@ -129,7 +130,7 @@ export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockN
   logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 
-export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: string, loggerOptions: { crawler: string; }) => {
+export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: string, loggerOptions: LoggerOptions): Promise<void> => {
   const [balances, { identity }] = await Promise.all([
     api.derive.balances.all(address),
     api.derive.accounts.info(address),
@@ -214,8 +215,8 @@ export const processExtrinsics = async (
   extrinsics: Vec<GenericExtrinsic<AnyTuple>>,
   blockEvents: Vec<EventRecord>,
   timestamp: number,
-  loggerOptions: { crawler: string; },
-) => {
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const startTime = new Date().getTime();
   const indexedExtrinsics: indexedBlockExtrinsic[] = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
   const chunks = chunker(indexedExtrinsics, chunkSize);
@@ -248,8 +249,8 @@ export const processExtrinsic = async (
   indexedExtrinsic: indexedBlockExtrinsic,
   blockEvents: Vec<EventRecord>,
   timestamp: number,
-  loggerOptions: { crawler: string; },
-) => {
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const [extrinsicIndex, extrinsic] = indexedExtrinsic;
   const { isSigned } = extrinsic;
   const signer = isSigned ? extrinsic.signer.toString() : '';
@@ -420,16 +421,16 @@ export const processTransfer = async (
   method: string,
   args: string,
   hash: string,
-  signer: any,
+  signer: string,
   feeInfo: string,
   success: boolean,
   errorMessage: string,
   timestamp: number,
-  loggerOptions: { crawler: string; }
-) => {
+  loggerOptions: LoggerOptions
+): Promise<void> => {
   // Store transfer
   const source = signer;
-  const destination = JSON.parse(args)[0].id
+  const destination: string = JSON.parse(args)[0].id
     ? JSON.parse(args)[0].id
     : JSON.parse(args)[0].address20;
 
@@ -510,8 +511,8 @@ export const processEvents = async (
   blockEvents: Vec<EventRecord>,
   blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>,
   timestamp: number,
-  loggerOptions: { crawler: string; },
-) => {
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const startTime = new Date().getTime();
   const indexedBlockEvents: indexedBlockEvent[] = blockEvents.map((event, index) => ([index, event]));
   const indexedBlockExtrinsics: indexedBlockExtrinsic[] = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
@@ -536,8 +537,8 @@ export const processEvent = async (
   indexedBlockEvents: indexedBlockEvent[],
   indexedBlockExtrinsics: indexedBlockExtrinsic[],
   timestamp: number,
-  loggerOptions: { crawler: string; },
-) => {
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const [eventIndex, { event, phase }] = indexedEvent;
   const data = [
     blockNumber,
@@ -819,7 +820,7 @@ export const processEvent = async (
   }
 };
 
-export const processLogs = async (client: Client, blockNumber: number, logs: any[], timestamp: number, loggerOptions: { crawler: string; }) => {
+export const processLogs = async (client: Client, blockNumber: number, logs: any[], timestamp: number, loggerOptions: LoggerOptions): Promise<void> => {
   const startTime = new Date().getTime();
   await Promise.all(
     logs.map((log, index) => processLog(
@@ -831,7 +832,7 @@ export const processLogs = async (client: Client, blockNumber: number, logs: any
   logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
 
-export const processLog = async (client: Client, blockNumber: number, log: any, index: number, timestamp: number, loggerOptions: { crawler: string; }) => {
+export const processLog = async (client: Client, blockNumber: number, log: any, index: number, timestamp: number, loggerOptions: LoggerOptions): Promise<void> => {
   const { type } = log;
   // this can change in the future...
   const [[engine, logData]] = type === 'RuntimeEnvironmentUpdated'
@@ -910,7 +911,7 @@ export const getDisplayName = (identity: DeriveAccountRegistration): string => {
   return identity.display || '';
 };
 
-export const updateFinalized = async (client: Client, finalizedBlock: number, loggerOptions: { crawler: string; }) => {
+export const updateFinalized = async (client: Client, finalizedBlock: number, loggerOptions: LoggerOptions): Promise<void> => {
   const sql = `
     UPDATE block SET finalized = true WHERE finalized = false AND block_number <= $1;
   `;
@@ -922,7 +923,7 @@ export const updateFinalized = async (client: Client, finalizedBlock: number, lo
   }
 };
 
-export const logHarvestError = async (client: Client, blockNumber: number, error: any, loggerOptions: { crawler: string; }) => {
+export const logHarvestError = async (client: Client, blockNumber: number, error: any, loggerOptions: LoggerOptions): Promise<void> => {
   const timestamp = new Date().getTime();
   const errorString = error.toString().replace(/'/g, "''");
   const data = [
@@ -971,7 +972,7 @@ export const getSlashedValidatorAccount = (index: number, indexedBlockEvents: in
   return validatorAccountId;
 }
 
-export const healthCheck = async (config: any, client: Client, loggerOptions: { crawler: string; }) => {
+export const healthCheck = async (config: CrawlerConfig, client: Client, loggerOptions: LoggerOptions): Promise<void> => {
   const startTime = new Date().getTime();
   logger.info(loggerOptions, 'Starting health check');
   const query = `
@@ -997,7 +998,7 @@ export const healthCheck = async (config: any, client: Client, loggerOptions: { 
   logger.debug(loggerOptions, `Health check finished in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
 };
 
-export const harvestBlock = async (config: any, api: ApiPromise, client: Client, blockNumber: number, loggerOptions: { crawler: string; }) => {
+export const harvestBlock = async (config: CrawlerConfig, api: ApiPromise, client: Client, blockNumber: number, loggerOptions: LoggerOptions): Promise<void> => {
   const startTime = new Date().getTime();
   try {
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
@@ -1163,7 +1164,7 @@ export const harvestBlock = async (config: any, api: ApiPromise, client: Client,
 };
 
 // eslint-disable-next-line no-unused-vars
-export const harvestBlocksSeq = async (config: any, api: ApiPromise, client: Client, startBlock: number, endBlock: number, loggerOptions: { crawler: string; }) => {
+export const harvestBlocksSeq = async (config: CrawlerConfig, api: ApiPromise, client: Client, startBlock: number, endBlock: number, loggerOptions: LoggerOptions): Promise<void> => {
   const reverseOrder = true;
   const blocks = reverseOrder
     ? reverseRange(startBlock, endBlock, 1)
@@ -1196,7 +1197,7 @@ export const harvestBlocksSeq = async (config: any, api: ApiPromise, client: Cli
   }
 };
 
-export const harvestBlocks = async (config: any, api: ApiPromise, client: Client, startBlock: number, endBlock: number, loggerOptions: { crawler: string; }) => {
+export const harvestBlocks = async (config: CrawlerConfig, api: ApiPromise, client: Client, startBlock: number, endBlock: number, loggerOptions: LoggerOptions): Promise<void> => {
   const reverseOrder = true;
   const blocks = reverseOrder
     ? reverseRange(startBlock, endBlock, 1)
@@ -1253,8 +1254,8 @@ export const storeMetadata = async (
   specName: string,
   specVersion: number,
   timestamp: number,
-  loggerOptions: { crawler: string; }
-) => {
+  loggerOptions: LoggerOptions
+): Promise<void> => {
   let metadata;
   try {
     const response = await axios.get(`${backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
@@ -1300,13 +1301,13 @@ export const storeMetadata = async (
   await dbParamQuery(client, query, data, loggerOptions);
 }
 
-export const getAccountIdFromArgs = (account: any[]) => account
+export const getAccountIdFromArgs = (account: any[]): string[] => account
   .map(({ args }) => args)
   .map(([e]) => e.toHuman());
 
-export const fetchAccountIds = async (api: ApiPromise) => getAccountIdFromArgs(await api.query.system.account.keys());
+export const fetchAccountIds = async (api: ApiPromise): Promise<any[]> => getAccountIdFromArgs(await api.query.system.account.keys());
 
-export const processAccountsChunk = async (api: ApiPromise, client: Client, accountId: any, loggerOptions: { crawler: string; }) => {
+export const processAccountsChunk = async (api: ApiPromise, client: Client, accountId: any, loggerOptions: LoggerOptions): Promise<void> => {
   const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
   const [block, identity, balances] = await Promise.all([
     api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
@@ -1381,7 +1382,7 @@ export const processAccountsChunk = async (api: ApiPromise, client: Client, acco
 // staking
 //
 
-export const getThousandValidators = async (loggerOptions: { crawler: string; }) => {
+export const getThousandValidators = async (loggerOptions: LoggerOptions): Promise<any[]> => {
   try {
     const response = await axios.get('https://kusama.w3f.community/candidates');
     return response.data;
@@ -1392,7 +1393,7 @@ export const getThousandValidators = async (loggerOptions: { crawler: string; })
   }
 };
 
-export const isVerifiedIdentity = (identity: DeriveAccountRegistration) => {
+export const isVerifiedIdentity = (identity: DeriveAccountRegistration): boolean => {
   if (identity.judgements.length === 0) {
     return false;
   }
@@ -1401,7 +1402,7 @@ export const isVerifiedIdentity = (identity: DeriveAccountRegistration) => {
     .some(([, judgement]) => judgement.isKnownGood || judgement.isReasonable);
 };
 
-export const getName = (identity: DeriveAccountRegistration) => {
+export const getName = (identity: DeriveAccountRegistration): string => {
   if (
     identity.displayParent
     && identity.displayParent !== ''
@@ -1413,9 +1414,9 @@ export const getName = (identity: DeriveAccountRegistration) => {
   return identity.display || '';
 };
 
-export const getClusterName = (identity: DeriveAccountRegistration) => identity.displayParent || '';
+export const getClusterName = (identity: DeriveAccountRegistration): string => identity.displayParent || '';
 
-export const subIdentity = (identity: DeriveAccountRegistration) => {
+export const subIdentity = (identity: DeriveAccountRegistration): boolean => {
   if (
     identity.displayParent
     && identity.displayParent !== ''
@@ -1427,7 +1428,7 @@ export const subIdentity = (identity: DeriveAccountRegistration) => {
   return false;
 };
 
-export const getIdentityRating = (name: string, verifiedIdentity: boolean, hasAllFields: any) => {
+export const getIdentityRating = (name: string, verifiedIdentity: boolean, hasAllFields: boolean): number => {
   if (verifiedIdentity && hasAllFields) {
     return 3;
   } if (verifiedIdentity && !hasAllFields) {
@@ -1438,16 +1439,16 @@ export const getIdentityRating = (name: string, verifiedIdentity: boolean, hasAl
   return 0;
 };
 
-export const parseIdentity = (identity: DeriveAccountRegistration) => {
+export const parseIdentity = (identity: DeriveAccountRegistration): IdentityInfo => {
   const verifiedIdentity = isVerifiedIdentity(identity);
   const hasSubIdentity = subIdentity(identity);
   const name = getName(identity);
-  const hasAllFields = identity.display
-    && identity.legal
-    && identity.web
-    && identity.email
-    && identity.twitter
-    && identity.riot;
+  const hasAllFields = identity?.display !== undefined
+    && identity?.legal !== undefined
+    && identity?.web !== undefined
+    && identity?.email !== undefined
+    && identity?.twitter !== undefined
+    && identity?.riot !== undefined;
   const identityRating = getIdentityRating(name, verifiedIdentity, hasAllFields);
   return {
     verifiedIdentity,
@@ -1457,7 +1458,7 @@ export const parseIdentity = (identity: DeriveAccountRegistration) => {
   };
 };
 
-export const getCommissionHistory = (accountId: string | number, erasPreferences: any[]) => {
+export const getCommissionHistory = (accountId: string | number, erasPreferences: any[]): CommisionHistoryItem[] => {
   const commissionHistory: any = [];
   erasPreferences.forEach(({ era, validators }) => {
     if (validators[accountId]) {
@@ -1475,7 +1476,7 @@ export const getCommissionHistory = (accountId: string | number, erasPreferences
   return commissionHistory;
 };
 
-export const getCommissionRating = (commission: number, commissionHistory: any[]) => {
+export const getCommissionRating = (commission: number, commissionHistory: any[]): number => {
   if (commission !== 100 && commission !== 0) {
     if (commission > 10) {
       return 1;
@@ -1496,7 +1497,7 @@ export const getCommissionRating = (commission: number, commissionHistory: any[]
   return 0;
 };
 
-export const getPayoutRating = (config: any, payoutHistory: any[]) => {
+export const getPayoutRating = (config: CrawlerConfig, payoutHistory: any[]): number => {
   const pendingEras = payoutHistory.filter((era) => era.status === 'pending').length;
   if (pendingEras <= config.erasPerDay) {
     return 3;
@@ -1508,7 +1509,7 @@ export const getPayoutRating = (config: any, payoutHistory: any[]) => {
   return 0;
 };
 
-export const getClusterInfo = (hasSubIdentity: boolean, validators: any[], validatorIdentity: DeriveAccountRegistration) => {
+export const getClusterInfo = (hasSubIdentity: boolean, validators: any[], validatorIdentity: DeriveAccountRegistration): ClusterInfo => {
   if (!hasSubIdentity) {
     // string detection
     // samples: DISC-SOFT-01, BINANCE_KSM_9, SNZclient-1
@@ -1543,12 +1544,14 @@ export const getClusterInfo = (hasSubIdentity: boolean, validators: any[], valid
   };
 };
 
-export const addNewFeaturedValidator = async (config: any, client: Client, ranking: any[], loggerOptions: { crawler: string; }) => {
-  // rules:
-  // - maximum commission is 10%
-  // - at least 20 KSM own stake
-  // - no previously featured
-
+//
+//   featured rules:
+//
+// - maximum commission is 10%
+// - at least 20 KSM own stake
+// - no previously featured
+//
+export const addNewFeaturedValidator = async (config: CrawlerConfig, client: Client, ranking: any[], loggerOptions: LoggerOptions): Promise<void> => {
   // get previously featured
   const alreadyFeatured: any = [];
   const sql = 'SELECT stash_address, timestamp FROM featured';
@@ -1572,7 +1575,7 @@ export const addNewFeaturedValidator = async (config: any, client: Client, ranki
   logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
 };
 
-export const insertRankingValidator = async (client: Client, validator: any, blockHeight: number, startTime: number, loggerOptions: { crawler: string; }) => {
+export const insertRankingValidator = async (client: Client, validator: any, blockHeight: number, startTime: number, loggerOptions: LoggerOptions): Promise<void> => {
   const sql = `INSERT INTO ranking (
       block_height,
       rank,
@@ -1730,7 +1733,7 @@ export const insertRankingValidator = async (client: Client, validator: any, blo
   await dbParamQuery(client, sql, data, loggerOptions);
 };
 
-export const insertEraValidatorStats = async (client: Client, validator: any, activeEra: any, loggerOptions: { crawler: string; }) => {
+export const insertEraValidatorStats = async (client: Client, validator: any, activeEra: any, loggerOptions: LoggerOptions): Promise<void> => {
   let sql = `INSERT INTO era_vrc_score (
       stash_address,
       era,
@@ -1834,7 +1837,7 @@ export const insertEraValidatorStats = async (client: Client, validator: any, ac
   }
 };
 
-export const getAddressCreation = async (client: Client, address: any, loggerOptions: { crawler: string; }) => {
+export const getAddressCreation = async (client: Client, address: string, loggerOptions: LoggerOptions): Promise<number> => {
   const query = "SELECT block_number FROM event WHERE method = 'NewAccount' AND data LIKE $1";
   const res = await dbParamQuery(client, query, [`%${address}%`], loggerOptions);
   if (res) {
@@ -1844,11 +1847,11 @@ export const getAddressCreation = async (client: Client, address: any, loggerOpt
       }
     }
   }
-  // if not found we assume that it's included in genesis
+  // if not found we assume it was created in genesis block
   return 0;
 };
 
-export const getLastEraInDb = async (client: Client, loggerOptions: { crawler: string; }) => {
+export const getLastEraInDb = async (client: Client, loggerOptions: LoggerOptions): Promise<string> => {
   // TODO: check also:
   // era_points_avg, era_relative_performance_avg, era_self_stake_avg
   const query = 'SELECT era FROM era_commission_avg ORDER BY era DESC LIMIT 1';
@@ -1860,10 +1863,10 @@ export const getLastEraInDb = async (client: Client, loggerOptions: { crawler: s
       }
     }
   }
-  return 0;
+  return '0';
 };
 
-export const insertEraValidatorStatsAvg = async (client: Client, eraIndex: EraIndex, loggerOptions: { crawler: string; }) => {
+export const insertEraValidatorStatsAvg = async (client: Client, eraIndex: EraIndex, loggerOptions: LoggerOptions): Promise<void> => {
   const era = new BigNumber(eraIndex.toString()).toString(10);
   let data = [era];
   let sql = 'SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = $1 AND commission != 100';

@@ -21,6 +21,7 @@ import { wait, getRandom } from '../lib/utils';
 import { BigNumber } from 'bignumber.js';
 import pino from 'pino';
 import { backendConfig } from '../backend.config';
+import { CrawlerConfig } from '../lib/types';
 
 const crawlerName = 'ranking';
 
@@ -37,7 +38,7 @@ const loggerOptions = {
   crawler: crawlerName,
 };
 
-const config = backendConfig.crawlers.find(
+const config: CrawlerConfig = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
 
@@ -278,10 +279,10 @@ const crawler = async (delayedStart: boolean) => {
     // stash & identity parent address creation block
     const stashAddressesCreation: any = [];
     for (const validator of validators) {
-      const stashAddress = validator.stashId.toString();
+      const stashAddress: string = validator.stashId.toString();
       stashAddressesCreation[stashAddress] = await getAddressCreation(client, stashAddress, loggerOptions);
       if (validator.identity.parent) {
-        const stashParentAddress = validator.identity.parent.toString();
+        const stashParentAddress: string = validator.identity.parent.toString();
         stashAddressesCreation[stashParentAddress] = await getAddressCreation(
           client, stashParentAddress, loggerOptions
         );

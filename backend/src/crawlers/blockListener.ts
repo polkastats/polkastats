@@ -17,6 +17,7 @@ import {
 import { wait, shortHash } from '../lib/utils';
 import pino from 'pino';
 import { backendConfig } from '../backend.config';
+import { CrawlerConfig } from '../lib/types';
 
 const crawlerName = 'blockListener';
 
@@ -33,7 +34,7 @@ const loggerOptions = {
   crawler: crawlerName,
 };
 
-const config = backendConfig.crawlers.find(
+const config: CrawlerConfig = backendConfig.crawlers.find(
   ({ name }) => name === crawlerName,
 );
 

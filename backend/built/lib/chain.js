@@ -1283,12 +1283,12 @@ const parseIdentity = (identity) => {
     const verifiedIdentity = (0, exports.isVerifiedIdentity)(identity);
     const hasSubIdentity = (0, exports.subIdentity)(identity);
     const name = (0, exports.getName)(identity);
-    const hasAllFields = identity.display
-        && identity.legal
-        && identity.web
-        && identity.email
-        && identity.twitter
-        && identity.riot;
+    const hasAllFields = (identity === null || identity === void 0 ? void 0 : identity.display) !== undefined
+        && (identity === null || identity === void 0 ? void 0 : identity.legal) !== undefined
+        && (identity === null || identity === void 0 ? void 0 : identity.web) !== undefined
+        && (identity === null || identity === void 0 ? void 0 : identity.email) !== undefined
+        && (identity === null || identity === void 0 ? void 0 : identity.twitter) !== undefined
+        && (identity === null || identity === void 0 ? void 0 : identity.riot) !== undefined;
     const identityRating = (0, exports.getIdentityRating)(name, verifiedIdentity, hasAllFields);
     return {
         verifiedIdentity,
@@ -1380,11 +1380,14 @@ const getClusterInfo = (hasSubIdentity, validators, validatorIdentity) => {
     };
 };
 exports.getClusterInfo = getClusterInfo;
+//
+//   featured rules:
+//
+// - maximum commission is 10%
+// - at least 20 KSM own stake
+// - no previously featured
+//
 const addNewFeaturedValidator = async (config, client, ranking, loggerOptions) => {
-    // rules:
-    // - maximum commission is 10%
-    // - at least 20 KSM own stake
-    // - no previously featured
     // get previously featured
     const alreadyFeatured = [];
     const sql = 'SELECT stash_address, timestamp FROM featured';
@@ -1676,7 +1679,7 @@ const getAddressCreation = async (client, address, loggerOptions) => {
             }
         }
     }
-    // if not found we assume that it's included in genesis
+    // if not found we assume it was created in genesis block
     return 0;
 };
 exports.getAddressCreation = getAddressCreation;
@@ -1692,7 +1695,7 @@ const getLastEraInDb = async (client, loggerOptions) => {
             }
         }
     }
-    return 0;
+    return '0';
 };
 exports.getLastEraInDb = getLastEraInDb;
 const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
