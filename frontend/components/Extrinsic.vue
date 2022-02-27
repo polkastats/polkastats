@@ -70,16 +70,10 @@
         <tr>
           <td>Documentation</td>
           <td>
-            <!-- {{ extrinsic.doc.split(/, ,/) }} -->
-            <span
-              v-for="(line, index) in extrinsic.doc
-                .replace(/\[/g, '')
-                .replace(/\]/g, '')
-                .split(/,/)"
-              :key="`doc-${index}`"
-            >
-              {{ line }}<br
-            /></span>
+            <div
+              class="extrinsic-doc"
+              v-html="$md.render(JSON.parse(extrinsic.doc).join('\n'))"
+            ></div>
           </td>
         </tr>
         <tr>
@@ -148,3 +142,13 @@ export default {
   },
 }
 </script>
+
+<style>
+.extrinsic-doc ul {
+  list-style: disc;
+  padding-left: 1rem;
+}
+.extrinsic-doc hr {
+  border-top: 1px solid gray;
+}
+</style>

@@ -61,9 +61,18 @@ export default {
     ['cookie-universal-nuxt', { alias: 'cookies' }],
     // https://github.com/nuxt-community/redirect-module
     '@nuxtjs/redirect-module',
+    // https://github.com/nuxt-community/markdownit-module
+    '@nuxtjs/markdownit',
   ],
 
   // Module configurations
+  markdownit: {
+    injected: true,
+    preset: 'commonmark',
+    linkify: true,
+    breaks: true,
+  },
+
   axios: {},
 
   i18n: {
