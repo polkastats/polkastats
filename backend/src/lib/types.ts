@@ -1,3 +1,7 @@
+import { AnyTuple } from '@polkadot/types/types';
+import { GenericExtrinsic } from '@polkadot/types';
+import { EventRecord } from '@polkadot/types/interfaces';
+
 export interface CrawlerConfig {
   name: string;
   enabled: boolean;
@@ -12,7 +16,7 @@ export interface CrawlerConfig {
   erasPerDay?: number;
   tokenDecimals?: number;
   featuredTimespan?: number;
-};
+}
 
 export interface BackendConfig {
   substrateNetwork: string;
@@ -28,25 +32,28 @@ export interface BackendConfig {
   sentryDSN: string;
   substrateApiSidecar: string;
   crawlers: CrawlerConfig[];
-};
+}
 
 export interface LoggerOptions {
   crawler: string;
-};
+}
 
 export interface IdentityInfo {
   verifiedIdentity: boolean;
   hasSubIdentity: boolean;
   name: string;
   identityRating: number;
-};
+}
 
 export interface CommisionHistoryItem {
   era: string;
   commission: string;
-};
+}
 
 export interface ClusterInfo {
   clusterName: string;
   clusterMembers: number;
-};
+}
+
+export type IndexedBlockEvent = [number, EventRecord];
+export type IndexedBlockExtrinsic = [number, GenericExtrinsic<AnyTuple>];

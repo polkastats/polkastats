@@ -102,7 +102,7 @@ const crawler = async (delayedStart: boolean) => {
   }
   logger.debug(loggerOptions, 'Disconnecting from API');
   await api.disconnect().catch((error) => {
-    logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`)
+    logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`);
     Sentry.captureException(error);
   });
   logger.debug(loggerOptions, 'Disconnecting from DB');

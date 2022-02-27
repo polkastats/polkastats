@@ -5,7 +5,7 @@ import {
   getPolkadotAPI,
   isNodeSynced,
   fetchAccountIds,
-  processAccountsChunk
+  processAccountsChunk,
 } from '../lib/chain';
 import { chunker, wait } from '../lib/utils';
 import pino from 'pino';

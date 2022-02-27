@@ -15,7 +15,7 @@ import { getClient,
   insertEraValidatorStats,
   insertEraValidatorStatsAvg,
   insertRankingValidator,
-  addNewFeaturedValidator
+  addNewFeaturedValidator,
 } from '../lib/chain';
 import { wait, getRandom } from '../lib/utils';
 import { BigNumber } from 'bignumber.js';
@@ -284,7 +284,7 @@ const crawler = async (delayedStart: boolean) => {
       if (validator.identity.parent) {
         const stashParentAddress: string = validator.identity.parent.toString();
         stashAddressesCreation[stashParentAddress] = await getAddressCreation(
-          client, stashParentAddress, loggerOptions
+          client, stashParentAddress, loggerOptions,
         );
       }
     }
@@ -618,10 +618,10 @@ const crawler = async (delayedStart: boolean) => {
         const relativePerformanceHistory: any = [];
         validator.performanceHistory.forEach((performance: any) => {
           const eraMinPerformance = minMaxEraPerformance.find(
-            ({ era }: {era: any}) => era === performance.era,
+            ({ era }: { era: any }) => era === performance.era,
           ).min;
           const eraMaxPerformance = minMaxEraPerformance.find(
-            ({ era }: {era: any}) => era === performance.era,
+            ({ era }: { era: any }) => era === performance.era,
           ).max;
           const relativePerformance = ((performance.performance - eraMinPerformance)
           / (eraMaxPerformance - eraMinPerformance)).toFixed(6);
@@ -660,7 +660,7 @@ const crawler = async (delayedStart: boolean) => {
     logger.debug(loggerOptions, 'Random selection of validators based on cluster size');
     let validatorsToHide: any = [];
     for (const cluster of clusters) {
-      const clusterMembers = ranking.filter(({ clusterName }: {clusterName: any}) => clusterName === cluster);
+      const clusterMembers = ranking.filter(({ clusterName }: { clusterName: any }) => clusterName === cluster);
       const clusterSize = clusterMembers[0].clusterMembers;
       // EXTRASMALL: 2 - Show all (2)
       let show = 2;

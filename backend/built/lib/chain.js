@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertEraValidatorStatsAvg = exports.getLastEraInDb = exports.getAddressCreation = exports.insertEraValidatorStats = exports.insertRankingValidator = exports.addNewFeaturedValidator = exports.getClusterInfo = exports.getPayoutRating = exports.getCommissionRating = exports.getCommissionHistory = exports.parseIdentity = exports.getIdentityRating = exports.subIdentity = exports.getClusterName = exports.getName = exports.isVerifiedIdentity = exports.getThousandValidators = exports.processAccountsChunk = exports.fetchAccountIds = exports.getAccountIdFromArgs = exports.storeMetadata = exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.healthCheck = exports.getSlashedValidatorAccount = exports.getTransferAllAmount = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.getExtrinsicSuccessOrErrorMessage = exports.processLog = exports.processLogs = exports.processEvent = exports.processEvents = exports.processTransfer = exports.processExtrinsic = exports.processExtrinsics = exports.updateAccountInfo = exports.updateAccountsInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
+exports.insertEraValidatorStatsAvg = exports.getLastEraInDb = exports.getAddressCreation = exports.insertEraValidatorStats = exports.insertRankingValidator = exports.addNewFeaturedValidator = exports.getClusterInfo = exports.getPayoutRating = exports.getCommissionRating = exports.getCommissionHistory = exports.parseIdentity = exports.getIdentityRating = exports.subIdentity = exports.getClusterName = exports.getName = exports.isVerifiedIdentity = exports.getThousandValidators = exports.processAccountsChunk = exports.fetchAccountIds = exports.getAccountIdFromArgs = exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.storeMetadata = exports.healthCheck = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = exports.processLogs = exports.processLog = exports.processEvents = exports.processEvent = exports.getSlashedValidatorAccount = exports.processExtrinsics = exports.processExtrinsic = exports.processTransfer = exports.getTransferAllAmount = exports.getExtrinsicSuccessOrErrorMessage = exports.updateAccountsInfo = exports.updateAccountInfo = exports.isValidAddressPolkadotAddress = exports.dbParamQuery = exports.dbQuery = exports.getClient = exports.isNodeSynced = exports.getPolkadotAPI = void 0;
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 require("@polkadot/api-augment");
@@ -120,25 +120,6 @@ const isValidAddressPolkadotAddress = (address) => {
     }
 };
 exports.isValidAddressPolkadotAddress = isValidAddressPolkadotAddress;
-const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
-    const startTime = new Date().getTime();
-    const involvedAddresses = [];
-    blockEvents
-        .forEach(({ event }) => {
-        const types = event.typeDef;
-        event.data.forEach((data, index) => {
-            if (types[index].type === 'AccountId32') {
-                involvedAddresses.push(data.toString());
-            }
-        });
-    });
-    const uniqueAddresses = lodash_1.default.uniq(involvedAddresses);
-    await Promise.all(uniqueAddresses.map((address) => (0, exports.updateAccountInfo)(api, client, blockNumber, timestamp, address, loggerOptions)));
-    // Log execution time
-    const endTime = new Date().getTime();
-    logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
-};
-exports.updateAccountsInfo = updateAccountsInfo;
 const updateAccountInfo = async (api, client, blockNumber, timestamp, address, loggerOptions) => {
     const [balances, { identity }] = await Promise.all([
         api.derive.balances.all(address),
@@ -216,18 +197,145 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
     }
 };
 exports.updateAccountInfo = updateAccountInfo;
-const processExtrinsics = async (api, apiAt, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => {
+const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
     const startTime = new Date().getTime();
-    const indexedExtrinsics = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
-    const chunks = (0, utils_1.chunker)(indexedExtrinsics, chunkSize);
-    for (const chunk of chunks) {
-        await Promise.all(chunk.map((indexedExtrinsic) => (0, exports.processExtrinsic)(api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
-    }
+    const involvedAddresses = [];
+    blockEvents
+        .forEach(({ event }) => {
+        const types = event.typeDef;
+        event.data.forEach((data, index) => {
+            if (types[index].type === 'AccountId32') {
+                involvedAddresses.push(data.toString());
+            }
+        });
+    });
+    const uniqueAddresses = lodash_1.default.uniq(involvedAddresses);
+    await Promise.all(uniqueAddresses.map((address) => (0, exports.updateAccountInfo)(api, client, blockNumber, timestamp, address, loggerOptions)));
     // Log execution time
     const endTime = new Date().getTime();
-    logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
-exports.processExtrinsics = processExtrinsics;
+exports.updateAccountsInfo = updateAccountsInfo;
+const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents) => {
+    let extrinsicSuccess = false;
+    let extrinsicErrorMessage = '';
+    blockEvents
+        .filter(({ phase }) => phase.isApplyExtrinsic &&
+        phase.asApplyExtrinsic.eq(index))
+        .forEach(({ event }) => {
+        if (apiAt.events.system.ExtrinsicSuccess.is(event)) {
+            extrinsicSuccess = true;
+        }
+        else if (apiAt.events.system.ExtrinsicFailed.is(event)) {
+            const [dispatchError] = event.data;
+            if (dispatchError.isModule) {
+                const decoded = apiAt.registry.findMetaError(dispatchError.asModule);
+                extrinsicErrorMessage = `${decoded.name}: ${decoded.docs}`;
+            }
+            else {
+                extrinsicErrorMessage = dispatchError.toString();
+            }
+        }
+    });
+    return [extrinsicSuccess, extrinsicErrorMessage];
+};
+exports.getExtrinsicSuccessOrErrorMessage = getExtrinsicSuccessOrErrorMessage;
+const getTransferAllAmount = (blockNumber, index, blockEvents) => {
+    try {
+        return blockEvents
+            .find(({ event, phase }) => (phase.isApplyExtrinsic
+            && phase.asApplyExtrinsic.eq(index)
+            && event.section === 'balances'
+            && event.method === 'Transfer')).event.data[2].toString();
+    }
+    catch (error) {
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
+    }
+};
+exports.getTransferAllAmount = getTransferAllAmount;
+// TODO: Use in multiple extrinsics included in utility.batch and proxy.proxy
+const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash, signer, feeInfo, success, errorMessage, timestamp, loggerOptions) => {
+    // Store transfer
+    const source = signer;
+    const destination = JSON.parse(args)[0].id
+        ? JSON.parse(args)[0].id
+        : JSON.parse(args)[0].address20;
+    let amount;
+    if (method === 'transferAll' && success) {
+        // Equal source and destination addres doesn't trigger a balances.Transfer event
+        amount = source === destination
+            ? 0
+            : (0, exports.getTransferAllAmount)(blockNumber, extrinsicIndex, blockEvents);
+    }
+    else if (method === 'transferAll' && !success) {
+        // We can't get amount in this case cause no event is emitted
+        amount = 0;
+    }
+    else if (method === 'forceTransfer') {
+        amount = JSON.parse(args)[2];
+    }
+    else {
+        amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
+    }
+    const feeAmount = JSON.parse(feeInfo).partialFee;
+    const data = [
+        blockNumber,
+        extrinsicIndex,
+        section,
+        method,
+        hash,
+        source,
+        destination,
+        new bignumber_js_1.BigNumber(amount).toString(10),
+        new bignumber_js_1.BigNumber(feeAmount).toString(10),
+        success,
+        errorMessage,
+        timestamp,
+    ];
+    const sql = `INSERT INTO transfer (
+      block_number,
+      extrinsic_index,
+      section,
+      method,
+      hash,
+      source,
+      destination,
+      amount,
+      fee_amount,      
+      success,
+      error_message,
+      timestamp
+    ) VALUES (
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7,
+      $8,
+      $9,
+      $10,
+      $11,
+      $12
+    )
+    ON CONFLICT ON CONSTRAINT transfer_pkey 
+    DO NOTHING;
+    ;`;
+    try {
+        await client.query(sql, data);
+        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${(0, utils_1.shortHash)(hash.toString())}) ${section} ➡ ${method}`);
+    }
+    catch (error) {
+        logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
+    }
+};
+exports.processTransfer = processTransfer;
 const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions) => {
     const [extrinsicIndex, extrinsic] = indexedExtrinsic;
     const { isSigned } = extrinsic;
@@ -265,7 +373,7 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
         feeDetails,
         success,
         errorMessage,
-        timestamp
+        timestamp,
     ];
     const sql = `INSERT INTO extrinsic (
       block_number,
@@ -325,7 +433,7 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
             feeDetails,
             success,
             errorMessage,
-            timestamp
+            timestamp,
         ];
         // Store signed extrinsic
         const sql = `INSERT INTO signed_extrinsic (
@@ -375,101 +483,30 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
     }
 };
 exports.processExtrinsic = processExtrinsic;
-// TODO: Use in multiple extrinsics included in utility.batch and proxy.proxy
-const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash, signer, feeInfo, success, errorMessage, timestamp, loggerOptions) => {
-    // Store transfer
-    const source = signer;
-    const destination = JSON.parse(args)[0].id
-        ? JSON.parse(args)[0].id
-        : JSON.parse(args)[0].address20;
-    let amount;
-    if (method === 'transferAll' && success) {
-        // Equal source and destination addres doesn't trigger a balances.Transfer event
-        amount = source === destination
-            ? 0
-            : (0, exports.getTransferAllAmount)(blockNumber, extrinsicIndex, blockEvents);
-    }
-    else if (method === 'transferAll' && !success) {
-        // We can't get amount in this case cause no event is emitted
-        amount = 0;
-    }
-    else if (method === 'forceTransfer') {
-        amount = JSON.parse(args)[2];
-    }
-    else {
-        amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
-    }
-    const feeAmount = JSON.parse(feeInfo).partialFee;
-    const data = [
-        blockNumber,
-        extrinsicIndex,
-        section,
-        method,
-        hash,
-        source,
-        destination,
-        new bignumber_js_1.BigNumber(amount).toString(10),
-        new bignumber_js_1.BigNumber(feeAmount).toString(10),
-        success,
-        errorMessage,
-        timestamp
-    ];
-    const sql = `INSERT INTO transfer (
-      block_number,
-      extrinsic_index,
-      section,
-      method,
-      hash,
-      source,
-      destination,
-      amount,
-      fee_amount,      
-      success,
-      error_message,
-      timestamp
-    ) VALUES (
-      $1,
-      $2,
-      $3,
-      $4,
-      $5,
-      $6,
-      $7,
-      $8,
-      $9,
-      $10,
-      $11,
-      $12
-    )
-    ON CONFLICT ON CONSTRAINT transfer_pkey 
-    DO NOTHING;
-    ;`;
-    try {
-        await client.query(sql, data);
-        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${(0, utils_1.shortHash)(hash.toString())}) ${section} ➡ ${method}`);
-    }
-    catch (error) {
-        logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
-        const scope = new Sentry.Scope();
-        scope.setTag('blockNumber', blockNumber);
-        Sentry.captureException(error, scope);
-    }
-};
-exports.processTransfer = processTransfer;
-const processEvents = async (client, blockNumber, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => {
+const processExtrinsics = async (api, apiAt, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
-    const indexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
-    const indexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
-    const chunks = (0, utils_1.chunker)(indexedBlockEvents, chunkSize);
+    const indexedExtrinsics = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
+    const chunks = (0, utils_1.chunker)(indexedExtrinsics, chunkSize);
     for (const chunk of chunks) {
-        await Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(client, blockNumber, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions)));
+        await Promise.all(chunk.map((indexedExtrinsic) => (0, exports.processExtrinsic)(api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
-    logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
-exports.processEvents = processEvents;
-const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexedBlockEvents, indexedBlockExtrinsics, timestamp, loggerOptions) => {
+exports.processExtrinsics = processExtrinsics;
+const getSlashedValidatorAccount = (index, IndexedBlockEvents) => {
+    let validatorAccountId = '';
+    for (let i = index; i >= 0; i--) {
+        const { event } = IndexedBlockEvents[i][1];
+        if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
+            return validatorAccountId = event.data[0].toString();
+        }
+    }
+    return validatorAccountId;
+};
+exports.getSlashedValidatorAccount = getSlashedValidatorAccount;
+const processEvent = async (client, blockNumber, activeEra, indexedEvent, IndexedBlockEvents, IndexedBlockExtrinsics, timestamp, loggerOptions) => {
     const [eventIndex, { event, phase }] = indexedEvent;
     const data = [
         blockNumber,
@@ -478,7 +515,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
         event.method,
         phase.toString(),
         JSON.stringify(event.data),
-        timestamp
+        timestamp,
     ];
     const sql = `INSERT INTO event (
     block_number,
@@ -517,7 +554,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
         let era = null;
         let sql;
         let data = [];
-        const payoutStakersExtrinsic = indexedBlockExtrinsics
+        const payoutStakersExtrinsic = IndexedBlockExtrinsics
             .find(([extrinsicIndex, { method: { section, method } }]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
             && section === 'staking'
             && method === 'payoutStakers'));
@@ -530,21 +567,21 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
             //
             // staking.payoutStakers extrinsic included in a utility.batch or utility.batchAll extrinsic
             //
-            const utilityBatchExtrinsicIndexes = indexedBlockExtrinsics
+            const utilityBatchExtrinsicIndexes = IndexedBlockExtrinsics
                 .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
                 && extrinsic.method.section === 'utility'
                 && (extrinsic.method.method === 'batch' || extrinsic.method.method === 'batchAll')))
-                .map(([index, _]) => index);
+                .map(([index]) => index);
             if (utilityBatchExtrinsicIndexes.length > 0) {
                 // We know that utility.batch has some staking.payoutStakers extrinsic
                 // Then we need to do a lookup of the previous staking.payoutStarted 
                 // event to get validator and era
-                const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (record.phase.isApplyExtrinsic
+                const payoutStartedEvents = IndexedBlockEvents.filter(([, record]) => (record.phase.isApplyExtrinsic
                     && utilityBatchExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to utility.batch extrinsic
                     && record.event.section === 'staking'
                     && record.event.method === 'PayoutStarted')).reverse();
                 if (payoutStartedEvents) {
-                    const payoutStartedEvent = payoutStartedEvents.find(([index, _]) => index < eventIndex);
+                    const payoutStartedEvent = payoutStartedEvents.find(([index]) => index < eventIndex);
                     if (payoutStartedEvent) {
                         [era, validator] = payoutStartedEvent[1].event.data;
                     }
@@ -554,21 +591,21 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
                 //
                 // staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
                 //
-                const proxyProxyExtrinsicIndexes = indexedBlockExtrinsics
+                const proxyProxyExtrinsicIndexes = IndexedBlockExtrinsics
                     .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
                     && extrinsic.method.section === 'proxy'
                     && extrinsic.method.method === 'proxy'))
-                    .map(([index, _]) => index);
+                    .map(([index]) => index);
                 if (proxyProxyExtrinsicIndexes.length > 0) {
                     // We know that proxy.proxy has some staking.payoutStakers extrinsic
                     // Then we need to do a lookup of the previous staking.payoutStarted 
                     // event to get validator and era
-                    const payoutStartedEvents = indexedBlockEvents.filter(([_, record]) => (record.phase.isApplyExtrinsic
+                    const payoutStartedEvents = IndexedBlockEvents.filter(([, record]) => (record.phase.isApplyExtrinsic
                         && proxyProxyExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to proxy.proxy extrinsic
                         && record.event.section === 'staking'
                         && record.event.method === 'PayoutStarted')).reverse();
                     if (payoutStartedEvents) {
-                        const payoutStartedEvent = payoutStartedEvents.find(([index, _]) => index < eventIndex);
+                        const payoutStartedEvent = payoutStartedEvents.find(([index]) => index < eventIndex);
                         if (payoutStartedEvent) {
                             [era, validator] = payoutStartedEvent[1].event.data;
                         }
@@ -584,7 +621,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
                 validator.toString(),
                 era,
                 new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
-                timestamp
+                timestamp,
             ];
             sql = `INSERT INTO staking_reward (
         block_number,
@@ -613,7 +650,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
                 eventIndex,
                 event.data[0].toString(),
                 new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
-                timestamp
+                timestamp,
             ];
             sql = `INSERT INTO staking_reward (
         block_number,
@@ -657,7 +694,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
             event.data[0].toString(),
             activeEra - 1,
             new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
-            timestamp
+            timestamp,
         ];
         const sql = `INSERT INTO staking_slash (
       block_number,
@@ -690,15 +727,15 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
     }
     // Store nominator staking slash
     if (event.section === 'balances' && (event.method === 'Slash' || event.method === 'Slashed')) {
-        const validator_stash_address = (0, exports.getSlashedValidatorAccount)(eventIndex, indexedBlockEvents);
+        const validatorStashAddress = (0, exports.getSlashedValidatorAccount)(eventIndex, IndexedBlockEvents);
         const data = [
             blockNumber,
             eventIndex,
             event.data[0].toString(),
-            validator_stash_address,
+            validatorStashAddress,
             activeEra - 1,
             new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
-            timestamp
+            timestamp,
         ];
         const sql = `INSERT INTO staking_slash (
       block_number,
@@ -733,14 +770,19 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, indexe
     }
 };
 exports.processEvent = processEvent;
-const processLogs = async (client, blockNumber, logs, timestamp, loggerOptions) => {
+const processEvents = async (client, blockNumber, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
-    await Promise.all(logs.map((log, index) => (0, exports.processLog)(client, blockNumber, log, index, timestamp, loggerOptions)));
+    const IndexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
+    const IndexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
+    const chunks = (0, utils_1.chunker)(IndexedBlockEvents, chunkSize);
+    for (const chunk of chunks) {
+        await Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(client, blockNumber, activeEra, indexedEvent, IndexedBlockEvents, IndexedBlockExtrinsics, timestamp, loggerOptions)));
+    }
     // Log execution time
     const endTime = new Date().getTime();
-    logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
-exports.processLogs = processLogs;
+exports.processEvents = processEvents;
 const processLog = async (client, blockNumber, log, index, timestamp, loggerOptions) => {
     const { type } = log;
     // this can change in the future...
@@ -753,7 +795,7 @@ const processLog = async (client, blockNumber, log, index, timestamp, loggerOpti
         type,
         engine,
         logData,
-        timestamp
+        timestamp,
     ];
     const sql = `INSERT INTO log (
       block_number,
@@ -785,30 +827,14 @@ const processLog = async (client, blockNumber, log, index, timestamp, loggerOpti
     }
 };
 exports.processLog = processLog;
-const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents) => {
-    let extrinsicSuccess = false;
-    let extrinsicErrorMessage = '';
-    blockEvents
-        .filter(({ phase }) => phase.isApplyExtrinsic &&
-        phase.asApplyExtrinsic.eq(index))
-        .forEach(({ event }) => {
-        if (apiAt.events.system.ExtrinsicSuccess.is(event)) {
-            extrinsicSuccess = true;
-        }
-        else if (apiAt.events.system.ExtrinsicFailed.is(event)) {
-            const [dispatchError] = event.data;
-            if (dispatchError.isModule) {
-                const decoded = apiAt.registry.findMetaError(dispatchError.asModule);
-                extrinsicErrorMessage = `${decoded.name}: ${decoded.docs}`;
-            }
-            else {
-                extrinsicErrorMessage = dispatchError.toString();
-            }
-        }
-    });
-    return [extrinsicSuccess, extrinsicErrorMessage];
+const processLogs = async (client, blockNumber, logs, timestamp, loggerOptions) => {
+    const startTime = new Date().getTime();
+    await Promise.all(logs.map((log, index) => (0, exports.processLog)(client, blockNumber, log, index, timestamp, loggerOptions)));
+    // Log execution time
+    const endTime = new Date().getTime();
+    logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
 };
-exports.getExtrinsicSuccessOrErrorMessage = getExtrinsicSuccessOrErrorMessage;
+exports.processLogs = processLogs;
 const getDisplayName = (identity) => {
     if (identity.displayParent
         && identity.displayParent !== ''
@@ -852,32 +878,6 @@ const logHarvestError = async (client, blockNumber, error, loggerOptions) => {
     await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
 };
 exports.logHarvestError = logHarvestError;
-const getTransferAllAmount = (blockNumber, index, blockEvents) => {
-    try {
-        return blockEvents
-            .find(({ event, phase }) => (phase.isApplyExtrinsic
-            && phase.asApplyExtrinsic.eq(index)
-            && event.section === 'balances'
-            && event.method === 'Transfer')).event.data[2].toString();
-    }
-    catch (error) {
-        const scope = new Sentry.Scope();
-        scope.setTag('blockNumber', blockNumber);
-        Sentry.captureException(error, scope);
-    }
-};
-exports.getTransferAllAmount = getTransferAllAmount;
-const getSlashedValidatorAccount = (index, indexedBlockEvents) => {
-    let validatorAccountId = '';
-    for (let i = index; i >= 0; i--) {
-        const { event } = indexedBlockEvents[i][1];
-        if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
-            return validatorAccountId = event.data[0].toString();
-        }
-    }
-    return validatorAccountId;
-};
-exports.getSlashedValidatorAccount = getSlashedValidatorAccount;
 const healthCheck = async (config, client, loggerOptions) => {
     const startTime = new Date().getTime();
     logger.info(loggerOptions, 'Starting health check');
@@ -904,6 +904,53 @@ const healthCheck = async (config, client, loggerOptions) => {
     logger.debug(loggerOptions, `Health check finished in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
 };
 exports.healthCheck = healthCheck;
+const storeMetadata = async (client, blockNumber, blockHash, specName, specVersion, timestamp, loggerOptions) => {
+    let metadata;
+    try {
+        const response = await axios_1.default.get(`${backend_config_1.backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
+        metadata = response.data;
+        logger.debug(loggerOptions, `Got runtime metadata at ${blockHash}!`);
+    }
+    catch (error) {
+        logger.error(loggerOptions, `Error fetching runtime metadata at ${blockHash}: ${JSON.stringify(error)}`);
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
+    }
+    const data = [
+        blockNumber,
+        specName,
+        specVersion,
+        Object.keys(metadata.metadata)[0],
+        metadata.magicNumber,
+        metadata.metadata,
+        timestamp,
+    ];
+    const query = `
+    INSERT INTO runtime (
+      block_number,
+      spec_name,
+      spec_version,
+      metadata_version,
+      metadata_magic_number,
+      metadata,
+      timestamp
+    ) VALUES (
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $7
+    )
+    ON CONFLICT (spec_version)
+    DO UPDATE SET
+      block_number = EXCLUDED.block_number
+    WHERE EXCLUDED.block_number < runtime.block_number;`;
+    await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
+};
+exports.storeMetadata = storeMetadata;
 const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => {
     const startTime = new Date().getTime();
     try {
@@ -948,7 +995,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             totalEvents,
             totalExtrinsics,
             totalIssuance.toString(),
-            timestamp
+            timestamp,
         ];
         const sql = `INSERT INTO block (
         block_number,
@@ -1093,53 +1140,6 @@ const harvestBlocks = async (config, api, client, startBlock, endBlock, loggerOp
     }
 };
 exports.harvestBlocks = harvestBlocks;
-const storeMetadata = async (client, blockNumber, blockHash, specName, specVersion, timestamp, loggerOptions) => {
-    let metadata;
-    try {
-        const response = await axios_1.default.get(`${backend_config_1.backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
-        metadata = response.data;
-        logger.debug(loggerOptions, `Got runtime metadata at ${blockHash}!`);
-    }
-    catch (error) {
-        logger.error(loggerOptions, `Error fetching runtime metadata at ${blockHash}: ${JSON.stringify(error)}`);
-        const scope = new Sentry.Scope();
-        scope.setTag('blockNumber', blockNumber);
-        Sentry.captureException(error, scope);
-    }
-    const data = [
-        blockNumber,
-        specName,
-        specVersion,
-        Object.keys(metadata.metadata)[0],
-        metadata.magicNumber,
-        metadata.metadata,
-        timestamp,
-    ];
-    const query = `
-    INSERT INTO runtime (
-      block_number,
-      spec_name,
-      spec_version,
-      metadata_version,
-      metadata_magic_number,
-      metadata,
-      timestamp
-    ) VALUES (
-      $1,
-      $2,
-      $3,
-      $4,
-      $5,
-      $6,
-      $7
-    )
-    ON CONFLICT (spec_version)
-    DO UPDATE SET
-      block_number = EXCLUDED.block_number
-    WHERE EXCLUDED.block_number < runtime.block_number;`;
-    await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
-};
-exports.storeMetadata = storeMetadata;
 const getAccountIdFromArgs = (account) => account
     .map(({ args }) => args)
     .map(([e]) => e.toHuman());
@@ -1704,7 +1704,7 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
         if (res.rows[0].commission_avg) {
             data = [
                 era,
-                res.rows[0].commission_avg
+                res.rows[0].commission_avg,
             ];
             sql = 'INSERT INTO era_commission_avg (era, commission_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
@@ -1718,7 +1718,7 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
             const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
             data = [
                 era,
-                selfStakeAvg
+                selfStakeAvg,
             ];
             sql = 'INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
@@ -1731,7 +1731,7 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
         if (res.rows[0].relative_performance_avg) {
             data = [
                 era,
-                res.rows[0].relative_performance_avg
+                res.rows[0].relative_performance_avg,
             ];
             sql = 'INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
@@ -1744,7 +1744,7 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
         if (res.rows[0].points_avg) {
             data = [
                 era,
-                res.rows[0].points_avg
+                res.rows[0].points_avg,
             ];
             sql = 'INSERT INTO era_points_avg (era, points_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
