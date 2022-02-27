@@ -849,7 +849,7 @@ const logHarvestError = async (client, blockNumber, error, loggerOptions) => {
     await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
 };
 exports.logHarvestError = logHarvestError;
-// TODO: Figure out what happens when the extrinsic balances.transferAll is included in a utility.batch or proxy.proxy extrinsic
+// This can fail with same source and destionation addres (doesn't make sense but...)
 const getTransferAllAmount = (blockNumber, index, blockEvents) => {
     try {
         return blockEvents
