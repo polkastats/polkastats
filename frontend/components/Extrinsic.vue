@@ -142,13 +142,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.extrinsic-doc ul {
-  list-style: disc;
-  padding-left: 1rem;
-}
-.extrinsic-doc hr {
-  border-top: 1px solid gray;
-}
-</style>

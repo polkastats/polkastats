@@ -674,3 +674,20 @@ section .section-title {
 .custom-select:focus {
   border-color: #001c71;
 }
+
+// extrinsic doc
+.extrinsic-doc ul {
+  list-style: disc;
+  padding-left: 1rem;
+}
+.extrinsic-doc hr {
+  border-top: 1px solid gray;
+}
+.extrinsic-doc a {
+  pointer-events: none;
+  color: #e83e8c;
+  word-wrap: break-word;
+}
+.extrinsic-doc code {
+  font-size: 100%;
+}
