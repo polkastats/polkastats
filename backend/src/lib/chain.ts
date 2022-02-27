@@ -830,7 +830,10 @@ export const processLogs = async (client: Client, blockNumber: number, logs: any
 
 export const processLog = async (client: Client, blockNumber: number, log: any, index: number, timestamp: number, loggerOptions: { crawler: string; }) => {
   const { type } = log;
-  const [[engine, logData]] = Object.values(log.toHuman());
+  // this can change in the future...
+  const [[engine, logData]] = type === 'RuntimeEnvironmentUpdated'
+    ? [[null, null]]
+    : Object.values(log.toHuman());
   const data = [
     blockNumber,
     index,

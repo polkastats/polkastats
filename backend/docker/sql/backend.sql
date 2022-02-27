@@ -131,8 +131,8 @@ CREATE TABLE IF NOT EXISTS log  (
   block_number BIGINT NOT NULL,
   log_index INT NOT NULL,
   type TEXT,
-  engine TEXT NOT NULL,
-  data TEXT NOT NULL,
+  engine TEXT DEFAULT NULL,
+  data TEXT DEFAULT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, log_index ),
   CONSTRAINT fk_block
