@@ -464,7 +464,7 @@ export const processExtrinsic = async (
         '',
     ]);
   }
-  const data = [
+  let data = [
     blockNumber,
     extrinsicIndex,
     isSigned,
@@ -480,7 +480,7 @@ export const processExtrinsic = async (
     errorMessage,
     timestamp,
   ];
-  const sql = `INSERT INTO extrinsic (
+  let sql = `INSERT INTO extrinsic (
       block_number,
       extrinsic_index,
       is_signed,
@@ -535,7 +535,7 @@ export const processExtrinsic = async (
   }
 
   if (isSigned) {
-    const data = [
+    data = [
       blockNumber,
       extrinsicIndex,
       signer,
@@ -551,7 +551,7 @@ export const processExtrinsic = async (
       timestamp,
     ];
     // Store signed extrinsic
-    const sql = `INSERT INTO signed_extrinsic (
+    sql = `INSERT INTO signed_extrinsic (
       block_number,
       extrinsic_index,
       signer,
@@ -700,7 +700,7 @@ export const processEvent = async (
   loggerOptions: LoggerOptions,
 ): Promise<void> => {
   const [eventIndex, { event, phase }] = indexedEvent;
-  const data = [
+  let data = [
     blockNumber,
     eventIndex,
     event.section,
@@ -709,7 +709,7 @@ export const processEvent = async (
     JSON.stringify(event.data),
     timestamp,
   ];
-  const sql = `INSERT INTO event (
+  let sql = `INSERT INTO event (
     block_number,
     event_index,
     section,
@@ -754,8 +754,6 @@ export const processEvent = async (
 
     let validator = null;
     let era = null;
-    let sql;
-    let data = [];
 
     const payoutStakersExtrinsic = IndexedBlockExtrinsics.find(
       ([
@@ -849,7 +847,7 @@ export const processEvent = async (
         eventIndex,
         event.data[0].toString(),
         validator.toString(),
-        era,
+        era.toString(),
         new BigNumber(event.data[1].toString()).toString(10),
         timestamp,
       ];
@@ -926,7 +924,7 @@ export const processEvent = async (
     event.section === 'staking' &&
     (event.method === 'Slash' || event.method === 'Slashed')
   ) {
-    const data = [
+    data = [
       blockNumber,
       eventIndex,
       event.data[0].toString(),
@@ -935,7 +933,7 @@ export const processEvent = async (
       new BigNumber(event.data[1].toString()).toString(10),
       timestamp,
     ];
-    const sql = `INSERT INTO staking_slash (
+    sql = `INSERT INTO staking_slash (
       block_number,
       event_index,
       account_id,
@@ -979,7 +977,7 @@ export const processEvent = async (
       eventIndex,
       IndexedBlockEvents,
     );
-    const data = [
+    data = [
       blockNumber,
       eventIndex,
       event.data[0].toString(),
@@ -988,7 +986,7 @@ export const processEvent = async (
       new BigNumber(event.data[1].toString()).toString(10),
       timestamp,
     ];
-    const sql = `INSERT INTO staking_slash (
+    sql = `INSERT INTO staking_slash (
       block_number,
       event_index,
       account_id,
