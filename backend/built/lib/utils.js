@@ -17,10 +17,8 @@ exports.getRandom = getRandom;
 const chunker = (a, n) => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, i * n + n));
 exports.chunker = chunker;
 // Return a reverse ordered array filled from range
-const reverseRange = (start, stop, step) => Array
-    .from({ length: (stop - start) / step + 1 }, (_, i) => stop - (i * step));
+const reverseRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (_, i) => stop - i * step);
 exports.reverseRange = reverseRange;
 // Return filled array from range
-const range = (start, stop, step) => Array
-    .from({ length: (stop - start) / step + 1 }, (_, i) => start + (i * step));
+const range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
 exports.range = range;

@@ -33,7 +33,10 @@ const config: CrawlerConfig = backendConfig.crawlers.find(
 
 const crawler = async (delayedStart: boolean) => {
   if (delayedStart) {
-    logger.info(loggerOptions, `Delaying block harvester crawler start for ${config.startDelay / 1000}s`);
+    logger.info(
+      loggerOptions,
+      `Delaying block harvester crawler start for ${config.startDelay / 1000}s`,
+    );
     await wait(config.startDelay);
   }
 
@@ -78,7 +81,10 @@ const crawler = async (delayedStart: boolean) => {
   const res = await dbQuery(client, sqlSelect, loggerOptions);
   for (const row of res.rows) {
     if (!(row.gap_start === 0 && row.gap_end === 0)) {
-      logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
+      logger.info(
+        loggerOptions,
+        `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`,
+      );
       if (config.mode === 'chunks') {
         await harvestBlocks(
           config,
@@ -102,23 +108,32 @@ const crawler = async (delayedStart: boolean) => {
   }
   logger.debug(loggerOptions, 'Disconnecting from API');
   await api.disconnect().catch((error) => {
-    logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `API disconnect error: ${JSON.stringify(error)}`,
+    );
     Sentry.captureException(error);
   });
   logger.debug(loggerOptions, 'Disconnecting from DB');
   await client.end().catch((error) => {
-    logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `DB disconnect error: ${JSON.stringify(error)}`,
+    );
     Sentry.captureException(error);
   });
 
   // Log execution time
   const endTime = new Date().getTime();
-  logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
-  logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
-  setTimeout(
-    () => crawler(false),
-    config.pollingTime,
+  logger.info(
+    loggerOptions,
+    `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`,
   );
+  logger.info(
+    loggerOptions,
+    `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`,
+  );
+  setTimeout(() => crawler(false), config.pollingTime);
 };
 
 crawler(true).catch((error) => {

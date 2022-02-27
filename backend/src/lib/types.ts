@@ -27,7 +27,7 @@ export interface BackendConfig {
     database: string;
     password: string;
     port: number;
-  },
+  };
   logLevel: string;
   sentryDSN: string;
   substrateApiSidecar: string;

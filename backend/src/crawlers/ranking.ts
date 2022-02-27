@@ -1,6 +1,7 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import { getClient,
+import {
+  getClient,
   getPolkadotAPI,
   isNodeSynced,
   dbQuery,
@@ -44,7 +45,10 @@ const config: CrawlerConfig = backendConfig.crawlers.find(
 
 const crawler = async (delayedStart: boolean) => {
   if (delayedStart) {
-    logger.info(loggerOptions, `Delaying ranking crawler start for ${config.startDelay / 1000}s`);
+    logger.info(
+      loggerOptions,
+      `Delaying ranking crawler start for ${config.startDelay / 1000}s`,
+    );
     await wait(config.startDelay);
   }
 
@@ -84,9 +88,15 @@ const crawler = async (delayedStart: boolean) => {
     logger.debug(loggerOptions, `Last era in DB is ${lastEraInDb}`);
 
     // thousand validators program data
-    logger.debug(loggerOptions, 'Fetching thousand validator program validators ...');
+    logger.debug(
+      loggerOptions,
+      'Fetching thousand validator program validators ...',
+    );
     const thousandValidators = await getThousandValidators(loggerOptions);
-    logger.debug(loggerOptions, `Got info of ${thousandValidators.length} validators from Thousand Validators program API`);
+    logger.debug(
+      loggerOptions,
+      `Got info of ${thousandValidators.length} validators from Thousand Validators program API`,
+    );
 
     // chain data
     logger.debug(loggerOptions, 'Fetching chain data ...');
@@ -124,7 +134,10 @@ const crawler = async (delayedStart: boolean) => {
 
     logger.debug(loggerOptions, 'Step #3');
     // eslint-disable-next-line no-underscore-dangle
-    const erasPoints = await api.derive.staking._erasPoints(eraIndexes, withActive);
+    const erasPoints = await api.derive.staking._erasPoints(
+      eraIndexes,
+      withActive,
+    );
 
     logger.debug(loggerOptions, 'Step #4');
     let erasPreferences: any = [];
@@ -149,15 +162,15 @@ const crawler = async (delayedStart: boolean) => {
 
     logger.debug(loggerOptions, 'Step #7');
     validators = await Promise.all(
-      validatorAddresses.map(
-        (authorityId: any) => api.derive.staking.query(authorityId, stakingQueryFlags),
+      validatorAddresses.map((authorityId: any) =>
+        api.derive.staking.query(authorityId, stakingQueryFlags),
       ),
     );
 
     logger.debug(loggerOptions, 'Step #8');
     validators = await Promise.all(
-      validators.map(
-        (validator: any) => api.derive.accounts.info(validator.accountId).then(({ identity }) => ({
+      validators.map((validator: any) =>
+        api.derive.accounts.info(validator.accountId).then(({ identity }) => ({
           ...validator,
           identity,
           active: true,
@@ -167,8 +180,8 @@ const crawler = async (delayedStart: boolean) => {
 
     logger.debug(loggerOptions, 'Step #9');
     intentions = await Promise.all(
-      waitingInfo.info.map(
-        (intention) => api.derive.accounts.info(intention.accountId).then(({ identity }) => ({
+      waitingInfo.info.map((intention) =>
+        api.derive.accounts.info(intention.accountId).then(({ identity }) => ({
           ...intention,
           identity,
           active: false,
@@ -206,13 +219,13 @@ const crawler = async (delayedStart: boolean) => {
     logger.debug(loggerOptions, 'Finding minimum stake');
     const nominatorStakes = [];
     // eslint-disable-next-line
-    for (const validator of validators){
+    for (const validator of validators) {
       // eslint-disable-next-line
-      for (const nominatorStake of validator.exposure.others){
+      for (const nominatorStake of validator.exposure.others) {
         nominatorStakes.push(nominatorStake.value);
       }
     }
-    nominatorStakes.sort((a, b) => ((a.unwrap().lt(b.unwrap())) ? -1 : 1));
+    nominatorStakes.sort((a, b) => (a.unwrap().lt(b.unwrap()) ? -1 : 1));
     const minimumStake = nominatorStakes[0];
 
     logger.debug(loggerOptions, `${activeValidatorCount} active validators`);
@@ -267,10 +280,14 @@ const crawler = async (delayedStart: boolean) => {
     });
     proposals.forEach(({ seconds, proposer }) => {
       participateInGovernance.push(proposer.toString());
-      seconds.forEach((accountId) => participateInGovernance.push(accountId.toString()));
+      seconds.forEach((accountId) =>
+        participateInGovernance.push(accountId.toString()),
+      );
     });
     referendums.forEach(({ votes }) => {
-      votes.forEach(({ accountId }) => participateInGovernance.push(accountId.toString()));
+      votes.forEach(({ accountId }) =>
+        participateInGovernance.push(accountId.toString()),
+      );
     });
 
     // Merge validators and intentions
@@ -280,11 +297,17 @@ const crawler = async (delayedStart: boolean) => {
     const stashAddressesCreation: any = [];
     for (const validator of validators) {
       const stashAddress: string = validator.stashId.toString();
-      stashAddressesCreation[stashAddress] = await getAddressCreation(client, stashAddress, loggerOptions);
+      stashAddressesCreation[stashAddress] = await getAddressCreation(
+        client,
+        stashAddress,
+        loggerOptions,
+      );
       if (validator.identity.parent) {
         const stashParentAddress: string = validator.identity.parent.toString();
         stashAddressesCreation[stashParentAddress] = await getAddressCreation(
-          client, stashParentAddress, loggerOptions,
+          client,
+          stashParentAddress,
+          loggerOptions,
         );
       }
     }
@@ -300,15 +323,20 @@ const crawler = async (delayedStart: boolean) => {
 
         // address creation
         let addressCreationRating = 0;
-        const stashCreatedAtBlock = parseInt(stashAddressesCreation[stashAddress], 10);
+        const stashCreatedAtBlock = parseInt(
+          stashAddressesCreation[stashAddress],
+          10,
+        );
         let stashParentCreatedAtBlock = 0;
         if (validator.identity.parent) {
           stashParentCreatedAtBlock = parseInt(
-            stashAddressesCreation[validator.identity.parent.toString()], 10,
+            stashAddressesCreation[validator.identity.parent.toString()],
+            10,
           );
-          const best = stashParentCreatedAtBlock > stashCreatedAtBlock
-            ? stashCreatedAtBlock
-            : stashParentCreatedAtBlock;
+          const best =
+            stashParentCreatedAtBlock > stashCreatedAtBlock
+              ? stashCreatedAtBlock
+              : stashParentCreatedAtBlock;
           if (best <= blockHeight / 4) {
             addressCreationRating = 3;
           } else if (best <= (blockHeight / 4) * 2) {
@@ -328,20 +356,18 @@ const crawler = async (delayedStart: boolean) => {
         const includedThousandValidators = thousandValidators.some(
           ({ stash }: { stash: any }) => stash === stashAddress,
         );
-        const thousandValidator = includedThousandValidators ? thousandValidators.find(
-          ({ stash }: { stash: any }) => stash === stashAddress,
-        ) : '';
+        const thousandValidator = includedThousandValidators
+          ? thousandValidators.find(
+              ({ stash }: { stash: any }) => stash === stashAddress,
+            )
+          : '';
 
         // controller
         const controllerAddress = validator.controllerId.toString();
 
         // identity
-        const {
-          verifiedIdentity,
-          hasSubIdentity,
-          name,
-          identityRating,
-        } = parseIdentity(validator.identity);
+        const { verifiedIdentity, hasSubIdentity, name, identityRating } =
+          parseIdentity(validator.identity);
         const identity = JSON.parse(JSON.stringify(validator.identity));
 
         // sub-accounts
@@ -360,27 +386,31 @@ const crawler = async (delayedStart: boolean) => {
         // eslint-disable-next-line
         const nominators = active
           ? validator.exposure.others.length
-          : nominations.filter((nomination) => nomination.targets.some(
-            (target: any) => target === validator.accountId.toString(),
-          )).length;
-        const nominatorsRating = nominators > 0
-            && nominators <= maxNominatorRewardedPerValidator.toNumber()
-          ? 2
-          : 0;
+          : nominations.filter((nomination) =>
+              nomination.targets.some(
+                (target: any) => target === validator.accountId.toString(),
+              ),
+            ).length;
+        const nominatorsRating =
+          nominators > 0 &&
+          nominators <= maxNominatorRewardedPerValidator.toNumber()
+            ? 2
+            : 0;
 
         // slashes
-        const slashes = erasSlashes.filter(
-          // eslint-disable-next-line
-          ({ validators }: { validators: any }) => validators[validator.accountId.toString()],
-        ) || [];
+        const slashes =
+          erasSlashes.filter(
+            // eslint-disable-next-line
+            ({ validators }: { validators: any }) =>
+              validators[validator.accountId.toString()],
+          ) || [];
         const slashed = slashes.length > 0;
         const slashRating = slashed ? 0 : 2;
 
         // commission
-        const commission = parseInt(
-          validator.validatorPrefs.commission.toString(),
-          10,
-        ) / 10000000;
+        const commission =
+          parseInt(validator.validatorPrefs.commission.toString(), 10) /
+          10000000;
         const commissionHistory = getCommissionHistory(
           validator.accountId,
           erasPreferences,
@@ -393,17 +423,18 @@ const crawler = async (delayedStart: boolean) => {
         // governance
         const councilBacking = validator.identity?.parent
           ? councilVotes.some(
-            (vote) => vote[0].toString() === validator.accountId.toString(),
-          )
-            || councilVotes.some(
-              (vote) => vote[0].toString() === validator.identity.parent.toString(),
+              (vote) => vote[0].toString() === validator.accountId.toString(),
+            ) ||
+            councilVotes.some(
+              (vote) =>
+                vote[0].toString() === validator.identity.parent.toString(),
             )
           : councilVotes.some(
-            (vote) => vote[0].toString() === validator.accountId.toString(),
-          );
+              (vote) => vote[0].toString() === validator.accountId.toString(),
+            );
         const activeInGovernance = validator.identity?.parent
-          ? participateInGovernance.includes(validator.accountId.toString())
-            || participateInGovernance.includes(
+          ? participateInGovernance.includes(validator.accountId.toString()) ||
+            participateInGovernance.includes(
               validator.identity.parent.toString(),
             )
           : participateInGovernance.includes(validator.accountId.toString());
@@ -428,7 +459,10 @@ const crawler = async (delayedStart: boolean) => {
           let eraPerformance = 0;
           if (eraPoints.validators[stashAddress]) {
             activeEras += 1;
-            const points = parseInt(eraPoints.validators[stashAddress].toString(), 10);
+            const points = parseInt(
+              eraPoints.validators[stashAddress].toString(),
+              10,
+            );
             eraPointsHistory.push({
               era: new BigNumber(era.toString()).toString(10),
               points,
@@ -456,8 +490,11 @@ const crawler = async (delayedStart: boolean) => {
               others: eraOthersStake.toString(10),
               total: eraTotalStake.toString(10),
             });
-            eraPerformance = (points * (1 - (commission / 100)))
-              / (eraTotalStake.div(new BigNumber(10).pow(config.tokenDecimals)).toNumber());
+            eraPerformance =
+              (points * (1 - commission / 100)) /
+              eraTotalStake
+                .div(new BigNumber(10).pow(config.tokenDecimals))
+                .toNumber();
             performanceHistory.push({
               era: new BigNumber(era.toString()).toString(10),
               performance: eraPerformance,
@@ -490,8 +527,10 @@ const crawler = async (delayedStart: boolean) => {
           (total: any, era: any) => total + era.points,
           0,
         );
-        const eraPointsPercent = (eraPointsHistoryValidator * 100) / eraPointsHistoryTotalsSum;
-        const eraPointsRating = eraPointsHistoryValidator > eraPointsAverage ? 2 : 0;
+        const eraPointsPercent =
+          (eraPointsHistoryValidator * 100) / eraPointsHistoryTotalsSum;
+        const eraPointsRating =
+          eraPointsHistoryValidator > eraPointsAverage ? 2 : 0;
         const payoutRating = getPayoutRating(config, payoutHistory);
 
         // stake
@@ -516,16 +555,17 @@ const crawler = async (delayedStart: boolean) => {
         const showClusterMember = true;
 
         // VRC score
-        const totalRating = activeRating
-          + addressCreationRating
-          + identityRating
-          + subAccountsRating
-          + nominatorsRating
-          + commissionRating
-          + eraPointsRating
-          + slashRating
-          + governanceRating
-          + payoutRating;
+        const totalRating =
+          activeRating +
+          addressCreationRating +
+          identityRating +
+          subAccountsRating +
+          nominatorsRating +
+          commissionRating +
+          eraPointsRating +
+          slashRating +
+          governanceRating +
+          payoutRating;
 
         return {
           active,
@@ -575,8 +615,10 @@ const crawler = async (delayedStart: boolean) => {
       })
       .sort((a: any, b: any) => (a.totalRating < b.totalRating ? 1 : -1))
       .map((validator: any, rank: number) => {
-        const relativePerformance = ((validator.performance - minPerformance)
-          / (maxPerformance - minPerformance)).toFixed(6);
+        const relativePerformance = (
+          (validator.performance - minPerformance) /
+          (maxPerformance - minPerformance)
+        ).toFixed(6);
         const dominated = false;
         const relativePerformanceHistory: any = [];
         return {
@@ -592,9 +634,9 @@ const crawler = async (delayedStart: boolean) => {
     eraIndexes.forEach((eraIndex) => {
       const era = new BigNumber(eraIndex.toString()).toString(10);
       const eraPerformances = ranking.map(
-        ({ performanceHistory }: { performanceHistory: any }) => performanceHistory.find(
-          (performance: any) => performance.era === era,
-        ).performance,
+        ({ performanceHistory }: { performanceHistory: any }) =>
+          performanceHistory.find((performance: any) => performance.era === era)
+            .performance,
       );
       minMaxEraPerformance.push({
         era,
@@ -604,63 +646,90 @@ const crawler = async (delayedStart: boolean) => {
     });
 
     // find largest cluster size
-    const largestCluster = Math.max(...Array.from(ranking, (o: any) => o.clusterMembers));
+    const largestCluster = Math.max(
+      ...Array.from(ranking, (o: any) => o.clusterMembers),
+    );
     logger.debug(loggerOptions, `LARGEST cluster size is ${largestCluster}`);
-    logger.debug(loggerOptions, `SMALL cluster size is between 2 and ${Math.round(largestCluster / 3)}`);
-    logger.debug(loggerOptions, `MEDIUM cluster size is between ${Math.round(largestCluster / 3)} and ${(Math.round(largestCluster / 3) * 2)}`);
-    logger.debug(loggerOptions, `LARGE cluster size is between ${Math.round((largestCluster / 3) * 2)} and ${largestCluster}`);
+    logger.debug(
+      loggerOptions,
+      `SMALL cluster size is between 2 and ${Math.round(largestCluster / 3)}`,
+    );
+    logger.debug(
+      loggerOptions,
+      `MEDIUM cluster size is between ${Math.round(largestCluster / 3)} and ${
+        Math.round(largestCluster / 3) * 2
+      }`,
+    );
+    logger.debug(
+      loggerOptions,
+      `LARGE cluster size is between ${Math.round(
+        (largestCluster / 3) * 2,
+      )} and ${largestCluster}`,
+    );
     // find Pareto-dominated validators
     logger.debug(loggerOptions, 'Finding dominated validators');
     const dominatedStart = new Date().getTime();
-    ranking = ranking
-      .map((validator: any) => {
-        // populate relativePerformanceHistory
-        const relativePerformanceHistory: any = [];
-        validator.performanceHistory.forEach((performance: any) => {
-          const eraMinPerformance = minMaxEraPerformance.find(
-            ({ era }: { era: any }) => era === performance.era,
-          ).min;
-          const eraMaxPerformance = minMaxEraPerformance.find(
-            ({ era }: { era: any }) => era === performance.era,
-          ).max;
-          const relativePerformance = ((performance.performance - eraMinPerformance)
-          / (eraMaxPerformance - eraMinPerformance)).toFixed(6);
-          relativePerformanceHistory.push({
-            era: performance.era,
-            relativePerformance: parseFloat(relativePerformance),
-          });
+    ranking = ranking.map((validator: any) => {
+      // populate relativePerformanceHistory
+      const relativePerformanceHistory: any = [];
+      validator.performanceHistory.forEach((performance: any) => {
+        const eraMinPerformance = minMaxEraPerformance.find(
+          ({ era }: { era: any }) => era === performance.era,
+        ).min;
+        const eraMaxPerformance = minMaxEraPerformance.find(
+          ({ era }: { era: any }) => era === performance.era,
+        ).max;
+        const relativePerformance = (
+          (performance.performance - eraMinPerformance) /
+          (eraMaxPerformance - eraMinPerformance)
+        ).toFixed(6);
+        relativePerformanceHistory.push({
+          era: performance.era,
+          relativePerformance: parseFloat(relativePerformance),
         });
-        // dominated validator logic
-        let dominated = false;
-        for (const opponent of ranking) {
-          if (
-            opponent !== validator
-            && (
-              parseFloat(opponent.relativePerformance)
-                >= parseFloat(validator.relativePerformance)
-              && opponent.selfStake.gte(validator.selfStake)
-              && opponent.activeEras >= validator.activeEras
-              && opponent.totalRating >= validator.totalRating
-            )
-          ) {
-            dominated = true;
-            break;
-          }
-        }
-        return {
-          ...validator,
-          relativePerformanceHistory,
-          dominated,
-        };
       });
+      // dominated validator logic
+      let dominated = false;
+      for (const opponent of ranking) {
+        if (
+          opponent !== validator &&
+          parseFloat(opponent.relativePerformance) >=
+            parseFloat(validator.relativePerformance) &&
+          opponent.selfStake.gte(validator.selfStake) &&
+          opponent.activeEras >= validator.activeEras &&
+          opponent.totalRating >= validator.totalRating
+        ) {
+          dominated = true;
+          break;
+        }
+      }
+      return {
+        ...validator,
+        relativePerformanceHistory,
+        dominated,
+      };
+    });
     const dominatedEnd = new Date().getTime();
-    logger.debug(loggerOptions, `Found ${ranking.filter(({ dominated }: { dominated: any }) => dominated).length} dominated validators in ${((dominatedEnd - dominatedStart) / 1000).toFixed(3)}s`);
+    logger.debug(
+      loggerOptions,
+      `Found ${
+        ranking.filter(({ dominated }: { dominated: any }) => dominated).length
+      } dominated validators in ${(
+        (dominatedEnd - dominatedStart) /
+        1000
+      ).toFixed(3)}s`,
+    );
 
     // cluster categorization
-    logger.debug(loggerOptions, 'Random selection of validators based on cluster size');
+    logger.debug(
+      loggerOptions,
+      'Random selection of validators based on cluster size',
+    );
     let validatorsToHide: any = [];
     for (const cluster of clusters) {
-      const clusterMembers = ranking.filter(({ clusterName }: { clusterName: any }) => clusterName === cluster);
+      const clusterMembers = ranking.filter(
+        ({ clusterName }: { clusterName: any }) => clusterName === cluster,
+      );
       const clusterSize = clusterMembers[0].clusterMembers;
       // EXTRASMALL: 2 - Show all (2)
       let show = 2;
@@ -680,36 +749,57 @@ const crawler = async (delayedStart: boolean) => {
       const hide = clusterSize - show;
       // randomly select 'hide' number of validators
       // from cluster and set 'showClusterMember' prop to false
-      const rankingPositions = clusterMembers.map((validator: any) => validator.rank);
-      validatorsToHide = validatorsToHide.concat(getRandom(rankingPositions, hide));
+      const rankingPositions = clusterMembers.map(
+        (validator: any) => validator.rank,
+      );
+      validatorsToHide = validatorsToHide.concat(
+        getRandom(rankingPositions, hide),
+      );
     }
-    ranking = ranking
-      .map((validator: any) => {
-        const modValidator = validator;
-        if (validatorsToHide.includes(validator.rank)) {
-          modValidator.showClusterMember = false;
-        }
-        return modValidator;
-      });
-    logger.debug(loggerOptions, `Finished, ${validatorsToHide.length} validators hided!`);
+    ranking = ranking.map((validator: any) => {
+      const modValidator = validator;
+      if (validatorsToHide.includes(validator.rank)) {
+        modValidator.showClusterMember = false;
+      }
+      return modValidator;
+    });
+    logger.debug(
+      loggerOptions,
+      `Finished, ${validatorsToHide.length} validators hided!`,
+    );
 
     // We want to store era stats only when there's a new consolidated era in chain history
     if (parseInt(activeEra, 10) - 1 > parseInt(lastEraInDb, 10)) {
       logger.debug(loggerOptions, 'Storing era stats in db...');
       await Promise.all(
-        ranking.map((validator: any) => insertEraValidatorStats(client, validator, activeEra, loggerOptions)),
+        ranking.map((validator: any) =>
+          insertEraValidatorStats(client, validator, activeEra, loggerOptions),
+        ),
       );
       logger.debug(loggerOptions, 'Storing era stats averages in db...');
       await Promise.all(
-        eraIndexes.map((eraIndex) => insertEraValidatorStatsAvg(client, eraIndex, loggerOptions)),
+        eraIndexes.map((eraIndex) =>
+          insertEraValidatorStatsAvg(client, eraIndex, loggerOptions),
+        ),
       );
     } else {
       logger.debug(loggerOptions, 'Updating era averages is not needed!');
     }
 
-    logger.debug(loggerOptions, `Storing ${ranking.length} validators in db...`);
+    logger.debug(
+      loggerOptions,
+      `Storing ${ranking.length} validators in db...`,
+    );
     await Promise.all(
-      ranking.map((validator: any) => insertRankingValidator(client, validator, blockHeight, startTime, loggerOptions)),
+      ranking.map((validator: any) =>
+        insertRankingValidator(
+          client,
+          validator,
+          blockHeight,
+          startTime,
+          loggerOptions,
+        ),
+      ),
     );
 
     logger.debug(loggerOptions, 'Cleaning old data');
@@ -720,37 +810,64 @@ const crawler = async (delayedStart: boolean) => {
     );
 
     // featured validator
-    const sql = 'SELECT stash_address, timestamp FROM featured ORDER BY timestamp DESC LIMIT 1';
+    const sql =
+      'SELECT stash_address, timestamp FROM featured ORDER BY timestamp DESC LIMIT 1';
     const res = await dbQuery(client, sql, loggerOptions);
     if (res.rows.length === 0) {
       await addNewFeaturedValidator(config, client, ranking, loggerOptions);
     } else {
       const currentFeatured = res.rows[0];
       const currentTimestamp = new Date().getTime();
-      if (currentTimestamp - currentFeatured.timestamp > config.featuredTimespan) {
+      if (
+        currentTimestamp - currentFeatured.timestamp >
+        config.featuredTimespan
+      ) {
         // timespan passed, let's add a new featured validator
         await addNewFeaturedValidator(config, client, ranking, loggerOptions);
       }
     }
 
     logger.debug(loggerOptions, 'Disconnecting from API');
-    await api.disconnect().catch((error) => logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`));
+    await api
+      .disconnect()
+      .catch((error) =>
+        logger.error(
+          loggerOptions,
+          `API disconnect error: ${JSON.stringify(error)}`,
+        ),
+      );
 
     logger.debug(loggerOptions, 'Disconnecting from DB');
-    await client.end().catch((error) => logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`));
+    await client
+      .end()
+      .catch((error) =>
+        logger.error(
+          loggerOptions,
+          `DB disconnect error: ${JSON.stringify(error)}`,
+        ),
+      );
 
     const endTime = new Date().getTime();
     const dataProcessingTime = endTime - dataCollectionEndTime;
-    logger.info(loggerOptions, `Added ${ranking.length} validators in ${((dataCollectionTime + dataProcessingTime) / 1000).toFixed(3)}s`);
-    logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
+    logger.info(
+      loggerOptions,
+      `Added ${ranking.length} validators in ${(
+        (dataCollectionTime + dataProcessingTime) /
+        1000
+      ).toFixed(3)}s`,
+    );
+    logger.info(
+      loggerOptions,
+      `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`,
+    );
   } catch (error) {
-    logger.error(loggerOptions, `General error in ranking crawler: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `General error in ranking crawler: ${JSON.stringify(error)}`,
+    );
     Sentry.captureException(error);
   }
-  setTimeout(
-    () => crawler(false),
-    config.pollingTime,
-  );
+  setTimeout(() => crawler(false), config.pollingTime);
 };
 
 crawler(true).catch((error) => {

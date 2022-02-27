@@ -70,11 +70,14 @@ const crawler = async () => {
         totalIssuance,
         timestamp,
       ] = await Promise.all([
-        apiAt.query.staking.activeEra()
+        apiAt.query.staking
+          .activeEra()
           .then((res: any) => (res.toJSON() ? res.toJSON().index : 0))
-          .catch((e) => { console.log(e); return 0; }),
-        apiAt.query.session.currentIndex()
-          .then((res) => (res || 0)),
+          .catch((e) => {
+            console.log(e);
+            return 0;
+          }),
+        apiAt.query.session.currentIndex().then((res) => res || 0),
         api.rpc.chain.getBlock(blockHash),
         api.derive.chain.getHeader(blockHash),
         api.rpc.state.getRuntimeVersion(blockHash),
@@ -87,10 +90,20 @@ const crawler = async () => {
       if (iteration === 1) {
         const specName = runtimeVersion.toJSON().specName;
         const specVersion = runtimeVersion.specVersion;
-        await storeMetadata(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
+        await storeMetadata(
+          client,
+          blockNumber,
+          blockHash.toString(),
+          specName.toString(),
+          specVersion.toNumber(),
+          timestamp.toNumber(),
+          loggerOptions,
+        );
       }
 
-      const finalizedBlockHeader = await api.rpc.chain.getHeader(finalizedBlockHash);
+      const finalizedBlockHeader = await api.rpc.chain.getHeader(
+        finalizedBlockHash,
+      );
       const finalizedBlock = finalizedBlockHeader.number.toNumber();
       const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
 
@@ -100,7 +113,10 @@ const crawler = async () => {
 
       if (res && res.rows.length > 0) {
         // Chain reorganization detected! We need to update block_author, block_hash and state_root
-        logger.debug(loggerOptions, `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
+        logger.debug(
+          loggerOptions,
+          `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`,
+        );
         const blockAuthor = extendedHeader.author;
         const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
         const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
@@ -108,19 +124,17 @@ const crawler = async () => {
         res = await dbQuery(client, sql, loggerOptions);
       } else {
         const blockAuthor = extendedHeader.author || '';
-        const [
-          blockAuthorIdentity,
-          blockEvents,
-          chainElectionStatus,
-        ] = await Promise.all([
-          api.derive.accounts.info(blockAuthor),
-          apiAt.query.system.events(),
-          api.query.electionProviderMultiPhase.currentPhase(),
-        ]);
+        const [blockAuthorIdentity, blockEvents, chainElectionStatus] =
+          await Promise.all([
+            api.derive.accounts.info(blockAuthor),
+            apiAt.query.system.events(),
+            api.query.electionProviderMultiPhase.currentPhase(),
+          ]);
         const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
 
         // Get election status
-        const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
+        const isElection =
+          Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
 
         // Totals
         const totalEvents = blockEvents.length || 0;
@@ -169,7 +183,10 @@ const crawler = async () => {
         try {
           await dbQuery(client, sql, loggerOptions);
         } catch (error) {
-          logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
+          logger.error(
+            loggerOptions,
+            `Error adding block #${blockNumber}: ${error}, sql: ${sql}`,
+          );
           const scope = new Sentry.Scope();
           scope.setTag('blockNumber', blockNumber);
           Sentry.captureException(error, scope);
@@ -221,10 +238,18 @@ const crawler = async () => {
         await updateFinalized(client, finalizedBlock, loggerOptions);
 
         const endTime = new Date().getTime();
-        logger.info(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+        logger.info(
+          loggerOptions,
+          `Added block #${blockNumber} (${shortHash(
+            blockHash.toString(),
+          )}) in ${((endTime - startTime) / 1000).toFixed(3)}s`,
+        );
       }
     } catch (error) {
-      logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
+      logger.error(
+        loggerOptions,
+        `Error adding block #${blockNumber}: ${error}`,
+      );
       await logHarvestError(client, blockNumber, error, loggerOptions);
       Sentry.captureException(error);
     }

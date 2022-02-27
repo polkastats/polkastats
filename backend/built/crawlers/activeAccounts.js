@@ -63,7 +63,8 @@ const crawler = async (delayedStart) => {
         const chunkStartTime = Date.now();
         await Promise.all(chunk.map((accountId) => (0, chain_1.processAccountsChunk)(api, client, accountId, loggerOptions)));
         const chunkEndTime = new Date().getTime();
-        logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) / 1000).toFixed(3)}s`);
+        logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) /
+            1000).toFixed(3)}s`);
     }
     logger.debug(loggerOptions, 'Disconnecting from API');
     await api.disconnect().catch((error) => {
@@ -76,7 +77,8 @@ const crawler = async (delayedStart) => {
         Sentry.captureException(error);
     });
     const endTime = new Date().getTime();
-    logger.info(loggerOptions, `Processed ${accountIds.length} active accounts in ${((endTime - startTime) / 1000).toFixed(0)}s`);
+    logger.info(loggerOptions, `Processed ${accountIds.length} active accounts in ${((endTime - startTime) /
+        1000).toFixed(0)}s`);
     logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
     setTimeout(() => crawler(false), config.pollingTime);
 };

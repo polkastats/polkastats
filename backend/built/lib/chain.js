@@ -109,9 +109,7 @@ const dbParamQuery = async (client, sql, data, loggerOptions) => {
 exports.dbParamQuery = dbParamQuery;
 const isValidAddressPolkadotAddress = (address) => {
     try {
-        (0, keyring_1.encodeAddress)((0, util_1.isHex)(address)
-            ? (0, util_1.hexToU8a)(address.toString())
-            : (0, keyring_1.decodeAddress)(address));
+        (0, keyring_1.encodeAddress)((0, util_1.isHex)(address) ? (0, util_1.hexToU8a)(address.toString()) : (0, keyring_1.decodeAddress)(address));
         return true;
     }
     catch (error) {
@@ -130,7 +128,9 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
     const freeBalance = balances.freeBalance.toString();
     const lockedBalance = balances.lockedBalance.toString();
     const identityDisplay = identity.display ? identity.display.toString() : '';
-    const identityDisplayParent = identity.displayParent ? identity.displayParent.toString() : '';
+    const identityDisplayParent = identity.displayParent
+        ? identity.displayParent.toString()
+        : '';
     const JSONIdentity = identity.display ? JSON.stringify(identity) : '';
     const JSONbalances = JSON.stringify(balances);
     const nonce = balances.accountNonce.toString();
@@ -200,8 +200,7 @@ exports.updateAccountInfo = updateAccountInfo;
 const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
     const startTime = new Date().getTime();
     const involvedAddresses = [];
-    blockEvents
-        .forEach(({ event }) => {
+    blockEvents.forEach(({ event }) => {
         const types = event.typeDef;
         event.data.forEach((data, index) => {
             if (types[index].type === 'AccountId32') {
@@ -213,15 +212,15 @@ const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOpt
     await Promise.all(uniqueAddresses.map((address) => (0, exports.updateAccountInfo)(api, client, blockNumber, timestamp, address, loggerOptions)));
     // Log execution time
     const endTime = new Date().getTime();
-    logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) /
+        1000).toFixed(3)}s`);
 };
 exports.updateAccountsInfo = updateAccountsInfo;
 const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents) => {
     let extrinsicSuccess = false;
     let extrinsicErrorMessage = '';
     blockEvents
-        .filter(({ phase }) => phase.isApplyExtrinsic &&
-        phase.asApplyExtrinsic.eq(index))
+        .filter(({ phase }) => phase.isApplyExtrinsic && phase.asApplyExtrinsic.eq(index))
         .forEach(({ event }) => {
         if (apiAt.events.system.ExtrinsicSuccess.is(event)) {
             extrinsicSuccess = true;
@@ -243,10 +242,11 @@ exports.getExtrinsicSuccessOrErrorMessage = getExtrinsicSuccessOrErrorMessage;
 const getTransferAllAmount = (blockNumber, index, blockEvents) => {
     try {
         return blockEvents
-            .find(({ event, phase }) => (phase.isApplyExtrinsic
-            && phase.asApplyExtrinsic.eq(index)
-            && event.section === 'balances'
-            && event.method === 'Transfer')).event.data[2].toString();
+            .find(({ event, phase }) => phase.isApplyExtrinsic &&
+            phase.asApplyExtrinsic.eq(index) &&
+            event.section === 'balances' &&
+            event.method === 'Transfer')
+            .event.data[2].toString();
     }
     catch (error) {
         const scope = new Sentry.Scope();
@@ -265,9 +265,10 @@ const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents,
     let amount;
     if (method === 'transferAll' && success) {
         // Equal source and destination addres doesn't trigger a balances.Transfer event
-        amount = source === destination
-            ? 0
-            : (0, exports.getTransferAllAmount)(blockNumber, extrinsicIndex, blockEvents);
+        amount =
+            source === destination
+                ? 0
+                : (0, exports.getTransferAllAmount)(blockNumber, extrinsicIndex, blockEvents);
     }
     else if (method === 'transferAll' && !success) {
         // We can't get amount in this case cause no event is emitted
@@ -351,12 +352,16 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
     let feeDetails = '';
     if (isSigned) {
         [feeInfo, feeDetails] = await Promise.all([
-            api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
+            api.rpc.payment
+                .queryInfo(extrinsic.toHex(), blockHash)
                 .then((result) => JSON.stringify(result.toJSON()))
-                .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '',
-            api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)
+                .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) ||
+                '',
+            api.rpc.payment
+                .queryFeeDetails(extrinsic.toHex(), blockHash)
                 .then((result) => JSON.stringify(result.toJSON()))
-                .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '',
+                .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) ||
+                '',
         ]);
     }
     const data = [
@@ -476,7 +481,11 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
             logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
             Sentry.captureException(error);
         }
-        if (section === 'balances' && (method === 'forceTransfer' || method === 'transfer' || method === 'transferAll' || method === 'transferKeepAlive')) {
+        if (section === 'balances' &&
+            (method === 'forceTransfer' ||
+                method === 'transfer' ||
+                method === 'transferAll' ||
+                method === 'transferKeepAlive')) {
             // Store transfer
             (0, exports.processTransfer)(client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash.toString(), signer, feeInfo, success, errorMessage, timestamp, loggerOptions);
         }
@@ -485,22 +494,24 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
 exports.processExtrinsic = processExtrinsic;
 const processExtrinsics = async (api, apiAt, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
-    const indexedExtrinsics = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
+    const indexedExtrinsics = extrinsics.map((extrinsic, index) => [index, extrinsic]);
     const chunks = (0, utils_1.chunker)(indexedExtrinsics, chunkSize);
     for (const chunk of chunks) {
         await Promise.all(chunk.map((indexedExtrinsic) => (0, exports.processExtrinsic)(api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
-    logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) /
+        1000).toFixed(3)}s`);
 };
 exports.processExtrinsics = processExtrinsics;
 const getSlashedValidatorAccount = (index, IndexedBlockEvents) => {
     let validatorAccountId = '';
     for (let i = index; i >= 0; i--) {
         const { event } = IndexedBlockEvents[i][1];
-        if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
-            return validatorAccountId = event.data[0].toString();
+        if (event.section === 'staking' &&
+            (event.method === 'Slash' || event.method === 'Slashed')) {
+            return (validatorAccountId = event.data[0].toString());
         }
     }
     return validatorAccountId;
@@ -546,7 +557,8 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
         Sentry.captureException(error);
     }
     // Store staking reward
-    if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
+    if (event.section === 'staking' &&
+        (event.method === 'Reward' || event.method === 'Rewarded')) {
         //
         // Store validator stash address and era index
         //
@@ -554,10 +566,9 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
         let era = null;
         let sql;
         let data = [];
-        const payoutStakersExtrinsic = IndexedBlockExtrinsics
-            .find(([extrinsicIndex, { method: { section, method } }]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
-            && section === 'staking'
-            && method === 'payoutStakers'));
+        const payoutStakersExtrinsic = IndexedBlockExtrinsics.find(([extrinsicIndex, { method: { section, method }, },]) => phase.asApplyExtrinsic.eq(extrinsicIndex) && // event phase
+            section === 'staking' &&
+            method === 'payoutStakers');
         if (payoutStakersExtrinsic) {
             validator = payoutStakersExtrinsic[1].method.args[0];
             era = payoutStakersExtrinsic[1].method.args[1];
@@ -567,19 +578,18 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
             //
             // staking.payoutStakers extrinsic included in a utility.batch or utility.batchAll extrinsic
             //
-            const utilityBatchExtrinsicIndexes = IndexedBlockExtrinsics
-                .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
-                && extrinsic.method.section === 'utility'
-                && (extrinsic.method.method === 'batch' || extrinsic.method.method === 'batchAll')))
-                .map(([index]) => index);
+            const utilityBatchExtrinsicIndexes = IndexedBlockExtrinsics.filter(([extrinsicIndex, extrinsic]) => phase.asApplyExtrinsic.eq(extrinsicIndex) && // event phase
+                extrinsic.method.section === 'utility' &&
+                (extrinsic.method.method === 'batch' ||
+                    extrinsic.method.method === 'batchAll')).map(([index]) => index);
             if (utilityBatchExtrinsicIndexes.length > 0) {
                 // We know that utility.batch has some staking.payoutStakers extrinsic
-                // Then we need to do a lookup of the previous staking.payoutStarted 
+                // Then we need to do a lookup of the previous staking.payoutStarted
                 // event to get validator and era
-                const payoutStartedEvents = IndexedBlockEvents.filter(([, record]) => (record.phase.isApplyExtrinsic
-                    && utilityBatchExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to utility.batch extrinsic
-                    && record.event.section === 'staking'
-                    && record.event.method === 'PayoutStarted')).reverse();
+                const payoutStartedEvents = IndexedBlockEvents.filter(([, record]) => record.phase.isApplyExtrinsic &&
+                    utilityBatchExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) && // events should be related to utility.batch extrinsic
+                    record.event.section === 'staking' &&
+                    record.event.method === 'PayoutStarted').reverse();
                 if (payoutStartedEvents) {
                     const payoutStartedEvent = payoutStartedEvents.find(([index]) => index < eventIndex);
                     if (payoutStartedEvent) {
@@ -591,19 +601,17 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
                 //
                 // staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
                 //
-                const proxyProxyExtrinsicIndexes = IndexedBlockExtrinsics
-                    .filter(([extrinsicIndex, extrinsic]) => (phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
-                    && extrinsic.method.section === 'proxy'
-                    && extrinsic.method.method === 'proxy'))
-                    .map(([index]) => index);
+                const proxyProxyExtrinsicIndexes = IndexedBlockExtrinsics.filter(([extrinsicIndex, extrinsic]) => phase.asApplyExtrinsic.eq(extrinsicIndex) && // event phase
+                    extrinsic.method.section === 'proxy' &&
+                    extrinsic.method.method === 'proxy').map(([index]) => index);
                 if (proxyProxyExtrinsicIndexes.length > 0) {
                     // We know that proxy.proxy has some staking.payoutStakers extrinsic
-                    // Then we need to do a lookup of the previous staking.payoutStarted 
+                    // Then we need to do a lookup of the previous staking.payoutStarted
                     // event to get validator and era
-                    const payoutStartedEvents = IndexedBlockEvents.filter(([, record]) => (record.phase.isApplyExtrinsic
-                        && proxyProxyExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to proxy.proxy extrinsic
-                        && record.event.section === 'staking'
-                        && record.event.method === 'PayoutStarted')).reverse();
+                    const payoutStartedEvents = IndexedBlockEvents.filter(([, record]) => record.phase.isApplyExtrinsic &&
+                        proxyProxyExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) && // events should be related to proxy.proxy extrinsic
+                        record.event.section === 'staking' &&
+                        record.event.method === 'PayoutStarted').reverse();
                     if (payoutStartedEvents) {
                         const payoutStartedEvent = payoutStartedEvents.find(([index]) => index < eventIndex);
                         if (payoutStartedEvent) {
@@ -686,7 +694,8 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
     // -> validator account id is in staking.Slashed event
     //
     // Store validator staking slash
-    if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
+    if (event.section === 'staking' &&
+        (event.method === 'Slash' || event.method === 'Slashed')) {
         const data = [
             blockNumber,
             eventIndex,
@@ -726,7 +735,8 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
         }
     }
     // Store nominator staking slash
-    if (event.section === 'balances' && (event.method === 'Slash' || event.method === 'Slashed')) {
+    if (event.section === 'balances' &&
+        (event.method === 'Slash' || event.method === 'Slashed')) {
         const validatorStashAddress = (0, exports.getSlashedValidatorAccount)(eventIndex, IndexedBlockEvents);
         const data = [
             blockNumber,
@@ -772,15 +782,16 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
 exports.processEvent = processEvent;
 const processEvents = async (client, blockNumber, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
-    const IndexedBlockEvents = blockEvents.map((event, index) => ([index, event]));
-    const IndexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
+    const IndexedBlockEvents = blockEvents.map((event, index) => [index, event]);
+    const IndexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => [index, extrinsic]);
     const chunks = (0, utils_1.chunker)(IndexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
         await Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(client, blockNumber, activeEra, indexedEvent, IndexedBlockEvents, IndexedBlockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
-    logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) /
+        1000).toFixed(3)}s`);
 };
 exports.processEvents = processEvents;
 const processLog = async (client, blockNumber, log, index, timestamp, loggerOptions) => {
@@ -789,14 +800,7 @@ const processLog = async (client, blockNumber, log, index, timestamp, loggerOpti
     const [[engine, logData]] = type === 'RuntimeEnvironmentUpdated'
         ? [[null, null]]
         : Object.values(log.toHuman());
-    const data = [
-        blockNumber,
-        index,
-        type,
-        engine,
-        logData,
-        timestamp,
-    ];
+    const data = [blockNumber, index, type, engine, logData, timestamp];
     const sql = `INSERT INTO log (
       block_number,
       log_index,
@@ -836,10 +840,10 @@ const processLogs = async (client, blockNumber, logs, timestamp, loggerOptions) 
 };
 exports.processLogs = processLogs;
 const getDisplayName = (identity) => {
-    if (identity.displayParent
-        && identity.displayParent !== ''
-        && identity.display
-        && identity.display !== '') {
+    if (identity.displayParent &&
+        identity.displayParent !== '' &&
+        identity.display &&
+        identity.display !== '') {
         return `${identity.displayParent} / ${identity.display}`;
     }
     return identity.display || '';
@@ -861,11 +865,7 @@ exports.updateFinalized = updateFinalized;
 const logHarvestError = async (client, blockNumber, error, loggerOptions) => {
     const timestamp = new Date().getTime();
     const errorString = error.toString().replace(/'/g, "''");
-    const data = [
-        blockNumber,
-        errorString,
-        timestamp,
-    ];
+    const data = [blockNumber, errorString, timestamp];
     const query = `
     INSERT INTO
       harvest_error (block_number, error, timestamp)
@@ -962,11 +962,14 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             api.derive.chain.getHeader(blockHash),
             apiAt.query.balances.totalIssuance(),
             api.rpc.state.getRuntimeVersion(blockHash),
-            apiAt.query.staking.activeEra()
+            apiAt.query.staking
+                .activeEra()
                 .then((res) => (res.toJSON() ? res.toJSON().index : 0))
-                .catch((e) => { console.log(e); return 0; }),
-            apiAt.query.session.currentIndex()
-                .then((res) => (res || 0)),
+                .catch((e) => {
+                console.log(e);
+                return 0;
+            }),
+            apiAt.query.session.currentIndex().then((res) => res || 0),
             apiAt.query.electionProviderMultiPhase.currentPhase(),
             apiAt.query.timestamp.now(),
         ]);
@@ -1038,7 +1041,8 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         try {
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
             const endTime = new Date().getTime();
-            logger.debug(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+            logger.debug(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) /
+                1000).toFixed(config.statsPrecision)}s`);
         }
         catch (error) {
             logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
@@ -1047,8 +1051,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             Sentry.captureException(error, scope);
         }
         // Runtime upgrade
-        const runtimeUpgrade = blockEvents
-            .find(({ event }) => apiAt.events.system.CodeUpdated.is(event));
+        const runtimeUpgrade = blockEvents.find(({ event }) => apiAt.events.system.CodeUpdated.is(event));
         if (runtimeUpgrade) {
             const specName = runtimeVersion.toJSON().specName;
             const specVersion = runtimeVersion.specVersion;
@@ -1098,9 +1101,10 @@ const harvestBlocksSeq = async (config, api, client, startBlock, endBlock, logge
             maxTimeMs = blockProcessingTimeMs;
         }
         blockProcessingTimes.push(blockProcessingTimeMs);
-        avgTimeMs = blockProcessingTimes.reduce((sum, blockProcessingTime) => sum + blockProcessingTime, 0) / blockProcessingTimes.length;
+        avgTimeMs =
+            blockProcessingTimes.reduce((sum, blockProcessingTime) => sum + blockProcessingTime, 0) / blockProcessingTimes.length;
         const completed = ((blocks.indexOf(blockNumber) + 1) * 100) / blocks.length;
-        logger.info(loggerOptions, `Processed block #${blockNumber} ${blocks.indexOf(blockNumber) + 1}/${blocks.length} [${completed.toFixed(config.statsPrecision)}%] in ${((blockProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)}`);
+        logger.info(loggerOptions, `Processed block #${blockNumber} ${blocks.indexOf(blockNumber) + 1}/${blocks.length} [${completed.toFixed(config.statsPrecision)}%] in ${(blockProcessingTimeMs / 1000).toFixed(config.statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)}`);
     }
 };
 exports.harvestBlocksSeq = harvestBlocksSeq;
@@ -1129,27 +1133,28 @@ const harvestBlocks = async (config, api, client, startBlock, endBlock, loggerOp
             maxTimeMs = chunkProcessingTimeMs;
         }
         chunkProcessingTimes.push(chunkProcessingTimeMs);
-        avgTimeMs = chunkProcessingTimes.reduce((sum, chunkProcessingTime) => sum + chunkProcessingTime, 0) / chunkProcessingTimes.length;
-        avgBlocksPerSecond = 1 / ((avgTimeMs / 1000) / config.chunkSize);
-        const currentBlocksPerSecond = 1 / ((chunkProcessingTimeMs / 1000) / config.chunkSize);
+        avgTimeMs =
+            chunkProcessingTimes.reduce((sum, chunkProcessingTime) => sum + chunkProcessingTime, 0) / chunkProcessingTimes.length;
+        avgBlocksPerSecond = 1 / (avgTimeMs / 1000 / config.chunkSize);
+        const currentBlocksPerSecond = 1 / (chunkProcessingTimeMs / 1000 / config.chunkSize);
         const completed = ((chunks.indexOf(chunk) + 1) * 100) / chunks.length;
-        logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} [${completed.toFixed(config.statsPrecision)}%] `
-            + `in ${((chunkProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s `
-            + `min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)} `
-            + `cur/avg bps: ${currentBlocksPerSecond.toFixed(config.statsPrecision)}/${avgBlocksPerSecond.toFixed(config.statsPrecision)}`);
+        logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} [${completed.toFixed(config.statsPrecision)}%] ` +
+            `in ${(chunkProcessingTimeMs / 1000).toFixed(config.statsPrecision)}s ` +
+            `min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)} ` +
+            `cur/avg bps: ${currentBlocksPerSecond.toFixed(config.statsPrecision)}/${avgBlocksPerSecond.toFixed(config.statsPrecision)}`);
     }
 };
 exports.harvestBlocks = harvestBlocks;
-const getAccountIdFromArgs = (account) => account
-    .map(({ args }) => args)
-    .map(([e]) => e.toHuman());
+const getAccountIdFromArgs = (account) => account.map(({ args }) => args).map(([e]) => e.toHuman());
 exports.getAccountIdFromArgs = getAccountIdFromArgs;
 const fetchAccountIds = async (api) => (0, exports.getAccountIdFromArgs)(await api.query.system.account.keys());
 exports.fetchAccountIds = fetchAccountIds;
 const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
     const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
     const [block, identity, balances] = await Promise.all([
-        api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
+        api.rpc.chain
+            .getBlock()
+            .then((result) => result.block.header.number.toNumber()),
         api.derive.accounts.identity(accountId),
         api.derive.balances.all(accountId),
     ]);
@@ -1157,7 +1162,9 @@ const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
     const freeBalance = balances.freeBalance.toString();
     const lockedBalance = balances.lockedBalance.toString();
     const identityDisplay = identity.display ? identity.display.toString() : '';
-    const identityDisplayParent = identity.displayParent ? identity.displayParent.toString() : '';
+    const identityDisplayParent = identity.displayParent
+        ? identity.displayParent.toString()
+        : '';
     const JSONIdentity = identity.display ? JSON.stringify(identity) : '';
     const JSONbalances = JSON.stringify(balances);
     const nonce = balances.accountNonce.toString();
@@ -1242,10 +1249,10 @@ const isVerifiedIdentity = (identity) => {
 };
 exports.isVerifiedIdentity = isVerifiedIdentity;
 const getName = (identity) => {
-    if (identity.displayParent
-        && identity.displayParent !== ''
-        && identity.display
-        && identity.display !== '') {
+    if (identity.displayParent &&
+        identity.displayParent !== '' &&
+        identity.display &&
+        identity.display !== '') {
         return `${identity.displayParent}/${identity.display}`;
     }
     return identity.display || '';
@@ -1254,10 +1261,10 @@ exports.getName = getName;
 const getClusterName = (identity) => identity.displayParent || '';
 exports.getClusterName = getClusterName;
 const subIdentity = (identity) => {
-    if (identity.displayParent
-        && identity.displayParent !== ''
-        && identity.display
-        && identity.display !== '') {
+    if (identity.displayParent &&
+        identity.displayParent !== '' &&
+        identity.display &&
+        identity.display !== '') {
         return true;
     }
     return false;
@@ -1280,12 +1287,12 @@ const parseIdentity = (identity) => {
     const verifiedIdentity = (0, exports.isVerifiedIdentity)(identity);
     const hasSubIdentity = (0, exports.subIdentity)(identity);
     const name = (0, exports.getName)(identity);
-    const hasAllFields = (identity === null || identity === void 0 ? void 0 : identity.display) !== undefined
-        && (identity === null || identity === void 0 ? void 0 : identity.legal) !== undefined
-        && (identity === null || identity === void 0 ? void 0 : identity.web) !== undefined
-        && (identity === null || identity === void 0 ? void 0 : identity.email) !== undefined
-        && (identity === null || identity === void 0 ? void 0 : identity.twitter) !== undefined
-        && (identity === null || identity === void 0 ? void 0 : identity.riot) !== undefined;
+    const hasAllFields = (identity === null || identity === void 0 ? void 0 : identity.display) !== undefined &&
+        (identity === null || identity === void 0 ? void 0 : identity.legal) !== undefined &&
+        (identity === null || identity === void 0 ? void 0 : identity.web) !== undefined &&
+        (identity === null || identity === void 0 ? void 0 : identity.email) !== undefined &&
+        (identity === null || identity === void 0 ? void 0 : identity.twitter) !== undefined &&
+        (identity === null || identity === void 0 ? void 0 : identity.riot) !== undefined;
     const identityRating = (0, exports.getIdentityRating)(name, verifiedIdentity, hasAllFields);
     return {
         verifiedIdentity,
@@ -1320,8 +1327,8 @@ const getCommissionRating = (commission, commissionHistory) => {
             return 1;
         }
         if (commission >= 5) {
-            if (commissionHistory.length > 1
-                && commissionHistory[0] > commissionHistory[commissionHistory.length - 1]) {
+            if (commissionHistory.length > 1 &&
+                commissionHistory[0] > commissionHistory[commissionHistory.length - 1]) {
                 return 3;
             }
             return 2;
@@ -1353,8 +1360,8 @@ const getClusterInfo = (hasSubIdentity, validators, validatorIdentity) => {
         // samples: DISC-SOFT-01, BINANCE_KSM_9, SNZclient-1
         if (validatorIdentity.display) {
             const stringSize = 6;
-            const clusterMembers = validators.filter(({ identity }) => (identity.display || '').substring(0, stringSize)
-                === validatorIdentity.display.substring(0, stringSize)).length;
+            const clusterMembers = validators.filter(({ identity }) => (identity.display || '').substring(0, stringSize) ===
+                validatorIdentity.display.substring(0, stringSize)).length;
             const clusterName = validatorIdentity.display
                 .replace(/\d{1,2}$/g, '')
                 .replace(/-$/g, '')
@@ -1392,9 +1399,10 @@ const addNewFeaturedValidator = async (config, client, ranking, loggerOptions) =
     res.rows.forEach((validator) => alreadyFeatured.push(validator.stash_address));
     // get candidates that meet the rules
     const featuredCandidates = ranking
-        .filter((validator) => validator.commission <= 10
-        && validator.selfStake.div(10 ** config.tokenDecimals).gte(20)
-        && !validator.active && !alreadyFeatured.includes(validator.stashAddress))
+        .filter((validator) => validator.commission <= 10 &&
+        validator.selfStake.div(10 ** config.tokenDecimals).gte(20) &&
+        !validator.active &&
+        !alreadyFeatured.includes(validator.stashAddress))
         .map(({ rank }) => rank);
     // get random featured validator of the week
     const shuffled = [...featuredCandidates].sort(() => 0.5 - Math.random());
@@ -1574,11 +1582,7 @@ const insertEraValidatorStats = async (client, validator, activeEra, loggerOptio
     )
     ON CONFLICT ON CONSTRAINT era_vrc_score_pkey 
     DO NOTHING;`;
-    let data = [
-        validator.stashAddress,
-        activeEra,
-        validator.totalRating,
-    ];
+    let data = [validator.stashAddress, activeEra, validator.totalRating];
     await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     for (const commissionHistoryItem of validator.commissionHistory) {
         if (commissionHistoryItem.commission) {
@@ -1602,7 +1606,8 @@ const insertEraValidatorStats = async (client, validator, activeEra, loggerOptio
         }
     }
     for (const perfHistoryItem of validator.relativePerformanceHistory) {
-        if (perfHistoryItem.relativePerformance && perfHistoryItem.relativePerformance > 0) {
+        if (perfHistoryItem.relativePerformance &&
+            perfHistoryItem.relativePerformance > 0) {
             sql = `INSERT INTO era_relative_performance (
           stash_address,
           era,
@@ -1702,38 +1707,36 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
     let res = await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].commission_avg) {
-            data = [
-                era,
-                res.rows[0].commission_avg,
-            ];
-            sql = 'INSERT INTO era_commission_avg (era, commission_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;';
+            data = [era, res.rows[0].commission_avg];
+            sql =
+                'INSERT INTO era_commission_avg (era, commission_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
-    sql = 'SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = $1';
+    sql =
+        'SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = $1';
     data = [era];
     res = await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].self_stake_avg) {
-            const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
-            data = [
-                era,
-                selfStakeAvg,
-            ];
-            sql = 'INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;';
+            const selfStakeAvg = res.rows[0].self_stake_avg
+                .toString(10)
+                .split('.')[0];
+            data = [era, selfStakeAvg];
+            sql =
+                'INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
-    sql = 'SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = $1';
+    sql =
+        'SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = $1';
     data = [era];
     res = await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].relative_performance_avg) {
-            data = [
-                era,
-                res.rows[0].relative_performance_avg,
-            ];
-            sql = 'INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;';
+            data = [era, res.rows[0].relative_performance_avg];
+            sql =
+                'INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
@@ -1742,11 +1745,9 @@ const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
     res = await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].points_avg) {
-            data = [
-                era,
-                res.rows[0].points_avg,
-            ];
-            sql = 'INSERT INTO era_points_avg (era, points_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;';
+            data = [era, res.rows[0].points_avg];
+            sql =
+                'INSERT INTO era_points_avg (era, points_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;';
             await (0, exports.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }

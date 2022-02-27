@@ -31,16 +31,15 @@ exports.backendConfig = {
             mode: process.env.BLOCK_HARVESTER_MODE || 'chunks',
             chunkSize: parseInt(process.env.BLOCK_HARVESTER_CHUNK_SIZE, 10) || 10,
             statsPrecision: parseInt(process.env.BLOCK_HARVESTER_STATS_PRECISION, 10) || 2,
-            pollingTime: parseInt(process.env.BLOCK_LISTENER_POLLING_TIME_MS, 10)
-                || 60 * 60 * 1000,
+            pollingTime: parseInt(process.env.BLOCK_LISTENER_POLLING_TIME_MS, 10) ||
+                60 * 60 * 1000,
         },
         {
             name: 'ranking',
             enabled: !process.env.RANKING_DISABLE,
             crawler: './built/crawlers/ranking.js',
             startDelay: parseInt(process.env.RANKING_START_DELAY_MS, 10) || 15 * 60 * 1000,
-            pollingTime: parseInt(process.env.RANKING_POLLING_TIME_MS, 10)
-                || 5 * 60 * 1000,
+            pollingTime: parseInt(process.env.RANKING_POLLING_TIME_MS, 10) || 5 * 60 * 1000,
             historySize: 84,
             erasPerDay: 4,
             tokenDecimals: 12,
@@ -52,8 +51,8 @@ exports.backendConfig = {
             crawler: './built/crawlers/activeAccounts.js',
             startDelay: parseInt(process.env.ACTIVE_ACCOUNTS_START_DELAY_MS, 10) || 60 * 1000,
             chunkSize: parseInt(process.env.ACTIVE_ACCOUNTS_CHUNK_SIZE, 10) || 100,
-            pollingTime: parseInt(process.env.ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10)
-                || 6 * 60 * 60 * 1000, // 6 hours
+            pollingTime: parseInt(process.env.ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10) ||
+                6 * 60 * 60 * 1000, // 6 hours
         },
     ],
 };

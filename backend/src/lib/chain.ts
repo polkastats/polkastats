@@ -17,7 +17,15 @@ import fs from 'fs';
 import { BigNumber } from 'bignumber.js';
 import { chunker, range, reverseRange, shortHash } from './utils';
 import { backendConfig } from '../backend.config';
-import { ClusterInfo, CommisionHistoryItem, CrawlerConfig, IdentityInfo, LoggerOptions, IndexedBlockEvent, IndexedBlockExtrinsic } from './types';
+import {
+  ClusterInfo,
+  CommisionHistoryItem,
+  CrawlerConfig,
+  IdentityInfo,
+  LoggerOptions,
+  IndexedBlockEvent,
+  IndexedBlockExtrinsic,
+} from './types';
 
 Sentry.init({
   dsn: backendConfig.sentryDSN,
@@ -31,12 +39,17 @@ const logger = pino({
 // Used for processing events and extrinsics
 const chunkSize = 100;
 
-export const getPolkadotAPI = async (loggerOptions: LoggerOptions, apiCustomTypes: string | undefined): Promise<ApiPromise> => {
+export const getPolkadotAPI = async (
+  loggerOptions: LoggerOptions,
+  apiCustomTypes: string | undefined,
+): Promise<ApiPromise> => {
   let api;
   logger.debug(loggerOptions, `Connecting to ${backendConfig.wsProviderUrl}`);
   const provider = new WsProvider(backendConfig.wsProviderUrl);
   if (apiCustomTypes && apiCustomTypes !== '') {
-    const types = JSON.parse(fs.readFileSync(`./src/types/${apiCustomTypes}`, 'utf8'));
+    const types = JSON.parse(
+      fs.readFileSync(`./src/types/${apiCustomTypes}`, 'utf8'),
+    );
     api = await ApiPromise.create({ provider, types });
   } else {
     api = await ApiPromise.create({ provider });
@@ -45,7 +58,10 @@ export const getPolkadotAPI = async (loggerOptions: LoggerOptions, apiCustomType
   return api;
 };
 
-export const isNodeSynced = async (api: ApiPromise, loggerOptions: LoggerOptions): Promise<boolean> => {
+export const isNodeSynced = async (
+  api: ApiPromise,
+  loggerOptions: LoggerOptions,
+): Promise<boolean> => {
   let node;
   try {
     node = await api.rpc.system.health();
@@ -61,14 +77,23 @@ export const isNodeSynced = async (api: ApiPromise, loggerOptions: LoggerOptions
   return false;
 };
 
-export const getClient = async (loggerOptions: LoggerOptions): Promise<Client> => {
-  logger.debug(loggerOptions, `Connecting to DB ${backendConfig.postgresConnParams.database} at ${backendConfig.postgresConnParams.host}:${backendConfig.postgresConnParams.port}`);
+export const getClient = async (
+  loggerOptions: LoggerOptions,
+): Promise<Client> => {
+  logger.debug(
+    loggerOptions,
+    `Connecting to DB ${backendConfig.postgresConnParams.database} at ${backendConfig.postgresConnParams.host}:${backendConfig.postgresConnParams.port}`,
+  );
   const client = new Client(backendConfig.postgresConnParams);
   await client.connect();
   return client;
 };
 
-export const dbQuery = async (client: Client, sql: string, loggerOptions: LoggerOptions): Promise<QueryResult<any>> | null => {
+export const dbQuery = async (
+  client: Client,
+  sql: string,
+  loggerOptions: LoggerOptions,
+): Promise<QueryResult<any>> | null => {
   try {
     return await client.query(sql);
   } catch (error) {
@@ -78,11 +103,21 @@ export const dbQuery = async (client: Client, sql: string, loggerOptions: Logger
   return null;
 };
 
-export const dbParamQuery = async (client: Client, sql: string, data: any[], loggerOptions: LoggerOptions): Promise<QueryResult<any>> | null => {
+export const dbParamQuery = async (
+  client: Client,
+  sql: string,
+  data: any[],
+  loggerOptions: LoggerOptions,
+): Promise<QueryResult<any>> | null => {
   try {
     return await client.query(sql, data);
   } catch (error) {
-    logger.error(loggerOptions, `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `SQL: ${sql} PARAM: ${JSON.stringify(data)} ERROR: ${JSON.stringify(
+        error,
+      )}`,
+    );
     Sentry.captureException(error);
   }
   return null;
@@ -91,9 +126,7 @@ export const dbParamQuery = async (client: Client, sql: string, data: any[], log
 export const isValidAddressPolkadotAddress = (address: string): boolean => {
   try {
     encodeAddress(
-      isHex(address)
-        ? hexToU8a(address.toString())
-        : decodeAddress(address),
+      isHex(address) ? hexToU8a(address.toString()) : decodeAddress(address),
     );
     return true;
   } catch (error) {
@@ -102,7 +135,14 @@ export const isValidAddressPolkadotAddress = (address: string): boolean => {
   }
 };
 
-export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, address: string, loggerOptions: LoggerOptions): Promise<void> => {
+export const updateAccountInfo = async (
+  api: ApiPromise,
+  client: Client,
+  blockNumber: number,
+  timestamp: number,
+  address: string,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const [balances, { identity }] = await Promise.all([
     api.derive.balances.all(address),
     api.derive.accounts.info(address),
@@ -112,7 +152,9 @@ export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNu
   const freeBalance = balances.freeBalance.toString();
   const lockedBalance = balances.lockedBalance.toString();
   const identityDisplay = identity.display ? identity.display.toString() : '';
-  const identityDisplayParent = identity.displayParent ? identity.displayParent.toString() : '';
+  const identityDisplayParent = identity.displayParent
+    ? identity.displayParent.toString()
+    : '';
   const JSONIdentity = identity.display ? JSON.stringify(identity) : '';
   const JSONbalances = JSON.stringify(balances);
   const nonce = balances.accountNonce.toString();
@@ -171,45 +213,73 @@ export const updateAccountInfo = async (api: ApiPromise, client: Client, blockNu
   ;`;
   try {
     await client.query(query, data);
-    logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
+    logger.debug(
+      loggerOptions,
+      `Updated account info for event/s involved address ${address}`,
+    );
   } catch (error) {
-    logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `Error updating account info for event/s involved address: ${JSON.stringify(
+        error,
+      )}`,
+    );
     Sentry.captureException(error);
   }
 };
 
-export const updateAccountsInfo = async (api: ApiPromise, client: Client, blockNumber: number, timestamp: number, loggerOptions: LoggerOptions, blockEvents: Vec<EventRecord>): Promise<void> => {
+export const updateAccountsInfo = async (
+  api: ApiPromise,
+  client: Client,
+  blockNumber: number,
+  timestamp: number,
+  loggerOptions: LoggerOptions,
+  blockEvents: Vec<EventRecord>,
+): Promise<void> => {
   const startTime = new Date().getTime();
   const involvedAddresses: string[] = [];
-  blockEvents
-    .forEach(({ event }: EventRecord) => {
-      const types = event.typeDef;
-      event.data.forEach((data, index) => {
-        if (types[index].type === 'AccountId32') {
-          involvedAddresses.push(data.toString());
-        }
-      });
+  blockEvents.forEach(({ event }: EventRecord) => {
+    const types = event.typeDef;
+    event.data.forEach((data, index) => {
+      if (types[index].type === 'AccountId32') {
+        involvedAddresses.push(data.toString());
+      }
     });
+  });
   const uniqueAddresses = _.uniq(involvedAddresses);
   await Promise.all(
-    uniqueAddresses.map(
-      (address) => updateAccountInfo(
-        api, client, blockNumber, timestamp, address, loggerOptions,
+    uniqueAddresses.map((address) =>
+      updateAccountInfo(
+        api,
+        client,
+        blockNumber,
+        timestamp,
+        address,
+        loggerOptions,
       ),
     ),
   );
   // Log execution time
   const endTime = new Date().getTime();
-  logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+  logger.debug(
+    loggerOptions,
+    `Updated ${uniqueAddresses.length} accounts in ${(
+      (endTime - startTime) /
+      1000
+    ).toFixed(3)}s`,
+  );
 };
 
-export const getExtrinsicSuccessOrErrorMessage = (apiAt: ApiDecoration<'promise'>, index: number, blockEvents: Vec<EventRecord>): [boolean, string] => {
+export const getExtrinsicSuccessOrErrorMessage = (
+  apiAt: ApiDecoration<'promise'>,
+  index: number,
+  blockEvents: Vec<EventRecord>,
+): [boolean, string] => {
   let extrinsicSuccess = false;
   let extrinsicErrorMessage = '';
   blockEvents
-    .filter(({ phase }) =>
-      phase.isApplyExtrinsic &&
-      phase.asApplyExtrinsic.eq(index),
+    .filter(
+      ({ phase }) => phase.isApplyExtrinsic && phase.asApplyExtrinsic.eq(index),
     )
     .forEach(({ event }) => {
       if (apiAt.events.system.ExtrinsicSuccess.is(event)) {
@@ -227,15 +297,21 @@ export const getExtrinsicSuccessOrErrorMessage = (apiAt: ApiDecoration<'promise'
   return [extrinsicSuccess, extrinsicErrorMessage];
 };
 
-export const getTransferAllAmount = (blockNumber: number, index: number, blockEvents: Vec<EventRecord>): string => {
+export const getTransferAllAmount = (
+  blockNumber: number,
+  index: number,
+  blockEvents: Vec<EventRecord>,
+): string => {
   try {
     return blockEvents
-      .find(({ event, phase }) => (
-        phase.isApplyExtrinsic
-        && phase.asApplyExtrinsic.eq(index)
-        && event.section === 'balances'
-        && event.method === 'Transfer'
-      )).event.data[2].toString();
+      .find(
+        ({ event, phase }) =>
+          phase.isApplyExtrinsic &&
+          phase.asApplyExtrinsic.eq(index) &&
+          event.section === 'balances' &&
+          event.method === 'Transfer',
+      )
+      .event.data[2].toString();
   } catch (error) {
     const scope = new Sentry.Scope();
     scope.setTag('blockNumber', blockNumber);
@@ -269,9 +345,10 @@ export const processTransfer = async (
   let amount;
   if (method === 'transferAll' && success) {
     // Equal source and destination addres doesn't trigger a balances.Transfer event
-    amount = source === destination
-      ? 0
-      : getTransferAllAmount(blockNumber, extrinsicIndex, blockEvents);
+    amount =
+      source === destination
+        ? 0
+        : getTransferAllAmount(blockNumber, extrinsicIndex, blockEvents);
   } else if (method === 'transferAll' && !success) {
     // We can't get amount in this case cause no event is emitted
     amount = 0;
@@ -327,9 +404,19 @@ export const processTransfer = async (
     ;`;
   try {
     await client.query(sql, data);
-    logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${shortHash(hash.toString())}) ${section} ➡ ${method}`);
+    logger.debug(
+      loggerOptions,
+      `Added transfer ${blockNumber}-${extrinsicIndex} (${shortHash(
+        hash.toString(),
+      )}) ${section} ➡ ${method}`,
+    );
   } catch (error) {
-    logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(
+        error,
+      )}`,
+    );
     const scope = new Sentry.Scope();
     scope.setTag('blockNumber', blockNumber);
     Sentry.captureException(error, scope);
@@ -356,17 +443,25 @@ export const processExtrinsic = async (
   const hash = extrinsic.hash.toHex();
   const doc = JSON.stringify(extrinsic.meta.docs.toJSON());
   // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
-  const [success, errorMessage] = getExtrinsicSuccessOrErrorMessage(apiAt, extrinsicIndex, blockEvents);
+  const [success, errorMessage] = getExtrinsicSuccessOrErrorMessage(
+    apiAt,
+    extrinsicIndex,
+    blockEvents,
+  );
   let feeInfo = '';
   let feeDetails = '';
   if (isSigned) {
     [feeInfo, feeDetails] = await Promise.all([
-      api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
+      api.rpc.payment
+        .queryInfo(extrinsic.toHex(), blockHash)
         .then((result) => JSON.stringify(result.toJSON()))
-        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '',
-      api.rpc.payment.queryFeeDetails(extrinsic.toHex(), blockHash)
+        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) ||
+        '',
+      api.rpc.payment
+        .queryFeeDetails(extrinsic.toHex(), blockHash)
         .then((result) => JSON.stringify(result.toJSON()))
-        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '',
+        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) ||
+        '',
     ]);
   }
   const data = [
@@ -421,9 +516,19 @@ export const processExtrinsic = async (
     ;`;
   try {
     await client.query(sql, data);
-    logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
+    logger.debug(
+      loggerOptions,
+      `Added extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(
+        hash,
+      )}) ${section} ➡ ${method}`,
+    );
   } catch (error) {
-    logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(
+        error,
+      )}`,
+    );
     const scope = new Sentry.Scope();
     scope.setTag('blockNumber', blockNumber);
     Sentry.captureException(error, scope);
@@ -480,12 +585,28 @@ export const processExtrinsic = async (
     ;`;
     try {
       await client.query(sql, data);
-      logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
+      logger.debug(
+        loggerOptions,
+        `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(
+          hash,
+        )}) ${section} ➡ ${method}`,
+      );
     } catch (error) {
-      logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+      logger.error(
+        loggerOptions,
+        `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(
+          error,
+        )}`,
+      );
       Sentry.captureException(error);
     }
-    if (section === 'balances' && (method === 'forceTransfer' || method === 'transfer' || method === 'transferAll' || method === 'transferKeepAlive')) {
+    if (
+      section === 'balances' &&
+      (method === 'forceTransfer' ||
+        method === 'transfer' ||
+        method === 'transferAll' ||
+        method === 'transferKeepAlive')
+    ) {
       // Store transfer
       processTransfer(
         client,
@@ -519,34 +640,50 @@ export const processExtrinsics = async (
   loggerOptions: LoggerOptions,
 ): Promise<void> => {
   const startTime = new Date().getTime();
-  const indexedExtrinsics: IndexedBlockExtrinsic[] = extrinsics.map((extrinsic, index) => ([index, extrinsic]));
+  const indexedExtrinsics: IndexedBlockExtrinsic[] = extrinsics.map(
+    (extrinsic, index) => [index, extrinsic],
+  );
   const chunks = chunker(indexedExtrinsics, chunkSize);
   for (const chunk of chunks) {
     await Promise.all(
-      chunk.map((indexedExtrinsic: IndexedBlockExtrinsic) => processExtrinsic(
-        api,
-        apiAt,
-        client,
-        blockNumber,
-        blockHash,
-        indexedExtrinsic,
-        blockEvents,
-        timestamp,
-        loggerOptions,
-      )),
+      chunk.map((indexedExtrinsic: IndexedBlockExtrinsic) =>
+        processExtrinsic(
+          api,
+          apiAt,
+          client,
+          blockNumber,
+          blockHash,
+          indexedExtrinsic,
+          blockEvents,
+          timestamp,
+          loggerOptions,
+        ),
+      ),
     );
   }
   // Log execution time
   const endTime = new Date().getTime();
-  logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+  logger.debug(
+    loggerOptions,
+    `Added ${extrinsics.length} extrinsics in ${(
+      (endTime - startTime) /
+      1000
+    ).toFixed(3)}s`,
+  );
 };
 
-export const getSlashedValidatorAccount = (index: number, IndexedBlockEvents: IndexedBlockEvent[]): string => {
+export const getSlashedValidatorAccount = (
+  index: number,
+  IndexedBlockEvents: IndexedBlockEvent[],
+): string => {
   let validatorAccountId = '';
   for (let i = index; i >= 0; i--) {
     const { event } = IndexedBlockEvents[i][1];
-    if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
-      return validatorAccountId = event.data[0].toString();
+    if (
+      event.section === 'staking' &&
+      (event.method === 'Slash' || event.method === 'Slashed')
+    ) {
+      return (validatorAccountId = event.data[0].toString());
     }
   }
   return validatorAccountId;
@@ -594,15 +731,23 @@ export const processEvent = async (
   ;`;
   try {
     await client.query(sql, data);
-    logger.debug(loggerOptions, `Added event #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+    logger.debug(
+      loggerOptions,
+      `Added event #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`,
+    );
   } catch (error) {
-    logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+    logger.error(
+      loggerOptions,
+      `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`,
+    );
     Sentry.captureException(error);
   }
 
   // Store staking reward
-  if (event.section === 'staking' && (event.method === 'Reward' || event.method === 'Rewarded')) {
-
+  if (
+    event.section === 'staking' &&
+    (event.method === 'Reward' || event.method === 'Rewarded')
+  ) {
     //
     // Store validator stash address and era index
     //
@@ -612,72 +757,84 @@ export const processEvent = async (
     let sql;
     let data = [];
 
-    const payoutStakersExtrinsic = IndexedBlockExtrinsics
-      .find(([extrinsicIndex, { method: { section, method } }]) => (
-        phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
-        && section === 'staking'
-        && method === 'payoutStakers'
-      ));
+    const payoutStakersExtrinsic = IndexedBlockExtrinsics.find(
+      ([
+        extrinsicIndex,
+        {
+          method: { section, method },
+        },
+      ]) =>
+        phase.asApplyExtrinsic.eq(extrinsicIndex) && // event phase
+        section === 'staking' &&
+        method === 'payoutStakers',
+    );
 
     if (payoutStakersExtrinsic) {
       validator = payoutStakersExtrinsic[1].method.args[0];
       era = payoutStakersExtrinsic[1].method.args[1];
     } else {
-
       // TODO: support era/validator extraction for staking.payoutValidator and staking.payoutNominator
 
       //
       // staking.payoutStakers extrinsic included in a utility.batch or utility.batchAll extrinsic
       //
-      const utilityBatchExtrinsicIndexes = IndexedBlockExtrinsics
-        .filter(([extrinsicIndex, extrinsic]) => (
-          phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
-          && extrinsic.method.section === 'utility'
-          && (extrinsic.method.method === 'batch' || extrinsic.method.method === 'batchAll')
-        ))
-        .map(([index]) => index);
+      const utilityBatchExtrinsicIndexes = IndexedBlockExtrinsics.filter(
+        ([extrinsicIndex, extrinsic]) =>
+          phase.asApplyExtrinsic.eq(extrinsicIndex) && // event phase
+          extrinsic.method.section === 'utility' &&
+          (extrinsic.method.method === 'batch' ||
+            extrinsic.method.method === 'batchAll'),
+      ).map(([index]) => index);
 
       if (utilityBatchExtrinsicIndexes.length > 0) {
         // We know that utility.batch has some staking.payoutStakers extrinsic
-        // Then we need to do a lookup of the previous staking.payoutStarted 
+        // Then we need to do a lookup of the previous staking.payoutStarted
         // event to get validator and era
-        const payoutStartedEvents = IndexedBlockEvents.filter(([, record]) => (
-          record.phase.isApplyExtrinsic
-          && utilityBatchExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to utility.batch extrinsic
-          && record.event.section === 'staking'
-          && record.event.method === 'PayoutStarted'
-        )).reverse();
+        const payoutStartedEvents = IndexedBlockEvents.filter(
+          ([, record]) =>
+            record.phase.isApplyExtrinsic &&
+            utilityBatchExtrinsicIndexes.includes(
+              record.phase.asApplyExtrinsic.toNumber(),
+            ) && // events should be related to utility.batch extrinsic
+            record.event.section === 'staking' &&
+            record.event.method === 'PayoutStarted',
+        ).reverse();
         if (payoutStartedEvents) {
-          const payoutStartedEvent = payoutStartedEvents.find(([index]) => index < eventIndex);
+          const payoutStartedEvent = payoutStartedEvents.find(
+            ([index]) => index < eventIndex,
+          );
           if (payoutStartedEvent) {
             [era, validator] = payoutStartedEvent[1].event.data;
           }
         }
       } else {
-
         //
         // staking.payoutStakers extrinsic included in a proxy.proxy extrinsic
         //
-        const proxyProxyExtrinsicIndexes = IndexedBlockExtrinsics
-          .filter(([extrinsicIndex, extrinsic]) => (
-            phase.asApplyExtrinsic.eq(extrinsicIndex) // event phase
-            && extrinsic.method.section === 'proxy'
-            && extrinsic.method.method === 'proxy'
-          ))
-          .map(([index]) => index);
+        const proxyProxyExtrinsicIndexes = IndexedBlockExtrinsics.filter(
+          ([extrinsicIndex, extrinsic]) =>
+            phase.asApplyExtrinsic.eq(extrinsicIndex) && // event phase
+            extrinsic.method.section === 'proxy' &&
+            extrinsic.method.method === 'proxy',
+        ).map(([index]) => index);
 
         if (proxyProxyExtrinsicIndexes.length > 0) {
           // We know that proxy.proxy has some staking.payoutStakers extrinsic
-          // Then we need to do a lookup of the previous staking.payoutStarted 
+          // Then we need to do a lookup of the previous staking.payoutStarted
           // event to get validator and era
-          const payoutStartedEvents = IndexedBlockEvents.filter(([, record]) => (
-            record.phase.isApplyExtrinsic
-            && proxyProxyExtrinsicIndexes.includes(record.phase.asApplyExtrinsic.toNumber()) // events should be related to proxy.proxy extrinsic
-            && record.event.section === 'staking'
-            && record.event.method === 'PayoutStarted'
-          )).reverse();
+          const payoutStartedEvents = IndexedBlockEvents.filter(
+            ([, record]) =>
+              record.phase.isApplyExtrinsic &&
+              proxyProxyExtrinsicIndexes.includes(
+                record.phase.asApplyExtrinsic.toNumber(),
+              ) && // events should be related to proxy.proxy extrinsic
+              record.event.section === 'staking' &&
+              record.event.method === 'PayoutStarted',
+          ).reverse();
           if (payoutStartedEvents) {
-            const payoutStartedEvent = payoutStartedEvents.find(([index]) => index < eventIndex);
+            const payoutStartedEvent = payoutStartedEvents.find(
+              ([index]) => index < eventIndex,
+            );
             if (payoutStartedEvent) {
               [era, validator] = payoutStartedEvent[1].event.data;
             }
@@ -743,15 +900,20 @@ export const processEvent = async (
     }
     try {
       await client.query(sql, data);
-      logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+      logger.debug(
+        loggerOptions,
+        `Added staking reward #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`,
+      );
     } catch (error) {
-      logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+      logger.error(
+        loggerOptions,
+        `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`,
+      );
       const scope = new Sentry.Scope();
       scope.setTag('blockNumber', blockNumber);
       Sentry.captureException(error, scope);
     }
   }
-
 
   //
   // TODO: store validator and era index
@@ -760,7 +922,10 @@ export const processEvent = async (
   //
 
   // Store validator staking slash
-  if (event.section === 'staking' && (event.method === 'Slash' || event.method === 'Slashed')) {
+  if (
+    event.section === 'staking' &&
+    (event.method === 'Slash' || event.method === 'Slashed')
+  ) {
     const data = [
       blockNumber,
       eventIndex,
@@ -792,16 +957,28 @@ export const processEvent = async (
     ;`;
     try {
       await client.query(sql, data);
-      logger.debug(loggerOptions, `Added validator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+      logger.debug(
+        loggerOptions,
+        `Added validator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`,
+      );
     } catch (error) {
-      logger.error(loggerOptions, `Error adding validator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+      logger.error(
+        loggerOptions,
+        `Error adding validator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`,
+      );
       Sentry.captureException(error);
     }
   }
 
   // Store nominator staking slash
-  if (event.section === 'balances' && (event.method === 'Slash' || event.method === 'Slashed')) {
-    const validatorStashAddress = getSlashedValidatorAccount(eventIndex, IndexedBlockEvents);
+  if (
+    event.section === 'balances' &&
+    (event.method === 'Slash' || event.method === 'Slashed')
+  ) {
+    const validatorStashAddress = getSlashedValidatorAccount(
+      eventIndex,
+      IndexedBlockEvents,
+    );
     const data = [
       blockNumber,
       eventIndex,
@@ -833,9 +1010,15 @@ export const processEvent = async (
     ;`;
     try {
       await client.query(sql, data);
-      logger.debug(loggerOptions, `Added nominator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+      logger.debug(
+        loggerOptions,
+        `Added nominator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`,
+      );
     } catch (error) {
-      logger.error(loggerOptions, `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+      logger.error(
+        loggerOptions,
+        `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`,
+      );
       const scope = new Sentry.Scope();
       scope.setTag('blockNumber', blockNumber);
       Sentry.captureException(error, scope);
@@ -853,35 +1036,55 @@ export const processEvents = async (
   loggerOptions: LoggerOptions,
 ): Promise<void> => {
   const startTime = new Date().getTime();
-  const IndexedBlockEvents: IndexedBlockEvent[] = blockEvents.map((event, index) => ([index, event]));
-  const IndexedBlockExtrinsics: IndexedBlockExtrinsic[] = blockExtrinsics.map((extrinsic, index) => ([index, extrinsic]));
+  const IndexedBlockEvents: IndexedBlockEvent[] = blockEvents.map(
+    (event, index) => [index, event],
+  );
+  const IndexedBlockExtrinsics: IndexedBlockExtrinsic[] = blockExtrinsics.map(
+    (extrinsic, index) => [index, extrinsic],
+  );
   const chunks = chunker(IndexedBlockEvents, chunkSize);
   for (const chunk of chunks) {
     await Promise.all(
-      chunk.map((indexedEvent: IndexedBlockEvent) => processEvent(
-        client, blockNumber, activeEra, indexedEvent, IndexedBlockEvents, IndexedBlockExtrinsics, timestamp, loggerOptions,
-      )),
+      chunk.map((indexedEvent: IndexedBlockEvent) =>
+        processEvent(
+          client,
+          blockNumber,
+          activeEra,
+          indexedEvent,
+          IndexedBlockEvents,
+          IndexedBlockExtrinsics,
+          timestamp,
+          loggerOptions,
+        ),
+      ),
     );
   }
   // Log execution time
   const endTime = new Date().getTime();
-  logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+  logger.debug(
+    loggerOptions,
+    `Added ${blockEvents.length} events in ${(
+      (endTime - startTime) /
+      1000
+    ).toFixed(3)}s`,
+  );
 };
 
-export const processLog = async (client: Client, blockNumber: number, log: any, index: number, timestamp: number, loggerOptions: LoggerOptions): Promise<void> => {
+export const processLog = async (
+  client: Client,
+  blockNumber: number,
+  log: any,
+  index: number,
+  timestamp: number,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const { type } = log;
   // this can change in the future...
-  const [[engine, logData]] = type === 'RuntimeEnvironmentUpdated'
-    ? [[null, null]]
-    : Object.values(log.toHuman());
-  const data = [
-    blockNumber,
-    index,
-    type,
-    engine,
-    logData,
-    timestamp,
-  ];
+  const [[engine, logData]] =
+    type === 'RuntimeEnvironmentUpdated'
+      ? [[null, null]]
+      : Object.values(log.toHuman());
+  const data = [blockNumber, index, type, engine, logData, timestamp];
   const sql = `INSERT INTO log (
       block_number,
       log_index,
@@ -904,38 +1107,56 @@ export const processLog = async (client: Client, blockNumber: number, log: any, 
     await client.query(sql, data);
     logger.debug(loggerOptions, `Added log ${blockNumber}-${index}`);
   } catch (error) {
-    logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`,
+    );
     const scope = new Sentry.Scope();
     scope.setTag('blockNumber', blockNumber);
     Sentry.captureException(error, scope);
   }
 };
 
-export const processLogs = async (client: Client, blockNumber: number, logs: any[], timestamp: number, loggerOptions: LoggerOptions): Promise<void> => {
+export const processLogs = async (
+  client: Client,
+  blockNumber: number,
+  logs: any[],
+  timestamp: number,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const startTime = new Date().getTime();
   await Promise.all(
-    logs.map((log, index) => processLog(
-      client, blockNumber, log, index, timestamp, loggerOptions,
-    )),
+    logs.map((log, index) =>
+      processLog(client, blockNumber, log, index, timestamp, loggerOptions),
+    ),
   );
   // Log execution time
   const endTime = new Date().getTime();
-  logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+  logger.debug(
+    loggerOptions,
+    `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(
+      3,
+    )}s`,
+  );
 };
 
 export const getDisplayName = (identity: DeriveAccountRegistration): string => {
   if (
-    identity.displayParent
-    && identity.displayParent !== ''
-    && identity.display
-    && identity.display !== ''
+    identity.displayParent &&
+    identity.displayParent !== '' &&
+    identity.display &&
+    identity.display !== ''
   ) {
     return `${identity.displayParent} / ${identity.display}`;
   }
   return identity.display || '';
 };
 
-export const updateFinalized = async (client: Client, finalizedBlock: number, loggerOptions: LoggerOptions): Promise<void> => {
+export const updateFinalized = async (
+  client: Client,
+  finalizedBlock: number,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const sql = `
     UPDATE block SET finalized = true WHERE finalized = false AND block_number <= $1;
   `;
@@ -947,14 +1168,15 @@ export const updateFinalized = async (client: Client, finalizedBlock: number, lo
   }
 };
 
-export const logHarvestError = async (client: Client, blockNumber: number, error: any, loggerOptions: LoggerOptions): Promise<void> => {
+export const logHarvestError = async (
+  client: Client,
+  blockNumber: number,
+  error: any,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const timestamp = new Date().getTime();
   const errorString = error.toString().replace(/'/g, "''");
-  const data = [
-    blockNumber,
-    errorString,
-    timestamp,
-  ];
+  const data = [blockNumber, errorString, timestamp];
   const query = `
     INSERT INTO
       harvest_error (block_number, error, timestamp)
@@ -967,7 +1189,11 @@ export const logHarvestError = async (client: Client, blockNumber: number, error
   await dbParamQuery(client, query, data, loggerOptions);
 };
 
-export const healthCheck = async (config: CrawlerConfig, client: Client, loggerOptions: LoggerOptions): Promise<void> => {
+export const healthCheck = async (
+  config: CrawlerConfig,
+  client: Client,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const startTime = new Date().getTime();
   logger.info(loggerOptions, 'Starting health check');
   const query = `
@@ -986,11 +1212,23 @@ export const healthCheck = async (config: CrawlerConfig, client: Client, loggerO
     ;`;
   const res = await dbQuery(client, query, loggerOptions);
   for (const row of res.rows) {
-    logger.info(loggerOptions, `Health check failed for block #${row.block_number}, deleting block from block table!`);
-    await dbQuery(client, `DELETE FROM block WHERE block_number = '${row.block_number}';`, loggerOptions);
+    logger.info(
+      loggerOptions,
+      `Health check failed for block #${row.block_number}, deleting block from block table!`,
+    );
+    await dbQuery(
+      client,
+      `DELETE FROM block WHERE block_number = '${row.block_number}';`,
+      loggerOptions,
+    );
   }
   const endTime = new Date().getTime();
-  logger.debug(loggerOptions, `Health check finished in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+  logger.debug(
+    loggerOptions,
+    `Health check finished in ${((endTime - startTime) / 1000).toFixed(
+      config.statsPrecision,
+    )}s`,
+  );
 };
 
 export const storeMetadata = async (
@@ -1004,11 +1242,18 @@ export const storeMetadata = async (
 ): Promise<void> => {
   let metadata;
   try {
-    const response = await axios.get(`${backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`);
+    const response = await axios.get(
+      `${backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`,
+    );
     metadata = response.data;
     logger.debug(loggerOptions, `Got runtime metadata at ${blockHash}!`);
   } catch (error) {
-    logger.error(loggerOptions, `Error fetching runtime metadata at ${blockHash}: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `Error fetching runtime metadata at ${blockHash}: ${JSON.stringify(
+        error,
+      )}`,
+    );
     const scope = new Sentry.Scope();
     scope.setTag('blockNumber', blockNumber);
     Sentry.captureException(error, scope);
@@ -1047,7 +1292,13 @@ export const storeMetadata = async (
   await dbParamQuery(client, query, data, loggerOptions);
 };
 
-export const harvestBlock = async (config: CrawlerConfig, api: ApiPromise, client: Client, blockNumber: number, loggerOptions: LoggerOptions): Promise<void> => {
+export const harvestBlock = async (
+  config: CrawlerConfig,
+  api: ApiPromise,
+  client: Client,
+  blockNumber: number,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const startTime = new Date().getTime();
   try {
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
@@ -1069,21 +1320,27 @@ export const harvestBlock = async (config: CrawlerConfig, api: ApiPromise, clien
       api.derive.chain.getHeader(blockHash),
       apiAt.query.balances.totalIssuance(),
       api.rpc.state.getRuntimeVersion(blockHash),
-      apiAt.query.staking.activeEra()
+      apiAt.query.staking
+        .activeEra()
         .then((res: any) => (res.toJSON() ? res.toJSON().index : 0))
-        .catch((e) => { console.log(e); return 0; }),
-      apiAt.query.session.currentIndex()
-        .then((res) => (res || 0)),
+        .catch((e) => {
+          console.log(e);
+          return 0;
+        }),
+      apiAt.query.session.currentIndex().then((res) => res || 0),
       apiAt.query.electionProviderMultiPhase.currentPhase(),
       apiAt.query.timestamp.now(),
     ]);
 
     const blockAuthor = blockHeader.author || '';
-    const blockAuthorIdentity = await api.derive.accounts.info(blockHeader.author);
+    const blockAuthorIdentity = await api.derive.accounts.info(
+      blockHeader.author,
+    );
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
     // Get election status
-    const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
+    const isElection =
+      Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
 
     // Totals
     const totalEvents = blockEvents.length;
@@ -1148,26 +1405,44 @@ export const harvestBlock = async (config: CrawlerConfig, api: ApiPromise, clien
     try {
       await dbParamQuery(client, sql, data, loggerOptions);
       const endTime = new Date().getTime();
-      logger.debug(loggerOptions, `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+      logger.debug(
+        loggerOptions,
+        `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${(
+          (endTime - startTime) /
+          1000
+        ).toFixed(config.statsPrecision)}s`,
+      );
     } catch (error) {
-      logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
+      logger.error(
+        loggerOptions,
+        `Error adding block #${blockNumber}: ${error}`,
+      );
       const scope = new Sentry.Scope();
       scope.setTag('blockNumber', blockNumber);
       Sentry.captureException(error, scope);
     }
 
     // Runtime upgrade
-    const runtimeUpgrade = blockEvents
-      .find(({ event }) => apiAt.events.system.CodeUpdated.is(event));
+    const runtimeUpgrade = blockEvents.find(({ event }) =>
+      apiAt.events.system.CodeUpdated.is(event),
+    );
     if (runtimeUpgrade) {
       const specName = runtimeVersion.toJSON().specName;
       const specVersion = runtimeVersion.specVersion;
-      
+
       // TODO: enable again
       // see: https://github.com/polkadot-js/api/issues/4596
       // const metadata = await api.rpc.state.getMetadata(blockHash);
-      
-      await storeMetadata(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
+
+      await storeMetadata(
+        client,
+        blockNumber,
+        blockHash.toString(),
+        specName.toString(),
+        specVersion.toNumber(),
+        timestamp.toNumber(),
+        loggerOptions,
+      );
     }
 
     await Promise.all([
@@ -1202,7 +1477,6 @@ export const harvestBlock = async (config: CrawlerConfig, api: ApiPromise, clien
         loggerOptions,
       ),
     ]);
-
   } catch (error) {
     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
     await logHarvestError(client, blockNumber, error, loggerOptions);
@@ -1213,7 +1487,14 @@ export const harvestBlock = async (config: CrawlerConfig, api: ApiPromise, clien
 };
 
 // eslint-disable-next-line no-unused-vars
-export const harvestBlocksSeq = async (config: CrawlerConfig, api: ApiPromise, client: Client, startBlock: number, endBlock: number, loggerOptions: LoggerOptions): Promise<void> => {
+export const harvestBlocksSeq = async (
+  config: CrawlerConfig,
+  api: ApiPromise,
+  client: Client,
+  startBlock: number,
+  endBlock: number,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const reverseOrder = true;
   const blocks = reverseOrder
     ? reverseRange(startBlock, endBlock, 1)
@@ -1237,16 +1518,36 @@ export const harvestBlocksSeq = async (config: CrawlerConfig, api: ApiPromise, c
       maxTimeMs = blockProcessingTimeMs;
     }
     blockProcessingTimes.push(blockProcessingTimeMs);
-    avgTimeMs = blockProcessingTimes.reduce(
-      (sum, blockProcessingTime) => sum + blockProcessingTime, 0,
-    ) / blockProcessingTimes.length;
+    avgTimeMs =
+      blockProcessingTimes.reduce(
+        (sum, blockProcessingTime) => sum + blockProcessingTime,
+        0,
+      ) / blockProcessingTimes.length;
     const completed = ((blocks.indexOf(blockNumber) + 1) * 100) / blocks.length;
 
-    logger.info(loggerOptions, `Processed block #${blockNumber} ${blocks.indexOf(blockNumber) + 1}/${blocks.length} [${completed.toFixed(config.statsPrecision)}%] in ${((blockProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)}`);
+    logger.info(
+      loggerOptions,
+      `Processed block #${blockNumber} ${blocks.indexOf(blockNumber) + 1}/${
+        blocks.length
+      } [${completed.toFixed(config.statsPrecision)}%] in ${(
+        blockProcessingTimeMs / 1000
+      ).toFixed(config.statsPrecision)}s min/max/avg: ${(
+        minTimeMs / 1000
+      ).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(
+        config.statsPrecision,
+      )}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)}`,
+    );
   }
 };
 
-export const harvestBlocks = async (config: CrawlerConfig, api: ApiPromise, client: Client, startBlock: number, endBlock: number, loggerOptions: LoggerOptions): Promise<void> => {
+export const harvestBlocks = async (
+  config: CrawlerConfig,
+  api: ApiPromise,
+  client: Client,
+  startBlock: number,
+  endBlock: number,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const reverseOrder = true;
   const blocks = reverseOrder
     ? reverseRange(startBlock, endBlock, 1)
@@ -1264,8 +1565,8 @@ export const harvestBlocks = async (config: CrawlerConfig, api: ApiPromise, clie
   for (const chunk of chunks) {
     const chunkStartTime = Date.now();
     await Promise.all(
-      chunk.map(
-        (blockNumber: number) => harvestBlock(config, api, client, blockNumber, loggerOptions),
+      chunk.map((blockNumber: number) =>
+        harvestBlock(config, api, client, blockNumber, loggerOptions),
       ),
     );
     const chunkEndTime = new Date().getTime();
@@ -1279,33 +1580,53 @@ export const harvestBlocks = async (config: CrawlerConfig, api: ApiPromise, clie
       maxTimeMs = chunkProcessingTimeMs;
     }
     chunkProcessingTimes.push(chunkProcessingTimeMs);
-    avgTimeMs = chunkProcessingTimes.reduce(
-      (sum, chunkProcessingTime) => sum + chunkProcessingTime, 0,
-    ) / chunkProcessingTimes.length;
-    avgBlocksPerSecond = 1 / ((avgTimeMs / 1000) / config.chunkSize);
-    const currentBlocksPerSecond = 1 / ((chunkProcessingTimeMs / 1000) / config.chunkSize);
+    avgTimeMs =
+      chunkProcessingTimes.reduce(
+        (sum, chunkProcessingTime) => sum + chunkProcessingTime,
+        0,
+      ) / chunkProcessingTimes.length;
+    avgBlocksPerSecond = 1 / (avgTimeMs / 1000 / config.chunkSize);
+    const currentBlocksPerSecond =
+      1 / (chunkProcessingTimeMs / 1000 / config.chunkSize);
     const completed = ((chunks.indexOf(chunk) + 1) * 100) / chunks.length;
 
     logger.info(
       loggerOptions,
-      `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} [${completed.toFixed(config.statsPrecision)}%] `
-      + `in ${((chunkProcessingTimeMs) / 1000).toFixed(config.statsPrecision)}s `
-      + `min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(maxTimeMs / 1000).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(config.statsPrecision)} `
-      + `cur/avg bps: ${currentBlocksPerSecond.toFixed(config.statsPrecision)}/${avgBlocksPerSecond.toFixed(config.statsPrecision)}`,
+      `Processed chunk ${chunks.indexOf(chunk) + 1}/${
+        chunks.length
+      } [${completed.toFixed(config.statsPrecision)}%] ` +
+        `in ${(chunkProcessingTimeMs / 1000).toFixed(
+          config.statsPrecision,
+        )}s ` +
+        `min/max/avg: ${(minTimeMs / 1000).toFixed(config.statsPrecision)}/${(
+          maxTimeMs / 1000
+        ).toFixed(config.statsPrecision)}/${(avgTimeMs / 1000).toFixed(
+          config.statsPrecision,
+        )} ` +
+        `cur/avg bps: ${currentBlocksPerSecond.toFixed(
+          config.statsPrecision,
+        )}/${avgBlocksPerSecond.toFixed(config.statsPrecision)}`,
     );
   }
 };
 
-export const getAccountIdFromArgs = (account: any[]): string[] => account
-  .map(({ args }) => args)
-  .map(([e]) => e.toHuman());
+export const getAccountIdFromArgs = (account: any[]): string[] =>
+  account.map(({ args }) => args).map(([e]) => e.toHuman());
 
-export const fetchAccountIds = async (api: ApiPromise): Promise<any[]> => getAccountIdFromArgs(await api.query.system.account.keys());
+export const fetchAccountIds = async (api: ApiPromise): Promise<any[]> =>
+  getAccountIdFromArgs(await api.query.system.account.keys());
 
-export const processAccountsChunk = async (api: ApiPromise, client: Client, accountId: any, loggerOptions: LoggerOptions): Promise<void> => {
+export const processAccountsChunk = async (
+  api: ApiPromise,
+  client: Client,
+  accountId: any,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
   const [block, identity, balances] = await Promise.all([
-    api.rpc.chain.getBlock().then((result) => result.block.header.number.toNumber()),
+    api.rpc.chain
+      .getBlock()
+      .then((result) => result.block.header.number.toNumber()),
     api.derive.accounts.identity(accountId),
     api.derive.balances.all(accountId),
   ]);
@@ -1313,7 +1634,9 @@ export const processAccountsChunk = async (api: ApiPromise, client: Client, acco
   const freeBalance = balances.freeBalance.toString();
   const lockedBalance = balances.lockedBalance.toString();
   const identityDisplay = identity.display ? identity.display.toString() : '';
-  const identityDisplayParent = identity.displayParent ? identity.displayParent.toString() : '';
+  const identityDisplayParent = identity.displayParent
+    ? identity.displayParent.toString()
+    : '';
   const JSONIdentity = identity.display ? JSON.stringify(identity) : '';
   const JSONbalances = JSON.stringify(balances);
   const nonce = balances.accountNonce.toString();
@@ -1377,18 +1700,27 @@ export const processAccountsChunk = async (api: ApiPromise, client: Client, acco
 // staking
 //
 
-export const getThousandValidators = async (loggerOptions: LoggerOptions): Promise<any[]> => {
+export const getThousandValidators = async (
+  loggerOptions: LoggerOptions,
+): Promise<any[]> => {
   try {
     const response = await axios.get('https://kusama.w3f.community/candidates');
     return response.data;
   } catch (error) {
-    logger.error(loggerOptions, `Error fetching Thousand Validator Program stats: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `Error fetching Thousand Validator Program stats: ${JSON.stringify(
+        error,
+      )}`,
+    );
     Sentry.captureException(error);
     return [];
   }
 };
 
-export const isVerifiedIdentity = (identity: DeriveAccountRegistration): boolean => {
+export const isVerifiedIdentity = (
+  identity: DeriveAccountRegistration,
+): boolean => {
   if (identity.judgements.length === 0) {
     return false;
   }
@@ -1399,52 +1731,66 @@ export const isVerifiedIdentity = (identity: DeriveAccountRegistration): boolean
 
 export const getName = (identity: DeriveAccountRegistration): string => {
   if (
-    identity.displayParent
-    && identity.displayParent !== ''
-    && identity.display
-    && identity.display !== ''
+    identity.displayParent &&
+    identity.displayParent !== '' &&
+    identity.display &&
+    identity.display !== ''
   ) {
     return `${identity.displayParent}/${identity.display}`;
   }
   return identity.display || '';
 };
 
-export const getClusterName = (identity: DeriveAccountRegistration): string => identity.displayParent || '';
+export const getClusterName = (identity: DeriveAccountRegistration): string =>
+  identity.displayParent || '';
 
 export const subIdentity = (identity: DeriveAccountRegistration): boolean => {
   if (
-    identity.displayParent
-    && identity.displayParent !== ''
-    && identity.display
-    && identity.display !== ''
+    identity.displayParent &&
+    identity.displayParent !== '' &&
+    identity.display &&
+    identity.display !== ''
   ) {
     return true;
   }
   return false;
 };
 
-export const getIdentityRating = (name: string, verifiedIdentity: boolean, hasAllFields: boolean): number => {
+export const getIdentityRating = (
+  name: string,
+  verifiedIdentity: boolean,
+  hasAllFields: boolean,
+): number => {
   if (verifiedIdentity && hasAllFields) {
     return 3;
-  } if (verifiedIdentity && !hasAllFields) {
+  }
+  if (verifiedIdentity && !hasAllFields) {
     return 2;
-  } if (name !== '') {
+  }
+  if (name !== '') {
     return 1;
   }
   return 0;
 };
 
-export const parseIdentity = (identity: DeriveAccountRegistration): IdentityInfo => {
+export const parseIdentity = (
+  identity: DeriveAccountRegistration,
+): IdentityInfo => {
   const verifiedIdentity = isVerifiedIdentity(identity);
   const hasSubIdentity = subIdentity(identity);
   const name = getName(identity);
-  const hasAllFields = identity?.display !== undefined
-    && identity?.legal !== undefined
-    && identity?.web !== undefined
-    && identity?.email !== undefined
-    && identity?.twitter !== undefined
-    && identity?.riot !== undefined;
-  const identityRating = getIdentityRating(name, verifiedIdentity, hasAllFields);
+  const hasAllFields =
+    identity?.display !== undefined &&
+    identity?.legal !== undefined &&
+    identity?.web !== undefined &&
+    identity?.email !== undefined &&
+    identity?.twitter !== undefined &&
+    identity?.riot !== undefined;
+  const identityRating = getIdentityRating(
+    name,
+    verifiedIdentity,
+    hasAllFields,
+  );
   return {
     verifiedIdentity,
     hasSubIdentity,
@@ -1453,7 +1799,10 @@ export const parseIdentity = (identity: DeriveAccountRegistration): IdentityInfo
   };
 };
 
-export const getCommissionHistory = (accountId: string | number, erasPreferences: any[]): CommisionHistoryItem[] => {
+export const getCommissionHistory = (
+  accountId: string | number,
+  erasPreferences: any[],
+): CommisionHistoryItem[] => {
   const commissionHistory: any = [];
   erasPreferences.forEach(({ era, validators }) => {
     if (validators[accountId]) {
@@ -1471,15 +1820,18 @@ export const getCommissionHistory = (accountId: string | number, erasPreferences
   return commissionHistory;
 };
 
-export const getCommissionRating = (commission: number, commissionHistory: any[]): number => {
+export const getCommissionRating = (
+  commission: number,
+  commissionHistory: any[],
+): number => {
   if (commission !== 100 && commission !== 0) {
     if (commission > 10) {
       return 1;
     }
     if (commission >= 5) {
       if (
-        commissionHistory.length > 1
-        && commissionHistory[0] > commissionHistory[commissionHistory.length - 1]
+        commissionHistory.length > 1 &&
+        commissionHistory[0] > commissionHistory[commissionHistory.length - 1]
       ) {
         return 3;
       }
@@ -1492,27 +1844,39 @@ export const getCommissionRating = (commission: number, commissionHistory: any[]
   return 0;
 };
 
-export const getPayoutRating = (config: CrawlerConfig, payoutHistory: any[]): number => {
-  const pendingEras = payoutHistory.filter((era) => era.status === 'pending').length;
+export const getPayoutRating = (
+  config: CrawlerConfig,
+  payoutHistory: any[],
+): number => {
+  const pendingEras = payoutHistory.filter(
+    (era) => era.status === 'pending',
+  ).length;
   if (pendingEras <= config.erasPerDay) {
     return 3;
-  } if (pendingEras <= 3 * config.erasPerDay) {
+  }
+  if (pendingEras <= 3 * config.erasPerDay) {
     return 2;
-  } if (pendingEras < 7 * config.erasPerDay) {
+  }
+  if (pendingEras < 7 * config.erasPerDay) {
     return 1;
   }
   return 0;
 };
 
-export const getClusterInfo = (hasSubIdentity: boolean, validators: any[], validatorIdentity: DeriveAccountRegistration): ClusterInfo => {
+export const getClusterInfo = (
+  hasSubIdentity: boolean,
+  validators: any[],
+  validatorIdentity: DeriveAccountRegistration,
+): ClusterInfo => {
   if (!hasSubIdentity) {
     // string detection
     // samples: DISC-SOFT-01, BINANCE_KSM_9, SNZclient-1
     if (validatorIdentity.display) {
       const stringSize = 6;
       const clusterMembers = validators.filter(
-        ({ identity }) => (identity.display || '').substring(0, stringSize)
-          === validatorIdentity.display.substring(0, stringSize),
+        ({ identity }) =>
+          (identity.display || '').substring(0, stringSize) ===
+          validatorIdentity.display.substring(0, stringSize),
       ).length;
       const clusterName = validatorIdentity.display
         .replace(/\d{1,2}$/g, '')
@@ -1530,7 +1894,8 @@ export const getClusterInfo = (hasSubIdentity: boolean, validators: any[], valid
   }
 
   const clusterMembers = validators.filter(
-    ({ identity }) => identity.displayParent === validatorIdentity.displayParent,
+    ({ identity }) =>
+      identity.displayParent === validatorIdentity.displayParent,
   ).length;
   const clusterName = getClusterName(validatorIdentity);
   return {
@@ -1546,17 +1911,28 @@ export const getClusterInfo = (hasSubIdentity: boolean, validators: any[], valid
 // - at least 20 KSM own stake
 // - no previously featured
 //
-export const addNewFeaturedValidator = async (config: CrawlerConfig, client: Client, ranking: any[], loggerOptions: LoggerOptions): Promise<void> => {
+export const addNewFeaturedValidator = async (
+  config: CrawlerConfig,
+  client: Client,
+  ranking: any[],
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   // get previously featured
   const alreadyFeatured: any = [];
   const sql = 'SELECT stash_address, timestamp FROM featured';
   const res = await dbQuery(client, sql, loggerOptions);
-  res.rows.forEach((validator) => alreadyFeatured.push(validator.stash_address));
+  res.rows.forEach((validator) =>
+    alreadyFeatured.push(validator.stash_address),
+  );
   // get candidates that meet the rules
   const featuredCandidates = ranking
-    .filter((validator) => validator.commission <= 10
-      && validator.selfStake.div(10 ** config.tokenDecimals).gte(20)
-      && !validator.active && !alreadyFeatured.includes(validator.stashAddress))
+    .filter(
+      (validator) =>
+        validator.commission <= 10 &&
+        validator.selfStake.div(10 ** config.tokenDecimals).gte(20) &&
+        !validator.active &&
+        !alreadyFeatured.includes(validator.stashAddress),
+    )
     .map(({ rank }) => rank);
   // get random featured validator of the week
   const shuffled = [...featuredCandidates].sort(() => 0.5 - Math.random());
@@ -1564,13 +1940,24 @@ export const addNewFeaturedValidator = async (config: CrawlerConfig, client: Cli
   const featured = ranking.find((validator) => validator.rank === randomRank);
   await dbQuery(
     client,
-    `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`,
+    `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${
+      featured.stashAddress
+    }', '${featured.name}', '${new Date().getTime()}')`,
     loggerOptions,
   );
-  logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
+  logger.debug(
+    loggerOptions,
+    `New featured validator added: ${featured.name} ${featured.stashAddress}`,
+  );
 };
 
-export const insertRankingValidator = async (client: Client, validator: any, blockHeight: number, startTime: number, loggerOptions: LoggerOptions): Promise<void> => {
+export const insertRankingValidator = async (
+  client: Client,
+  validator: any,
+  blockHeight: number,
+  startTime: number,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const sql = `INSERT INTO ranking (
       block_height,
       rank,
@@ -1728,7 +2115,12 @@ export const insertRankingValidator = async (client: Client, validator: any, blo
   await dbParamQuery(client, sql, data, loggerOptions);
 };
 
-export const insertEraValidatorStats = async (client: Client, validator: any, activeEra: any, loggerOptions: LoggerOptions): Promise<void> => {
+export const insertEraValidatorStats = async (
+  client: Client,
+  validator: any,
+  activeEra: any,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   let sql = `INSERT INTO era_vrc_score (
       stash_address,
       era,
@@ -1740,11 +2132,7 @@ export const insertEraValidatorStats = async (client: Client, validator: any, ac
     )
     ON CONFLICT ON CONSTRAINT era_vrc_score_pkey 
     DO NOTHING;`;
-  let data = [
-    validator.stashAddress,
-    activeEra,
-    validator.totalRating,
-  ];
+  let data = [validator.stashAddress, activeEra, validator.totalRating];
   await dbParamQuery(client, sql, data, loggerOptions);
   for (const commissionHistoryItem of validator.commissionHistory) {
     if (commissionHistoryItem.commission) {
@@ -1768,7 +2156,10 @@ export const insertEraValidatorStats = async (client: Client, validator: any, ac
     }
   }
   for (const perfHistoryItem of validator.relativePerformanceHistory) {
-    if (perfHistoryItem.relativePerformance && perfHistoryItem.relativePerformance > 0) {
+    if (
+      perfHistoryItem.relativePerformance &&
+      perfHistoryItem.relativePerformance > 0
+    ) {
       sql = `INSERT INTO era_relative_performance (
           stash_address,
           era,
@@ -1832,9 +2223,19 @@ export const insertEraValidatorStats = async (client: Client, validator: any, ac
   }
 };
 
-export const getAddressCreation = async (client: Client, address: string, loggerOptions: LoggerOptions): Promise<number> => {
-  const query = "SELECT block_number FROM event WHERE method = 'NewAccount' AND data LIKE $1";
-  const res = await dbParamQuery(client, query, [`%${address}%`], loggerOptions);
+export const getAddressCreation = async (
+  client: Client,
+  address: string,
+  loggerOptions: LoggerOptions,
+): Promise<number> => {
+  const query =
+    "SELECT block_number FROM event WHERE method = 'NewAccount' AND data LIKE $1";
+  const res = await dbParamQuery(
+    client,
+    query,
+    [`%${address}%`],
+    loggerOptions,
+  );
   if (res) {
     if (res.rows.length > 0) {
       if (res.rows[0].block_number) {
@@ -1846,7 +2247,10 @@ export const getAddressCreation = async (client: Client, address: string, logger
   return 0;
 };
 
-export const getLastEraInDb = async (client: Client, loggerOptions: LoggerOptions): Promise<string> => {
+export const getLastEraInDb = async (
+  client: Client,
+  loggerOptions: LoggerOptions,
+): Promise<string> => {
   // TODO: check also:
   // era_points_avg, era_relative_performance_avg, era_self_stake_avg
   const query = 'SELECT era FROM era_commission_avg ORDER BY era DESC LIMIT 1';
@@ -1861,45 +2265,48 @@ export const getLastEraInDb = async (client: Client, loggerOptions: LoggerOption
   return '0';
 };
 
-export const insertEraValidatorStatsAvg = async (client: Client, eraIndex: EraIndex, loggerOptions: LoggerOptions): Promise<void> => {
+export const insertEraValidatorStatsAvg = async (
+  client: Client,
+  eraIndex: EraIndex,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
   const era = new BigNumber(eraIndex.toString()).toString(10);
   let data = [era];
-  let sql = 'SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = $1 AND commission != 100';
+  let sql =
+    'SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = $1 AND commission != 100';
   let res = await dbParamQuery(client, sql, data, loggerOptions);
   if (res.rows.length > 0) {
     if (res.rows[0].commission_avg) {
-      data = [
-        era,
-        res.rows[0].commission_avg,
-      ];
-      sql = 'INSERT INTO era_commission_avg (era, commission_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;';
+      data = [era, res.rows[0].commission_avg];
+      sql =
+        'INSERT INTO era_commission_avg (era, commission_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;';
       await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
-  sql = 'SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = $1';
+  sql =
+    'SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = $1';
   data = [era];
   res = await dbParamQuery(client, sql, data, loggerOptions);
   if (res.rows.length > 0) {
     if (res.rows[0].self_stake_avg) {
-      const selfStakeAvg = res.rows[0].self_stake_avg.toString(10).split('.')[0];
-      data = [
-        era,
-        selfStakeAvg,
-      ];
-      sql = 'INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;';
+      const selfStakeAvg = res.rows[0].self_stake_avg
+        .toString(10)
+        .split('.')[0];
+      data = [era, selfStakeAvg];
+      sql =
+        'INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;';
       await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
-  sql = 'SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = $1';
+  sql =
+    'SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = $1';
   data = [era];
   res = await dbParamQuery(client, sql, data, loggerOptions);
   if (res.rows.length > 0) {
     if (res.rows[0].relative_performance_avg) {
-      data = [
-        era,
-        res.rows[0].relative_performance_avg,
-      ];
-      sql = 'INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;';
+      data = [era, res.rows[0].relative_performance_avg];
+      sql =
+        'INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;';
       await dbParamQuery(client, sql, data, loggerOptions);
     }
   }
@@ -1908,11 +2315,9 @@ export const insertEraValidatorStatsAvg = async (client: Client, eraIndex: EraIn
   res = await dbParamQuery(client, sql, data, loggerOptions);
   if (res.rows.length > 0) {
     if (res.rows[0].points_avg) {
-      data = [
-        era,
-        res.rows[0].points_avg,
-      ];
-      sql = 'INSERT INTO era_points_avg (era, points_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;';
+      data = [era, res.rows[0].points_avg];
+      sql =
+        'INSERT INTO era_points_avg (era, points_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;';
       await dbParamQuery(client, sql, data, loggerOptions);
     }
   }

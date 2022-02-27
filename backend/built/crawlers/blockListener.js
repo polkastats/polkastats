@@ -60,11 +60,14 @@ const crawler = async () => {
             const apiAt = await api.at(blockHash);
             // Parallelize
             const [activeEra, currentIndex, { block }, extendedHeader, runtimeVersion, finalizedBlockHash, totalIssuance, timestamp,] = await Promise.all([
-                apiAt.query.staking.activeEra()
+                apiAt.query.staking
+                    .activeEra()
                     .then((res) => (res.toJSON() ? res.toJSON().index : 0))
-                    .catch((e) => { console.log(e); return 0; }),
-                apiAt.query.session.currentIndex()
-                    .then((res) => (res || 0)),
+                    .catch((e) => {
+                    console.log(e);
+                    return 0;
+                }),
+                apiAt.query.session.currentIndex().then((res) => res || 0),
                 api.rpc.chain.getBlock(blockHash),
                 api.derive.chain.getHeader(blockHash),
                 api.rpc.state.getRuntimeVersion(blockHash),
@@ -95,7 +98,7 @@ const crawler = async () => {
             }
             else {
                 const blockAuthor = extendedHeader.author || '';
-                const [blockAuthorIdentity, blockEvents, chainElectionStatus,] = await Promise.all([
+                const [blockAuthorIdentity, blockEvents, chainElectionStatus] = await Promise.all([
                     api.derive.accounts.info(blockAuthor),
                     apiAt.query.system.events(),
                     api.query.electionProviderMultiPhase.currentPhase(),

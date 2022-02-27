@@ -35,7 +35,10 @@ const { chunkSize } = config;
 
 const crawler = async (delayedStart: boolean) => {
   if (delayedStart && config.startDelay) {
-    logger.debug(loggerOptions, `Delaying active accounts crawler start for ${config.startDelay / 1000}s`);
+    logger.debug(
+      loggerOptions,
+      `Delaying active accounts crawler start for ${config.startDelay / 1000}s`,
+    );
     await wait(config.startDelay);
   }
 
@@ -59,34 +62,52 @@ const crawler = async (delayedStart: boolean) => {
   for (const chunk of chunks) {
     const chunkStartTime = Date.now();
     await Promise.all(
-      chunk.map(
-        (accountId: any) => processAccountsChunk(api, client, accountId, loggerOptions),
+      chunk.map((accountId: any) =>
+        processAccountsChunk(api, client, accountId, loggerOptions),
       ),
     );
     const chunkEndTime = new Date().getTime();
-    logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) / 1000).toFixed(3)}s`);
+    logger.info(
+      loggerOptions,
+      `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${(
+        (chunkEndTime - chunkStartTime) /
+        1000
+      ).toFixed(3)}s`,
+    );
   }
 
   logger.debug(loggerOptions, 'Disconnecting from API');
   await api.disconnect().catch((error) => {
-    logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `API disconnect error: ${JSON.stringify(error)}`,
+    );
     Sentry.captureException(error);
   });
 
   logger.debug(loggerOptions, 'Disconnecting from DB');
   await client.end().catch((error) => {
-    logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`);
+    logger.error(
+      loggerOptions,
+      `DB disconnect error: ${JSON.stringify(error)}`,
+    );
     Sentry.captureException(error);
   });
 
   const endTime = new Date().getTime();
-  logger.info(loggerOptions, `Processed ${accountIds.length} active accounts in ${((endTime - startTime) / 1000).toFixed(0)}s`);
-
-  logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
-  setTimeout(
-    () => crawler(false),
-    config.pollingTime,
+  logger.info(
+    loggerOptions,
+    `Processed ${accountIds.length} active accounts in ${(
+      (endTime - startTime) /
+      1000
+    ).toFixed(0)}s`,
   );
+
+  logger.info(
+    loggerOptions,
+    `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`,
+  );
+  setTimeout(() => crawler(false), config.pollingTime);
 };
 
 crawler(true).catch((error) => {

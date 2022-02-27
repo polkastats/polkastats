@@ -9,6 +9,7 @@
     "start": "node built/index.js",
     "tsc": "tsc",
     "lint": "npx eslint . --ext .js,.ts",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
     "docker:kusama": "docker-compose -p backend -f docker/docker-compose-kusama.yml up -d",
     "docker:polkadot": "docker-compose -p backend -f docker/docker-compose-polkadot.yml up -d",
     "docker:build:kusama": "docker-compose -p backend -f docker/docker-compose-kusama.yml build --no-cache",
