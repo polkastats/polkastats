@@ -384,7 +384,10 @@ const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents,
         : JSON.parse(args)[0].address20;
     let amount;
     if (method === 'transferAll' && success) {
-        amount = (0, exports.getTransferAllAmount)(blockNumber, extrinsicIndex, blockEvents);
+        // Equal source and destination addres doesn't trigger a balances.Transfer event
+        amount = source === destination
+            ? 0
+            : (0, exports.getTransferAllAmount)(blockNumber, extrinsicIndex, blockEvents);
     }
     else if (method === 'transferAll' && !success) {
         // We can't get amount in this case cause no event is emitted
@@ -849,7 +852,6 @@ const logHarvestError = async (client, blockNumber, error, loggerOptions) => {
     await (0, exports.dbParamQuery)(client, query, data, loggerOptions);
 };
 exports.logHarvestError = logHarvestError;
-// This can fail with same source and destionation addres (doesn't make sense but...)
 const getTransferAllAmount = (blockNumber, index, blockEvents) => {
     try {
         return blockEvents

@@ -435,7 +435,10 @@ export const processTransfer = async (
 
   let amount;
   if (method === 'transferAll' && success) {
-    amount = getTransferAllAmount(blockNumber, extrinsicIndex, blockEvents);
+    // Equal source and destination addres doesn't trigger a balances.Transfer event
+    amount = source === destination
+      ? 0
+      : getTransferAllAmount(blockNumber, extrinsicIndex, blockEvents);
   } else if (method === 'transferAll' && !success) {
     // We can't get amount in this case cause no event is emitted
     amount = 0;
@@ -939,7 +942,6 @@ export const logHarvestError = async (client: Client, blockNumber: number, error
   await dbParamQuery(client, query, data, loggerOptions);
 };
 
-// This can fail with same source and destionation addres (doesn't make sense but...)
 export const getTransferAllAmount = (blockNumber: number, index: number, blockEvents: Vec<EventRecord>): string => {
   try {
     return blockEvents
@@ -957,7 +959,6 @@ export const getTransferAllAmount = (blockNumber: number, index: number, blockEv
     return '0';
   }
 }
-
 
 export const getSlashedValidatorAccount = (index: number, indexedBlockEvents: indexedBlockEvent[]): string => {
   let validatorAccountId = '';
