@@ -258,7 +258,7 @@ export const processExtrinsic = async (
   const method = extrinsic.method.method;
   const args = JSON.stringify(extrinsic.args);
   const hash = extrinsic.hash.toHex();
-  const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
+  const doc = JSON.stringify(extrinsic.meta.docs.toJSON());
   // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
   const [success, errorMessage] = getExtrinsicSuccessOrErrorMessage(apiAt, extrinsicIndex, blockEvents);
   let feeInfo = '';
