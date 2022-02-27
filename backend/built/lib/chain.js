@@ -865,9 +865,6 @@ const getTransferAllAmount = (blockNumber, index, blockEvents) => {
         scope.setTag('blockNumber', blockNumber);
         Sentry.captureException(error, scope);
     }
-    finally {
-        return '0';
-    }
 };
 exports.getTransferAllAmount = getTransferAllAmount;
 const getSlashedValidatorAccount = (index, indexedBlockEvents) => {

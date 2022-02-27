@@ -956,8 +956,6 @@ export const getTransferAllAmount = (blockNumber: number, index: number, blockEv
     const scope = new Sentry.Scope();
     scope.setTag('blockNumber', blockNumber);
     Sentry.captureException(error, scope);
-  } finally {
-    return '0';
   }
 }
 
