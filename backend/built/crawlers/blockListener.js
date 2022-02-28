@@ -18,31 +18,31 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
+const db_1 = require("../lib/db");
 const chain_1 = require("../lib/chain");
+const block_1 = require("../lib/block");
+const extrinsic_1 = require("../lib/extrinsic");
+const event_1 = require("../lib/event");
+const log_1 = require("../lib/log");
+const account_1 = require("../lib/account");
 const utils_1 = require("../lib/utils");
-const pino_1 = __importDefault(require("pino"));
 const backend_config_1 = require("../backend.config");
+const logger_1 = require("../lib/logger");
 const crawlerName = 'blockListener';
 Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
-});
-const logger = (0, pino_1.default)({
-    level: backend_config_1.backendConfig.logLevel,
 });
 const loggerOptions = {
     crawler: crawlerName,
 };
 const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
 const crawler = async () => {
-    logger.info(loggerOptions, 'Starting block listener crawler...');
-    const client = await (0, chain_1.getClient)(loggerOptions);
+    logger_1.logger.info(loggerOptions, 'Starting block listener crawler...');
+    const client = await (0, db_1.getClient)(loggerOptions);
     const api = await (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
     let synced = await (0, chain_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
@@ -79,22 +79,22 @@ const crawler = async () => {
             if (iteration === 1) {
                 const specName = runtimeVersion.toJSON().specName;
                 const specVersion = runtimeVersion.specVersion;
-                await (0, chain_1.storeMetadata)(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
+                await (0, block_1.storeMetadata)(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
             }
             const finalizedBlockHeader = await api.rpc.chain.getHeader(finalizedBlockHash);
             const finalizedBlock = finalizedBlockHeader.number.toNumber();
             const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
             // Handle chain reorganizations
             let sql = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
-            let res = await (0, chain_1.dbQuery)(client, sql, loggerOptions);
+            let res = await (0, db_1.dbQuery)(client, sql, loggerOptions);
             if (res && res.rows.length > 0) {
                 // Chain reorganization detected! We need to update block_author, block_hash and state_root
-                logger.debug(loggerOptions, `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
+                logger_1.logger.debug(loggerOptions, `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
                 const blockAuthor = extendedHeader.author;
                 const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
-                const blockAuthorName = (0, chain_1.getDisplayName)(blockAuthorIdentity.identity);
+                const blockAuthorName = (0, block_1.getDisplayName)(blockAuthorIdentity.identity);
                 sql = `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
-                res = await (0, chain_1.dbQuery)(client, sql, loggerOptions);
+                res = await (0, db_1.dbQuery)(client, sql, loggerOptions);
             }
             else {
                 const blockAuthor = extendedHeader.author || '';
@@ -103,7 +103,7 @@ const crawler = async () => {
                     apiAt.query.system.events(),
                     api.query.electionProviderMultiPhase.currentPhase(),
                 ]);
-                const blockAuthorName = (0, chain_1.getDisplayName)(blockAuthorIdentity.identity);
+                const blockAuthorName = (0, block_1.getDisplayName)(blockAuthorIdentity.identity);
                 // Get election status
                 const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
                 // Totals
@@ -149,39 +149,39 @@ const crawler = async () => {
           DO NOTHING
           ;`;
                 try {
-                    await (0, chain_1.dbQuery)(client, sql, loggerOptions);
+                    await (0, db_1.dbQuery)(client, sql, loggerOptions);
                 }
                 catch (error) {
-                    logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
+                    logger_1.logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}, sql: ${sql}`);
                     const scope = new Sentry.Scope();
                     scope.setTag('blockNumber', blockNumber);
                     Sentry.captureException(error, scope);
                 }
                 await Promise.all([
                     // Store block extrinsics
-                    (0, chain_1.processExtrinsics)(api, apiAt, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
+                    (0, extrinsic_1.processExtrinsics)(api, apiAt, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
                     // Get involved addresses from block events and update its balances
-                    (0, chain_1.updateAccountsInfo)(api, client, blockNumber, timestamp.toNumber(), loggerOptions, blockEvents),
+                    (0, account_1.updateAccountsInfo)(api, client, blockNumber, timestamp.toNumber(), loggerOptions, blockEvents),
                     // Store module events
-                    (0, chain_1.processEvents)(client, blockNumber, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
+                    (0, event_1.processEvents)(client, blockNumber, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
                     // Store block logs
-                    (0, chain_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
+                    (0, log_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
                 ]);
                 // Update finalized blocks
-                await (0, chain_1.updateFinalized)(client, finalizedBlock, loggerOptions);
+                await (0, block_1.updateFinalized)(client, finalizedBlock, loggerOptions);
                 const endTime = new Date().getTime();
-                logger.info(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+                logger_1.logger.info(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
             }
         }
         catch (error) {
-            logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
-            await (0, chain_1.logHarvestError)(client, blockNumber, error, loggerOptions);
+            logger_1.logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
+            await (0, block_1.logHarvestError)(client, blockNumber, error, loggerOptions);
             Sentry.captureException(error);
         }
     });
 };
 crawler().catch((error) => {
-    logger.error(loggerOptions, `Crawler error: ${error}`);
+    logger_1.logger.error(loggerOptions, `Crawler error: ${error}`);
     Sentry.captureException(error);
     process.exit(-1);
 });

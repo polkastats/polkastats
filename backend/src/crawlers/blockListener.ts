@@ -1,33 +1,27 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
+import { dbQuery, getClient } from '../lib/db';
+import { getPolkadotAPI, isNodeSynced } from '../lib/chain';
 import {
-  dbQuery,
-  getClient,
-  getPolkadotAPI,
-  isNodeSynced,
-  processExtrinsics,
-  processEvents,
-  processLogs,
   getDisplayName,
   updateFinalized,
-  updateAccountsInfo,
   logHarvestError,
   storeMetadata,
-} from '../lib/chain';
+} from '../lib/block';
+import { processExtrinsics } from '../lib/extrinsic';
+import { processEvents } from '../lib/event';
+import { processLogs } from '../lib/log';
+import { updateAccountsInfo } from '../lib/account';
 import { wait, shortHash } from '../lib/utils';
-import pino from 'pino';
 import { backendConfig } from '../backend.config';
 import { CrawlerConfig } from '../lib/types';
+import { logger } from '../lib/logger';
 
 const crawlerName = 'blockListener';
 
 Sentry.init({
   dsn: backendConfig.sentryDSN,
   tracesSampleRate: 1.0,
-});
-
-const logger = pino({
-  level: backendConfig.logLevel,
 });
 
 const loggerOptions = {

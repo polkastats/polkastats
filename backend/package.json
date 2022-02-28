@@ -21,8 +21,6 @@
   },
   "dependencies": {
     "@polkadot/api": "^7.9.1",
-    "@polkadot/keyring": "^8.4.1",
-    "@polkadot/util": "^8.4.1",
     "@polkadot/util-crypto": "^8.4.1",
     "@sentry/node": "^6.17.9",
     "@sentry/tracing": "^6.17.9",

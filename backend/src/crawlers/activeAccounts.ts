@@ -1,26 +1,18 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import {
-  getClient,
-  getPolkadotAPI,
-  isNodeSynced,
-  fetchAccountIds,
-  processAccountsChunk,
-} from '../lib/chain';
+import { getClient } from '../lib/db';
+import { getPolkadotAPI, isNodeSynced } from '../lib/chain';
+import { fetchAccountIds, processAccountsChunk } from '../lib/account';
 import { chunker, wait } from '../lib/utils';
-import pino from 'pino';
 import { backendConfig } from '../backend.config';
 import { CrawlerConfig } from '../lib/types';
+import { logger } from '../lib/logger';
 
 const crawlerName = 'activeAccounts';
 
 Sentry.init({
   dsn: backendConfig.sentryDSN,
   tracesSampleRate: 1.0,
-});
-
-const logger = pino({
-  level: backendConfig.logLevel,
 });
 
 const loggerOptions = {

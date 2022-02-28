@@ -1,18 +1,12 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
-import {
-  getClient,
-  dbQuery,
-  getPolkadotAPI,
-  isNodeSynced,
-  healthCheck,
-  harvestBlocks,
-  harvestBlocksSeq,
-} from '../lib/chain';
+import { getClient, dbQuery } from '../lib/db';
+import { getPolkadotAPI, isNodeSynced } from '../lib/chain';
+import { healthCheck, harvestBlocks, harvestBlocksSeq } from '../lib/block';
 import { wait } from '../lib/utils';
-import pino from 'pino';
 import { backendConfig } from '../backend.config';
 import { CrawlerConfig } from '../lib/types';
+import { logger } from '../lib/logger';
 
 const crawlerName = 'blockHarvester';
 
@@ -21,9 +15,6 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-const logger = pino({
-  level: backendConfig.logLevel,
-});
 const loggerOptions = {
   crawler: crawlerName,
 };

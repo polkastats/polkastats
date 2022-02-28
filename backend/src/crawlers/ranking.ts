@@ -1,10 +1,8 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
+import { getClient, dbQuery } from '../lib/db';
+import { getPolkadotAPI, isNodeSynced } from '../lib/chain';
 import {
-  getClient,
-  getPolkadotAPI,
-  isNodeSynced,
-  dbQuery,
   getLastEraInDb,
   getThousandValidators,
   getAddressCreation,
@@ -17,22 +15,18 @@ import {
   insertEraValidatorStatsAvg,
   insertRankingValidator,
   addNewFeaturedValidator,
-} from '../lib/chain';
+} from '../lib/staking';
 import { wait, getRandom } from '../lib/utils';
 import { BigNumber } from 'bignumber.js';
-import pino from 'pino';
 import { backendConfig } from '../backend.config';
 import { CrawlerConfig } from '../lib/types';
+import { logger } from '../lib/logger';
 
 const crawlerName = 'ranking';
 
 Sentry.init({
   dsn: backendConfig.sentryDSN,
   tracesSampleRate: 1.0,
-});
-
-const logger = pino({
-  level: backendConfig.logLevel,
 });
 
 const loggerOptions = {

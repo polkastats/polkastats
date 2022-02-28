@@ -18,23 +18,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
+const db_1 = require("../lib/db");
 const chain_1 = require("../lib/chain");
+const block_1 = require("../lib/block");
 const utils_1 = require("../lib/utils");
-const pino_1 = __importDefault(require("pino"));
 const backend_config_1 = require("../backend.config");
+const logger_1 = require("../lib/logger");
 const crawlerName = 'blockHarvester';
 Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
-});
-const logger = (0, pino_1.default)({
-    level: backend_config_1.backendConfig.logLevel,
 });
 const loggerOptions = {
     crawler: crawlerName,
@@ -42,14 +38,14 @@ const loggerOptions = {
 const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
 const crawler = async (delayedStart) => {
     if (delayedStart) {
-        logger.info(loggerOptions, `Delaying block harvester crawler start for ${config.startDelay / 1000}s`);
+        logger_1.logger.info(loggerOptions, `Delaying block harvester crawler start for ${config.startDelay / 1000}s`);
         await (0, utils_1.wait)(config.startDelay);
     }
-    logger.info(loggerOptions, 'Starting block harvester...');
+    logger_1.logger.info(loggerOptions, 'Starting block harvester...');
     const startTime = new Date().getTime();
-    const client = await (0, chain_1.getClient)(loggerOptions);
+    const client = await (0, db_1.getClient)(loggerOptions);
     // Delete blocks that don't have all its events or extrinsics in db
-    await (0, chain_1.healthCheck)(config, client, loggerOptions);
+    await (0, block_1.healthCheck)(config, client, loggerOptions);
     const api = await (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
     let synced = await (0, chain_1.isNodeSynced)(api, loggerOptions);
     while (!synced) {
@@ -81,36 +77,36 @@ const crawler = async (delayedStart) => {
   )
   ORDER BY gap_start DESC
   `;
-    const res = await (0, chain_1.dbQuery)(client, sqlSelect, loggerOptions);
+    const res = await (0, db_1.dbQuery)(client, sqlSelect, loggerOptions);
     for (const row of res.rows) {
         if (!(row.gap_start === 0 && row.gap_end === 0)) {
-            logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
+            logger_1.logger.info(loggerOptions, `Detected gap! Harvesting blocks from #${row.gap_end} to #${row.gap_start}`);
             if (config.mode === 'chunks') {
-                await (0, chain_1.harvestBlocks)(config, api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10), loggerOptions);
+                await (0, block_1.harvestBlocks)(config, api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10), loggerOptions);
             }
             else {
-                await (0, chain_1.harvestBlocksSeq)(config, api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10), loggerOptions);
+                await (0, block_1.harvestBlocksSeq)(config, api, client, parseInt(row.gap_start, 10), parseInt(row.gap_end, 10), loggerOptions);
             }
         }
     }
-    logger.debug(loggerOptions, 'Disconnecting from API');
+    logger_1.logger.debug(loggerOptions, 'Disconnecting from API');
     await api.disconnect().catch((error) => {
-        logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`);
+        logger_1.logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
     });
-    logger.debug(loggerOptions, 'Disconnecting from DB');
+    logger_1.logger.debug(loggerOptions, 'Disconnecting from DB');
     await client.end().catch((error) => {
-        logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`);
+        logger_1.logger.error(loggerOptions, `DB disconnect error: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
     });
     // Log execution time
     const endTime = new Date().getTime();
-    logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
-    logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
+    logger_1.logger.info(loggerOptions, `Executed in ${((endTime - startTime) / 1000).toFixed(0)}s`);
+    logger_1.logger.info(loggerOptions, `Next execution in ${(config.pollingTime / 60000).toFixed(0)}m...`);
     setTimeout(() => crawler(false), config.pollingTime);
 };
 crawler(true).catch((error) => {
-    logger.error(loggerOptions, `Crawler error: ${error}`);
+    logger_1.logger.error(loggerOptions, `Crawler error: ${error}`);
     Sentry.captureException(error);
     process.exit(-1);
 });
