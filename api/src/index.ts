@@ -1,14 +1,13 @@
 // @ts-check
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const crypto = require('crypto');
-const fetch = require('node-fetch');
-const { Pool, Client } = require('pg');
-const axios = require('axios');
-const moment = require('moment');
-const { ApiPromise, WsProvider } = require('@polkadot/api');
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import morgan from 'morgan';
+import fetch from 'node-fetch';
+import { Client } from 'pg';
+import moment from 'moment';
+import '@polkadot/api-augment';
+import { ApiPromise, WsProvider } from '@polkadot/api';
 
 const postgresConnParams = {
   user: process.env.POSTGRES_USER || 'polkastats',
@@ -25,38 +24,37 @@ const app = express();
 // middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-const getClient = async () => {
+const getClient = async (): Promise<Client> => {
   const client = new Client(postgresConnParams);
   await client.connect();
   return client;
-}
+};
 
-const getPolkadotAPI = async () => {
+const getPolkadotAPI = async (): Promise<ApiPromise> => {
   console.log(`Connecting to ${wsProviderUrl}`);
   const provider = new WsProvider(wsProviderUrl);
   const api = await ApiPromise.create({ provider });
   await api.isReady;
   return api;
-}
+};
 
 // from https://stackoverflow.com/questions/60504945/javascript-encode-decode-utf8-to-hex-and-hex-to-utf8
-const hexToUtf8 = (s) =>
-{
+const hexToUtf8 = (s: string) => {
   return decodeURIComponent(
-     s.replace(/\s+/g, '') // remove spaces
-      .replace(/[0-9a-f]{2}/g, '%$&') // add '%' before each 2 characters
+    s
+      .replace(/\s+/g, '') // remove spaces
+      .replace(/[0-9a-f]{2}/g, '%$&'), // add '%' before each 2 characters
   );
-}
+};
 
 //
 // Example query: /api/v1/block?page[size]=5
 //
-app.get('/api/v1/block', async (req, res) => {
+app.get('/api/v1/block', async (req: any, res) => {
   try {
-    // @ts-ignore
     const pageSize = req.query.page.size;
     const client = await getClient();
     const query = `
@@ -71,14 +69,14 @@ app.get('/api/v1/block', async (req, res) => {
     ;`;
     const dbres = await client.query(query, [pageSize]);
     if (dbres.rows.length > 0) {
-      const data = dbres.rows.map(row => {
+      const data = dbres.rows.map((row) => {
         return {
           attributes: {
             id: parseInt(row.block_number),
             hash: row.block_hash,
             datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
-          }
-        }
+          },
+        };
       });
       res.send({
         status: true,
@@ -88,14 +86,14 @@ app.get('/api/v1/block', async (req, res) => {
     } else {
       res.send({
         status: false,
-        message: 'There was an error processing your request'
+        message: 'There was an error processing your request',
       });
     }
     await client.end();
   } catch (error) {
     res.send({
       status: false,
-      message: 'There was an error processing your request'
+      message: 'There was an error processing your request',
     });
   }
 });
@@ -105,15 +103,17 @@ app.get('/api/v1/block', async (req, res) => {
 //
 // Get sytem.remarks extrinsics in the last 8 hours
 //
-app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
+app.get('/api/v1/batsignal/system.remarks', async (_req, res) => {
   try {
-
     const api = await getPolkadotAPI();
     const councilMembers = await api.query.council.members();
-    const technicalCommitteeMembers = await api.query.technicalCommittee.members();
+    const technicalCommitteeMembers =
+      await api.query.technicalCommittee.members();
     await api.disconnect();
-    const councilAndTCAddresses = JSON.parse(JSON.stringify(councilMembers.concat(technicalCommitteeMembers)));
-    const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
+    const councilAndTCAddresses = JSON.parse(
+      JSON.stringify(councilMembers.concat(technicalCommitteeMembers)),
+    );
+    const timestamp = Math.floor(Date.now() / 1000 - 28800); // last 8h
     const client = await getClient();
     const query = `
       SELECT
@@ -133,15 +133,17 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     ;`;
     const dbres = await client.query(query, [timestamp, councilAndTCAddresses]);
     if (dbres.rows.length > 0) {
-      const data = dbres.rows.map(row => {
+      const data = dbres.rows.map((row) => {
         const remarkMessage = hexToUtf8(JSON.parse(row.args)[0]);
         return {
           block_number: parseInt(row.block_number),
           extrinsic_hash: row.hash,
           signer: row.signer,
-          remark: remarkMessage.startsWith('0x') ? remarkMessage.substring(2) : remarkMessage,
+          remark: remarkMessage.startsWith('0x')
+            ? remarkMessage.substring(2)
+            : remarkMessage,
           datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
-        }
+        };
       });
       res.send({
         status: true,
@@ -157,10 +159,10 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
     }
     await client.end();
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.send({
       status: false,
-      message: 'There was an error processing your request'
+      message: 'There was an error processing your request',
     });
   }
 });
@@ -170,15 +172,15 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
 //
 // Get council.Proposed events in the last 8 hours
 //
-// Proposed(AccountId, ProposalIndex, Hash, MemberCount)# 
-// interface: api.events.council.Proposed.is 
+// Proposed(AccountId, ProposalIndex, Hash, MemberCount)#
+// interface: api.events.council.Proposed.is
 // summary: A motion (given hash) has been proposed (by given account) with a threshold (given MemberCount). [account, proposal_index, proposal_hash, threshold]
 //
 
-app.get('/api/v1/batsignal/council-events', async (req, res) => {
+app.get('/api/v1/batsignal/council-events', async (_req, res) => {
   try {
     // const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
-    const timestamp = Math.floor((Date.now() / 1000) - 30 * 24 * 60 * 60); // last 30d
+    const timestamp = Math.floor(Date.now() / 1000 - 30 * 24 * 60 * 60); // last 30d
     const client = await getClient();
     const query = `
       SELECT
@@ -198,11 +200,11 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
     if (dbres.rows.length > 0) {
       const data = [];
       for (const row of dbres.rows) {
-        const proposal_id = JSON.parse(row.data)[1];
+        const proposalId = JSON.parse(row.data)[1];
 
         const graphQlQuery = `
           query {
-            posts(where: {onchain_link: {onchain_motion_id: {_eq: ${proposal_id}}}}) {
+            posts(where: {onchain_link: {onchain_motion_id: {_eq: ${proposalId}}}}) {
               title
               content
               onchain_link {
@@ -211,18 +213,18 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
               }
             }
           }`;
-        let title = ''
-        let content = ''
+        let title = '';
+        let content = '';
         try {
           // @ts-ignore
           const response = await fetch(polkassemblyGraphQL, {
             method: 'POST',
-            body: JSON.stringify({query: graphQlQuery}),
+            body: JSON.stringify({ query: graphQlQuery }),
           });
           const body = await response.text();
           title = JSON.parse(body).data.posts[0].title;
           content = JSON.parse(body).data.posts[0].content;
-        } catch(error) {
+        } catch (error) {
           console.error(error);
         }
 
@@ -231,10 +233,10 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
           section: row.section,
           method: row.method,
           data: row.data,
-          proposal_id,
+          proposal_id: proposalId,
           title,
           content,
-          polkassembly_link: `https://kusama.polkassembly.io/motion/${proposal_id}`,
+          polkassembly_link: `https://kusama.polkassembly.io/motion/${proposalId}`,
           timestamp: row.timestamp,
           datetime: moment.unix(row.timestamp).format(), // 2021-08-06T13:53:18+00:00
         });
@@ -255,13 +257,12 @@ app.get('/api/v1/batsignal/council-events', async (req, res) => {
   } catch (error) {
     res.send({
       status: false,
-      message: 'There was an error processing your request'
+      message: 'There was an error processing your request',
     });
   }
 });
 
-
 // Start app
-app.listen(port, () => 
-  console.log(`PolkaStats API is listening on port ${port}.`)
+app.listen(port, () =>
+  console.log(`PolkaStats API is listening on port ${port}.`),
 );
