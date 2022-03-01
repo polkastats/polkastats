@@ -160,6 +160,7 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
     const section = extrinsic.method.section;
     const method = extrinsic.method.method;
     const args = JSON.stringify(extrinsic.args);
+    const argsDef = JSON.stringify(extrinsic.argsDef);
     const hash = extrinsic.hash.toHex();
     const doc = JSON.stringify(extrinsic.meta.docs.toJSON());
     // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
@@ -188,6 +189,7 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
         section,
         method,
         args,
+        argsDef,
         hash,
         doc,
         feeInfo,
@@ -204,6 +206,7 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
       section,
       method,
       args,
+      args_def,
       hash,
       doc,
       fee_info,
@@ -225,7 +228,8 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
       $11,
       $12,
       $13,
-      $14
+      $14,
+      $15
     )
     ON CONFLICT ON CONSTRAINT extrinsic_pkey 
     DO NOTHING;
@@ -248,6 +252,7 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
             section,
             method,
             args,
+            argsDef,
             hash,
             doc,
             feeInfo,
@@ -264,6 +269,7 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
       section,
       method,
       args,
+      args_def,
       hash,
       doc,
       fee_info,
@@ -284,7 +290,8 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
       $10,
       $11,
       $12,
-      $13
+      $13,
+      $14
     )
     ON CONFLICT ON CONSTRAINT signed_extrinsic_pkey 
     DO NOTHING;
