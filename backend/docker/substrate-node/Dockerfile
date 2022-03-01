@@ -1,4 +1,4 @@
-FROM phusion/baseimage:hirsute
+FROM phusion/baseimage:impish
 ARG POLKADOT_VERSION
 LABEL maintainer "@mariopino"
 LABEL description="Parity Polkadot client"
