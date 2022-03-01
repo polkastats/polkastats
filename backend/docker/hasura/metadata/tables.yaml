@@ -208,6 +208,8 @@
       - section
       - method
       - phase
+      - types
+      - doc
       - data
       - timestamp
       filter: {}

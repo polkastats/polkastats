@@ -69,8 +69,8 @@ export const processEvent = async (
     section,
     method,
     phase,
-    doc,
     types,
+    doc,
     data,
     timestamp
   ) VALUES (
