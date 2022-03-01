@@ -186,18 +186,6 @@
                   </template>
                   <Activities :account-id="accountId" />
                 </b-tab>
-                <!-- <b-tab>
-                  <template #title>
-                    <h5>Sent transfers</h5>
-                  </template>
-                  <SentTransfers :account-id="accountId" />
-                </b-tab>
-                <b-tab>
-                  <template #title>
-                    <h5>Received transfers</h5>
-                  </template>
-                  <ReceivedTransfers :account-id="accountId" />
-                </b-tab> -->
                 <b-tab>
                   <template #title>
                     <h5>Transfers</h5>
@@ -235,8 +223,6 @@ import { gql } from 'graphql-tag'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import Activities from '@/components/Activities.vue'
-// import SentTransfers from '@/components/SentTransfers.vue'
-// import ReceivedTransfers from '@/components/ReceivedTransfers.vue'
 import AccountTransfers from '@/components/AccountTransfers.vue'
 import StakingRewards from '@/components/StakingRewards.vue'
 import StakingSlashes from '@/components/StakingSlashes.vue'
@@ -331,6 +317,36 @@ export default {
                   ? JSON.parse(data.account[0].identity)
                   : {},
               timestamp: data.account[0].timestamp,
+            }
+          } else if (this.isAddress(this.accountId)) {
+            this.parsedAccount = {
+              accountId: this.accountId,
+              availableBalance: '0',
+              freeBalance: '0',
+              lockedBalance: '0',
+              balances: {
+                accountId: this.accountId,
+                accountNonce: '0x00000000',
+                additional: [],
+                freeBalance: '0x00000000000000000000000000000000',
+                frozenFee: '0x00000000000000000000000000000000',
+                frozenMisc: '0x00000000000000000000000000000000',
+                reservedBalance: '0x00000000000000000000000000000000',
+                votingBalance: '0x00000000000000000000000000000000',
+                availableBalance: '0x00000000000000000000000000000000',
+                lockedBalance: '0x00000000000000000000000000000000',
+                lockedBreakdown: [],
+                vestingLocked: '0x00000000000000000000000000000000',
+                isVesting: false,
+                vestedBalance: '0x00000000000000000000000000000000',
+                vestedClaimable: '0x00000000000000000000000000000000',
+                vestingEndBlock: '0x00000000',
+                vestingPerBlock: '0x00000000000000000000000000000000',
+                vestingTotal: '0x00000000000000000000000000000000',
+              },
+              nonce: 0,
+              identity: {},
+              timestamp: null,
             }
           }
           this.loading = false
