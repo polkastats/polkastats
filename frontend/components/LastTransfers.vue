@@ -57,10 +57,10 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import { gql } from 'graphql-tag'
+import { network } from '../frontend.config'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
-import { network } from '../frontend.config'
 
 export default {
   components: {

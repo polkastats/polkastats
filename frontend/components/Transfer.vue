@@ -80,7 +80,7 @@
           <td>Fee</td>
           <td class="amount">
             <div v-if="transfer.fee_info">
-              {{ formatAmount(JSON.parse(transfer.fee_info).partialFee) }}
+              {{ formatAmount(JSON.parse(transfer.fee_info).partialFee, 6) }}
             </div>
           </td>
         </tr>
@@ -93,6 +93,12 @@
               class="text-success"
             />
             <font-awesome-icon v-else icon="times" class="text-danger" />
+          </td>
+        </tr>
+        <tr v-if="transfer.error_message">
+          <td>Error message</td>
+          <td>
+            {{ transfer.error_message }}
           </td>
         </tr>
       </tbody>

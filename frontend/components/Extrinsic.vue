@@ -104,7 +104,7 @@
           <td>Fee</td>
           <td class="amount">
             <div v-if="extrinsic.fee_info">
-              {{ formatAmount(JSON.parse(extrinsic.fee_info).partialFee) }}
+              {{ formatAmount(JSON.parse(extrinsic.fee_info).partialFee, 6) }}
             </div>
           </td>
         </tr>
@@ -117,6 +117,12 @@
               class="text-success"
             />
             <font-awesome-icon v-else icon="times" class="text-danger" />
+          </td>
+        </tr>
+        <tr v-if="extrinsic.error_message">
+          <td>Error message</td>
+          <td>
+            {{ extrinsic.error_message }}
           </td>
         </tr>
       </tbody>
