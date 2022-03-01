@@ -46,12 +46,16 @@ const getSlashedValidatorAccount = (index, IndexedBlockEvents) => {
 exports.getSlashedValidatorAccount = getSlashedValidatorAccount;
 const processEvent = async (client, blockNumber, activeEra, indexedEvent, IndexedBlockEvents, IndexedBlockExtrinsics, timestamp, loggerOptions) => {
     const [eventIndex, { event, phase }] = indexedEvent;
+    const doc = JSON.stringify(event.meta.docs.toJSON());
+    const types = JSON.stringify(event.typeDef);
     let data = [
         blockNumber,
         eventIndex,
         event.section,
         event.method,
         phase.toString(),
+        types,
+        doc,
         JSON.stringify(event.data),
         timestamp,
     ];
@@ -61,6 +65,8 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
     section,
     method,
     phase,
+    types,
+    doc,
     data,
     timestamp
   ) VALUES (
@@ -70,7 +76,9 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
     $4,
     $5,
     $6,
-    $7
+    $7,
+    $8,
+    $9
   )
   ON CONFLICT ON CONSTRAINT event_pkey 
   DO NOTHING
