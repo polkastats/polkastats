@@ -66,20 +66,17 @@ export default {
           ],
         },
       },
-      rewards: [],
       slashes: [],
-      sentTx: [],
-      receivedTx: [],
     }
   },
   computed: {
     chartData() {
       return {
-        labels: this.rewards.map(({ era }) => era),
+        labels: this.slashes.map(({ era }) => era),
         datasets: [
           {
-            labels: 'rewards',
-            data: this.rewards.map(({ amount }) =>
+            labels: 'slashes',
+            data: this.slashes.map(({ amount }) =>
               new BigNumber(amount)
                 .div(new BigNumber(10).pow(network.tokenDecimals))
                 .toNumber()
@@ -96,10 +93,10 @@ export default {
   },
   apollo: {
     $subscribe: {
-      rewards: {
+      slashes: {
         query: gql`
-          subscription staking_reward($accountId: String!) {
-            staking_reward(
+          subscription staking_slash($accountId: String!) {
+            staking_slash(
               order_by: { era: asc }
               where: { account_id: { _eq: $accountId } }
             ) {
@@ -118,11 +115,11 @@ export default {
           return !this.accountId
         },
         result({ data }) {
-          this.rewards = data.staking_reward.map((reward) => {
+          this.slashes = data.staking_slash.map((slash) => {
             return {
-              era: reward.era,
-              timestamp: reward.timestamp,
-              amount: reward.amount,
+              era: slash.era,
+              timestamp: slash.timestamp,
+              amount: slash.amount,
             }
           })
         },
