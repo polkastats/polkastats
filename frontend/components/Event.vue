@@ -36,6 +36,15 @@
           </td>
         </tr>
         <tr>
+          <td>Documentation</td>
+          <td>
+            <div
+              class="extrinsic-doc"
+              v-html="$md.render(JSON.parse(event.doc).join('\n'))"
+            ></div>
+          </td>
+        </tr>
+        <tr>
           <td>Phase</td>
           <td>
             {{ event.phase }}
@@ -46,6 +55,14 @@
           <td>
             <pre class="mb-0">{{
               JSON.stringify(JSON.parse(event.data), null, 2)
+            }}</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>Types</td>
+          <td>
+            <pre class="mb-0">{{
+              JSON.stringify(JSON.parse(event.types), null, 2)
             }}</pre>
           </td>
         </tr>
