@@ -46,7 +46,7 @@ services:
     # OS Type: linux
     # DB Type: web
     # Total Memory (RAM): 128 GB
-    # CPUs num: 12
+    # CPUs num: 32
     # Connections num: 200
     # Data Storage: ssd
 
@@ -77,11 +77,11 @@ services:
       - "-c"
       - "max_wal_size=4GB"
       - "-c"
-      - "max_worker_processes=12"
+      - "max_worker_processes=32"
       - "-c"
       - "max_parallel_workers_per_gather=4"
       - "-c"
-      - "max_parallel_workers=12"
+      - "max_parallel_workers=32"
       - "-c"
       - "max_parallel_maintenance_workers=4"
 
