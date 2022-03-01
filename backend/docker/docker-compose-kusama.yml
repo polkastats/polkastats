@@ -23,7 +23,7 @@ services:
   # SQL data base
   #
   postgres:
-    image: postgres:13
+    image: postgres:14
     restart: always
     shm_size: 1gb
     volumes:
@@ -84,6 +84,8 @@ services:
       - "max_parallel_workers=32"
       - "-c"
       - "max_parallel_maintenance_workers=4"
+      - "-c"
+      - "password=md5"
 
   #
   # Hasura
