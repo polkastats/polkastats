@@ -50,12 +50,16 @@ export const processEvent = async (
   loggerOptions: LoggerOptions,
 ): Promise<void> => {
   const [eventIndex, { event, phase }] = indexedEvent;
+  const doc = JSON.stringify(event.meta.docs.toJSON());
+  const types = JSON.stringify(event.typeDef);
   let data = [
     blockNumber,
     eventIndex,
     event.section,
     event.method,
     phase.toString(),
+    types,
+    doc,
     JSON.stringify(event.data),
     timestamp,
   ];
@@ -65,6 +69,8 @@ export const processEvent = async (
     section,
     method,
     phase,
+    doc,
+    types,
     data,
     timestamp
   ) VALUES (
@@ -74,7 +80,9 @@ export const processEvent = async (
     $4,
     $5,
     $6,
-    $7
+    $7,
+    $8,
+    $9
   )
   ON CONFLICT ON CONSTRAINT event_pkey 
   DO NOTHING

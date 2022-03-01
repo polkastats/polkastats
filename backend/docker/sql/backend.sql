@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS event (
   section TEXT NOT NULL,
   method TEXT NOT NULL,
   phase TEXT NOT NULL,
+  types TEXT NOT NULL,
+  doc TEXT NOT NULL,
   data TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, event_index ),
