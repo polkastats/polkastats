@@ -37,7 +37,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'balance over the last 30 days',
+          text: 'total issuance over the last 30 days',
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -71,14 +71,14 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'balance',
+                labelString: 'total issuance',
               },
             },
           ],
         },
       },
       loading: true,
-      balances: [],
+      totalIssuance: [],
       points: 30, // 1 point per day
       historySize: 10 * 1440 * 30, // 30 days
     }
@@ -86,35 +86,17 @@ export default {
   computed: {
     chartData() {
       return {
-        labels: this.balances.map(({ block }) => block),
+        labels: this.totalIssuance.map(({ block }) => block),
         datasets: [
           {
             labels: 'total',
-            data: this.balances.map(({ total }) => total),
+            data: this.totalIssuance.map(({ value }) => value),
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             borderColor: 'rgba(230, 0, 122, 0.8)',
             hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
             fill: false,
             showLine: true,
           },
-          // {
-          //   labels: 'free',
-          //   data: this.balances.map(({ free }) => free),
-          //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          //   borderColor: 'rgba(230, 0, 122, 0.8)',
-          //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-          //   fill: false,
-          //   showLine: true,
-          // },
-          // {
-          //   labels: 'reserved',
-          //   data: this.balances.map(({ reserved }) => reserved),
-          //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          //   borderColor: 'rgba(230, 0, 122, 0.8)',
-          //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-          //   fill: false,
-          //   showLine: true,
-          // },
         ],
       }
     },
@@ -127,16 +109,15 @@ export default {
     const lastSignedBlock = await api.rpc.chain.getBlock()
     const endBlock = lastSignedBlock.block.header.number
     const startBlock = endBlock - this.historySize
-    this.balances = await this.getBalanceInRange(
+    this.totalIssuance = await this.getTotalIssuanceInRange(
       api,
-      this.accountId,
       startBlock,
       endBlock
     )
     this.loading = false
   },
   methods: {
-    async getBalanceInRange(api, address, startBlock, endBlock) {
+    async getTotalIssuanceInRange(api, startBlock, endBlock) {
       const blockHashes = []
       // Calculate the step size given the range of blocks and the number of points we want
       const step = Math.floor((endBlock - startBlock) / this.points)
@@ -158,46 +139,41 @@ export default {
         }
         console.log('block hashes:', blockHashes)
 
-        const balancePromises = []
+        const totalIssuancePromises = []
 
         // Loop over the blocks, using the step value
         for (let i = startBlock + step; i <= endBlock; i = i + step) {
           // If we already have data about that block, skip it
-          if (!this.balances.find((x) => x.block === i)) {
+          if (!this.totalIssuance.find((x) => x.block === i)) {
             // Get the block hash
             const blockHash = blockHashes.find((x) => x.block === i).hash
             // Create a promise to query the balance for that block
-            const accountDataPromise = api.query.system.account.at(
-              blockHash,
-              address
-            )
+            const totalIssuancePromise =
+              api.query.balances.totalIssuance.at(blockHash)
             // Push data to a linear array of promises to run in parallel.
-            balancePromises.push(i, accountDataPromise)
+            totalIssuancePromises.push(i, totalIssuancePromise)
           }
         }
 
         // Call all promises in parallel for speed.
-        const balanceResults = await Promise.all(balancePromises)
+        const totalIssuanceResults = await Promise.all(totalIssuancePromises)
 
         // Restructure the data into an array of objects
         const balances = []
-        for (let i = 0; i < balanceResults.length; i = i + 2) {
-          const block = balanceResults[i]
-          const accountData = balanceResults[i + 1]
-          const free = this.formatBalance(accountData.data.free)
-          const reserved = this.formatBalance(accountData.data.reserved)
-          const total = free + reserved
+        for (let i = 0; i < totalIssuanceResults.length; i = i + 2) {
+          const block = totalIssuanceResults[i]
+          const totalIssuanceAtBlock = this.formatBalance(
+            totalIssuanceResults[i + 1].toString()
+          )
           balances.push({
             block,
-            free,
-            reserved,
-            total,
+            value: totalIssuanceAtBlock,
           })
         }
-        console.log('balances:', balances)
+        console.log('total issuance:', balances)
         return balances
       } catch (error) {
-        console.log('error fetching balances:', error)
+        console.log('error fetching total issuance:', error)
       }
     },
     formatBalance(balance) {
