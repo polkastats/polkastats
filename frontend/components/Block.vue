@@ -157,10 +157,10 @@
 </template>
 <script>
 import { gql } from 'graphql-tag'
-import commonMixin from '@/mixins/commonMixin.js'
 import BlockExtrinsics from './BlockExtrinsics.vue'
 import BlockEvents from './BlockEvents.vue'
 import BlockLogs from './BlockLogs.vue'
+import commonMixin from '@/mixins/commonMixin.js'
 export default {
   components: {
     BlockExtrinsics,

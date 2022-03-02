@@ -16,7 +16,7 @@
   </div>
 </template>
 <script>
-import Identicon from '@polkadot/vue-identicon'
+import { Identicon } from '@polkadot/vue-identicon'
 export default {
   components: {
     VueIdenticon: Identicon,

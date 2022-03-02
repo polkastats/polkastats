@@ -179,6 +179,7 @@
                   </tbody>
                 </table>
               </div>
+              <BalanceChart :account-id="accountId" />
               <b-tabs class="mt-4" content-class="mt-4" fill>
                 <b-tab active>
                   <template #title>
@@ -224,6 +225,7 @@ import StakingRewards from '@/components/StakingRewards.vue'
 import StakingSlashes from '@/components/StakingSlashes.vue'
 import StakingRewardsChart from '@/components/StakingRewardsChart.vue'
 import StakingSlashesChart from '@/components/StakingSlashesChart.vue'
+import BalanceChart from '@/components/BalanceChart.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { network } from '@/frontend.config.js'
 
@@ -237,6 +239,7 @@ export default {
     StakingSlashes,
     StakingRewardsChart,
     StakingSlashesChart,
+    BalanceChart,
   },
   mixins: [commonMixin],
   data() {

@@ -5,7 +5,7 @@ export const network = {
   tokenDecimals: 12,
   ss58Format: 2,
   coinGeckoDenom: 'kusama',
-  nodeWs: 'wss://kusama-rpc.polkadot.network',
+  nodeWs: 'wss://kusama-rpc.polkadot.io',
   backendWs: 'wss://dev.kusama.polkastats.io/graphql',
   backendHttp: 'https://dev.kusama.polkastats.io/graphql',
   // googleAnalytics: 'UA-172854168-1',
