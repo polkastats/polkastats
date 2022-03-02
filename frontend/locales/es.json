@@ -101,6 +101,8 @@
       "free_balance": "Fondo libre",
       "available_balance": "Fondo disponible",
       "locked_balance": "Fondo bloqueado",
+      "reserved_balance": "Fondo reservado",
+      "total_balance": "Fondo total",
       "remove_from_favorites": "Eliminar de Favoritos",
       "add_to_favorites": "Añadir a Favoritos",
       "identity": "Identidad",

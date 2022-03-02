@@ -101,6 +101,8 @@
       "free_balance": "Free Balance",
       "available_balance": "Available Balance",
       "locked_balance": "Locked Balance",
+      "reserved_balance": "Reserved Balance",
+      "total_balance": "Total Balance",
       "remove_from_favorites": "Remove from Favorites",
       "add_to_favorites": "Add to Favorites",
       "identity": "Identity",

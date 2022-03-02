@@ -136,6 +136,16 @@
                   {{ formatAmount(data.item.available_balance) }}
                 </p>
               </template>
+              <template #cell(reserved_balance)="data">
+                <p class="text-right mb-0">
+                  {{ formatAmount(data.item.reserved_balance) }}
+                </p>
+              </template>
+              <template #cell(total_balance)="data">
+                <p class="text-right mb-0">
+                  {{ formatAmount(data.item.total_balance) }}
+                </p>
+              </template>
               <template #cell(nonce)="data">
                 <p class="text-right mb-0">
                   {{ data.item.nonce }}
@@ -241,6 +251,18 @@ export default {
           class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
         {
+          key: 'reserved_balance',
+          label: this.$t('pages.accounts.reserved_balance'),
+          sortable: false,
+          class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
+        },
+        {
+          key: 'total_balance',
+          label: this.$t('pages.accounts.total_balance'),
+          sortable: false,
+          class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
+        },
+        {
           key: 'nonce',
           label: 'Nonce',
           sortable: false,
@@ -319,7 +341,7 @@ export default {
                   { identity_display_parent: { _ilike: $filter } }
                 ]
               }
-              order_by: { free_balance: desc }
+              order_by: { total_balance: desc }
             ) {
               account_id
               identity_display
@@ -327,6 +349,8 @@ export default {
               available_balance
               free_balance
               locked_balance
+              reserved_balance
+              total_balance
               nonce
             }
           }
