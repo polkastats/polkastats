@@ -49,6 +49,8 @@ const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
     const availableBalance = balances.availableBalance.toString();
     const freeBalance = balances.freeBalance.toString();
     const lockedBalance = balances.lockedBalance.toString();
+    const reservedBalance = balances.reservedBalance.toString();
+    const totalBalance = balances.freeBalance.add(balances.reservedBalance).toString();
     const identityDisplay = identity.display ? identity.display.toString() : '';
     const identityDisplayParent = identity.displayParent
         ? identity.displayParent.toString()
@@ -65,6 +67,8 @@ const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
         availableBalance,
         freeBalance,
         lockedBalance,
+        reservedBalance,
+        totalBalance,
         nonce,
         timestamp,
         block,
@@ -79,6 +83,8 @@ const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
       available_balance,
       free_balance,
       locked_balance,
+      reserved_balance,
+      total_balance,
       nonce,
       timestamp,
       block_height
@@ -93,7 +99,9 @@ const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
       $8,
       $9,
       $10,
-      $11
+      $11,
+      $12,
+      $13
     )
     ON CONFLICT (account_id)
     DO UPDATE SET
@@ -104,6 +112,8 @@ const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
       available_balance = EXCLUDED.available_balance,
       free_balance = EXCLUDED.free_balance,
       locked_balance = EXCLUDED.locked_balance,
+      reserved_balance = EXCLUDED.reserved_balance,
+      total_balance = EXCLUDED.total_balance,
       nonce = EXCLUDED.nonce,
       timestamp = EXCLUDED.timestamp,
       block_height = EXCLUDED.block_height
@@ -121,6 +131,8 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
     const availableBalance = balances.availableBalance.toString();
     const freeBalance = balances.freeBalance.toString();
     const lockedBalance = balances.lockedBalance.toString();
+    const reservedBalance = balances.reservedBalance.toString();
+    const totalBalance = balances.freeBalance.add(balances.reservedBalance).toString();
     const identityDisplay = identity.display ? identity.display.toString() : '';
     const identityDisplayParent = identity.displayParent
         ? identity.displayParent.toString()
@@ -137,6 +149,8 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
         availableBalance,
         freeBalance,
         lockedBalance,
+        reservedBalance,
+        totalBalance,
         nonce,
         timestamp,
         blockNumber,
@@ -151,6 +165,8 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
       available_balance,
       free_balance,
       locked_balance,
+      reserved_balance,
+      total_balance,
       nonce,
       timestamp,
       block_height
@@ -165,7 +181,9 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
       $8,
       $9,
       $10,
-      $11
+      $11,
+      $12,
+      $13
     )
     ON CONFLICT (account_id)
     DO UPDATE SET
@@ -176,6 +194,8 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
       available_balance = EXCLUDED.available_balance,
       free_balance = EXCLUDED.free_balance,
       locked_balance = EXCLUDED.locked_balance,
+      reserved_balance = EXCLUDED.reserved_balance,
+      total_balance = EXCLUDED.total_balance,
       nonce = EXCLUDED.nonce,
       timestamp = EXCLUDED.timestamp,
       block_height = EXCLUDED.block_height

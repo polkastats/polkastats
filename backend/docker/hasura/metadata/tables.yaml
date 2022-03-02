@@ -12,6 +12,8 @@
       - available_balance
       - balances
       - free_balance
+      - reserved_balance
+      - total_balance
       - identity
       - identity_display
       - identity_display_parent

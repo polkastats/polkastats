@@ -38,6 +38,8 @@ export const processAccountsChunk = async (
   const availableBalance = balances.availableBalance.toString();
   const freeBalance = balances.freeBalance.toString();
   const lockedBalance = balances.lockedBalance.toString();
+  const reservedBalance = balances.reservedBalance.toString();
+  const totalBalance = balances.freeBalance.add(balances.reservedBalance).toString();
   const identityDisplay = identity.display ? identity.display.toString() : '';
   const identityDisplayParent = identity.displayParent
     ? identity.displayParent.toString()
@@ -54,6 +56,8 @@ export const processAccountsChunk = async (
     availableBalance,
     freeBalance,
     lockedBalance,
+    reservedBalance,
+    totalBalance,
     nonce,
     timestamp,
     block,
@@ -68,6 +72,8 @@ export const processAccountsChunk = async (
       available_balance,
       free_balance,
       locked_balance,
+      reserved_balance,
+      total_balance,
       nonce,
       timestamp,
       block_height
@@ -82,7 +88,9 @@ export const processAccountsChunk = async (
       $8,
       $9,
       $10,
-      $11
+      $11,
+      $12,
+      $13
     )
     ON CONFLICT (account_id)
     DO UPDATE SET
@@ -93,6 +101,8 @@ export const processAccountsChunk = async (
       available_balance = EXCLUDED.available_balance,
       free_balance = EXCLUDED.free_balance,
       locked_balance = EXCLUDED.locked_balance,
+      reserved_balance = EXCLUDED.reserved_balance,
+      total_balance = EXCLUDED.total_balance,
       nonce = EXCLUDED.nonce,
       timestamp = EXCLUDED.timestamp,
       block_height = EXCLUDED.block_height
@@ -117,6 +127,8 @@ export const updateAccountInfo = async (
   const availableBalance = balances.availableBalance.toString();
   const freeBalance = balances.freeBalance.toString();
   const lockedBalance = balances.lockedBalance.toString();
+  const reservedBalance = balances.reservedBalance.toString();
+  const totalBalance = balances.freeBalance.add(balances.reservedBalance).toString();
   const identityDisplay = identity.display ? identity.display.toString() : '';
   const identityDisplayParent = identity.displayParent
     ? identity.displayParent.toString()
@@ -133,6 +145,8 @@ export const updateAccountInfo = async (
     availableBalance,
     freeBalance,
     lockedBalance,
+    reservedBalance,
+    totalBalance,
     nonce,
     timestamp,
     blockNumber,
@@ -147,6 +161,8 @@ export const updateAccountInfo = async (
       available_balance,
       free_balance,
       locked_balance,
+      reserved_balance,
+      total_balance,
       nonce,
       timestamp,
       block_height
@@ -161,7 +177,9 @@ export const updateAccountInfo = async (
       $8,
       $9,
       $10,
-      $11
+      $11,
+      $12,
+      $13
     )
     ON CONFLICT (account_id)
     DO UPDATE SET
@@ -172,6 +190,8 @@ export const updateAccountInfo = async (
       available_balance = EXCLUDED.available_balance,
       free_balance = EXCLUDED.free_balance,
       locked_balance = EXCLUDED.locked_balance,
+      reserved_balance = EXCLUDED.reserved_balance,
+      total_balance = EXCLUDED.total_balance,
       nonce = EXCLUDED.nonce,
       timestamp = EXCLUDED.timestamp,
       block_height = EXCLUDED.block_height

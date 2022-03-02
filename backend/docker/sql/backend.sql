@@ -273,6 +273,8 @@ CREATE TABLE IF NOT EXISTS account  (
   available_balance NUMERIC(40,0) NOT NULL,
   free_balance NUMERIC(40,0) NOT NULL,
   locked_balance NUMERIC(40,0) NOT NULL,
+  reserved_balance NUMERIC(40,0) NOT NULL,
+  total_balance NUMERIC(40,0) NOT NULL,
   nonce BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   block_height BIGINT NOT NULL,
