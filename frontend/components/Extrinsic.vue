@@ -18,7 +18,9 @@
           <td>Timestamp</td>
           <td>
             <p class="mb-0">
-              {{ getDateFromTimestamp(extrinsic.timestamp) }}
+              {{ getDateFromTimestamp(extrinsic.timestamp) }} ({{
+                fromNow(extrinsic.timestamp)
+              }})
             </p>
           </td>
         </tr>

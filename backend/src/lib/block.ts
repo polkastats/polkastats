@@ -504,12 +504,12 @@ export const updateFinalizedBlock = async (
     );
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
     const data = [
-      extendedHeader.author,
+      extendedHeader.author.toString(),
       blockAuthorName,
-      blockHash,
-      parentHash,
-      extrinsicsRoot,
-      stateRoot,
+      blockHash.toString(),
+      parentHash.toString(),
+      extrinsicsRoot.toString(),
+      stateRoot.toString(),
       blockNumber,
     ];
     const sql = `UPDATE

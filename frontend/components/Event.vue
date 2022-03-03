@@ -18,7 +18,9 @@
           <td>Timestamp</td>
           <td>
             <p class="mb-0">
-              {{ getDateFromTimestamp(event.timestamp) }}
+              {{ getDateFromTimestamp(event.timestamp) }} ({{
+                fromNow(event.timestamp)
+              }})
             </p>
           </td>
         </tr>
@@ -26,6 +28,20 @@
           <td>Event index</td>
           <td>
             {{ event.event_index }}
+          </td>
+        </tr>
+        <tr>
+          <td>Triggered by extrinsic</td>
+          <td>
+            <nuxt-link
+              :to="`/extrinsic/${event.block_number}/${
+                JSON.parse(event.phase).applyExtrinsic
+              }`"
+            >
+              #{{ formatNumber(event.block_number) }}-{{
+                JSON.parse(event.phase).applyExtrinsic
+              }}
+            </nuxt-link>
           </td>
         </tr>
         <tr>

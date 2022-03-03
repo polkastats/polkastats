@@ -20,15 +20,9 @@
                 <td>{{ $t('details.block.timestamp') }}</td>
                 <td class="text-right">
                   <p class="mb-0">
-                    {{ getDateFromTimestamp(parsedBlock.timestamp) }}
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td>{{ $t('details.block.timeago') }}</td>
-                <td class="text-right">
-                  <p class="mb-0">
-                    {{ fromNow(parsedBlock.timestamp) }}
+                    {{ getDateFromTimestamp(parsedBlock.timestamp) }} ({{
+                      fromNow(parsedBlock.timestamp)
+                    }})
                   </p>
                 </td>
               </tr>
