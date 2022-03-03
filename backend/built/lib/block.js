@@ -233,7 +233,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         $15,
         $16
       )
-      ON CONFLICT (block_pkey)
+      ON CONFLICT (block_number)
       DO UPDATE SET
         block_author = EXCLUDED.block_author,
         block_author_name = EXCLUDED.block_author_name,
