@@ -283,7 +283,7 @@ export const harvestBlock = async (
     try {
       await dbParamQuery(client, sql, data, loggerOptions);
       const endTime = new Date().getTime();
-      logger.debug(
+      logger.info(
         loggerOptions,
         `Added block #${blockNumber} (${shortHash(blockHash.toString())}) in ${(
           (endTime - startTime) /

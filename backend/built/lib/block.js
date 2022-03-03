@@ -239,7 +239,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         try {
             await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
             const endTime = new Date().getTime();
-            logger_1.logger.debug(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) /
+            logger_1.logger.info(loggerOptions, `Added block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) /
                 1000).toFixed(config.statsPrecision)}s`);
         }
         catch (error) {

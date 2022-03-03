@@ -67,7 +67,7 @@ const crawler = async () => {
           block_author_name = $2,
           block_hash = $3,
           parent_hash = $4,
-          extrinsic_root = $5,
+          extrinsics_root = $5,
           state_root = $6
         WHERE block_number = $7`;
       await dbParamQuery(client, sql, data, loggerOptions);
