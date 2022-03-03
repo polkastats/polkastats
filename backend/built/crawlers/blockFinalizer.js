@@ -27,7 +27,7 @@ const block_1 = require("../lib/block");
 const utils_1 = require("../lib/utils");
 const backend_config_1 = require("../backend.config");
 const logger_1 = require("../lib/logger");
-const crawlerName = 'blockListener';
+const crawlerName = 'blockFinalizer';
 Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
@@ -37,7 +37,9 @@ const loggerOptions = {
 };
 const config = backend_config_1.backendConfig.crawlers.find(({ name }) => name === crawlerName);
 const crawler = async () => {
-    logger_1.logger.info(loggerOptions, 'Starting block listener...');
+    logger_1.logger.info(loggerOptions, `Delaying block finalizer start for ${config.startDelay / 1000}s`);
+    await (0, utils_1.wait)(config.startDelay);
+    logger_1.logger.info(loggerOptions, 'Starting block finalizer...');
     const client = await (0, db_1.getClient)(loggerOptions);
     const api = await (0, chain_1.getPolkadotAPI)(loggerOptions, config.apiCustomTypes);
     let synced = await (0, chain_1.isNodeSynced)(api, loggerOptions);
@@ -45,26 +47,41 @@ const crawler = async () => {
         await (0, utils_1.wait)(10000);
         synced = await (0, chain_1.isNodeSynced)(api, loggerOptions);
     }
-    // Subscribe to new blocks
-    let iteration = 0;
-    await api.rpc.chain.subscribeNewHeads(async (blockHeader) => {
-        iteration++;
+    // Subscribe to finalized blocks
+    await api.rpc.chain.subscribeFinalizedHeads(async (blockHeader) => {
+        const startTime = new Date().getTime();
         const blockNumber = blockHeader.number.toNumber();
-        const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
         try {
-            await (0, block_1.harvestBlock)(config, api, client, blockNumber, loggerOptions);
-            // store current runtime metadata in first iteration
-            if (iteration === 1) {
-                const runtimeVersion = await api.rpc.state.getRuntimeVersion(blockHash);
-                const apiAt = await api.at(blockHash);
-                const timestamp = await apiAt.query.timestamp.now();
-                const specName = runtimeVersion.toJSON().specName;
-                const specVersion = runtimeVersion.specVersion;
-                await (0, block_1.storeMetadata)(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
-            }
+            const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
+            const extendedHeader = await api.derive.chain.getHeader(blockHash);
+            const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
+            const blockAuthorIdentity = await api.derive.accounts.info(extendedHeader.author);
+            const blockAuthorName = (0, block_1.getDisplayName)(blockAuthorIdentity.identity);
+            const data = [
+                extendedHeader.author,
+                blockAuthorName,
+                blockHash,
+                parentHash,
+                extrinsicsRoot,
+                stateRoot,
+                blockNumber,
+            ];
+            const sql = `UPDATE
+          block SET block_author = $1,
+          block_author_name = $2,
+          block_hash = $3,
+          parent_hash = $4,
+          extrinsic_root = $5,
+          state_root = $6
+        WHERE block_number = $7`;
+            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
+            // Update finalized blocks
+            await (0, block_1.updateFinalized)(client, blockNumber, loggerOptions);
+            const endTime = new Date().getTime();
+            logger_1.logger.info(loggerOptions, `Updated finalized block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
         }
         catch (error) {
-            logger_1.logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
+            logger_1.logger.error(loggerOptions, `Error updating finalized block #${blockNumber}: ${error}`);
             Sentry.captureException(error);
         }
     });

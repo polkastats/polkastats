@@ -23,6 +23,12 @@ exports.backendConfig = {
             crawler: './built/crawlers/blockListener.js',
         },
         {
+            name: 'blockFinalizer',
+            enabled: !process.env.BLOCK_FINALIZER_DISABLE,
+            crawler: './built/crawlers/blockFinalizer.js',
+            startDelay: parseInt(process.env.BLOCK_FINALIZER_START_DELAY_MS, 10) || 60 * 1000,
+        },
+        {
             name: 'blockHarvester',
             enabled: !process.env.BLOCK_HARVESTER_DISABLE,
             crawler: './built/crawlers/blockHarvester.js',

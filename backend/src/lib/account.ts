@@ -39,7 +39,9 @@ export const processAccountsChunk = async (
   const freeBalance = balances.freeBalance.toString();
   const lockedBalance = balances.lockedBalance.toString();
   const reservedBalance = balances.reservedBalance.toString();
-  const totalBalance = balances.freeBalance.add(balances.reservedBalance).toString();
+  const totalBalance = balances.freeBalance
+    .add(balances.reservedBalance)
+    .toString();
   const identityDisplay = identity.display ? identity.display.toString() : '';
   const identityDisplayParent = identity.displayParent
     ? identity.displayParent.toString()
@@ -128,7 +130,9 @@ export const updateAccountInfo = async (
   const freeBalance = balances.freeBalance.toString();
   const lockedBalance = balances.lockedBalance.toString();
   const reservedBalance = balances.reservedBalance.toString();
-  const totalBalance = balances.freeBalance.add(balances.reservedBalance).toString();
+  const totalBalance = balances.freeBalance
+    .add(balances.reservedBalance)
+    .toString();
   const identityDisplay = identity.display ? identity.display.toString() : '';
   const identityDisplayParent = identity.displayParent
     ? identity.displayParent.toString()

@@ -50,7 +50,9 @@ const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
     const freeBalance = balances.freeBalance.toString();
     const lockedBalance = balances.lockedBalance.toString();
     const reservedBalance = balances.reservedBalance.toString();
-    const totalBalance = balances.freeBalance.add(balances.reservedBalance).toString();
+    const totalBalance = balances.freeBalance
+        .add(balances.reservedBalance)
+        .toString();
     const identityDisplay = identity.display ? identity.display.toString() : '';
     const identityDisplayParent = identity.displayParent
         ? identity.displayParent.toString()
@@ -132,7 +134,9 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
     const freeBalance = balances.freeBalance.toString();
     const lockedBalance = balances.lockedBalance.toString();
     const reservedBalance = balances.reservedBalance.toString();
-    const totalBalance = balances.freeBalance.add(balances.reservedBalance).toString();
+    const totalBalance = balances.freeBalance
+        .add(balances.reservedBalance)
+        .toString();
     const identityDisplay = identity.display ? identity.display.toString() : '';
     const identityDisplayParent = identity.displayParent
         ? identity.displayParent.toString()
