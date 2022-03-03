@@ -277,8 +277,14 @@ export const harvestBlock = async (
         $15,
         $16
       )
-      ON CONFLICT ON CONSTRAINT block_pkey 
-      DO NOTHING
+      ON CONFLICT (block_pkey)
+      DO UPDATE SET
+        block_author = EXCLUDED.block_author,
+        block_author_name = EXCLUDED.block_author_name,
+        block_hash = EXCLUDED.block_hash,
+        parent_hash = EXCLUDED.parent_hash,
+        extrinsics_root = EXCLUDED.extrinsics_root,
+        state_root = EXCLUDED.state_root
       ;`;
     try {
       await dbParamQuery(client, sql, data, loggerOptions);
