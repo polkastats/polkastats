@@ -78,10 +78,15 @@
         </tr>
         <tr>
           <td>Arguments</td>
-          <td>
-            <pre class="mb-0">{{
-              JSON.stringify(JSON.parse(extrinsic.args), null, 2)
-            }}</pre>
+          <td class="extrinsic-arg">
+            <template v-for="(arg, index) in JSON.parse(extrinsic.args)">
+              <b-card :key="`extrinsic-arg-def-${index}`" class="mb-2">
+                <h6 class="mb-2">
+                  {{ Object.entries(JSON.parse(extrinsic.args_def))[index][0] }}
+                </h6>
+                <pre class="pb-0 mb-0">{{ JSON.stringify(arg, null, 2) }}</pre>
+              </b-card>
+            </template>
           </td>
         </tr>
         <tr>

@@ -691,3 +691,10 @@ section .section-title {
 .extrinsic-doc code {
   font-size: 100%;
 }
+.extrinsic-doc h1 {
+  font-size: 0.8rem;
+}
+
+.extrinsic-arg hr {
+  border-top: 1px solid #e83e8c;
+}

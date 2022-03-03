@@ -70,6 +70,7 @@ export default {
             section
             method
             args
+            args_def
             hash
             doc
             fee_info

@@ -52,10 +52,15 @@
         </tr>
         <tr>
           <td>Data</td>
-          <td>
-            <pre class="mb-0">{{
-              JSON.stringify(JSON.parse(event.data), null, 2)
-            }}</pre>
+          <td class="event-arg">
+            <template v-for="(data, index) in JSON.parse(event.data)">
+              <b-card :key="`event-data-${index}`" class="mb-2">
+                <h6 class="mb-2">
+                  {{ getDescriptorOrType(JSON.parse(event.types)[index].type) }}
+                </h6>
+                <pre class="pb-0 mb-0">{{ JSON.stringify(data, null, 2) }}</pre>
+              </b-card>
+            </template>
           </td>
         </tr>
         <tr>
@@ -79,6 +84,16 @@ export default {
     event: {
       type: Object,
       default: undefined,
+    },
+  },
+  methods: {
+    getDescriptorOrType(descriptorOrType) {
+      try {
+        return JSON.parse(descriptorOrType).descriptor
+      } catch (error) {
+        // console.log(error)
+      }
+      return descriptorOrType
     },
   },
 }
