@@ -1,5 +1,5 @@
 <template>
-  <div v-if="extrinsic" class="table-responsive pb-4">
+  <div v-if="extrinsic" class="table-responsive pb-0 mb-0">
     <table class="table table-striped extrinsic-table">
       <tbody>
         <tr>

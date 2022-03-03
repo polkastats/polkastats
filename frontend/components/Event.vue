@@ -1,5 +1,5 @@
 <template>
-  <div v-if="event" class="table-responsive pb-4">
+  <div v-if="event" class="table-responsive pb-0 mb-0">
     <table class="table table-striped event-table">
       <tbody>
         <tr>

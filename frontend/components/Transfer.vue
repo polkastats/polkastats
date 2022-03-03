@@ -1,5 +1,5 @@
 <template>
-  <div v-if="transfer" class="table-responsive pb-4">
+  <div v-if="transfer" class="table-responsive pb-0 mb-0">
     <table class="table table-striped transfer-table">
       <tbody>
         <tr>
@@ -14,7 +14,9 @@
           <td>Timestamp</td>
           <td>
             <p class="mb-0">
-              {{ getDateFromTimestamp(transfer.timestamp) }}
+              {{ getDateFromTimestamp(transfer.timestamp) }} ({{
+                fromNow(transfer.timestamp)
+              }})
             </p>
           </td>
         </tr>
