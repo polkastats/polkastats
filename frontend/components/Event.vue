@@ -63,14 +63,6 @@
             </template>
           </td>
         </tr>
-        <tr>
-          <td>Types</td>
-          <td>
-            <pre class="mb-0">{{
-              JSON.stringify(JSON.parse(event.types), null, 2)
-            }}</pre>
-          </td>
-        </tr>
       </tbody>
     </table>
   </div>
