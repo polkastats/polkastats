@@ -48,42 +48,19 @@ const crawler = async () => {
         synced = await (0, chain_1.isNodeSynced)(api, loggerOptions);
     }
     // Subscribe to finalized blocks
+    let trackedBlock = 0;
+    let initTracking = true;
     await api.rpc.chain.subscribeFinalizedHeads(async (blockHeader) => {
-        const startTime = new Date().getTime();
         const blockNumber = blockHeader.number.toNumber();
-        try {
-            const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-            const extendedHeader = await api.derive.chain.getHeader(blockHash);
-            const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
-            const blockAuthorIdentity = await api.derive.accounts.info(extendedHeader.author);
-            const blockAuthorName = (0, block_1.getDisplayName)(blockAuthorIdentity.identity);
-            const data = [
-                extendedHeader.author,
-                blockAuthorName,
-                blockHash,
-                parentHash,
-                extrinsicsRoot,
-                stateRoot,
-                blockNumber,
-            ];
-            const sql = `UPDATE
-          block SET block_author = $1,
-          block_author_name = $2,
-          block_hash = $3,
-          parent_hash = $4,
-          extrinsics_root = $5,
-          state_root = $6
-        WHERE block_number = $7`;
-            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
-            // Update finalized blocks
-            await (0, block_1.updateFinalized)(client, blockNumber, loggerOptions);
-            const endTime = new Date().getTime();
-            logger_1.logger.info(loggerOptions, `Updated finalized block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+        if (initTracking) {
+            trackedBlock = blockNumber;
+            initTracking = false;
         }
-        catch (error) {
-            logger_1.logger.error(loggerOptions, `Error updating finalized block #${blockNumber}: ${error}`);
-            Sentry.captureException(error);
+        // Handle missing blocks from subscription
+        for (let blockToUpdate = trackedBlock + 1; blockToUpdate <= blockNumber; blockToUpdate++) {
+            await (0, block_1.updateFinalizedBlock)(api, client, blockToUpdate, loggerOptions);
         }
+        trackedBlock = blockNumber;
     });
 };
 crawler().catch((error) => {

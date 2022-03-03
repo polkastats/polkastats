@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.storeMetadata = exports.healthCheck = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = void 0;
+exports.updateFinalizedBlock = exports.harvestBlocks = exports.harvestBlocksSeq = exports.harvestBlock = exports.storeMetadata = exports.healthCheck = exports.logHarvestError = exports.updateFinalized = exports.getDisplayName = void 0;
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 const axios_1 = __importDefault(require("axios"));
@@ -343,3 +343,40 @@ const harvestBlocks = async (config, api, client, startBlock, endBlock, loggerOp
     }
 };
 exports.harvestBlocks = harvestBlocks;
+const updateFinalizedBlock = async (api, client, blockNumber, loggerOptions) => {
+    const startTime = new Date().getTime();
+    try {
+        const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
+        const extendedHeader = await api.derive.chain.getHeader(blockHash);
+        const { parentHash, extrinsicsRoot, stateRoot } = extendedHeader;
+        const blockAuthorIdentity = await api.derive.accounts.info(extendedHeader.author);
+        const blockAuthorName = (0, exports.getDisplayName)(blockAuthorIdentity.identity);
+        const data = [
+            extendedHeader.author,
+            blockAuthorName,
+            blockHash,
+            parentHash,
+            extrinsicsRoot,
+            stateRoot,
+            blockNumber,
+        ];
+        const sql = `UPDATE
+        block SET block_author = $1,
+        block_author_name = $2,
+        block_hash = $3,
+        parent_hash = $4,
+        extrinsics_root = $5,
+        state_root = $6
+      WHERE block_number = $7`;
+        await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
+        // Update finalized blocks
+        await (0, exports.updateFinalized)(client, blockNumber, loggerOptions);
+        const endTime = new Date().getTime();
+        logger_1.logger.info(loggerOptions, `Updated finalized block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+    }
+    catch (error) {
+        logger_1.logger.error(loggerOptions, `Error updating finalized block #${blockNumber}: ${error}`);
+        Sentry.captureException(error);
+    }
+};
+exports.updateFinalizedBlock = updateFinalizedBlock;

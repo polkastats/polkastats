@@ -487,3 +487,56 @@ export const harvestBlocks = async (
     );
   }
 };
+
+export const updateFinalizedBlock = async (
+  api: ApiPromise,
+  client: Client,
+  blockNumber: number,
+  loggerOptions: LoggerOptions,
+): Promise<void> => {
+  const startTime = new Date().getTime();
+  try {
+    const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
+    const extendedHeader = await api.derive.chain.getHeader(blockHash);
+    const { parentHash, extrinsicsRoot, stateRoot } = extendedHeader;
+    const blockAuthorIdentity = await api.derive.accounts.info(
+      extendedHeader.author,
+    );
+    const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
+    const data = [
+      extendedHeader.author,
+      blockAuthorName,
+      blockHash,
+      parentHash,
+      extrinsicsRoot,
+      stateRoot,
+      blockNumber,
+    ];
+    const sql = `UPDATE
+        block SET block_author = $1,
+        block_author_name = $2,
+        block_hash = $3,
+        parent_hash = $4,
+        extrinsics_root = $5,
+        state_root = $6
+      WHERE block_number = $7`;
+    await dbParamQuery(client, sql, data, loggerOptions);
+
+    // Update finalized blocks
+    await updateFinalized(client, blockNumber, loggerOptions);
+
+    const endTime = new Date().getTime();
+    logger.info(
+      loggerOptions,
+      `Updated finalized block #${blockNumber} (${shortHash(
+        blockHash.toString(),
+      )}) in ${((endTime - startTime) / 1000).toFixed(3)}s`,
+    );
+  } catch (error) {
+    logger.error(
+      loggerOptions,
+      `Error updating finalized block #${blockNumber}: ${error}`,
+    );
+    Sentry.captureException(error);
+  }
+};
