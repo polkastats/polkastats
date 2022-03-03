@@ -28,7 +28,7 @@ services:
     shm_size: 1gb
     volumes:
       - 'db-data:/var/lib/postgresql/data'
-      - './sql/backend.sql:/docker-entrypoint-initdb.d/backend.sql'
+      - '../sql/backend.sql:/docker-entrypoint-initdb.d/backend.sql'
     environment:
       POSTGRES_USER: 'polkastats'
       POSTGRES_PASSWORD: 'polkastats'
@@ -95,7 +95,7 @@ services:
     ports:
       - '8082:8080'
     volumes:
-      - './hasura/metadata:/hasura-metadata'
+      - '../hasura/metadata:/hasura-metadata'
     depends_on:
       - 'postgres'
     restart: always
