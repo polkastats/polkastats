@@ -352,12 +352,12 @@ const updateFinalizedBlock = async (api, client, blockNumber, loggerOptions) => 
         const blockAuthorIdentity = await api.derive.accounts.info(extendedHeader.author);
         const blockAuthorName = (0, exports.getDisplayName)(blockAuthorIdentity.identity);
         const data = [
-            extendedHeader.author,
+            extendedHeader.author.toString(),
             blockAuthorName,
-            blockHash,
-            parentHash,
-            extrinsicsRoot,
-            stateRoot,
+            blockHash.toString(),
+            parentHash.toString(),
+            extrinsicsRoot.toString(),
+            stateRoot.toString(),
             blockNumber,
         ];
         const sql = `UPDATE
