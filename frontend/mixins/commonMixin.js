@@ -13,9 +13,8 @@ export default {
         address.substring(0, 5) + '…' + address.substring(address.length - 5)
       )
     },
-    shortHash(hash) {
-      return `${hash.substr(0, 6)}…${hash.substr(hash.length - 4, 4)}`
-    },
+    shortHash: (hash) =>
+      `${hash.substring(0, 6)}…${hash.substring(hash.length - 4, hash.length)}`,
     formatNumber(number) {
       if (isHex(number)) {
         return parseInt(number, 16)

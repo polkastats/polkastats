@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.range = exports.reverseRange = exports.chunker = exports.getRandom = exports.wait = exports.shortHash = void 0;
-const shortHash = (hash) => `${hash.substring(0, 6)}…${hash.substring(hash.length - 5, hash.length - 1)}`;
+const shortHash = (hash) => `${hash.substring(0, 6)}…${hash.substring(hash.length - 4, hash.length)}`;
 exports.shortHash = shortHash;
 const wait = async (ms) => new Promise((resolve) => {
     return setTimeout(resolve, ms);

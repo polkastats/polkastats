@@ -1,5 +1,5 @@
 export const shortHash = (hash: string): string =>
-  `${hash.substring(0, 6)}…${hash.substring(hash.length - 5, hash.length - 1)}`;
+  `${hash.substring(0, 6)}…${hash.substring(hash.length - 4, hash.length)}`;
 
 export const wait = async (ms: number): Promise<number> =>
   new Promise((resolve) => {
