@@ -19,6 +19,8 @@ export const backendConfig = {
       name: 'blockListener',
       enabled: !process.env.BLOCK_LISTENER_DISABLE,
       crawler: './built/crawlers/blockListener.js',
+      statsPrecision:
+        parseInt(process.env.BACKEND_STATS_PRECISION, 10) || 2,
     },
     {
       name: 'blockFinalizer',
@@ -37,7 +39,7 @@ export const backendConfig = {
       mode: process.env.BLOCK_HARVESTER_MODE || 'chunks',
       chunkSize: parseInt(process.env.BLOCK_HARVESTER_CHUNK_SIZE, 10) || 10,
       statsPrecision:
-        parseInt(process.env.BLOCK_HARVESTER_STATS_PRECISION, 10) || 2,
+        parseInt(process.env.BACKEND_STATS_PRECISION, 10) || 2,
       pollingTime:
         parseInt(process.env.BLOCK_LISTENER_POLLING_TIME_MS, 10) ||
         60 * 60 * 1000,
