@@ -241,6 +241,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         parent_hash = EXCLUDED.parent_hash,
         extrinsics_root = EXCLUDED.extrinsics_root,
         state_root = EXCLUDED.state_root
+      WHERE EXCLUDED.block_number = block.block_number
       ;`;
         try {
             await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);

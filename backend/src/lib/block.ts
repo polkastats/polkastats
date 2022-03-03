@@ -285,6 +285,7 @@ export const harvestBlock = async (
         parent_hash = EXCLUDED.parent_hash,
         extrinsics_root = EXCLUDED.extrinsics_root,
         state_root = EXCLUDED.state_root
+      WHERE EXCLUDED.block_number = block.block_number
       ;`;
     try {
       await dbParamQuery(client, sql, data, loggerOptions);
