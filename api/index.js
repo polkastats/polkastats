@@ -9,11 +9,13 @@ const faucet = require('./src/services/faucet');
 const tokensService = require('./src/services/cereTokensService');
 require('dotenv').config();
 const { REQUESTS_PER_IP_PER_DAY } = process.env;
+const apicache = require('apicache');
 
 // Http port
 const port = process.env.PORT || 8000;
 
 const app = express();
+const cache = apicache.middleware;
 
 // Add other middleware
 app.use(cors());
@@ -287,8 +289,8 @@ const limiter = rateLimit({
 
 app.use("/api/v1/faucet", limiter, faucet.faucet);
 
-app.get("/api/v1/tokens/total-supply", tokensService.getTotalSupply);
-app.get("/api/v1/tokens/circulating-supply", tokensService.getCirculatingSupply);
+app.get("/api/v1/tokens/total-supply", cache('10 minutes'), tokensService.getTotalSupply);
+app.get("/api/v1/tokens/circulating-supply", cache('10 minutes'), tokensService.getCirculatingSupply);
 
 app.use('/', (req, res) => {
   res.status(404).json({
