@@ -8,6 +8,7 @@
 - Fixed hand icon colour, when validator is selected
 - Renamed 'Total issuance' to 'Total supply' on home page
 - Updated validators count format on home page
+- Removed 'Total transactions fees' on home page
 
 ## v0.6.0
 
