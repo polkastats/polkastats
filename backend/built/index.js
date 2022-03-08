@@ -40,11 +40,19 @@ const runCrawler = async (crawler) => {
     const child = (0, child_process_1.spawn)('node', [`${crawler}`]);
     child.stdout.pipe(process.stdout);
     child.stderr.pipe(process.stderr);
-    child.on('close', () => {
+    const loggerOptions = {
+        crawler,
+    };
+    child.on('error', (error) => {
+        logger.error(loggerOptions, `Crawler error: ${error}`);
+    });
+    child.on('close', (code) => {
+        logger.error(loggerOptions, `Crawler closed with code ${code}`);
         // attempt to restart crawler
         runCrawler(crawler);
     });
-    child.on('exit', () => {
+    child.on('exit', (code) => {
+        logger.error(loggerOptions, `Crawler exited with code ${code}`);
         // attempt to restart crawler
         runCrawler(crawler);
     });

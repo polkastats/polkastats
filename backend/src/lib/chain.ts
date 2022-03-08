@@ -19,6 +19,9 @@ export const getPolkadotAPI = async (
   let api;
   logger.debug(loggerOptions, `Connecting to ${backendConfig.wsProviderUrl}`);
   const provider = new WsProvider(backendConfig.wsProviderUrl);
+  
+  provider.on('disconnected', () => logger.error(loggerOptions, `Got disconnected from provider ${backendConfig.wsProviderUrl}!`));
+
   if (apiCustomTypes && apiCustomTypes !== '') {
     const types = JSON.parse(
       fs.readFileSync(`./src/types/${apiCustomTypes}`, 'utf8'),
@@ -27,6 +30,9 @@ export const getPolkadotAPI = async (
   } else {
     api = await ApiPromise.create({ provider });
   }
+
+  api.on('disconnected', () => logger.error(loggerOptions, 'Got disconnected from API!'));
+
   await api.isReady;
   return api;
 };
