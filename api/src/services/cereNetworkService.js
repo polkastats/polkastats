@@ -71,7 +71,7 @@ module.exports = {
     });
   },
   getTotalSupply: (network) => {
-    const { api } = networkParams.get(network.toUpperCase());
+    const { api, _ } = networkParams.get(network.toUpperCase());
     return api.query.balances.totalIssuance();
   }
 };
