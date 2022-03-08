@@ -1,6 +1,7 @@
 const { decimal } = require("../constants/config");
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
+const { ETHEREUM_CERE_LOCKED_ADDRESSES } = process.env;
 
 const ethereumCERELockedAddresses = ["0x88E3386AC317892782f346e65FA7a4dd893552a1", "0x367ebF942F75E0c7Cf3EC0CEe1017349EDb3368b",
   "0x367ebF942F75E0c7Cf3EC0CEe1017349EDb3368b", "0x4F700F658E5D87aeC7D42915952AbD570Dc7a3a7", "0xb4f5427885c26841A7748Fc99045fbFaA02BfF4C",
@@ -24,6 +25,8 @@ module.exports = {
   getCirculatingSupply: async (req, res) => {
     const totalSupply = await getTotalSupplyInternal('MAINNET');
     let circulatingSupply = totalSupply;
+    const deserialized = JSON.parse(ETHEREUM_CERE_LOCKED_ADDRESSES);
+    console.log(`deserialized ${deserialized[0]}`);
     for (let i = 0; i < ethereumCERELockedAddresses.length; i++) {
       const balance = await ethNetworkService.getCEREBalanceOf(ethereumCERELockedAddresses[i]);
       circulatingSupply -= balance;
