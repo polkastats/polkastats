@@ -1,4 +1,4 @@
-const { decimal } = require("../constants/config");
+const { decimal, CERE_MAINNET } = require("../constants/config");
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
 const { ETHEREUM_CERE_LOCKED_ADDRESSES } = process.env;
@@ -19,11 +19,11 @@ async function getTotalSupplyInternal(network) {
 
 module.exports = {
   getTotalSupply: async (req, res) => {
-    const totalSupply = await getTotalSupplyInternal('MAINNET');
+    const totalSupply = await getTotalSupplyInternal(CERE_MAINNET);
     res.json(totalSupply);
   },
   getCirculatingSupply: async (req, res) => {
-    const totalSupply = await getTotalSupplyInternal('MAINNET');
+    const totalSupply = await getTotalSupplyInternal(CERE_MAINNET);
     let circulatingSupply = totalSupply;
     const deserialized = JSON.parse(ETHEREUM_CERE_LOCKED_ADDRESSES);
     console.log(`deserialized ${deserialized[0]}`);

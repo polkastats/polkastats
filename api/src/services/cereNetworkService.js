@@ -1,26 +1,35 @@
 const { ApiPromise, WsProvider, Keyring } = require("@polkadot/api");
-const { config } = require("../constants/config");
+const { config, CERE_MAINNET, CERE_MAINNET_WS_PROVIDER_URL_DEFAULT, MNEMONIC_EMPTY } = require("../constants/config");
 const {
   NETWORKS,
+  CERE_WS_PROVIDER_URL
 } = process.env;
 
 const networkParams = new Map();
 
-function init() {
+async function init() {
+  networkParams.set(CERE_MAINNET, await initNetwork(CERE_WS_PROVIDER_URL || CERE_MAINNET_WS_PROVIDER_URL_DEFAULT, MNEMONIC_EMPTY));
+
   if (NETWORKS === undefined) {
     return true
   }
   const networks = NETWORKS.split("},");
-
   networks.forEach(async (network, index) => {
     if (index !== networks.length - 1) {
       network = network + '}'
     }
     const parsedNetwork = JSON.parse(network);
-    const api = await initProvider(parsedNetwork.URL);
-    const faucet = await initFaucet(parsedNetwork.MNEMONICS);
-    networkParams.set(parsedNetwork.NETWORK, { api: api, faucet: faucet });
+    networkParams.set(parsedNetwork.NETWORK, await initNetwork(parsedNetwork.URL, parsedNetwork.MNEMONIC));
   });
+}
+
+async function initNetwork(url, mnemonic) {
+  const api = await initProvider(url);
+  if (mnemonic) {
+    const faucet = await initFaucet(mnemonic);
+    return {api, faucet};
+  }
+  return {api, faucet: {}};
 }
 
 async function initProvider(url) {

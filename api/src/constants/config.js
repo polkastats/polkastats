@@ -21,4 +21,7 @@ const config = {
 };
 
 const decimal = 10;
-module.exports = { config, decimal };
+const CERE_MAINNET = 'MAINNET';
+const CERE_MAINNET_WS_PROVIDER_URL_DEFAULT = 'wss://rpc.mainnet.cere.network:9945';
+const MNEMONIC_EMPTY = '';
+module.exports = { config, decimal, CERE_MAINNET, CERE_MAINNET_WS_PROVIDER_URL_DEFAULT, MNEMONIC_EMPTY };
