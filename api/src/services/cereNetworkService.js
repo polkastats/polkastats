@@ -24,7 +24,6 @@ function init() {
 }
 
 async function initProvider(url) {
-  console.log(`url is ${url}`);
   const provider = new WsProvider(url);
   const api = await ApiPromise.create({
     provider,

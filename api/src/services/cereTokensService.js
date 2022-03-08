@@ -26,7 +26,6 @@ module.exports = {
     let circulatingSupply = totalSupply;
     for (let i = 0; i < ethereumCERELockedAddresses.length; i++) {
       const balance = await ethNetworkService.getCEREBalanceOf(ethereumCERELockedAddresses[i]);
-      console.log(`balance of ${ethereumCERELockedAddresses[i]} is ${balance}`);
       circulatingSupply -= balance;
     }
     res.json(circulatingSupply);
