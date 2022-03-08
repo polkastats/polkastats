@@ -6,7 +6,7 @@ const getClient = require('./db/db');
 const moment = require('moment');
 const rateLimit = require('express-rate-limit');
 const faucet = require('./src/services/faucet');
-const ethNetwork = require('./src/services/ethNetwork');
+const tokensService = require('./src/services/cereTokensService');
 require('dotenv').config();
 const { REQUESTS_PER_IP_PER_DAY } = process.env;
 
@@ -36,7 +36,7 @@ const hexToUtf8 = (s) => {
  * @param {*} req request object
  * @param {*} res response object
  * @param {*} next next object
- * @returns 
+ * @returns
  */
 const validateToken = (req, res, next) => {
   const token = req.body.token || req.query.token || req.headers['x-api-key'];
@@ -160,8 +160,8 @@ app.get('/api/v1/batsignal/system.remarks', async (req, res) => {
 //
 // Get council.Proposed events in the last 8 hours
 //
-// Proposed(AccountId, ProposalIndex, Hash, MemberCount)# 
-// interface: api.events.council.Proposed.is 
+// Proposed(AccountId, ProposalIndex, Hash, MemberCount)#
+// interface: api.events.council.Proposed.is
 // summary: A motion (given hash) has been proposed (by given account) with a threshold (given MemberCount). [account, proposal_index, proposal_hash, threshold]
 //
 
@@ -287,11 +287,8 @@ const limiter = rateLimit({
 
 app.use("/api/v1/faucet", limiter, faucet.faucet);
 
-app.get("/api/v1/cere-erc20-token/total-supply", ethNetwork.getCereTotalSupply);
-app.get(
-  "/api/v1/cere-erc20-token/circulating-supply",
-  ethNetwork.getCereCirculatingSupply
-);
+app.get("/api/v1/total-supply", tokensService.getTotalSupply);
+app.get("/api/v1/circulating-supply", tokensService.getCirculatingSupply);
 
 app.use('/', (req, res) => {
   res.status(404).json({
@@ -301,6 +298,6 @@ app.use('/', (req, res) => {
 });
 
 // Start app
-app.listen(port, () => 
+app.listen(port, () =>
   console.log(`PolkaStats API is listening on port ${port}.`)
 );
