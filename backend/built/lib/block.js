@@ -154,7 +154,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
     try {
         const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
         const apiAt = await api.at(blockHash);
-        const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, chainElectionStatus, timestamp,] = await Promise.all([
+        const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, timestamp,] = await Promise.all([
             api.rpc.chain.getBlock(blockHash),
             apiAt.query.system.events(),
             api.derive.chain.getHeader(blockHash),
@@ -168,15 +168,12 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
                 return 0;
             }),
             apiAt.query.session.currentIndex().then((res) => res || 0),
-            apiAt.query.electionProviderMultiPhase.currentPhase(),
             apiAt.query.timestamp.now(),
         ]);
         const blockAuthor = blockHeader.author || '';
         const blockAuthorIdentity = await api.derive.accounts.info(blockHeader.author);
         const blockAuthorName = (0, exports.getDisplayName)(blockAuthorIdentity.identity);
         const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
-        // Get election status
-        const isElection = Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
         // Totals
         const totalEvents = blockEvents.length;
         const totalExtrinsics = block.extrinsics.length;
@@ -191,7 +188,6 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             stateRoot.toString(),
             activeEra,
             currentIndex,
-            isElection,
             runtimeVersion.specVersion,
             totalEvents,
             totalExtrinsics,
@@ -209,7 +205,6 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         state_root,
         active_era,
         current_index,
-        is_election,
         spec_version,
         total_events,
         total_extrinsics,
@@ -230,8 +225,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         $12,
         $13,
         $14,
-        $15,
-        $16
+        $15
       )
       ON CONFLICT (block_number)
       DO UPDATE SET

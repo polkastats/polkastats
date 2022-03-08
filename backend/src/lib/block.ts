@@ -190,7 +190,6 @@ export const harvestBlock = async (
       runtimeVersion,
       activeEra,
       currentIndex,
-      chainElectionStatus,
       timestamp,
     ] = await Promise.all([
       api.rpc.chain.getBlock(blockHash),
@@ -206,7 +205,6 @@ export const harvestBlock = async (
           return 0;
         }),
       apiAt.query.session.currentIndex().then((res) => res || 0),
-      apiAt.query.electionProviderMultiPhase.currentPhase(),
       apiAt.query.timestamp.now(),
     ]);
 
@@ -216,9 +214,6 @@ export const harvestBlock = async (
     );
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
     const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
-    // Get election status
-    const isElection =
-      Object.getOwnPropertyNames(chainElectionStatus.toJSON())[0] !== 'off';
 
     // Totals
     const totalEvents = blockEvents.length;
@@ -235,7 +230,6 @@ export const harvestBlock = async (
       stateRoot.toString(),
       activeEra,
       currentIndex,
-      isElection,
       runtimeVersion.specVersion,
       totalEvents,
       totalExtrinsics,
@@ -253,7 +247,6 @@ export const harvestBlock = async (
         state_root,
         active_era,
         current_index,
-        is_election,
         spec_version,
         total_events,
         total_extrinsics,
@@ -274,8 +267,7 @@ export const harvestBlock = async (
         $12,
         $13,
         $14,
-        $15,
-        $16
+        $15
       )
       ON CONFLICT (block_number)
       DO UPDATE SET

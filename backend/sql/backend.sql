@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS block (
   state_root TEXT NOT NULL,
   active_era BIGINT NOT NULL,
   current_index BIGINT NOT NULL,
-  is_election BOOLEAN NOT NULL,
   spec_version INT NOT NULL,
   total_events INT NOT NULL,
   total_extrinsics INT NOT NULL,
