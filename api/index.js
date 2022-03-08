@@ -287,8 +287,8 @@ const limiter = rateLimit({
 
 app.use("/api/v1/faucet", limiter, faucet.faucet);
 
-app.get("/api/v1/total-supply", tokensService.getTotalSupply);
-app.get("/api/v1/circulating-supply", tokensService.getCirculatingSupply);
+app.get("/api/v1/tokens/total-supply", tokensService.getTotalSupply);
+app.get("/api/v1/tokens/circulating-supply", tokensService.getCirculatingSupply);
 
 app.use('/', (req, res) => {
   res.status(404).json({
