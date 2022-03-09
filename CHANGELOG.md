@@ -1,6 +1,9 @@
 # Cere Stats
 
 ## vNext
+- ...
+
+## v0.7.0
 
 - Removed auto-payout and participation in governance filters
 - Implemented charts framework for cumulative line and bar types
