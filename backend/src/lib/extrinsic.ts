@@ -20,6 +20,32 @@ Sentry.init({
 // Used for processing events and extrinsics
 const chunkSize = 100;
 
+export const getExtrinsicFeeInfo = async (api: ApiPromise, hexExtrinsic: string, blockHash: BlockHash, blockNumber: number, loggerOptions: LoggerOptions): Promise<string> => {
+  try {
+    const feeInfo = await api.rpc.payment.queryInfo(hexExtrinsic, blockHash);
+    return JSON.stringify(feeInfo.toJSON());
+  } catch (error) {
+    const scope = new Sentry.Scope();
+    scope.setTag('blockNumber', blockNumber);
+    Sentry.captureException(error, scope);
+    logger.debug(loggerOptions, `Error getting extrinsic fee info: ${error}`);
+  }
+  return '';
+};
+
+export const getExtrinsicFeeDetails = async (api: ApiPromise, hexExtrinsic: string, blockHash: BlockHash, blockNumber: number, loggerOptions: LoggerOptions): Promise<string> => {
+  try {
+    const feeDetails = await api.rpc.payment.queryFeeDetails(hexExtrinsic, blockHash);
+    return JSON.stringify(feeDetails.toJSON());
+  } catch (error) {
+    const scope = new Sentry.Scope();
+    scope.setTag('blockNumber', blockNumber);
+    Sentry.captureException(error, scope);
+    logger.debug(loggerOptions, `Error getting extrinsic fee details: ${error}`);
+  }
+  return '';
+};
+
 export const getExtrinsicSuccessOrErrorMessage = (
   apiAt: ApiDecoration<'promise'>,
   index: number,
@@ -208,16 +234,8 @@ export const processExtrinsic = async (
   let feeInfo = '';
   let feeDetails = '';
   if (isSigned) {
-    [feeInfo, feeDetails] = await Promise.all([
-      api.rpc.payment
-        .queryInfo(extrinsic.toHex(), blockHash)
-        .then((result) => JSON.stringify(result.toJSON()) || '')
-        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)),
-      api.rpc.payment
-        .queryFeeDetails(extrinsic.toHex(), blockHash)
-        .then((result) => JSON.stringify(result.toJSON()) || '')
-        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)),
-    ]);
+    feeInfo = await getExtrinsicFeeInfo(api, extrinsic.toHex(), blockHash, blockNumber, loggerOptions);
+    feeDetails = await getExtrinsicFeeDetails(api, extrinsic.toHex(), blockHash, blockNumber, loggerOptions);
   }
   let data = [
     blockNumber,

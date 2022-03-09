@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.processExtrinsics = exports.processExtrinsic = exports.processTransfer = exports.getTransferAllAmount = exports.getExtrinsicSuccessOrErrorMessage = void 0;
+exports.processExtrinsics = exports.processExtrinsic = exports.processTransfer = exports.getTransferAllAmount = exports.getExtrinsicSuccessOrErrorMessage = exports.getExtrinsicFeeDetails = exports.getExtrinsicFeeInfo = void 0;
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 const bignumber_js_1 = require("bignumber.js");
@@ -32,6 +32,34 @@ Sentry.init({
 });
 // Used for processing events and extrinsics
 const chunkSize = 100;
+const getExtrinsicFeeInfo = async (api, hexExtrinsic, blockHash, blockNumber, loggerOptions) => {
+    try {
+        const feeInfo = await api.rpc.payment.queryInfo(hexExtrinsic, blockHash);
+        return JSON.stringify(feeInfo.toJSON());
+    }
+    catch (error) {
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
+        logger_1.logger.debug(loggerOptions, `Error getting extrinsic fee info: ${error}`);
+    }
+    return '';
+};
+exports.getExtrinsicFeeInfo = getExtrinsicFeeInfo;
+const getExtrinsicFeeDetails = async (api, hexExtrinsic, blockHash, blockNumber, loggerOptions) => {
+    try {
+        const feeDetails = await api.rpc.payment.queryFeeDetails(hexExtrinsic, blockHash);
+        return JSON.stringify(feeDetails.toJSON());
+    }
+    catch (error) {
+        const scope = new Sentry.Scope();
+        scope.setTag('blockNumber', blockNumber);
+        Sentry.captureException(error, scope);
+        logger_1.logger.debug(loggerOptions, `Error getting extrinsic fee details: ${error}`);
+    }
+    return '';
+};
+exports.getExtrinsicFeeDetails = getExtrinsicFeeDetails;
 const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents) => {
     let extrinsicSuccess = false;
     let extrinsicErrorMessage = '';
@@ -175,16 +203,8 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
     let feeInfo = '';
     let feeDetails = '';
     if (isSigned) {
-        [feeInfo, feeDetails] = await Promise.all([
-            api.rpc.payment
-                .queryInfo(extrinsic.toHex(), blockHash)
-                .then((result) => JSON.stringify(result.toJSON()) || '')
-                .catch((error) => logger_1.logger.debug(loggerOptions, `API Error: ${error}`)),
-            api.rpc.payment
-                .queryFeeDetails(extrinsic.toHex(), blockHash)
-                .then((result) => JSON.stringify(result.toJSON()) || '')
-                .catch((error) => logger_1.logger.debug(loggerOptions, `API Error: ${error}`)),
-        ]);
+        feeInfo = await (0, exports.getExtrinsicFeeInfo)(api, extrinsic.toHex(), blockHash, blockNumber, loggerOptions);
+        feeDetails = await (0, exports.getExtrinsicFeeDetails)(api, extrinsic.toHex(), blockHash, blockNumber, loggerOptions);
     }
     let data = [
         blockNumber,
