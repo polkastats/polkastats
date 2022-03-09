@@ -9,6 +9,7 @@
 - Renamed 'Total issuance' to 'Total supply' on home page
 - Updated validators count format on home page
 - Removed 'Total transactions fees' on home page
+- Added total/circulating-supply API
 
 ## v0.6.0
 
