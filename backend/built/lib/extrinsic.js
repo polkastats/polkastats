@@ -75,9 +75,16 @@ exports.getTransferAllAmount = getTransferAllAmount;
 const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash, signer, feeInfo, success, errorMessage, timestamp, loggerOptions) => {
     // Store transfer
     const source = signer;
-    const destination = JSON.parse(args)[0].id
-        ? JSON.parse(args)[0].id
-        : JSON.parse(args)[0].address20;
+    let destination = '';
+    if (JSON.parse(args)[0].id) {
+        destination = JSON.parse(args)[0].id;
+    }
+    else if (JSON.parse(args)[0].address20) {
+        destination = JSON.parse(args)[0].address20;
+    }
+    else {
+        destination = JSON.parse(args)[0];
+    }
     let amount;
     if (method === 'transferAll' && success) {
         // Equal source and destination addres doesn't trigger a balances.Transfer event
@@ -159,7 +166,7 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
     const signer = isSigned ? extrinsic.signer.toString() : '';
     const section = extrinsic.method.section;
     const method = extrinsic.method.method;
-    const args = JSON.stringify(extrinsic.args);
+    const args = JSON.stringify(extrinsic.method.args);
     const argsDef = JSON.stringify(extrinsic.argsDef);
     const hash = extrinsic.hash.toHex();
     const doc = JSON.stringify(extrinsic.meta.docs.toJSON());
@@ -171,14 +178,12 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
         [feeInfo, feeDetails] = await Promise.all([
             api.rpc.payment
                 .queryInfo(extrinsic.toHex(), blockHash)
-                .then((result) => JSON.stringify(result.toJSON()))
-                .catch((error) => logger_1.logger.debug(loggerOptions, `API Error: ${error}`)) ||
-                '',
+                .then((result) => JSON.stringify(result.toJSON()) || '')
+                .catch((error) => logger_1.logger.debug(loggerOptions, `API Error: ${error}`)),
             api.rpc.payment
                 .queryFeeDetails(extrinsic.toHex(), blockHash)
-                .then((result) => JSON.stringify(result.toJSON()))
-                .catch((error) => logger_1.logger.debug(loggerOptions, `API Error: ${error}`)) ||
-                '',
+                .then((result) => JSON.stringify(result.toJSON()) || '')
+                .catch((error) => logger_1.logger.debug(loggerOptions, `API Error: ${error}`)),
         ]);
     }
     let data = [

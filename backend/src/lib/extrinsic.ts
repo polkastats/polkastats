@@ -88,9 +88,15 @@ export const processTransfer = async (
 ): Promise<void> => {
   // Store transfer
   const source = signer;
-  const destination: string = JSON.parse(args)[0].id
-    ? JSON.parse(args)[0].id
-    : JSON.parse(args)[0].address20;
+  let destination = '';
+
+  if (JSON.parse(args)[0].id) {
+    destination = JSON.parse(args)[0].id;
+  } else if (JSON.parse(args)[0].address20) {
+    destination = JSON.parse(args)[0].address20;
+  } else {
+    destination = JSON.parse(args)[0];
+  }
 
   let amount;
   if (method === 'transferAll' && success) {
@@ -189,7 +195,7 @@ export const processExtrinsic = async (
   const signer = isSigned ? extrinsic.signer.toString() : '';
   const section = extrinsic.method.section;
   const method = extrinsic.method.method;
-  const args = JSON.stringify(extrinsic.args);
+  const args = JSON.stringify(extrinsic.method.args);
   const argsDef = JSON.stringify(extrinsic.argsDef);
   const hash = extrinsic.hash.toHex();
   const doc = JSON.stringify(extrinsic.meta.docs.toJSON());
@@ -205,14 +211,12 @@ export const processExtrinsic = async (
     [feeInfo, feeDetails] = await Promise.all([
       api.rpc.payment
         .queryInfo(extrinsic.toHex(), blockHash)
-        .then((result) => JSON.stringify(result.toJSON()))
-        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) ||
-        '',
+        .then((result) => JSON.stringify(result.toJSON()) || '')
+        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)),
       api.rpc.payment
         .queryFeeDetails(extrinsic.toHex(), blockHash)
-        .then((result) => JSON.stringify(result.toJSON()))
-        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) ||
-        '',
+        .then((result) => JSON.stringify(result.toJSON()) || '')
+        .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)),
     ]);
   }
   let data = [
