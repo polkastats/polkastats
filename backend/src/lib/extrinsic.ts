@@ -20,27 +20,21 @@ Sentry.init({
 // Used for processing events and extrinsics
 const chunkSize = 100;
 
-export const getExtrinsicFeeInfo = async (api: ApiPromise, hexExtrinsic: string, blockHash: BlockHash, blockNumber: number, loggerOptions: LoggerOptions): Promise<string> => {
+export const getExtrinsicFeeInfo = async (api: ApiPromise, hexExtrinsic: string, blockHash: BlockHash, loggerOptions: LoggerOptions): Promise<string> => {
   try {
     const feeInfo = await api.rpc.payment.queryInfo(hexExtrinsic, blockHash);
     return JSON.stringify(feeInfo.toJSON());
   } catch (error) {
-    const scope = new Sentry.Scope();
-    scope.setTag('blockNumber', blockNumber);
-    Sentry.captureException(error, scope);
     logger.debug(loggerOptions, `Error getting extrinsic fee info: ${error}`);
   }
   return '';
 };
 
-export const getExtrinsicFeeDetails = async (api: ApiPromise, hexExtrinsic: string, blockHash: BlockHash, blockNumber: number, loggerOptions: LoggerOptions): Promise<string> => {
+export const getExtrinsicFeeDetails = async (api: ApiPromise, hexExtrinsic: string, blockHash: BlockHash, loggerOptions: LoggerOptions): Promise<string> => {
   try {
     const feeDetails = await api.rpc.payment.queryFeeDetails(hexExtrinsic, blockHash);
     return JSON.stringify(feeDetails.toJSON());
   } catch (error) {
-    const scope = new Sentry.Scope();
-    scope.setTag('blockNumber', blockNumber);
-    Sentry.captureException(error, scope);
     logger.debug(loggerOptions, `Error getting extrinsic fee details: ${error}`);
   }
   return '';
@@ -234,8 +228,8 @@ export const processExtrinsic = async (
   let feeInfo = '';
   let feeDetails = '';
   if (isSigned) {
-    feeInfo = await getExtrinsicFeeInfo(api, extrinsic.toHex(), blockHash, blockNumber, loggerOptions);
-    feeDetails = await getExtrinsicFeeDetails(api, extrinsic.toHex(), blockHash, blockNumber, loggerOptions);
+    feeInfo = await getExtrinsicFeeInfo(api, extrinsic.toHex(), blockHash, loggerOptions);
+    feeDetails = await getExtrinsicFeeDetails(api, extrinsic.toHex(), blockHash, loggerOptions);
   }
   let data = [
     blockNumber,

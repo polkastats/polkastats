@@ -32,29 +32,23 @@ Sentry.init({
 });
 // Used for processing events and extrinsics
 const chunkSize = 100;
-const getExtrinsicFeeInfo = async (api, hexExtrinsic, blockHash, blockNumber, loggerOptions) => {
+const getExtrinsicFeeInfo = async (api, hexExtrinsic, blockHash, loggerOptions) => {
     try {
         const feeInfo = await api.rpc.payment.queryInfo(hexExtrinsic, blockHash);
         return JSON.stringify(feeInfo.toJSON());
     }
     catch (error) {
-        const scope = new Sentry.Scope();
-        scope.setTag('blockNumber', blockNumber);
-        Sentry.captureException(error, scope);
         logger_1.logger.debug(loggerOptions, `Error getting extrinsic fee info: ${error}`);
     }
     return '';
 };
 exports.getExtrinsicFeeInfo = getExtrinsicFeeInfo;
-const getExtrinsicFeeDetails = async (api, hexExtrinsic, blockHash, blockNumber, loggerOptions) => {
+const getExtrinsicFeeDetails = async (api, hexExtrinsic, blockHash, loggerOptions) => {
     try {
         const feeDetails = await api.rpc.payment.queryFeeDetails(hexExtrinsic, blockHash);
         return JSON.stringify(feeDetails.toJSON());
     }
     catch (error) {
-        const scope = new Sentry.Scope();
-        scope.setTag('blockNumber', blockNumber);
-        Sentry.captureException(error, scope);
         logger_1.logger.debug(loggerOptions, `Error getting extrinsic fee details: ${error}`);
     }
     return '';
@@ -203,8 +197,8 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
     let feeInfo = '';
     let feeDetails = '';
     if (isSigned) {
-        feeInfo = await (0, exports.getExtrinsicFeeInfo)(api, extrinsic.toHex(), blockHash, blockNumber, loggerOptions);
-        feeDetails = await (0, exports.getExtrinsicFeeDetails)(api, extrinsic.toHex(), blockHash, blockNumber, loggerOptions);
+        feeInfo = await (0, exports.getExtrinsicFeeInfo)(api, extrinsic.toHex(), blockHash, loggerOptions);
+        feeDetails = await (0, exports.getExtrinsicFeeDetails)(api, extrinsic.toHex(), blockHash, loggerOptions);
     }
     let data = [
         blockNumber,
