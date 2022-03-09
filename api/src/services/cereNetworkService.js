@@ -57,7 +57,7 @@ module.exports = {
     return networkParams.has(network.toUpperCase());
   },
   getBalance: async (network, address) => {
-    const { api } = networkParams.get(network.toUpperCase());
+    const { api, _ } = networkParams.get(network.toUpperCase());
     const { nonce, data: balance } = await api.query.system.account(address);
     return balance.free;
   },
