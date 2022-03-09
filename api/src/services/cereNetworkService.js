@@ -70,7 +70,7 @@ module.exports = {
         .signAndSend(faucet, { nonce }, ({ status }) => {
           if (status.isInBlock) {
             console.log(`Included in ${status.asInBlock}`);
-            resolve(status.asInBlock.toHex());
+            resolve({ trxHash: status.asInBlock.toHex(), sender: faucet.address });
           } else if (status.isFinalized) {
             console.log(`The transaction is Finalized ${status.asFinalized}`);
           }
