@@ -19,7 +19,7 @@ async function init() {
       network = network + '}'
     }
     const parsedNetwork = JSON.parse(network);
-    networkParams.set(parsedNetwork.NETWORK, await initNetwork(parsedNetwork.URL, parsedNetwork.MNEMONIC));
+    networkParams.set(parsedNetwork.NETWORK, await initNetwork(parsedNetwork.URL, parsedNetwork.MNEMONICS));
   });
 }
 
