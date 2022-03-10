@@ -264,7 +264,6 @@ app.get('/api/v1/batsignal/council-events', async (_req, res) => {
 
 // transfers in the last 30 days
 app.get('/api/v1/charts/transfers', async (_req, res) => {
-
   const chartData = [];
   const history = 30;
   const timestamps = [];
@@ -272,13 +271,13 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
 
   // today at 00:00:00.000
   const today = moment().set({
-    'year': now.year(),
-    'month': now.month(),
-    'date': now.date(),
-    'hour': 0,
-    'minute': 0,
-    'second': 0,
-    'millisecond': 0,
+    year: now.year(),
+    month: now.month(),
+    date: now.date(),
+    hour: 0,
+    minute: 0,
+    second: 0,
+    millisecond: 0,
   });
 
   const iterator = today.subtract(history, 'days');
@@ -298,10 +297,14 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
   // timestamps.map(([date, timestampMs]) => console.log(date, timestampMs));
 
   const client = await getClient();
-  const query = 'SELECT count(block_number) AS transfers FROM transfer WHERE timestamp >= $1 AND timestamp < $2;';
+  const query =
+    'SELECT count(block_number) AS transfers FROM transfer WHERE timestamp >= $1 AND timestamp < $2;';
 
   for (let index = 0; index < timestamps.length; index++) {
-    const dbres = await client.query(query, [timestamps[index], timestamps[index + 1]]);
+    const dbres = await client.query(query, [
+      timestamps[index][1],
+      timestamps[index + 1][1],
+    ]);
     chartData.push({
       date: timestamps[index][0],
       timestamp: timestamps[index][1],
