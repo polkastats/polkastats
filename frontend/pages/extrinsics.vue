@@ -369,31 +369,45 @@ export default {
           const metadataVersion = data.runtime[0].metadata_version
           this.metadata = data.runtime[0].metadata[metadataVersion]
           const palletsAndExtrinsics = []
-          this.metadata.pallets.forEach((pallet) => {
-            const callsId = pallet.calls?.type || null
-            const calls = []
-            const palletAndExtrinsics = {
-              name: pallet.name,
-              callsId,
-              calls,
-            }
-            if (callsId) {
-              this.metadata.lookup.types
-                .filter(
-                  ({ id, type }) => type.path.includes('Call') && id === callsId
-                )
-                .forEach(({ type }) => {
-                  type.def.variant.variants.forEach((variant) => {
-                    palletAndExtrinsics.calls.push(variant.name.toString())
+          if (metadataVersion !== 'v14') {
+            this.metadata.modules.forEach((module) => {
+              const palletAndExtrinsics = {
+                name: module.name,
+                calls:
+                  module.calls !== null
+                    ? module.calls.map((call) => call.name)
+                    : [],
+              }
+              palletsAndExtrinsics.push(palletAndExtrinsics)
+            })
+          } else {
+            this.metadata.pallets.forEach((pallet) => {
+              const callsId = pallet.calls?.type || null
+              const calls = []
+              const palletAndExtrinsics = {
+                name: pallet.name,
+                callsId,
+                calls,
+              }
+              if (callsId) {
+                this.metadata.lookup.types
+                  .filter(
+                    ({ id, type }) =>
+                      type.path.includes('Call') && id === callsId
+                  )
+                  .forEach(({ type }) => {
+                    type.def.variant.variants.forEach((variant) => {
+                      palletAndExtrinsics.calls.push(variant.name.toString())
+                    })
                   })
-                })
-            }
-            palletsAndExtrinsics.push(palletAndExtrinsics)
-          })
-          console.log(
-            'palletsAndExtrinsics:',
-            JSON.stringify(palletsAndExtrinsics, null, 2)
-          )
+              }
+              palletsAndExtrinsics.push(palletAndExtrinsics)
+            })
+          }
+          // console.log(
+          //   'palletsAndExtrinsics:',
+          //   JSON.stringify(palletsAndExtrinsics, null, 2)
+          // )
           this.palletsAndExtrinsics = palletsAndExtrinsics
         },
       },

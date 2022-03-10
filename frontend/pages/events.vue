@@ -350,28 +350,41 @@ export default {
           const metadataVersion = data.runtime[0].metadata_version
           this.metadata = data.runtime[0].metadata[metadataVersion]
           const palletsAndEvents = []
-          this.metadata.pallets.forEach((pallet) => {
-            const eventsId = pallet.events?.type || null
-            const events = []
-            const palletAndEvents = {
-              name: pallet.name,
-              eventsId,
-              events,
-            }
-            if (eventsId) {
-              this.metadata.lookup.types
-                .filter(
-                  ({ id, type }) =>
-                    type.path.includes('Event') && id === eventsId
-                )
-                .forEach(({ type }) => {
-                  type.def.variant.variants.forEach((variant) => {
-                    palletAndEvents.events.push(variant.name.toString())
+          if (metadataVersion !== 'v14') {
+            this.metadata.modules.forEach((module) => {
+              const palletAndEvents = {
+                name: module.name,
+                events:
+                  module.events !== null
+                    ? module.events.map((event) => event.name)
+                    : [],
+              }
+              palletsAndEvents.push(palletAndEvents)
+            })
+          } else {
+            this.metadata.pallets.forEach((pallet) => {
+              const eventsId = pallet.events?.type || null
+              const events = []
+              const palletAndEvents = {
+                name: pallet.name,
+                eventsId,
+                events,
+              }
+              if (eventsId) {
+                this.metadata.lookup.types
+                  .filter(
+                    ({ id, type }) =>
+                      type.path.includes('Event') && id === eventsId
+                  )
+                  .forEach(({ type }) => {
+                    type.def.variant.variants.forEach((variant) => {
+                      palletAndEvents.events.push(variant.name.toString())
+                    })
                   })
-                })
-            }
-            palletsAndEvents.push(palletAndEvents)
-          })
+              }
+              palletsAndEvents.push(palletAndEvents)
+            })
+          }
           this.palletsAndEvents = palletsAndEvents
         },
       },
