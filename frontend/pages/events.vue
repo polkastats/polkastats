@@ -224,7 +224,7 @@ export default {
           value: this.uncapitalize(palletName),
           text: palletName,
         }))
-      // console.log('modules:', palletNameOptions)
+      // console.log('modules:', palletNames)
       return [{ value: null, text: 'All' }].concat(palletNames)
     },
     palletEventOptions() {
