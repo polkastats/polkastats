@@ -35,7 +35,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'transfers in the last 30 days',
+          text: 'balance transfers in the last 30 days',
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -69,7 +69,7 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'transfers',
+                labelString: 'balance transfers',
               },
             },
           ],
