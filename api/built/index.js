@@ -288,7 +288,7 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
     timestamps.map(([date, timestampMs], index) => console.log(index, date, timestampMs));
     const client = await getClient();
     const query = 'SELECT count(block_number) AS transfers FROM transfer WHERE timestamp >= $1 AND timestamp < $2;';
-    for (let index = 0; index < timestamps.length; index++) {
+    for (let index = 0; index < timestamps.length - 1; index++) {
         const dbres = await client.query(query, [
             timestamps[index][1],
             timestamps[index + 1][1],
