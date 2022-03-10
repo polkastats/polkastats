@@ -265,7 +265,7 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
     const chartData = [];
     const now = (0, moment_1.default)();
     // today at 00:00:00.000
-    const today = (0, moment_1.default)().set({
+    const iterator = (0, moment_1.default)().set({
         year: now.year(),
         month: now.month(),
         date: now.date(),
@@ -274,12 +274,12 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
         second: 0,
         millisecond: 0,
     });
-    const iterator = today.subtract(history, 'days');
+    iterator.subtract(history, 'days');
     for (let offset = 1; offset <= history; offset++) {
         iterator.add(1, 'days');
         timestamps.push([
-            today.format('YYYY-MM-DD'),
-            today.valueOf(), // timestamp in ms
+            iterator.format('YYYY-MM-DD'),
+            iterator.valueOf(), // timestamp in ms
         ]);
     }
     timestamps.push([
