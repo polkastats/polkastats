@@ -284,13 +284,13 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
   for (let offset = 1; offset <= history; offset++) {
     iterator.add(1, 'days');
     timestamps.push([
-      today.format(),
+      today.format('YYYY-MMMM-dddd'),
       today.valueOf(), // timestamp in ms
     ]);
   }
 
   timestamps.push([
-    now.format(),
+    now.format('YYYY-MMMM-dddd'),
     now.valueOf(), // timestamp in ms
   ]);
 
@@ -307,7 +307,8 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
     ]);
     chartData.push({
       date: timestamps[index][0],
-      timestamp: timestamps[index][1],
+      fromTimestamp: timestamps[index][1], 
+      toTimestamp: timestamps[index + 1][1],
       transfers: dbres.rows[0].transfers,
     });
   }
