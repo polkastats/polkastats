@@ -156,7 +156,7 @@ export default {
             hash: hashResults[i + 1],
           })
         }
-        console.log('block hashes:', blockHashes)
+        // console.log('block hashes:', blockHashes)
 
         const balancePromises = []
 
@@ -194,9 +194,10 @@ export default {
             total,
           })
         }
-        console.log('balances:', balances)
+        // console.log('balances:', balances)
         return balances
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('error fetching balances:', error)
       }
     },

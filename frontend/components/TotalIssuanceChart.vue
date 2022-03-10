@@ -137,7 +137,7 @@ export default {
             hash: hashResults[i + 1],
           })
         }
-        console.log('block hashes:', blockHashes)
+        // console.log('block hashes:', blockHashes)
 
         const totalIssuancePromises = []
 
@@ -170,9 +170,10 @@ export default {
             value: totalIssuanceAtBlock,
           })
         }
-        console.log('total issuance:', balances)
+        // console.log('total issuance:', balances)
         return balances
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('error fetching total issuance:', error)
       }
     },

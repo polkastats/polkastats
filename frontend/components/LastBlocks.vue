@@ -84,7 +84,6 @@ export default {
           }
         `,
         result({ data }) {
-          console.log(data)
           this.blocks = data.block
         },
       },
