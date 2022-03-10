@@ -2,47 +2,47 @@
   <div class="last-transfers">
     <div class="table-responsive">
       <b-table striped hover :fields="fields" :items="transfers">
-        <template #cell(block_number)="data">
+        <template #cell(hash)="data">
           <p class="mb-0">
             <nuxt-link :to="`/transfer/${data.item.hash}`">
               {{ shortHash(data.item.hash) }}
             </nuxt-link>
           </p>
         </template>
-        <template #cell(from)="data">
+        <template #cell(source)="data">
           <p class="mb-0">
             <nuxt-link
-              :to="`/account/${data.item.from}`"
+              :to="`/account/${data.item.source}`"
               :title="$t('pages.accounts.account_details')"
             >
               <Identicon
-                :key="data.item.from"
-                :address="data.item.from"
+                :key="data.item.source"
+                :address="data.item.source"
                 :size="20"
               />
-              {{ shortAddress(data.item.from) }}
+              {{ shortAddress(data.item.source) }}
             </nuxt-link>
           </p>
         </template>
-        <template #cell(to)="data">
-          <div v-if="isValidAddressPolkadotAddress(data.item.to)">
+        <template #cell(destination)="data">
+          <div v-if="isValidAddressPolkadotAddress(data.item.destination)">
             <p class="mb-0">
               <nuxt-link
-                :to="`/account/${data.item.to}`"
+                :to="`/account/${data.item.destination}`"
                 :title="$t('pages.accounts.account_details')"
               >
                 <Identicon
-                  :key="data.item.to"
-                  :address="data.item.to"
+                  :key="data.item.destination"
+                  :address="data.item.destination"
                   :size="20"
                 />
-                {{ shortAddress(data.item.to) }}
+                {{ shortAddress(data.item.destination) }}
               </nuxt-link>
             </p>
           </div>
           <div v-else>
             <p class="mb-0">
-              {{ shortAddress(data.item.to || '') }}
+              {{ shortAddress(data.item.destination || '') }}
             </p>
           </div>
         </template>
@@ -58,7 +58,6 @@
 
 <script>
 import { gql } from 'graphql-tag'
-import { network } from '../frontend.config'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
 
@@ -72,18 +71,18 @@ export default {
       transfers: [],
       fields: [
         {
-          key: 'block_number',
+          key: 'hash',
           label: 'Hash',
           class: 'd-none d-sm-none d-md-none d-lg-block d-xl-block',
           sortable: true,
         },
         {
-          key: 'from',
+          key: 'source',
           label: 'From',
           sortable: true,
         },
         {
-          key: 'to',
+          key: 'destination',
           label: 'To',
           sortable: true,
         },
@@ -97,52 +96,19 @@ export default {
   },
   apollo: {
     $subscribe: {
-      extrinsic: {
+      transfers: {
         query: gql`
-          subscription extrinsic {
-            extrinsic(
-              order_by: { block_number: desc }
-              where: {
-                _or: [
-                  {
-                    section: { _eq: "currencies" }
-                    method: { _like: "transfer" }
-                  }
-                  {
-                    section: { _eq: "balances" }
-                    method: { _like: "transfer%" }
-                  }
-                ]
-              }
-              limit: 10
-            ) {
-              block_number
-              section
-              signer
+          subscription transfers {
+            transfer(limit: 10) {
               hash
-              args
+              source
+              destination
+              amount
             }
           }
         `,
         result({ data }) {
-          this.transfers = data.extrinsic.map((transfer) => {
-            return {
-              block_number: transfer.block_number,
-              hash: transfer.hash,
-              from: transfer.signer,
-              to: JSON.parse(transfer.args)[0].address20
-                ? JSON.parse(transfer.args)[0].address20
-                : JSON.parse(transfer.args)[0].id,
-              amount:
-                transfer.section === 'currencies'
-                  ? JSON.parse(transfer.args)[2]
-                  : JSON.parse(transfer.args)[1],
-              token:
-                transfer.section === 'currencies'
-                  ? JSON.parse(transfer.args)[1].token
-                  : network.tokenSymbol,
-            }
-          })
+          this.transfers = data.transfer
         },
       },
     },

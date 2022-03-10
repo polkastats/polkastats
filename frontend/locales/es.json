@@ -39,7 +39,7 @@
       "progress": "Progreso"
     },
     "transfers": {
-      "search": "Buscar transferencia por número de bloque, hash o dirección de procedencia",
+      "search": "Buscar transferencia por número de bloque, hash, dirección de origen o destino",
       "no_transfer_found": "No se han encontrado transferencias"
     },
     "staking_rewards": {

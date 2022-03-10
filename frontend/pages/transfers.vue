@@ -48,36 +48,29 @@
                     </nuxt-link>
                   </p>
                 </template>
-                <template #cell(from)="data">
+                <template #cell(source)="data">
                   <p class="mb-0">
-                    <Identicon :address="data.item.from" :size="20" />
+                    <Identicon :address="data.item.source" :size="20" />
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/account/${data.item.from}`"
+                      :to="`/account/${data.item.source}`"
                       :title="$t('pages.accounts.account_details')"
                     >
-                      {{ shortAddress(data.item.from) }}
+                      {{ shortAddress(data.item.source) }}
                     </nuxt-link>
                   </p>
                 </template>
-                <template #cell(to)="data">
-                  <div v-if="isValidAddressPolkadotAddress(data.item.to)">
-                    <p class="mb-0">
-                      <Identicon :address="data.item.to" :size="20" />
-                      <nuxt-link
-                        v-b-tooltip.hover
-                        :to="`/account/${data.item.to}`"
-                        :title="$t('pages.accounts.account_details')"
-                      >
-                        {{ shortAddress(data.item.to) }}
-                      </nuxt-link>
-                    </p>
-                  </div>
-                  <div v-else>
-                    <p class="mb-0">
-                      {{ shortAddress(data.item.to || '') }}
-                    </p>
-                  </div>
+                <template #cell(destination)="data">
+                  <p class="mb-0">
+                    <Identicon :address="data.item.destination" :size="20" />
+                    <nuxt-link
+                      v-b-tooltip.hover
+                      :to="`/account/${data.item.destination}`"
+                      :title="$t('pages.accounts.account_details')"
+                    >
+                      {{ shortAddress(data.item.destination) }}
+                    </nuxt-link>
+                  </p>
                 </template>
                 <template #cell(amount)="data">
                   <p class="mb-0">
@@ -188,12 +181,12 @@ export default {
           sortable: true,
         },
         {
-          key: 'from',
+          key: 'source',
           label: 'From',
           sortable: true,
         },
         {
-          key: 'to',
+          key: 'destination',
           label: 'To',
           sortable: true,
         },
@@ -234,43 +227,34 @@ export default {
   },
   apollo: {
     $subscribe: {
-      extrinsic: {
+      transfers: {
         query: gql`
-          subscription extrinsic(
+          subscription transfers(
             $blockNumber: bigint
-            $extrinsicHash: String
-            $fromAddress: String
+            $hash: String
+            $source: String
+            $destination: String
             $perPage: Int!
             $offset: Int!
           ) {
-            extrinsic(
+            transfer(
               limit: $perPage
               offset: $offset
               where: {
                 _or: [
-                  {
-                    section: { _eq: "currencies" }
-                    method: { _like: "transfer" }
-                    block_number: { _eq: $blockNumber }
-                    hash: { _eq: $extrinsicHash }
-                    signer: { _eq: $fromAddress }
-                  }
-                  {
-                    section: { _eq: "balances" }
-                    method: { _like: "transfer%" }
-                    block_number: { _eq: $blockNumber }
-                    hash: { _eq: $extrinsicHash }
-                    signer: { _eq: $fromAddress }
-                  }
+                  { block_number: { _eq: $blockNumber } }
+                  { hash: { _eq: $hash } }
+                  { source: { _eq: $source } }
+                  { destination: { _eq: $destination } }
                 ]
               }
               order_by: { block_number: desc, extrinsic_index: desc }
             ) {
               block_number
-              section
-              signer
               hash
-              args
+              source
+              destination
+              amount
               success
             }
           }
@@ -279,26 +263,16 @@ export default {
           return {
             blockNumber: this.isBlockNumber(this.filter)
               ? parseInt(this.filter)
-              : undefined,
-            extrinsicHash: this.isHash(this.filter) ? this.filter : undefined,
-            fromAddress: this.isAddress(this.filter) ? this.filter : undefined,
+              : -1,
+            hash: this.filter,
+            source: this.filter,
+            destination: this.filter,
             perPage: this.perPage,
             offset: (this.currentPage - 1) * this.perPage,
           }
         },
         result({ data }) {
-          this.transfers = data.extrinsic.map((transfer) => {
-            return {
-              block_number: transfer.block_number,
-              hash: transfer.hash,
-              from: transfer.signer,
-              to: JSON.parse(transfer.args)[0].id
-                ? JSON.parse(transfer.args)[0].id
-                : JSON.parse(transfer.args)[0],
-              amount: JSON.parse(transfer.args)[1],
-              success: transfer.success,
-            }
-          })
+          this.transfers = data.transfer
           this.loading = false
         },
       },
@@ -306,27 +280,17 @@ export default {
         query: gql`
           subscription count(
             $blockNumber: bigint
-            $extrinsicHash: String
-            $fromAddress: String
-            $toAddress: String
+            $hash: String
+            $source: String
+            $destination: String
           ) {
-            extrinsic_aggregate(
+            transfer_aggregate(
               where: {
                 _or: [
-                  {
-                    section: { _eq: "currencies" }
-                    method: { _like: "transfer" }
-                    block_number: { _eq: $blockNumber }
-                    hash: { _eq: $extrinsicHash }
-                    signer: { _eq: $fromAddress }
-                  }
-                  {
-                    section: { _eq: "balances" }
-                    method: { _like: "transfer%" }
-                    block_number: { _eq: $blockNumber }
-                    hash: { _eq: $extrinsicHash }
-                    signer: { _eq: $fromAddress }
-                  }
+                  { block_number: { _eq: $blockNumber } }
+                  { hash: { _eq: $hash } }
+                  { source: { _eq: $source } }
+                  { destination: { _eq: $destination } }
                 ]
               }
             ) {
@@ -340,13 +304,14 @@ export default {
           return {
             blockNumber: this.isBlockNumber(this.filter)
               ? parseInt(this.filter)
-              : undefined,
-            extrinsicHash: this.isHash(this.filter) ? this.filter : undefined,
-            fromAddress: this.isAddress(this.filter) ? this.filter : undefined,
+              : -1,
+            hash: this.filter,
+            source: this.filter,
+            destination: this.filter,
           }
         },
         result({ data }) {
-          this.totalRows = data.extrinsic_aggregate.aggregate.count
+          this.totalRows = data.transfer_aggregate.aggregate.count
         },
       },
     },

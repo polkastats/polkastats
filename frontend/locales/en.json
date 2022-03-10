@@ -198,7 +198,7 @@
       "title": "Transfers",
       "head_title": "PolkaStats - {networkName} transfers",
       "head_content": "{networkName} transfers",
-      "search_placeholder": "Search transfer by block number, hash or source address"
+      "search_placeholder": "Search transfer by block number, hash, source or destination address"
     },
     "activity": {
       "title": "Activity",

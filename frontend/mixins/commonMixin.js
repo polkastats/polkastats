@@ -34,8 +34,8 @@ export default {
       return s.charAt(0).toUpperCase() + s.slice(1)
     },
     isBlockNumber(input) {
-      const polkadotRegexp = /^[0-9]*$/
-      return polkadotRegexp.test(input)
+      const regexp = /^[0-9]*$/
+      return regexp.test(input)
     },
     async isBlockHash(input) {
       // 0xadb2179b1666fef3b56a5762c3db0152b2a0a7f3d4b47737a355262609d867b9
