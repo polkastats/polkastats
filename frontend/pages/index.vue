@@ -3,7 +3,8 @@
     <section>
       <b-container class="main py-5 dashboard">
         <Chain />
-        <TotalIssuanceChart />
+        <TransfersChart />
+        <!-- <TotalIssuanceChart /> -->
         <Search />
         <div class="row">
           <div class="col-md-6 mb-4">
@@ -66,7 +67,8 @@ import LastBlocks from '@/components/LastBlocks.vue'
 import LastTransfers from '@/components/LastTransfers.vue'
 import LastExtrinsics from '@/components/LastExtrinsics.vue'
 import LastEvents from '@/components/LastEvents.vue'
-import TotalIssuanceChart from '@/components/TotalIssuanceChart.vue'
+// import TotalIssuanceChart from '@/components/TotalIssuanceChart.vue'
+import TransfersChart from '@/components/TransfersChart.vue'
 import Chain from '@/components/Chain.vue'
 import Search from '@/components/Search.vue'
 // import Top10Rich from '@/components/Top10Rich.vue'
@@ -78,7 +80,8 @@ export default {
     LastTransfers,
     LastExtrinsics,
     LastEvents,
-    TotalIssuanceChart,
+    // TotalIssuanceChart,
+    TransfersChart,
     Chain,
     Search,
     // Top10Rich,

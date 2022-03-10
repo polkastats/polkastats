@@ -233,7 +233,7 @@
       - section
       - method
       - args
-      - args_def      
+      - args_def
       - hash
       - doc
       - fee_info
