@@ -290,7 +290,7 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
   }
 
   timestamps.push([
-    now.format('YYYY-MMMM-dddd'),
+    now.format('YYYY-MM-DD'),
     now.valueOf(), // timestamp in ms
   ]);
 
