@@ -294,7 +294,7 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
     now.valueOf(), // timestamp in ms
   ]);
 
-  // timestamps.map(([date, timestampMs]) => console.log(date, timestampMs));
+  timestamps.map(([date, timestampMs], index) => console.log(index, date, timestampMs));
 
   const client = await getClient();
   const query =
