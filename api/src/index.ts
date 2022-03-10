@@ -284,7 +284,7 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
   for (let offset = 1; offset <= history; offset++) {
     iterator.add(1, 'days');
     timestamps.push([
-      today.format('YYYY-MMMM-dddd'),
+      today.format('YYYY-MM-DD'),
       today.valueOf(), // timestamp in ms
     ]);
   }
