@@ -314,17 +314,20 @@ INSERT INTO total (name, count) VALUES
 CREATE INDEX IF NOT EXISTS block_finalized_idx ON block (finalized);
 CREATE INDEX IF NOT EXISTS block_block_number_idx ON block (block_number);
 CREATE INDEX IF NOT EXISTS block_block_hash_idx ON block (block_hash);
+CREATE INDEX IF NOT EXISTS block_timestamp_idx ON block (timestamp);
 
 CREATE INDEX IF NOT EXISTS extrinsic_block_number_idx ON extrinsic (block_number);
 CREATE INDEX IF NOT EXISTS extrinsic_section_idx ON extrinsic (section);
 CREATE INDEX IF NOT EXISTS extrinsic_method_idx ON extrinsic (method);
 CREATE INDEX IF NOT EXISTS extrinsic_signer_idx ON extrinsic (signer);
+CREATE INDEX IF NOT EXISTS extrinsic_timestamp_idx ON extrinsic (timestamp);
 
 CREATE INDEX IF NOT EXISTS signed_extrinsic_block_number_idx ON signed_extrinsic (block_number);
 CREATE INDEX IF NOT EXISTS signed_extrinsic_section_idx ON signed_extrinsic (section);
 CREATE INDEX IF NOT EXISTS signed_extrinsic_method_idx ON signed_extrinsic (method);
 CREATE INDEX IF NOT EXISTS signed_extrinsic_signer_idx ON signed_extrinsic (signer);
 CREATE INDEX IF NOT EXISTS signed_extrinsic_hash_idx ON signed_extrinsic (hash);
+CREATE INDEX IF NOT EXISTS signed_extrinsic_timestamp_idx ON signed_extrinsic (timestamp);
 
 CREATE INDEX IF NOT EXISTS transfer_block_number_idx ON transfer (block_number);
 CREATE INDEX IF NOT EXISTS transfer_section_idx ON transfer (section);
@@ -332,6 +335,7 @@ CREATE INDEX IF NOT EXISTS transfer_method_idx ON transfer (method);
 CREATE INDEX IF NOT EXISTS transfer_source_idx ON transfer (source);
 CREATE INDEX IF NOT EXISTS transfer_destination_idx ON transfer (destination);
 CREATE INDEX IF NOT EXISTS transfer_hash_idx ON transfer (hash);
+CREATE INDEX IF NOT EXISTS transfer_timestamp_idx ON transfer (timestamp);
 
 CREATE INDEX IF NOT EXISTS event_block_number_idx ON event (block_number);
 CREATE INDEX IF NOT EXISTS event_section_idx ON event (section);
