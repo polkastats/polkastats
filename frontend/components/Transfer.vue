@@ -45,14 +45,14 @@
         <tr>
           <td>From</td>
           <td>
-            <div v-if="transfer.signer">
+            <div v-if="transfer.source">
               <Identicon
-                :key="transfer.signer"
-                :address="transfer.signer"
+                :key="transfer.source"
+                :address="transfer.source"
                 :size="20"
               />
-              <nuxt-link :to="`/account/${transfer.signer}`">
-                {{ transfer.signer }}
+              <nuxt-link :to="`/account/${transfer.source}`">
+                {{ transfer.source }}
               </nuxt-link>
             </div>
           </td>
@@ -60,29 +60,27 @@
         <tr>
           <td>To</td>
           <td>
-            <div v-if="JSON.parse(transfer.args)[0].id">
-              <Identicon
-                :key="JSON.parse(transfer.args)[0].id"
-                :address="JSON.parse(transfer.args)[0].id"
-                :size="20"
-              />
-              <nuxt-link :to="`/account/${JSON.parse(transfer.args)[0].id}`">
-                {{ JSON.parse(transfer.args)[0].id }}
-              </nuxt-link>
-            </div>
+            <Identicon
+              :key="transfer.destination"
+              :address="transfer.destination"
+              :size="20"
+            />
+            <nuxt-link :to="`/account/${transfer.destination}`">
+              {{ transfer.destination }}
+            </nuxt-link>
           </td>
         </tr>
         <tr>
           <td>Amount</td>
           <td>
-            {{ formatAmount(JSON.parse(transfer.args)[1]) }}
+            {{ formatAmount(transfer.amount, 6) }}
           </td>
         </tr>
         <tr>
           <td>Fee</td>
           <td class="amount">
-            <div v-if="transfer.fee_info">
-              {{ formatAmount(JSON.parse(transfer.fee_info).partialFee, 6) }}
+            <div v-if="transfer.fee_amount">
+              {{ formatAmount(transfer.fee_amount, 6) }}
             </div>
           </td>
         </tr>
