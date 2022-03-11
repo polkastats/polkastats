@@ -1,7 +1,12 @@
 // @ts-check
 import * as Sentry from '@sentry/node';
 import { ApiPromise } from '@polkadot/api';
-import { BlockHash, EventRecord } from '@polkadot/types/interfaces';
+import {
+  BlockHash,
+  EventRecord,
+  FeeDetails,
+  RuntimeDispatchInfo,
+} from '@polkadot/types/interfaces';
 import { AnyTuple } from '@polkadot/types/types';
 import { GenericExtrinsic, Vec } from '@polkadot/types';
 import { ApiDecoration } from '@polkadot/api/types';
@@ -20,24 +25,40 @@ Sentry.init({
 // Used for processing events and extrinsics
 const chunkSize = 100;
 
-export const getExtrinsicFeeInfo = async (api: ApiPromise, hexExtrinsic: string, blockHash: BlockHash, loggerOptions: LoggerOptions): Promise<string> => {
+export const getExtrinsicFeeInfo = async (
+  api: ApiPromise,
+  hexExtrinsic: string,
+  blockHash: BlockHash,
+  loggerOptions: LoggerOptions,
+): Promise<RuntimeDispatchInfo> | null => {
   try {
     const feeInfo = await api.rpc.payment.queryInfo(hexExtrinsic, blockHash);
-    return JSON.stringify(feeInfo.toJSON());
+    return feeInfo;
   } catch (error) {
     logger.debug(loggerOptions, `Error getting extrinsic fee info: ${error}`);
   }
-  return '';
+  return null;
 };
 
-export const getExtrinsicFeeDetails = async (api: ApiPromise, hexExtrinsic: string, blockHash: BlockHash, loggerOptions: LoggerOptions): Promise<string> => {
+export const getExtrinsicFeeDetails = async (
+  api: ApiPromise,
+  hexExtrinsic: string,
+  blockHash: BlockHash,
+  loggerOptions: LoggerOptions,
+): Promise<FeeDetails> | null => {
   try {
-    const feeDetails = await api.rpc.payment.queryFeeDetails(hexExtrinsic, blockHash);
-    return JSON.stringify(feeDetails.toJSON());
+    const feeDetails = await api.rpc.payment.queryFeeDetails(
+      hexExtrinsic,
+      blockHash,
+    );
+    return feeDetails;
   } catch (error) {
-    logger.debug(loggerOptions, `Error getting extrinsic fee details: ${error}`);
+    logger.debug(
+      loggerOptions,
+      `Error getting extrinsic fee details: ${error}`,
+    );
   }
-  return '';
+  return null;
 };
 
 export const getExtrinsicSuccessOrErrorMessage = (
@@ -100,7 +121,7 @@ export const processTransfer = async (
   args: string,
   hash: string,
   signer: string,
-  feeInfo: string,
+  feeInfo: RuntimeDispatchInfo | null,
   success: boolean,
   errorMessage: string,
   timestamp: number,
@@ -126,14 +147,18 @@ export const processTransfer = async (
         ? 0
         : getTransferAllAmount(blockNumber, extrinsicIndex, blockEvents);
   } else if (method === 'transferAll' && !success) {
-    // We can't get amount in this case cause no event is emitted
+    // no event is emitted so we can't get amount
     amount = 0;
   } else if (method === 'forceTransfer') {
     amount = JSON.parse(args)[2];
   } else {
     amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
   }
-  const feeAmount = JSON.parse(feeInfo).partialFee;
+  // fee calculation not supported for some runtimes
+  const feeAmount =
+    typeof feeInfo !== null
+      ? new BigNumber(JSON.stringify(feeInfo.toJSON().partialFee)).toString(10)
+      : null;
   const data = [
     blockNumber,
     extrinsicIndex,
@@ -143,7 +168,7 @@ export const processTransfer = async (
     source,
     destination,
     new BigNumber(amount).toString(10),
-    new BigNumber(feeAmount).toString(10),
+    feeAmount,
     success,
     errorMessage,
     timestamp,
@@ -225,11 +250,21 @@ export const processExtrinsic = async (
     extrinsicIndex,
     blockEvents,
   );
-  let feeInfo = '';
-  let feeDetails = '';
+  let feeInfo = null;
+  let feeDetails = null;
   if (isSigned) {
-    feeInfo = await getExtrinsicFeeInfo(api, extrinsic.toHex(), blockHash, loggerOptions);
-    feeDetails = await getExtrinsicFeeDetails(api, extrinsic.toHex(), blockHash, loggerOptions);
+    feeInfo = await getExtrinsicFeeInfo(
+      api,
+      extrinsic.toHex(),
+      blockHash,
+      loggerOptions,
+    );
+    feeDetails = await getExtrinsicFeeDetails(
+      api,
+      extrinsic.toHex(),
+      blockHash,
+      loggerOptions,
+    );
   }
   let data = [
     blockNumber,
@@ -242,8 +277,8 @@ export const processExtrinsic = async (
     argsDef,
     hash,
     doc,
-    feeInfo,
-    feeDetails,
+    typeof feeInfo !== null ? JSON.stringify(feeInfo.toJSON()) : null,
+    typeof feeDetails !== null ? JSON.stringify(feeDetails.toJSON()) : null,
     success,
     errorMessage,
     timestamp,
@@ -315,8 +350,8 @@ export const processExtrinsic = async (
       argsDef,
       hash,
       doc,
-      feeInfo,
-      feeDetails,
+      typeof feeInfo !== null ? JSON.stringify(feeInfo.toJSON()) : null,
+      typeof feeDetails !== null ? JSON.stringify(feeDetails.toJSON()) : null,
       success,
       errorMessage,
       timestamp,

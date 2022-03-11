@@ -35,23 +35,23 @@ const chunkSize = 100;
 const getExtrinsicFeeInfo = async (api, hexExtrinsic, blockHash, loggerOptions) => {
     try {
         const feeInfo = await api.rpc.payment.queryInfo(hexExtrinsic, blockHash);
-        return JSON.stringify(feeInfo.toJSON());
+        return feeInfo;
     }
     catch (error) {
         logger_1.logger.debug(loggerOptions, `Error getting extrinsic fee info: ${error}`);
     }
-    return '';
+    return null;
 };
 exports.getExtrinsicFeeInfo = getExtrinsicFeeInfo;
 const getExtrinsicFeeDetails = async (api, hexExtrinsic, blockHash, loggerOptions) => {
     try {
         const feeDetails = await api.rpc.payment.queryFeeDetails(hexExtrinsic, blockHash);
-        return JSON.stringify(feeDetails.toJSON());
+        return feeDetails;
     }
     catch (error) {
         logger_1.logger.debug(loggerOptions, `Error getting extrinsic fee details: ${error}`);
     }
-    return '';
+    return null;
 };
 exports.getExtrinsicFeeDetails = getExtrinsicFeeDetails;
 const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents) => {
@@ -116,7 +116,7 @@ const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents,
                 : (0, exports.getTransferAllAmount)(blockNumber, extrinsicIndex, blockEvents);
     }
     else if (method === 'transferAll' && !success) {
-        // We can't get amount in this case cause no event is emitted
+        // no event is emitted so we can't get amount
         amount = 0;
     }
     else if (method === 'forceTransfer') {
@@ -125,7 +125,10 @@ const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents,
     else {
         amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
     }
-    const feeAmount = JSON.parse(feeInfo).partialFee;
+    // fee calculation not supported for some runtimes
+    const feeAmount = typeof feeInfo !== null
+        ? new bignumber_js_1.BigNumber(JSON.stringify(feeInfo.toJSON().partialFee)).toString(10)
+        : null;
     const data = [
         blockNumber,
         extrinsicIndex,
@@ -135,7 +138,7 @@ const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents,
         source,
         destination,
         new bignumber_js_1.BigNumber(amount).toString(10),
-        new bignumber_js_1.BigNumber(feeAmount).toString(10),
+        feeAmount,
         success,
         errorMessage,
         timestamp,
@@ -194,8 +197,8 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
     const doc = JSON.stringify(extrinsic.meta.docs.toJSON());
     // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
     const [success, errorMessage] = (0, exports.getExtrinsicSuccessOrErrorMessage)(apiAt, extrinsicIndex, blockEvents);
-    let feeInfo = '';
-    let feeDetails = '';
+    let feeInfo = null;
+    let feeDetails = null;
     if (isSigned) {
         feeInfo = await (0, exports.getExtrinsicFeeInfo)(api, extrinsic.toHex(), blockHash, loggerOptions);
         feeDetails = await (0, exports.getExtrinsicFeeDetails)(api, extrinsic.toHex(), blockHash, loggerOptions);
@@ -211,8 +214,8 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
         argsDef,
         hash,
         doc,
-        feeInfo,
-        feeDetails,
+        typeof feeInfo !== null ? JSON.stringify(feeInfo.toJSON()) : null,
+        typeof feeDetails !== null ? JSON.stringify(feeDetails.toJSON()) : null,
         success,
         errorMessage,
         timestamp,
@@ -274,8 +277,8 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
             argsDef,
             hash,
             doc,
-            feeInfo,
-            feeDetails,
+            typeof feeInfo !== null ? JSON.stringify(feeInfo.toJSON()) : null,
+            typeof feeDetails !== null ? JSON.stringify(feeDetails.toJSON()) : null,
             success,
             errorMessage,
             timestamp,

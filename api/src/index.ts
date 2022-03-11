@@ -264,7 +264,6 @@ app.get('/api/v1/batsignal/council-events', async (_req, res) => {
 
 // transfers in the last 30 days
 app.get('/api/v1/charts/transfers', async (_req, res) => {
-
   const history = 30;
 
   const timestamps = [];
@@ -300,7 +299,7 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
   for (let index = 0; index < timestamps.length - 1; index++) {
     timePeriods.push({
       date: timestamps[index][0],
-      fromTimestamp: timestamps[index][1], 
+      fromTimestamp: timestamps[index][1],
       toTimestamp: timestamps[index + 1][1],
     });
   }
@@ -310,7 +309,9 @@ app.get('/api/v1/charts/transfers', async (_req, res) => {
     'SELECT count(block_number) AS transfers FROM transfer WHERE timestamp >= $1 AND timestamp < $2;';
 
   const transferData = await Promise.all(
-    timePeriods.map((timePeriod) => client.query(query, [ timePeriod.fromTimestamp, timePeriod.toTimestamp ])),
+    timePeriods.map((timePeriod) =>
+      client.query(query, [timePeriod.fromTimestamp, timePeriod.toTimestamp]),
+    ),
   );
 
   for (let index = 0; index < timestamps.length - 1; index++) {
