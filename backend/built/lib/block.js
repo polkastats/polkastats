@@ -150,6 +150,7 @@ const storeMetadata = async (client, blockNumber, blockHash, specName, specVersi
 };
 exports.storeMetadata = storeMetadata;
 const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => {
+    var _a;
     const startTime = new Date().getTime();
     try {
         const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
@@ -160,14 +161,8 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             api.derive.chain.getHeader(blockHash),
             apiAt.query.balances.totalIssuance(),
             api.rpc.state.getRuntimeVersion(blockHash),
-            apiAt.query.staking
-                .activeEra()
-                .then((res) => (res.toJSON() ? res.toJSON().index : 0))
-                .catch((e) => {
-                console.log(e);
-                return 0;
-            }),
-            apiAt.query.session.currentIndex().then((res) => res || 0),
+            ((_a = apiAt.query) === null || _a === void 0 ? void 0 : _a.staking.activeEra) ? apiAt.query.staking.activeEra() : 0,
+            apiAt.query.session.currentIndex(),
             apiAt.query.timestamp.now(),
         ]);
         const blockAuthor = blockHeader.author || '';
