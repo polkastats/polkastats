@@ -86,9 +86,8 @@ export default {
       if (timestamp === 0) {
         return `--`
       }
-      const newDate = new Date()
-      newDate.setTime(timestamp)
-      return newDate.toUTCString()
+      const date = moment.unix(timestamp / 1000)
+      return `${date.utc().format('YYYY-MM-DD HH:mm:ss')} UTC`
     },
     isValidAddressPolkadotAddress: (address) => {
       try {

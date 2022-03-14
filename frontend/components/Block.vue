@@ -20,6 +20,7 @@
                 <td>{{ $t('details.block.timestamp') }}</td>
                 <td class="text-right">
                   <p class="mb-0">
+                    <font-awesome-icon icon="clock" class="text-light" />
                     {{ getDateFromTimestamp(parsedBlock.timestamp) }} ({{
                       fromNow(parsedBlock.timestamp)
                     }})
@@ -96,9 +97,8 @@
                   <p class="mb-0">{{ parsedBlock.state_root }}</p>
                 </td>
               </tr>
-
               <tr>
-                <td>{{ $t('details.block.currrent_index') }}</td>
+                <td>{{ $t('details.block.current_index') }}</td>
                 <td class="text-right">
                   <p class="mb-0">{{ parsedBlock.current_index }}</p>
                 </td>
@@ -109,13 +109,6 @@
                   <p class="mb-0">{{ parsedBlock.active_era }}</p>
                 </td>
               </tr>
-
-              <!-- <tr>
-                <td>{{ $t('details.block.spec_name') }}</td>
-                <td class="text-right">
-                  <p class="mb-0">{{ parsedBlock.spec_name }}</p>
-                </td>
-              </tr> -->
               <tr>
                 <td>{{ $t('details.block.spec_version') }}</td>
                 <td class="text-right">

@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import commonMixin from '@/mixins/commonMixin.js'
 import { gql } from 'graphql-tag'
+import commonMixin from '@/mixins/commonMixin.js'
 
 export default {
   mixins: [commonMixin],
