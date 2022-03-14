@@ -265,15 +265,6 @@ export const processExtrinsic = async (
       blockHash,
       loggerOptions,
     );
-    // debug
-    logger.info(
-      loggerOptions,
-      `DEBUG feeInfo #${blockNumber}-${extrinsicIndex}: ${JSON.stringify(feeInfo)}`,
-    );
-    logger.info(
-      loggerOptions,
-      `DEBUG feeDetails #${blockNumber}-${extrinsicIndex}: ${JSON.stringify(feeDetails)}`,
-    );
   }
   let data = [
     blockNumber,
