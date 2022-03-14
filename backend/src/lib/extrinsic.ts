@@ -156,7 +156,7 @@ export const processTransfer = async (
   }
   // fee calculation not supported for some runtimes
   const feeAmount =
-    typeof feeInfo !== null
+    !!feeInfo
       ? new BigNumber(JSON.stringify(feeInfo.toJSON().partialFee)).toString(10)
       : null;
   const data = [
@@ -286,8 +286,8 @@ export const processExtrinsic = async (
     argsDef,
     hash,
     doc,
-    typeof feeInfo !== null ? JSON.stringify(feeInfo.toJSON()) : null,
-    typeof feeDetails !== null ? JSON.stringify(feeDetails.toJSON()) : null,
+    !!feeInfo ? JSON.stringify(feeInfo.toJSON()) : null,
+    !!feeDetails ? JSON.stringify(feeDetails.toJSON()) : null,
     success,
     errorMessage,
     timestamp,
@@ -359,8 +359,8 @@ export const processExtrinsic = async (
       argsDef,
       hash,
       doc,
-      typeof feeInfo !== null ? JSON.stringify(feeInfo.toJSON()) : null,
-      typeof feeDetails !== null ? JSON.stringify(feeDetails.toJSON()) : null,
+      !!feeInfo ? JSON.stringify(feeInfo.toJSON()) : null,
+      !!feeDetails ? JSON.stringify(feeDetails.toJSON()) : null,
       success,
       errorMessage,
       timestamp,
