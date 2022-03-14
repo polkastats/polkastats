@@ -203,6 +203,9 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
         feeInfo = await (0, exports.getExtrinsicFeeInfo)(api, extrinsic.toHex(), blockHash, loggerOptions);
         feeDetails = await (0, exports.getExtrinsicFeeDetails)(api, extrinsic.toHex(), blockHash, loggerOptions);
     }
+    // debug
+    logger_1.logger.info(loggerOptions, `DEBUG feeInfo: ${JSON.stringify(feeInfo)}`);
+    logger_1.logger.info(loggerOptions, `DEBUG feeDetails: ${JSON.stringify(feeDetails)}`);
     let data = [
         blockNumber,
         extrinsicIndex,
