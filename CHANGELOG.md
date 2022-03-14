@@ -1,8 +1,18 @@
 # Cere Stats
-## vNext
 
+## vNext
 - ...
 
+## v0.7.0
+
+- Removed auto-payout and participation in governance filters
+- Implemented charts framework for cumulative line and bar types
+- Implemented Signed Extrinsic charts
+- Fixed hand icon colour, when validator is selected
+- Renamed 'Total issuance' to 'Total supply' on home page
+- Updated validators count format on home page
+- Removed 'Total transactions fees' on home page
+- Added total/circulating-supply API
 
 ## v0.6.0
 

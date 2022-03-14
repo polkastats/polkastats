@@ -158,7 +158,6 @@ h1 {
   padding-bottom: 1.125rem;
 }
 
-
 .nav-tabs .nav-item a {
   color: $light;
 }
@@ -166,7 +165,18 @@ h1 {
 .identicon {
   cursor: pointer;
 }
-.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
 }
 .chain-info h4 {
@@ -195,7 +205,8 @@ h1 {
   margin-right: 0.2rem;
   cursor: copy;
 }
-.dashboard h3, .dashboard .h3 {
+.dashboard h3,
+.dashboard .h3 {
   font-size: 1.2rem;
   text-transform: uppercase;
 }
@@ -236,10 +247,19 @@ h1 {
   text-align: right;
 }
 @media (max-width: 767.98px) {
-  .page-accounts .table.b-table.b-table-stacked-md > tbody > tr > [data-label]::before {
+  .page-accounts
+    .table.b-table.b-table-stacked-md
+    > tbody
+    > tr
+    > [data-label]::before {
     display: none;
   }
-  .page-accounts  .table.b-table.b-table-stacked-md > tbody > tr > [data-label] > div {
+  .page-accounts
+    .table.b-table.b-table-stacked-md
+    > tbody
+    > tr
+    > [data-label]
+    > div {
     width: 100%;
   }
 }
@@ -510,6 +530,12 @@ section .section-title {
 .select {
   cursor: pointer;
 }
+.selected {
+  color: #bd32a7;
+}
+.unselected {
+  color: #001c70 !important;
+}
 .ranking .select .selected,
 .ranking .select .unselected {
   font-size: 1.2rem;
@@ -560,7 +586,6 @@ section .section-title {
   cursor: pointer;
 }
 
-
 // verifiedIcon component
 .verified .circle {
   color: #0fccd6;
@@ -572,5 +597,41 @@ section .section-title {
 @media (max-width: 768px) {
   .btn {
     font-size: 0.8rem !important;
+  }
+}
+
+// charts
+.canvas-chart {
+  background-image: url('../../../static/img/cere-charts-watermark.png');
+  background-repeat: no-repeat;
+  background-position: 22% 30%;
+  background-size: 70px;
+}
+
+@media only screen and (min-width: 600px) {
+  .canvas-chart {
+    background-size: 70px;
+    background-position: 22% 30%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .canvas-chart {
+    background-size: 100px;
+    background-position: 14% 25%;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .canvas-chart {
+    background-size: 150px;
+    background-position: 12% 20%;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .canvas-chart {
+    background-size: 200px;
+    background-position: 10% 20%;
   }
 }

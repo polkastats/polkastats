@@ -112,7 +112,7 @@
         <div class="card h-100">
           <div class="card-body">
             <h4 class="mb-3 title">
-              {{ $t('components.network.total_issuance') }}
+              {{ $t('components.network.total_supply') }}
             </h4>
             <h6 class="d-inline-block">
               {{ formatAmount(totalIssuance) }}
@@ -155,7 +155,7 @@
             </h4>
             <h6 class="d-inline-block">
               {{ formatNumber(totalValidators) }} /
-              {{ formatNumber(totalWaiting) }}
+              {{ formatNumber(totalWaiting + totalValidators) }}
             </h6>
           </div>
         </div>
@@ -201,6 +201,7 @@ export default {
       totalWaiting: 0,
       totalNominators: 0,
       minStake: 0,
+      totalTransactionsFees: 0,
     }
   },
   computed: {

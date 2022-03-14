@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.0.0",
+  "version": "0.7.0",
   "description": "PolkaStats NG frontend",
   "author": "Mario Pino Uceda",
   "license": "Apache-2.0",
@@ -39,7 +39,7 @@
     "axios": "^0.23.0",
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
-    "chart.js": "^2.9.4",
+    "chart.js": "2.9.4",
     "cookie-universal-nuxt": "^2.1.4",
     "core-js": "^3.8.2",
     "nuxt": "^2.14.12",

@@ -200,15 +200,15 @@
           <span
             v-b-tooltip.hover
             :title="`
-              Active: ${data.item.activeRating}, 
-              Subaccounts: ${data.item.subAccountsRating}, 
-              Identity: ${data.item.identityRating}, 
-              Address: ${data.item.addressCreationRating}, 
-              Nominators: ${data.item.nominatorsRating}, 
-              Commission: ${data.item.commissionRating}, 
-              EraPoints: ${data.item.eraPointsRating}, 
-              Slash: ${data.item.slashRating}, 
-              Governance: ${data.item.governanceRating}, 
+              Active: ${data.item.activeRating},
+              Subaccounts: ${data.item.subAccountsRating},
+              Identity: ${data.item.identityRating},
+              Address: ${data.item.addressCreationRating},
+              Nominators: ${data.item.nominatorsRating},
+              Commission: ${data.item.commissionRating},
+              EraPoints: ${data.item.eraPointsRating},
+              Slash: ${data.item.slashRating},
+              Governance: ${data.item.governanceRating},
               Payouts: ${data.item.payoutRating}
             `"
             >{{ data.item.totalRating }}</span
@@ -230,7 +230,7 @@
               <font-awesome-icon
                 v-else
                 icon="hand-paper"
-                class="unselected text-primary2"
+                class="unselected text-secondary"
               />
             </a>
           </p>
@@ -355,14 +355,9 @@ export default {
         { text: 'Oversubscribed', value: 'oversubscribed' },
         { text: 'No identity', value: 'noIdentity' },
         { text: 'No verified identity', value: 'noVerifiedIdentity' },
-        { text: 'No auto-payout', value: 'noAutoPayout' },
         {
           text: 'Below average era points',
           value: 'belowAverageEraPoints',
-        },
-        {
-          text: 'No participation in governance',
-          value: 'noParticipateGovernance',
         },
         {
           text: 'Cluster member excess',

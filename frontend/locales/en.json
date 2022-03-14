@@ -17,11 +17,12 @@
       "era": "Era",
       "accounts": "Accounts",
       "total_staked": "Total staked",
-      "total_issuance": "Total issuance",
+      "total_supply": "Total supply",
       "transfers": "Transfers",
       "nominators": "Nominators",
       "validators": "Validators",
-      "signedTransactions": "Total transactions"
+      "signedTransactions": "Total transactions",
+      "transactionsFees": "Total transactions fees"
     },
     "chain": {
       "last_block": "Last block",
@@ -36,7 +37,7 @@
       "total_issuance": "Total issuance",
       "staked": "Staked",
       "waiting_validators": "Waiting",
-      "nominators": "Nominators" ,
+      "nominators": "Nominators",
       "progress": "Progress"
     },
     "transfers": {
@@ -66,6 +67,7 @@
       "nominators": "Nominators",
       "accounts": "Accounts",
       "faucet": "Faucet",
+      "charts": "Charts",
       "get_in_contact": "Get in contact",
       "about_us": "About us",
       "support_polkastats": "Support Polkastats",
@@ -287,6 +289,11 @@
       "title": "Faucet",
       "head_title": "Cere Stats - Faucet",
       "head_content": "{networkName} Faucet"
+    },
+    "charts": {
+      "title": "Charts",
+      "head_title": "Cere Stats - Charts",
+      "head_content": "Cere Stats - Charts"
     }
   },
   "details": {
