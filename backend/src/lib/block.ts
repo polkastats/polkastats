@@ -197,7 +197,7 @@ export const harvestBlock = async (
       api.derive.chain.getHeader(blockHash),
       apiAt.query.balances.totalIssuance(),
       api.rpc.state.getRuntimeVersion(blockHash),
-      apiAt.query?.staking.activeEra ? apiAt.query.staking.activeEra() : 0,
+      apiAt.query?.staking.activeEra ? apiAt.query.staking.activeEra().then(res => res.unwrap().index) : 0,
       apiAt.query.session.currentIndex(),
       apiAt.query.timestamp.now(),
     ]);
