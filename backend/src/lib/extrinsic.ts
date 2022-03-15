@@ -65,6 +65,7 @@ export const getExtrinsicSuccessOrErrorMessage = (
   apiAt: ApiDecoration<'promise'>,
   index: number,
   blockEvents: Vec<EventRecord>,
+  blockNumber: number,
 ): [boolean, string] => {
   let extrinsicSuccess = false;
   let extrinsicErrorMessage = '';
@@ -78,8 +79,15 @@ export const getExtrinsicSuccessOrErrorMessage = (
       } else if (apiAt.events.system.ExtrinsicFailed.is(event)) {
         const [dispatchError] = event.data;
         if (dispatchError.isModule) {
-          const decoded = apiAt.registry.findMetaError(dispatchError.asModule);
-          extrinsicErrorMessage = `${decoded.name}: ${decoded.docs}`;
+          let decoded;
+          try {
+            decoded = apiAt.registry.findMetaError(dispatchError.asModule);
+            extrinsicErrorMessage = `${decoded.name}: ${decoded.docs}`;
+          } catch (error) {
+            const scope = new Sentry.Scope();
+            scope.setTag('blockNumber', blockNumber);
+            Sentry.captureException(error, scope);
+          }
         } else {
           extrinsicErrorMessage = dispatchError.toString();
         }
@@ -248,6 +256,7 @@ export const processExtrinsic = async (
     apiAt,
     extrinsicIndex,
     blockEvents,
+    blockNumber,
   );
   let feeInfo = null;
   let feeDetails = null;
