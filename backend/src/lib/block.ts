@@ -197,7 +197,9 @@ export const harvestBlock = async (
       api.derive.chain.getHeader(blockHash),
       apiAt.query.balances.totalIssuance(),
       api.rpc.state.getRuntimeVersion(blockHash),
-      apiAt.query?.staking.activeEra ? apiAt.query.staking.activeEra().then(res => res.unwrap().index) : 0,
+      apiAt.query?.staking.activeEra
+        ? apiAt.query.staking.activeEra().then((res) => res.unwrap().index)
+        : 0,
       apiAt.query.session.currentIndex(),
       apiAt.query.timestamp.now(),
     ]);
@@ -294,9 +296,11 @@ export const harvestBlock = async (
     }
 
     // Runtime upgrade
-    const runtimeUpgrade = blockEvents.find(({ event }) =>
-      apiAt.events.system.CodeUpdated.is(event),
+    const runtimeUpgrade = blockEvents.find(
+      ({ event: { section, method } }) =>
+        section === 'system' && method === 'CodeUpdated',
     );
+
     if (runtimeUpgrade) {
       const specName = runtimeVersion.toJSON().specName;
       const specVersion = runtimeVersion.specVersion;

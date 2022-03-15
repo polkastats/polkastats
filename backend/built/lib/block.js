@@ -161,7 +161,9 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             api.derive.chain.getHeader(blockHash),
             apiAt.query.balances.totalIssuance(),
             api.rpc.state.getRuntimeVersion(blockHash),
-            ((_a = apiAt.query) === null || _a === void 0 ? void 0 : _a.staking.activeEra) ? apiAt.query.staking.activeEra().then(res => res.unwrap().index) : 0,
+            ((_a = apiAt.query) === null || _a === void 0 ? void 0 : _a.staking.activeEra)
+                ? apiAt.query.staking.activeEra().then((res) => res.unwrap().index)
+                : 0,
             apiAt.query.session.currentIndex(),
             apiAt.query.timestamp.now(),
         ]);
@@ -245,7 +247,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             Sentry.captureException(error, scope);
         }
         // Runtime upgrade
-        const runtimeUpgrade = blockEvents.find(({ event }) => apiAt.events.system.CodeUpdated.is(event));
+        const runtimeUpgrade = blockEvents.find(({ event: { section, method } }) => section === 'system' && method === 'CodeUpdated');
         if (runtimeUpgrade) {
             const specName = runtimeVersion.toJSON().specName;
             const specVersion = runtimeVersion.specVersion;

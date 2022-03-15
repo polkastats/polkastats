@@ -155,10 +155,9 @@ export const processTransfer = async (
     amount = JSON.parse(args)[1]; // 'transfer' and 'transferKeepAlive' methods
   }
   // fee calculation not supported for some runtimes
-  const feeAmount =
-    !!feeInfo
-      ? new BigNumber(JSON.stringify(feeInfo.toJSON().partialFee)).toString(10)
-      : null;
+  const feeAmount = !!feeInfo
+    ? new BigNumber(JSON.stringify(feeInfo.toJSON().partialFee)).toString(10)
+    : null;
   const data = [
     blockNumber,
     extrinsicIndex,
