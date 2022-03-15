@@ -54,7 +54,7 @@ const getExtrinsicFeeDetails = async (api, hexExtrinsic, blockHash, loggerOption
     return null;
 };
 exports.getExtrinsicFeeDetails = getExtrinsicFeeDetails;
-const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents) => {
+const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents, blockNumber) => {
     let extrinsicSuccess = false;
     let extrinsicErrorMessage = '';
     blockEvents
@@ -66,8 +66,16 @@ const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents) => {
         else if (apiAt.events.system.ExtrinsicFailed.is(event)) {
             const [dispatchError] = event.data;
             if (dispatchError.isModule) {
-                const decoded = apiAt.registry.findMetaError(dispatchError.asModule);
-                extrinsicErrorMessage = `${decoded.name}: ${decoded.docs}`;
+                let decoded;
+                try {
+                    decoded = apiAt.registry.findMetaError(dispatchError.asModule);
+                    extrinsicErrorMessage = `${decoded.name}: ${decoded.docs}`;
+                }
+                catch (error) {
+                    const scope = new Sentry.Scope();
+                    scope.setTag('blockNumber', blockNumber);
+                    Sentry.captureException(error, scope);
+                }
             }
             else {
                 extrinsicErrorMessage = dispatchError.toString();
@@ -196,7 +204,7 @@ const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, inde
     const hash = extrinsic.hash.toHex();
     const doc = JSON.stringify(extrinsic.meta.docs.toJSON());
     // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
-    const [success, errorMessage] = (0, exports.getExtrinsicSuccessOrErrorMessage)(apiAt, extrinsicIndex, blockEvents);
+    const [success, errorMessage] = (0, exports.getExtrinsicSuccessOrErrorMessage)(apiAt, extrinsicIndex, blockEvents, blockNumber);
     let feeInfo = null;
     let feeDetails = null;
     if (isSigned) {
