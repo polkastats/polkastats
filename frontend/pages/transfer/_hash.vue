@@ -21,9 +21,9 @@
   </div>
 </template>
 <script>
+import { gql } from 'graphql-tag'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
-import gql from 'graphql-tag'
 
 export default {
   components: {
@@ -55,22 +55,21 @@ export default {
     },
   },
   apollo: {
-    extrinsic: {
+    transfer: {
       query: gql`
-        query extrinsic($hash: String!) {
-          extrinsic(where: { hash: { _eq: $hash } }) {
+        query transfer($hash: String!) {
+          transfer(where: { hash: { _eq: $hash } }) {
             block_number
+            hash
             extrinsic_index
-            is_signed
-            signer
             section
             method
-            args
-            hash
-            doc
-            fee_info
-            fee_details
+            source
+            destination
+            amount
+            fee_amount
             success
+            error_message
             timestamp
           }
         }
@@ -84,7 +83,7 @@ export default {
         }
       },
       result({ data }) {
-        this.transfer = data.extrinsic[0]
+        this.transfer = data.transfer[0]
         this.loading = false
       },
     },

@@ -32,7 +32,7 @@
                 </span>
               </h4>
               <h4 class="text-center mb-4 amount">
-                {{ formatAmount(parsedAccount.balances.freeBalance) }}
+                {{ formatAmount(parsedAccount.totalBalance) }}
               </h4>
               <div class="table-responsive pb-4">
                 <table class="table table-striped">
@@ -127,6 +127,12 @@
                     <tr>
                       <td>{{ $t('details.account.total_balance') }}</td>
                       <td class="text-right amount">
+                        {{ formatAmount(parsedAccount.totalBalance) }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{{ $t('details.account.free_balance') }}</td>
+                      <td class="text-right amount">
                         {{ formatAmount(parsedAccount.balances.freeBalance) }}
                       </td>
                     </tr>
@@ -179,6 +185,7 @@
                   </tbody>
                 </table>
               </div>
+              <BalanceChart :account-id="accountId" />
               <b-tabs class="mt-4" content-class="mt-4" fill>
                 <b-tab active>
                   <template #title>
@@ -188,34 +195,24 @@
                 </b-tab>
                 <b-tab>
                   <template #title>
-                    <h5>Sent transfers</h5>
+                    <h5>Transfers</h5>
                   </template>
-                  <SentTransfers :account-id="accountId" />
-                </b-tab>
-                <b-tab>
-                  <template #title>
-                    <h5>Received transfers</h5>
-                  </template>
-                  <ReceivedTransfers :account-id="accountId" />
+                  <AccountTransfers :account-id="accountId" />
                 </b-tab>
                 <b-tab>
                   <template #title>
                     <h5>Rewards</h5>
                   </template>
+                  <StakingRewardsChart :account-id="accountId" />
                   <StakingRewards :account-id="accountId" />
                 </b-tab>
                 <b-tab>
                   <template #title>
                     <h5>Slashes</h5>
                   </template>
+                  <StakingSlashesChart :account-id="accountId" />
                   <StakingSlashes :account-id="accountId" />
                 </b-tab>
-                <!-- <b-tab>
-                  <template #title>
-                    <h5>Balances</h5>
-                  </template>
-                  <BalanceChart :account-id="accountId" />
-                </b-tab> -->
               </b-tabs>
             </div>
           </div>
@@ -229,11 +226,12 @@ import { gql } from 'graphql-tag'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import Activities from '@/components/Activities.vue'
-import SentTransfers from '@/components/SentTransfers.vue'
-import ReceivedTransfers from '@/components/ReceivedTransfers.vue'
+import AccountTransfers from '@/components/AccountTransfers.vue'
 import StakingRewards from '@/components/StakingRewards.vue'
 import StakingSlashes from '@/components/StakingSlashes.vue'
-// import BalanceChart from '@/components/BalanceChart.vue'
+import StakingRewardsChart from '@/components/StakingRewardsChart.vue'
+import StakingSlashesChart from '@/components/StakingSlashesChart.vue'
+import BalanceChart from '@/components/BalanceChart.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { network } from '@/frontend.config.js'
 
@@ -242,11 +240,12 @@ export default {
     Identicon,
     Loading,
     Activities,
-    SentTransfers,
-    ReceivedTransfers,
+    AccountTransfers,
     StakingRewards,
     StakingSlashes,
-    // BalanceChart,
+    StakingRewardsChart,
+    StakingSlashesChart,
+    BalanceChart,
   },
   mixins: [commonMixin],
   data() {
@@ -297,6 +296,8 @@ export default {
               available_balance
               free_balance
               locked_balance
+              reserved_balance
+              total_balance
               nonce
               block_height
               identity
@@ -316,6 +317,8 @@ export default {
               availableBalance: data.account[0].available_balance,
               freeBalance: data.account[0].free_balance,
               lockedBalance: data.account[0].locked_balance,
+              reservedBalance: data.account[0].reserved_balance,
+              totalBalance: data.account[0].total_balance,
               balances: JSON.parse(data.account[0].balances),
               nonce: data.account[0].nonce,
               identity:
@@ -323,6 +326,38 @@ export default {
                   ? JSON.parse(data.account[0].identity)
                   : {},
               timestamp: data.account[0].timestamp,
+            }
+          } else if (this.isAddress(this.accountId)) {
+            this.parsedAccount = {
+              accountId: this.accountId,
+              availableBalance: '0',
+              freeBalance: '0',
+              lockedBalance: '0',
+              reservedBalance: '0',
+              totalBalance: '0',
+              balances: {
+                accountId: this.accountId,
+                accountNonce: '0x00000000',
+                additional: [],
+                freeBalance: '0x00000000000000000000000000000000',
+                frozenFee: '0x00000000000000000000000000000000',
+                frozenMisc: '0x00000000000000000000000000000000',
+                reservedBalance: '0x00000000000000000000000000000000',
+                votingBalance: '0x00000000000000000000000000000000',
+                availableBalance: '0x00000000000000000000000000000000',
+                lockedBalance: '0x00000000000000000000000000000000',
+                lockedBreakdown: [],
+                vestingLocked: '0x00000000000000000000000000000000',
+                isVesting: false,
+                vestedBalance: '0x00000000000000000000000000000000',
+                vestedClaimable: '0x00000000000000000000000000000000',
+                vestingEndBlock: '0x00000000',
+                vestingPerBlock: '0x00000000000000000000000000000000',
+                vestingTotal: '0x00000000000000000000000000000000',
+              },
+              nonce: 0,
+              identity: {},
+              timestamp: null,
             }
           }
           this.loading = false

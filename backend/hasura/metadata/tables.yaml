@@ -1,0 +1,457 @@
+- table:
+    schema: public
+    name: account
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_height
+      - nonce
+      - timestamp
+      - account_id
+      - available_balance
+      - balances
+      - free_balance
+      - reserved_balance
+      - total_balance
+      - identity
+      - identity_display
+      - identity_display_parent
+      - locked_balance
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: block
+  object_relationships:
+  - name: runtime
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: runtime
+        column_mapping:
+          spec_version: spec_version
+  array_relationships:
+  - name: events
+    using:
+      foreign_key_constraint_on:
+        column: block_number
+        table:
+          schema: public
+          name: event
+  - name: extrinsics
+    using:
+      foreign_key_constraint_on:
+        column: block_number
+        table:
+          schema: public
+          name: extrinsic
+  - name: logs
+    using:
+      foreign_key_constraint_on:
+        column: block_number
+        table:
+          schema: public
+          name: log
+  - name: signed_extrinsics
+    using:
+      foreign_key_constraint_on:
+        column: block_number
+        table:
+          schema: public
+          name: signed_extrinsic
+  - name: transfers
+    using:
+      foreign_key_constraint_on:
+        column: block_number
+        table:
+          schema: public
+          name: transfer
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - finalized
+      - block_author
+      - block_author_name
+      - block_hash
+      - parent_hash
+      - extrinsics_root
+      - state_root
+      - active_era
+      - current_index
+      - spec_version
+      - total_events
+      - total_extrinsics
+      - total_issuance
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: era_commission
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - stash_address
+      - era
+      - commission
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: era_commission_avg
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - era
+      - commission_avg
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: era_points
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - stash_address
+      - era
+      - points
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: era_points_avg
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - era
+      - points_avg
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: era_relative_performance
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - stash_address
+      - era
+      - relative_performance
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: era_relative_performance_avg
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - era
+      - relative_performance_avg
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: era_self_stake
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - stash_address
+      - era
+      - self_stake
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: era_self_stake_avg
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - era
+      - self_stake_avg
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: era_vrc_score
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - stash_address
+      - era
+      - vrc_score
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: event
+  object_relationships:
+  - name: block
+    using:
+      foreign_key_constraint_on: block_number
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - event_index
+      - section
+      - method
+      - phase
+      - types
+      - doc
+      - data
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: extrinsic
+  object_relationships:
+  - name: block
+    using:
+      foreign_key_constraint_on: block_number
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - extrinsic_index
+      - is_signed
+      - signer
+      - section
+      - method
+      - args
+      - args_def
+      - hash
+      - doc
+      - fee_info
+      - fee_details
+      - success
+      - error_message
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: featured
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - stash_address
+      - name
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: harvest_error
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - error
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: log
+  object_relationships:
+  - name: block
+    using:
+      foreign_key_constraint_on: block_number
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - log_index
+      - type
+      - engine
+      - data
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: ranking
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_height
+      - rank
+      - active
+      - active_rating
+      - name
+      - identity
+      - has_sub_identity
+      - sub_accounts_rating
+      - verified_identity
+      - identity_rating
+      - stash_address
+      - stash_address_creation_block
+      - stash_parent_address_creation_block
+      - address_creation_rating
+      - controller_address
+      - included_thousand_validators
+      - thousand_validator
+      - part_of_cluster
+      - cluster_name
+      - cluster_members
+      - show_cluster_member
+      - nominators
+      - nominators_rating
+      - commission
+      - commission_history
+      - commission_rating
+      - active_eras
+      - era_points_history
+      - era_points_percent
+      - era_points_rating
+      - performance
+      - performance_history
+      - relative_performance
+      - relative_performance_history
+      - slashed
+      - slash_rating
+      - slashes
+      - council_backing
+      - active_in_governance
+      - governance_rating
+      - payout_history
+      - payout_rating
+      - self_stake
+      - other_stake
+      - total_stake
+      - stake_history
+      - total_rating
+      - dominated
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: runtime
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - spec_name
+      - spec_version
+      - metadata_version
+      - metadata_magic_number
+      - metadata
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: signed_extrinsic
+  object_relationships:
+  - name: block
+    using:
+      foreign_key_constraint_on: block_number
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - extrinsic_index
+      - signer
+      - section
+      - method
+      - args
+      - args_def
+      - hash
+      - doc
+      - fee_info
+      - fee_details
+      - success
+      - error_message
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: staking_reward
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - event_index
+      - account_id
+      - validator_stash_address
+      - era
+      - amount
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: staking_slash
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - event_index
+      - account_id
+      - validator_stash_address
+      - era
+      - amount
+      - timestamp
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: total
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - name
+      - count
+      filter: {}
+      allow_aggregations: true
+- table:
+    schema: public
+    name: transfer
+  object_relationships:
+  - name: block
+    using:
+      foreign_key_constraint_on: block_number
+  select_permissions:
+  - role: public
+    permission:
+      columns:
+      - block_number
+      - extrinsic_index
+      - section
+      - method
+      - hash
+      - source
+      - destination
+      - amount
+      - fee_amount
+      - success
+      - error_message
+      - timestamp
+      filter: {}
+      allow_aggregations: true

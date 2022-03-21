@@ -1,8 +1,8 @@
-FROM phusion/baseimage:0.11
+FROM phusion/baseimage:impish
 ARG POLKADOT_VERSION
 LABEL maintainer "@mariopino"
 LABEL description="Parity Polkadot client"
-RUN apt-get update && apt-get install wget curl jq -y
+RUN apt-get update && apt-get install wget -y
 WORKDIR /usr/local/bin
 RUN wget https://github.com/paritytech/polkadot/releases/download/$POLKADOT_VERSION/polkadot \
     && chmod +x polkadot

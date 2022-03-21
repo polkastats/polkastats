@@ -23,10 +23,10 @@
   </div>
 </template>
 <script>
-import Loading from '@/components/Loading.vue'
-import commonMixin from '@/mixins/commonMixin.js'
 import { gql } from 'graphql-tag'
 import Event from '../../../components/Event.vue'
+import Loading from '@/components/Loading.vue'
+import commonMixin from '@/mixins/commonMixin.js'
 
 export default {
   components: {
@@ -75,6 +75,8 @@ export default {
             data
             method
             phase
+            types
+            doc
             section
             timestamp
           }

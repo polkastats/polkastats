@@ -13,21 +13,54 @@
           </b-col>
         </b-row>
         <div class="last-extrinsics">
+          <!-- Filter -->
+          <b-row style="margin-bottom: 1rem">
+            <b-col cols="12">
+              <b-form-input
+                id="filterInput"
+                v-model="filter"
+                type="search"
+                :placeholder="$t('pages.blocks.search_placeholder')"
+              />
+            </b-col>
+          </b-row>
+          <b-row style="margin-bottom: 1rem">
+            <b-col cols="4">
+              <b-form-select
+                v-model="selectedRuntimeVersion"
+                :options="runtimeSpecVersionOptions"
+                @change="
+                  selectedPalletName = null
+                  loading = true
+                "
+              ></b-form-select>
+            </b-col>
+            <b-col cols="4">
+              <b-form-select
+                v-model="selectedPalletName"
+                :options="palletNameOptions"
+                @change="
+                  selectedPalletExtrinsic = null
+                  loading = true
+                "
+              ></b-form-select>
+            </b-col>
+            <b-col cols="4">
+              <b-form-select
+                v-model="selectedPalletExtrinsic"
+                :options="palletExtrinsicsOptions"
+                @change="loading = true"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+          <p>
+            runtime: {{ selectedRuntimeVersion }} / module:
+            {{ selectedPalletName }} / extrinsic: {{ selectedPalletExtrinsic }}
+          </p>
           <div v-if="loading" class="text-center py-4">
             <Loading />
           </div>
           <template v-else>
-            <!-- Filter -->
-            <b-row style="margin-bottom: 1rem">
-              <b-col cols="12">
-                <b-form-input
-                  id="filterInput"
-                  v-model="filter"
-                  type="search"
-                  :placeholder="$t('pages.blocks.search_placeholder')"
-                />
-              </b-col>
-            </b-row>
             <div class="table-responsive">
               <b-table striped hover :fields="fields" :items="extrinsics">
                 <template #cell(block_number)="data">
@@ -164,6 +197,11 @@ export default {
           sortable: true,
         },
       ],
+      runtimeVersions: [],
+      palletsAndExtrinsics: [],
+      selectedRuntimeVersion: null,
+      selectedPalletName: null,
+      selectedPalletExtrinsic: null,
     }
   },
   head() {
@@ -182,6 +220,46 @@ export default {
       ],
     }
   },
+  computed: {
+    runtimeSpecVersionOptions() {
+      const runtimeSpecVersionOptions = this.runtimeVersions.map(
+        (specVersion) => ({
+          value: specVersion.spec_version,
+          text: specVersion.spec_version,
+        })
+      )
+      return runtimeSpecVersionOptions
+    },
+    palletNameOptions() {
+      const palletNames = this.palletsAndExtrinsics
+        .filter(({ calls }) => calls.length !== 0)
+        .map(({ name }) => name)
+        .sort()
+        .map((palletName) => ({
+          value: this.uncapitalize(palletName),
+          text: palletName,
+        }))
+      // console.log('modules:', palletNames)
+      return [{ value: null, text: 'All' }].concat(palletNames)
+    },
+    palletExtrinsicsOptions() {
+      const vm = this
+      let palletExtrinsics = []
+      if (this.selectedPalletName) {
+        const selectedPallet = this.palletsAndExtrinsics.find(
+          ({ name }) => name === vm.capitalize(vm.selectedPalletName)
+        )
+        palletExtrinsics = selectedPallet.calls
+          .sort()
+          .map((moduleExtrinsic) => ({
+            value: this.snakeToCamel(moduleExtrinsic),
+            text: this.snakeToCamel(moduleExtrinsic),
+          }))
+      }
+      // console.log('extrinsics:', palletExtrinsics)
+      return [{ value: null, text: 'All' }].concat(palletExtrinsics)
+    },
+  },
   methods: {
     setPageSize(num) {
       localStorage.paginationOptions = num
@@ -194,13 +272,19 @@ export default {
         query: gql`
           subscription extrinsics(
             $blockNumber: bigint
+            $section: String
+            $method: String
             $perPage: Int!
             $offset: Int!
           ) {
             extrinsic(
               limit: $perPage
               offset: $offset
-              where: { block_number: { _eq: $blockNumber } }
+              where: {
+                block_number: { _eq: $blockNumber }
+                section: { _eq: $section }
+                method: { _eq: $method }
+              }
               order_by: { block_number: desc, extrinsic_index: desc }
             ) {
               block_number
@@ -217,6 +301,12 @@ export default {
         variables() {
           return {
             blockNumber: this.filter ? parseInt(this.filter) : undefined,
+            section: this.selectedPalletName
+              ? this.selectedPalletName
+              : undefined,
+            method: this.selectedPalletExtrinsic
+              ? this.selectedPalletExtrinsic
+              : undefined,
             perPage: this.perPage,
             offset: (this.currentPage - 1) * this.perPage,
           }
@@ -241,6 +331,84 @@ export default {
           if (!this.filter) {
             this.totalRows = data.total[0].count
           }
+        },
+      },
+      runtimeVersions: {
+        query: gql`
+          subscription runtime {
+            runtime(order_by: { block_number: desc }) {
+              spec_version
+            }
+          }
+        `,
+        result({ data }) {
+          this.runtimeVersions = data.runtime
+          this.selectedRuntimeVersion = data.runtime[0].spec_version
+          // console.log('runtime specs:', this.runtimeVersions)
+        },
+      },
+      metadata: {
+        query: gql`
+          subscription runtime($specVersion: Int!) {
+            runtime(where: { spec_version: { _eq: $specVersion } }, limit: 1) {
+              metadata_version
+              metadata
+            }
+          }
+        `,
+        skip() {
+          return this.runtimeVersions.length === 0
+        },
+        variables() {
+          return {
+            specVersion: this.selectedRuntimeVersion,
+          }
+        },
+        result({ data }) {
+          // get pallets and extrinsics from runtime metadata
+          const metadataVersion = data.runtime[0].metadata_version
+          this.metadata = data.runtime[0].metadata[metadataVersion]
+          const palletsAndExtrinsics = []
+          if (metadataVersion !== 'v14') {
+            this.metadata.modules.forEach((module) => {
+              const palletAndExtrinsics = {
+                name: module.name,
+                calls:
+                  module.calls !== null
+                    ? module.calls.map((call) => call.name)
+                    : [],
+              }
+              palletsAndExtrinsics.push(palletAndExtrinsics)
+            })
+          } else {
+            this.metadata.pallets.forEach((pallet) => {
+              const callsId = pallet.calls?.type || null
+              const calls = []
+              const palletAndExtrinsics = {
+                name: pallet.name,
+                callsId,
+                calls,
+              }
+              if (callsId) {
+                this.metadata.lookup.types
+                  .filter(
+                    ({ id, type }) =>
+                      type.path.includes('Call') && id === callsId
+                  )
+                  .forEach(({ type }) => {
+                    type.def.variant.variants.forEach((variant) => {
+                      palletAndExtrinsics.calls.push(variant.name.toString())
+                    })
+                  })
+              }
+              palletsAndExtrinsics.push(palletAndExtrinsics)
+            })
+          }
+          // console.log(
+          //   'palletsAndExtrinsics:',
+          //   JSON.stringify(palletsAndExtrinsics, null, 2)
+          // )
+          this.palletsAndExtrinsics = palletsAndExtrinsics
         },
       },
     },

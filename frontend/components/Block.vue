@@ -20,15 +20,10 @@
                 <td>{{ $t('details.block.timestamp') }}</td>
                 <td class="text-right">
                   <p class="mb-0">
-                    {{ getDateFromTimestamp(parsedBlock.timestamp) }}
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td>{{ $t('details.block.timeago') }}</td>
-                <td class="text-right">
-                  <p class="mb-0">
-                    {{ fromNow(parsedBlock.timestamp) }}
+                    <font-awesome-icon icon="clock" class="text-light" />
+                    {{ getDateFromTimestamp(parsedBlock.timestamp) }} ({{
+                      fromNow(parsedBlock.timestamp)
+                    }})
                   </p>
                 </td>
               </tr>
@@ -102,9 +97,8 @@
                   <p class="mb-0">{{ parsedBlock.state_root }}</p>
                 </td>
               </tr>
-
               <tr>
-                <td>{{ $t('details.block.currrent_index') }}</td>
+                <td>{{ $t('details.block.current_index') }}</td>
                 <td class="text-right">
                   <p class="mb-0">{{ parsedBlock.current_index }}</p>
                 </td>
@@ -113,13 +107,6 @@
                 <td>{{ $t('details.block.active_era') }}</td>
                 <td class="text-right">
                   <p class="mb-0">{{ parsedBlock.active_era }}</p>
-                </td>
-              </tr>
-
-              <tr>
-                <td>{{ $t('details.block.spec_name') }}</td>
-                <td class="text-right">
-                  <p class="mb-0">{{ parsedBlock.spec_name }}</p>
                 </td>
               </tr>
               <tr>
@@ -157,10 +144,10 @@
 </template>
 <script>
 import { gql } from 'graphql-tag'
-import commonMixin from '@/mixins/commonMixin.js'
 import BlockExtrinsics from './BlockExtrinsics.vue'
 import BlockEvents from './BlockEvents.vue'
 import BlockLogs from './BlockLogs.vue'
+import commonMixin from '@/mixins/commonMixin.js'
 export default {
   components: {
     BlockExtrinsics,
@@ -196,7 +183,6 @@ export default {
               state_root
               current_index
               active_era
-              spec_name
               spec_version
               timestamp
               total_events

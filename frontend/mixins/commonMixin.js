@@ -13,9 +13,8 @@ export default {
         address.substring(0, 5) + '…' + address.substring(address.length - 5)
       )
     },
-    shortHash(hash) {
-      return `${hash.substr(0, 6)}…${hash.substr(hash.length - 4, 4)}`
-    },
+    shortHash: (hash) =>
+      `${hash.substring(0, 6)}…${hash.substring(hash.length - 4, hash.length)}`,
     formatNumber(number) {
       if (isHex(number)) {
         return parseInt(number, 16)
@@ -25,7 +24,7 @@ export default {
         return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
       }
     },
-    formatAmount(amount, precission = 2) {
+    formatAmount(amount, precission = 3) {
       return `${new BigNumber(amount)
         .div(new BigNumber(10).pow(network.tokenDecimals))
         .toFixed(precission)} ${network.tokenSymbol}`
@@ -35,8 +34,8 @@ export default {
       return s.charAt(0).toUpperCase() + s.slice(1)
     },
     isBlockNumber(input) {
-      const polkadotRegexp = /^[0-9]*$/
-      return polkadotRegexp.test(input)
+      const regexp = /^[0-9]*$/
+      return regexp.test(input)
     },
     async isBlockHash(input) {
       // 0xadb2179b1666fef3b56a5762c3db0152b2a0a7f3d4b47737a355262609d867b9
@@ -87,9 +86,8 @@ export default {
       if (timestamp === 0) {
         return `--`
       }
-      const newDate = new Date()
-      newDate.setTime(timestamp * 1000)
-      return newDate.toUTCString()
+      const date = moment.unix(timestamp / 1000)
+      return `${date.utc().format('YYYY-MM-DD HH:mm:ss')} UTC`
     },
     isValidAddressPolkadotAddress: (address) => {
       try {
@@ -110,8 +108,17 @@ export default {
       return true
     },
     fromNow: (timestamp) => {
-      const date = moment.unix(timestamp)
+      const date = moment.unix(timestamp / 1000)
       return moment(date).fromNow()
+    },
+    uncapitalize: (str) => {
+      return str.charAt(0).toLowerCase() + str.slice(1)
+    },
+    snakeToCamel: (str) => {
+      if (!/[_-]/.test(str)) return str
+      return str
+        .toLowerCase()
+        .replace(/([-_])([a-z])/g, (_match, _p1, p2) => p2.toUpperCase())
     },
   },
 }

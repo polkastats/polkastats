@@ -84,18 +84,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.top-10-rich .table th,
-.top-10-rich .table td {
-  padding: 0.45rem;
-}
-.top-10-rich .table thead th {
-  border-bottom: 0;
-}
-.top-10-rich .identicon {
-  display: inline-block;
-  margin: 0 0.2rem 0 0;
-  cursor: copy;
-}
-</style>

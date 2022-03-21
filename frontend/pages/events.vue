@@ -13,31 +13,67 @@
           </b-col>
         </b-row>
         <div class="last-events">
+          <!-- Filter -->
+          <b-row style="margin-bottom: 1rem">
+            <b-col cols="12">
+              <b-form-input
+                id="filterInput"
+                v-model="filter"
+                type="search"
+                :placeholder="$t('pages.events.search_placeholder')"
+                @change="loading = true"
+              />
+            </b-col>
+          </b-row>
+          <b-row style="margin-bottom: 1rem">
+            <b-col cols="4">
+              <b-form-select
+                v-model="selectedRuntimeVersion"
+                :options="runtimeSpecVersionOptions"
+                @change="
+                  selectedPalletName = null
+                  loading = true
+                "
+              ></b-form-select>
+            </b-col>
+            <b-col cols="4">
+              <b-form-select
+                v-model="selectedPalletName"
+                :options="palletNameOptions"
+                @change="
+                  selectedPalletEvent = null
+                  loading = true
+                "
+              ></b-form-select>
+            </b-col>
+            <b-col cols="4">
+              <b-form-select
+                v-model="selectedPalletEvent"
+                :options="palletEventOptions"
+                @change="loading = true"
+              ></b-form-select>
+            </b-col>
+          </b-row>
+          <p>
+            runtime: {{ selectedRuntimeVersion }} / module:
+            {{ selectedPalletName }} / event: {{ selectedPalletEvent }}
+          </p>
           <div v-if="loading" class="text-center py-4">
             <Loading />
           </div>
           <template v-else>
-            <!-- Filter -->
-            <b-row style="margin-bottom: 1rem">
-              <b-col cols="12">
-                <b-form-input
-                  id="filterInput"
-                  v-model="filter"
-                  type="search"
-                  :placeholder="$t('pages.events.search_placeholder')"
-                />
-              </b-col>
-            </b-row>
             <div class="table-responsive">
               <b-table striped hover :fields="fields" :items="events">
                 <template #cell(block_number)="data">
                   <p class="mb-0">
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/block?blockNumber=${data.item.block_number}`"
-                      title="Check block information"
+                      :to="`/event/${data.item.block_number}/${data.item.event_index}`"
+                      title="Check event information"
                     >
-                      #{{ formatNumber(data.item.block_number) }}
+                      #{{ formatNumber(data.item.block_number) }}-{{
+                        data.item.event_index
+                      }}
                     </nuxt-link>
                   </p>
                 </template>
@@ -127,25 +163,30 @@ export default {
       fields: [
         {
           key: 'block_number',
-          label: 'Block',
-          sortable: true,
+          label: 'Event',
+          sortable: false,
         },
         {
           key: 'event_index',
           label: 'Index',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'section',
           label: 'Event',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'data',
           label: 'Data',
-          sortable: true,
+          sortable: false,
         },
       ],
+      runtimeVersions: [],
+      palletsAndEvents: [],
+      selectedRuntimeVersion: null,
+      selectedPalletName: null,
+      selectedPalletEvent: null,
     }
   },
   head() {
@@ -164,6 +205,44 @@ export default {
       ],
     }
   },
+  computed: {
+    runtimeSpecVersionOptions() {
+      const runtimeSpecVersionOptions = this.runtimeVersions.map(
+        (specVersion) => ({
+          value: specVersion.spec_version,
+          text: specVersion.spec_version,
+        })
+      )
+      return runtimeSpecVersionOptions
+    },
+    palletNameOptions() {
+      const palletNames = this.palletsAndEvents
+        .filter(({ events }) => events.length !== 0)
+        .map(({ name }) => name)
+        .sort()
+        .map((palletName) => ({
+          value: this.uncapitalize(palletName),
+          text: palletName,
+        }))
+      // console.log('modules:', palletNames)
+      return [{ value: null, text: 'All' }].concat(palletNames)
+    },
+    palletEventOptions() {
+      const vm = this
+      let palletEvents = []
+      if (this.selectedPalletName) {
+        const selectedPallet = this.palletsAndEvents.find(
+          ({ name }) => name === vm.capitalize(vm.selectedPalletName)
+        )
+        palletEvents = selectedPallet.events.sort().map((moduleEvent) => ({
+          value: moduleEvent,
+          text: moduleEvent,
+        }))
+      }
+      // console.log('events:', palletEvents)
+      return [{ value: null, text: 'All' }].concat(palletEvents)
+    },
+  },
   methods: {
     setPageSize(num) {
       localStorage.paginationOptions = num
@@ -172,17 +251,23 @@ export default {
   },
   apollo: {
     $subscribe: {
-      event: {
+      events: {
         query: gql`
           subscription events(
             $blockNumber: bigint
+            $section: String
+            $method: String
             $perPage: Int!
             $offset: Int!
           ) {
             event(
               limit: $perPage
               offset: $offset
-              where: { block_number: { _eq: $blockNumber } }
+              where: {
+                block_number: { _eq: $blockNumber }
+                section: { _eq: $section }
+                method: { _eq: $method }
+              }
               order_by: { block_number: desc, event_index: desc }
             ) {
               block_number
@@ -197,6 +282,12 @@ export default {
         variables() {
           return {
             blockNumber: this.filter ? parseInt(this.filter) : undefined,
+            section: this.selectedPalletName
+              ? this.selectedPalletName
+              : undefined,
+            method: this.selectedPalletEvent
+              ? this.selectedPalletEvent
+              : undefined,
             perPage: this.perPage,
             offset: (this.currentPage - 1) * this.perPage,
           }
@@ -221,6 +312,80 @@ export default {
           if (!this.filter) {
             this.totalRows = data.total[0].count
           }
+        },
+      },
+      runtimeVersions: {
+        query: gql`
+          subscription runtime {
+            runtime(order_by: { block_number: desc }) {
+              spec_version
+            }
+          }
+        `,
+        result({ data }) {
+          this.runtimeVersions = data.runtime
+          this.selectedRuntimeVersion = data.runtime[0].spec_version
+          // console.log('runtime specs:', this.runtimeVersions)
+        },
+      },
+      metadata: {
+        query: gql`
+          subscription runtime($specVersion: Int!) {
+            runtime(where: { spec_version: { _eq: $specVersion } }, limit: 1) {
+              metadata_version
+              metadata
+            }
+          }
+        `,
+        skip() {
+          return this.runtimeVersions.length === 0
+        },
+        variables() {
+          return {
+            specVersion: this.selectedRuntimeVersion,
+          }
+        },
+        result({ data }) {
+          // get pallets and events from runtime metadata
+          const metadataVersion = data.runtime[0].metadata_version
+          this.metadata = data.runtime[0].metadata[metadataVersion]
+          const palletsAndEvents = []
+          if (metadataVersion !== 'v14') {
+            this.metadata.modules.forEach((module) => {
+              const palletAndEvents = {
+                name: module.name,
+                events:
+                  module.events !== null
+                    ? module.events.map((event) => event.name)
+                    : [],
+              }
+              palletsAndEvents.push(palletAndEvents)
+            })
+          } else {
+            this.metadata.pallets.forEach((pallet) => {
+              const eventsId = pallet.events?.type || null
+              const events = []
+              const palletAndEvents = {
+                name: pallet.name,
+                eventsId,
+                events,
+              }
+              if (eventsId) {
+                this.metadata.lookup.types
+                  .filter(
+                    ({ id, type }) =>
+                      type.path.includes('Event') && id === eventsId
+                  )
+                  .forEach(({ type }) => {
+                    type.def.variant.variants.forEach((variant) => {
+                      palletAndEvents.events.push(variant.name.toString())
+                    })
+                  })
+              }
+              palletsAndEvents.push(palletAndEvents)
+            })
+          }
+          this.palletsAndEvents = palletsAndEvents
         },
       },
     },

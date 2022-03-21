@@ -1,14 +1,27 @@
 <template>
-  <!-- <LineChart :data="chartData" :options="chartOptions" :height="200" /> -->
-  <div>{{ balanceChanges }}</div>
+  <div v-if="loading" class="text-center py-4">
+    <Loading />
+  </div>
+  <div v-else>
+    <ReactiveLineChart
+      :chart-data="chartData"
+      :options="chartOptions"
+      :height="100"
+      class="mb-4"
+    />
+  </div>
 </template>
 <script>
-// import LineChart from '@/components/charts/LineChart.js'
-import { gql } from 'graphql-tag'
+import { ApiPromise, WsProvider } from '@polkadot/api'
+import { BigNumber } from 'bignumber.js'
+import Loading from '@/components/Loading.vue'
+import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
+import { network } from '@/frontend.config.js'
 export default {
-  // components: {
-  //   LineChart,
-  // },
+  components: {
+    Loading,
+    ReactiveLineChart,
+  },
   props: {
     accountId: {
       type: String,
@@ -24,7 +37,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'balance changes',
+          text: 'balance over the last 30 days',
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -39,6 +52,10 @@ export default {
                 display: true,
                 color: 'rgba(200, 200, 200, 0.4)',
               },
+              scaleLabel: {
+                display: true,
+                labelString: 'block',
+              },
             },
           ],
           yAxes: [
@@ -52,197 +69,144 @@ export default {
                 display: true,
                 color: 'rgba(200, 200, 200, 0.4)',
               },
+              scaleLabel: {
+                display: true,
+                labelString: 'balance',
+              },
             },
           ],
         },
       },
-      rewards: [],
-      slashes: [],
-      sentTx: [],
-      receivedTx: [],
+      loading: true,
+      balances: [],
+      points: 30, // 1 point per day
+      historySize: 10 * 1440 * 30, // 30 days
     }
   },
   computed: {
-    balanceChanges() {
-      const balanceChanges = this.rewards
-        .concat(this.slashes)
-        .concat(this.sentTx)
-        .concat(this.receivedTx)
-      // eslint-disable-next-line no-console
-      console.log(balanceChanges)
-      return balanceChanges || []
-    },
     chartData() {
       return {
-        // eslint-disable-next-line camelcase
-        labels: this.rewards.map(({ block_number }) => `Block ${block_number}`),
+        labels: this.balances.map(({ block }) => block),
         datasets: [
           {
-            labels: 'rewards',
-            data: this.rewards.map(({ reward }) => reward),
+            labels: 'total',
+            data: this.balances.map(({ total }) => total),
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             borderColor: 'rgba(230, 0, 122, 0.8)',
             hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
             fill: false,
             showLine: true,
           },
+          // {
+          //   labels: 'free',
+          //   data: this.balances.map(({ free }) => free),
+          //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          //   borderColor: 'rgba(230, 0, 122, 0.8)',
+          //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+          //   fill: false,
+          //   showLine: true,
+          // },
+          // {
+          //   labels: 'reserved',
+          //   data: this.balances.map(({ reserved }) => reserved),
+          //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          //   borderColor: 'rgba(230, 0, 122, 0.8)',
+          //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+          //   fill: false,
+          //   showLine: true,
+          // },
         ],
       }
     },
   },
-  apollo: {
-    $subscribe: {
-      rewards: {
-        query: gql`
-          subscription event($accountId: String!) {
-            event(
-              order_by: { block_number: desc }
-              where: {
-                section: { _eq: "staking" }
-                method: { _eq: "Reward" }
-                data: { _like: $accountId }
-              }
-            ) {
-              block_number
-              data
-              timestamp
-            }
+  async created() {
+    const wsProvider = new WsProvider(network.nodeWs)
+    const api = await ApiPromise.create({ provider: wsProvider })
+    await api.isReady
+    // get latest block
+    const lastSignedBlock = await api.rpc.chain.getBlock()
+    const endBlock = lastSignedBlock.block.header.number
+    const startBlock = endBlock - this.historySize
+    this.balances = await this.getBalanceInRange(
+      api,
+      this.accountId,
+      startBlock,
+      endBlock
+    )
+    this.loading = false
+  },
+  methods: {
+    async getBalanceInRange(api, address, startBlock, endBlock) {
+      const blockHashes = []
+      // Calculate the step size given the range of blocks and the number of points we want
+      const step = Math.floor((endBlock - startBlock) / this.points)
+      try {
+        // Get all block hashes
+        const blockHashPromises = []
+        for (let i = startBlock + step; i <= endBlock; i = i + step) {
+          if (!blockHashes.find((x) => x.block === i)) {
+            const blockHashPromise = api.rpc.chain.getBlockHash(i)
+            blockHashPromises.push(i, blockHashPromise)
           }
-        `,
-        variables() {
-          return {
-            accountId: `%"${this.accountId}",%`,
-          }
-        },
-        skip() {
-          return !this.accountId
-        },
-        result({ data }) {
-          this.rewards = data.event.map((event) => {
-            return {
-              block_number: event.block_number,
-              timestamp: event.timestamp,
-              amount: JSON.parse(event.data)[1],
-            }
+        }
+        const hashResults = await Promise.all(blockHashPromises)
+        for (let i = 0; i < hashResults.length; i = i + 2) {
+          blockHashes.push({
+            block: hashResults[i],
+            hash: hashResults[i + 1],
           })
-          // eslint-disable-next-line no-console
-          // console.log('rewards:', this.rewards)
-        },
-      },
-      slashes: {
-        query: gql`
-          subscription event($accountId: String!, $phase: String!) {
-            event(
-              order_by: { block_number: desc }
-              where: {
-                section: { _eq: "staking" }
-                method: { _eq: "Slash" }
-                phase: { _eq: $phase }
-                data: { _like: $accountId }
-              }
-            ) {
-              block_number
-              data
-              timestamp
-            }
+        }
+        // console.log('block hashes:', blockHashes)
+
+        const balancePromises = []
+
+        // Loop over the blocks, using the step value
+        for (let i = startBlock + step; i <= endBlock; i = i + step) {
+          // If we already have data about that block, skip it
+          if (!this.balances.find((x) => x.block === i)) {
+            // Get the block hash
+            const blockHash = blockHashes.find((x) => x.block === i).hash
+            // Create a promise to query the balance for that block
+            const accountDataPromise = api.query.system.account.at(
+              blockHash,
+              address
+            )
+            // Push data to a linear array of promises to run in parallel.
+            balancePromises.push(i, accountDataPromise)
           }
-        `,
-        variables() {
-          return {
-            accountId: `%"${this.accountId}",%`,
-            phase: `{"applyExtrinsic":0}`,
-          }
-        },
-        skip() {
-          return !this.accountId
-        },
-        result({ data }) {
-          this.slashes = data.event.map((event) => {
-            return {
-              block_number: event.block_number,
-              timestamp: event.timestamp,
-              amount: JSON.parse(event.data)[1],
-            }
+        }
+
+        // Call all promises in parallel for speed.
+        const balanceResults = await Promise.all(balancePromises)
+
+        // Restructure the data into an array of objects
+        const balances = []
+        for (let i = 0; i < balanceResults.length; i = i + 2) {
+          const block = balanceResults[i]
+          const accountData = balanceResults[i + 1]
+          const free = this.formatBalance(accountData.data.free)
+          const reserved = this.formatBalance(accountData.data.reserved)
+          const total = free + reserved
+          balances.push({
+            block,
+            free,
+            reserved,
+            total,
           })
-          // eslint-disable-next-line no-console
-          // console.log('slashes:', this.slashes)
-        },
-      },
-      sentTx: {
-        query: gql`
-          subscription extrinsic($signer: String!) {
-            extrinsic(
-              order_by: { block_number: desc }
-              where: {
-                section: { _eq: "balances" }
-                method: { _like: "transfer%" }
-                signer: { _eq: $signer }
-                success: { _eq: true }
-              }
-            ) {
-              block_number
-              args
-              timestamp
-            }
-          }
-        `,
-        variables() {
-          return {
-            signer: this.accountId,
-          }
-        },
-        skip() {
-          return !this.accountId
-        },
-        result({ data }) {
-          this.sentTx = data.extrinsic.map((transfer) => {
-            return {
-              block_number: transfer.block_number,
-              timestamp: transfer.timestamp,
-              amount: JSON.parse(transfer.args)[1],
-            }
-          })
-          // eslint-disable-next-line no-console
-          // console.log('sentTx:', this.sentTx)
-        },
-      },
-      receivedTx: {
-        query: gql`
-          subscription event($accountId: String!) {
-            event(
-              order_by: { block_number: desc }
-              where: {
-                section: { _eq: "balances" }
-                method: { _eq: "Transfer" }
-                data: { _like: $accountId }
-              }
-            ) {
-              block_number
-              data
-              timestamp
-            }
-          }
-        `,
-        variables() {
-          return {
-            accountId: `%,"${this.accountId}",%`,
-          }
-        },
-        skip() {
-          return !this.accountId
-        },
-        result({ data }) {
-          this.receivedTx = data.event.map((event) => {
-            return {
-              block_number: event.block_number,
-              timestamp: event.timestamp,
-              amount: JSON.parse(event.data)[2],
-            }
-          })
-          // eslint-disable-next-line no-console
-          // console.log('receivedTx:', this.sentTx)
-        },
-      },
+        }
+        // console.log('balances:', balances)
+        return balances
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('error fetching balances:', error)
+      }
+    },
+    formatBalance(balance) {
+      return parseFloat(
+        new BigNumber(balance)
+          .div(new BigNumber(10).pow(network.tokenDecimals))
+          .toFixed(3)
+      )
     },
   },
 }

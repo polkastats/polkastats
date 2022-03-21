@@ -5,7 +5,7 @@
     class="d-inline-block"
     @click="showToast"
   >
-    <Identicon
+    <VueIdenticon
       :key="address"
       v-clipboard:copy="address"
       :size="size"
@@ -16,10 +16,10 @@
   </div>
 </template>
 <script>
-import Identicon from '@polkadot/vue-identicon'
+import { Identicon } from '@polkadot/vue-identicon'
 export default {
   components: {
-    Identicon,
+    VueIdenticon: Identicon,
   },
   props: {
     address: {

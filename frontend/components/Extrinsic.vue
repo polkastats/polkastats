@@ -1,5 +1,5 @@
 <template>
-  <div v-if="extrinsic" class="table-responsive pb-4">
+  <div v-if="extrinsic" class="table-responsive pb-0 mb-0">
     <table class="table table-striped extrinsic-table">
       <tbody>
         <tr>
@@ -18,7 +18,9 @@
           <td>Timestamp</td>
           <td>
             <p class="mb-0">
-              {{ getDateFromTimestamp(extrinsic.timestamp) }}
+              {{ getDateFromTimestamp(extrinsic.timestamp) }} ({{
+                fromNow(extrinsic.timestamp)
+              }})
             </p>
           </td>
         </tr>
@@ -70,15 +72,23 @@
         <tr>
           <td>Documentation</td>
           <td>
-            {{ extrinsic.doc }}
+            <div
+              class="extrinsic-doc"
+              v-html="$md.render(JSON.parse(extrinsic.doc).join('\n'))"
+            ></div>
           </td>
         </tr>
         <tr>
           <td>Arguments</td>
-          <td>
-            <pre class="mb-0">{{
-              JSON.stringify(JSON.parse(extrinsic.args), null, 2)
-            }}</pre>
+          <td class="extrinsic-arg">
+            <template v-for="(arg, index) in JSON.parse(extrinsic.args)">
+              <b-card :key="`extrinsic-arg-def-${index}`" class="mb-2">
+                <h6 class="mb-2">
+                  {{ Object.entries(JSON.parse(extrinsic.args_def))[index][0] }}
+                </h6>
+                <pre class="pb-0 mb-0">{{ JSON.stringify(arg, null, 2) }}</pre>
+              </b-card>
+            </template>
           </td>
         </tr>
         <tr>
@@ -101,7 +111,7 @@
           <td>Fee</td>
           <td class="amount">
             <div v-if="extrinsic.fee_info">
-              {{ formatAmount(JSON.parse(extrinsic.fee_info).partialFee) }}
+              {{ formatAmount(JSON.parse(extrinsic.fee_info).partialFee, 6) }}
             </div>
           </td>
         </tr>
@@ -114,6 +124,12 @@
               class="text-success"
             />
             <font-awesome-icon v-else icon="times" class="text-danger" />
+          </td>
+        </tr>
+        <tr v-if="extrinsic.error_message">
+          <td>Error message</td>
+          <td>
+            {{ extrinsic.error_message }}
           </td>
         </tr>
       </tbody>
@@ -129,6 +145,12 @@ export default {
     extrinsic: {
       type: Object,
       default: undefined,
+    },
+  },
+  methods: {
+    setPageSize(num) {
+      localStorage.paginationOptions = num
+      this.perPage = parseInt(num)
     },
   },
 }

@@ -26,8 +26,8 @@ apt install docker-ce
 sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
-# node v14
-curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh
+# node v16
+curl -fsSL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
 bash nodesource_setup.sh
 apt install nodejs
 
@@ -69,13 +69,9 @@ That will build and start all the required dockers:
 - Parity Polkadot client
 - Nodejs crawler
 
-### Hasura configuration
+### Hasura console
 
-After that you need to access to Hasura console at http://server_ip_address:8082 and:
-
-- Login as admin using the password you previously set in `HASURA_GRAPHQL_ADMIN_SECRET`
-- Track all tables
-- For all tables go to Permissions and add a new ROLE named 'public' ony with SELECT permissions.
+After that you can access to Hasura console at http://server_ip_address:8082 and login as admin using the password you previously set in `HASURA_GRAPHQL_ADMIN_SECRET`
 
 ### Nginx configuration
 
@@ -93,7 +89,7 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    location /api/v3 {
+    location /graphql {
         proxy_pass http://localhost:8082/v1/graphql;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;

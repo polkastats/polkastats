@@ -48,6 +48,20 @@
               </nuxt-link>
             </p>
           </template>
+          <template #cell(validator_stash_address)="data">
+            <p class="mb-0">
+              <nuxt-link
+                :to="`/validator/${data.item.validator_stash_address}`"
+                :title="$t('pages.accounts.account_details')"
+              >
+                <Identicon
+                  :address="data.item.validator_stash_address"
+                  :size="20"
+                />
+                {{ shortAddress(data.item.validator_stash_address) }}
+              </nuxt-link>
+            </p>
+          </template>
           <template #cell(timestamp)="data">
             <p class="mb-0">
               {{ getDateFromTimestamp(data.item.timestamp) }}
@@ -55,7 +69,7 @@
           </template>
           <template #cell(timeago)="data">
             <p class="mb-0">
-              {{ fromNow(data.item.timeago) }}
+              {{ fromNow(data.item.timestamp) }}
             </p>
           </template>
           <template #cell(amount)="data">
@@ -131,6 +145,16 @@ export default {
           sortable: true,
         },
         {
+          key: 'era',
+          label: 'Era',
+          sortable: true,
+        },
+        {
+          key: 'validator_stash_address',
+          label: 'Validator',
+          sortable: true,
+        },
+        {
           key: 'timeago',
           label: 'Time ago',
           sortable: true,
@@ -156,40 +180,31 @@ export default {
   },
   apollo: {
     $subscribe: {
-      event: {
+      staking_rewards: {
         query: gql`
-          subscription event($accountId: String!) {
-            event(
+          subscription staking_rewards($accountId: String!) {
+            staking_reward(
               order_by: { block_number: desc }
-              where: {
-                section: { _eq: "staking" }
-                method: { _eq: "Reward" }
-                data: { _like: $accountId }
-              }
+              where: { account_id: { _eq: $accountId } }
             ) {
               block_number
-              data
+              validator_stash_address
+              era
+              amount
               timestamp
             }
           }
         `,
         variables() {
           return {
-            accountId: `%"${this.accountId}",%`,
+            accountId: this.accountId,
           }
         },
         skip() {
           return !this.accountId
         },
         result({ data }) {
-          this.stakingRewards = data.event.map((event) => {
-            return {
-              block_number: event.block_number,
-              timestamp: event.timestamp,
-              timeago: event.timestamp,
-              amount: JSON.parse(event.data)[1],
-            }
-          })
+          this.stakingRewards = data.staking_reward
           this.totalRows = this.stakingRewards.length
           this.loading = false
         },

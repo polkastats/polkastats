@@ -61,9 +61,18 @@ export default {
     ['cookie-universal-nuxt', { alias: 'cookies' }],
     // https://github.com/nuxt-community/redirect-module
     '@nuxtjs/redirect-module',
+    // https://github.com/nuxt-community/markdownit-module
+    '@nuxtjs/markdownit',
   ],
 
   // Module configurations
+  markdownit: {
+    injected: true,
+    preset: 'commonmark',
+    linkify: true,
+    breaks: true,
+  },
+
   axios: {},
 
   i18n: {
@@ -104,12 +113,34 @@ export default {
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
-    extend(config) {
-      if (config.resolve.extensions) {
-        config.resolve.extensions.push('.mjs')
-      } else {
-        config.resolve.extensions = ['.mjs']
-      }
+    transpile: [
+      '@polkadot/vue-identicon',
+      '@polkadot/x-ws',
+      '@polkadot/api',
+      '@polkadot/api-derive',
+      '@polkadot/keyring',
+      '@polkadot/networks',
+      '@polkadot/rpc-augment',
+      '@polkadot/rpc-core',
+      '@polkadot/rpc-provider',
+      '@polkadot/types',
+      '@polkadot/types-known',
+      '@polkadot/ui-shared',
+      '@polkadot/util',
+      '@polkadot/util-crypto',
+      '@polkadot/x-bigint',
+      '@polkadot/x-fetch',
+      '@polkadot/x-global',
+      '@polkadot/x-randomvalues',
+      '@polkadot/x-textdecoder',
+      '@polkadot/x-textencoder',
+      '@polkadot/x-ws',
+    ],
+    extend(config, ctx) {
+      config.module.rules.push({
+        test: /\.js$/,
+        loader: require.resolve('@open-wc/webpack-import-meta-loader'),
+      })
       config.module.rules.push({
         test: /\.mjs$/,
         include: /node_modules/,

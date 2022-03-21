@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import commonMixin from '@/mixins/commonMixin.js'
 import { gql } from 'graphql-tag'
+import commonMixin from '@/mixins/commonMixin.js'
 
 export default {
   mixins: [commonMixin],
@@ -94,18 +94,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.last-activity .table th,
-.last-activity .table td {
-  padding: 0.45rem;
-}
-.last-activity .table thead th {
-  border-bottom: 0;
-}
-.last-activity .identicon {
-  display: inline-block;
-  margin: 0 0.2rem 0 0;
-  cursor: copy;
-}
-</style>

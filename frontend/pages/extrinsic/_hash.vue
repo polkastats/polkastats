@@ -25,9 +25,9 @@
   </div>
 </template>
 <script>
+import { gql } from 'graphql-tag'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
-import { gql } from 'graphql-tag'
 
 export default {
   components: {
@@ -70,11 +70,13 @@ export default {
             section
             method
             args
+            args_def
             hash
             doc
             fee_info
             fee_details
             success
+            error_message
             timestamp
           }
         }
