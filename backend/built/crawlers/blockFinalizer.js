@@ -58,7 +58,7 @@ const crawler = async () => {
         }
         // Handle missing blocks from subscription
         for (let blockToUpdate = trackedBlock + 1; blockToUpdate <= blockNumber; blockToUpdate++) {
-            await (0, block_1.updateFinalizedBlock)(api, client, blockToUpdate, loggerOptions);
+            await (0, block_1.updateFinalizedBlock)(config, api, client, blockToUpdate, loggerOptions);
         }
         trackedBlock = blockNumber;
     });

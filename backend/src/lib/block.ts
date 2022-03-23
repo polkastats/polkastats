@@ -487,6 +487,7 @@ export const harvestBlocks = async (
 };
 
 export const updateFinalizedBlock = async (
+  config: CrawlerConfig,
   api: ApiPromise,
   client: Client,
   blockNumber: number,
@@ -528,7 +529,7 @@ export const updateFinalizedBlock = async (
       loggerOptions,
       `Updated finalized block #${blockNumber} (${shortHash(
         blockHash.toString(),
-      )}) in ${((endTime - startTime) / 1000).toFixed(3)}s`,
+      )}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`,
     );
   } catch (error) {
     logger.error(

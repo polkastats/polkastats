@@ -341,7 +341,7 @@ const harvestBlocks = async (config, api, client, startBlock, endBlock, loggerOp
     }
 };
 exports.harvestBlocks = harvestBlocks;
-const updateFinalizedBlock = async (api, client, blockNumber, loggerOptions) => {
+const updateFinalizedBlock = async (config, api, client, blockNumber, loggerOptions) => {
     const startTime = new Date().getTime();
     try {
         const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
@@ -370,7 +370,7 @@ const updateFinalizedBlock = async (api, client, blockNumber, loggerOptions) => 
         // Update finalized blocks
         await (0, exports.updateFinalized)(client, blockNumber, loggerOptions);
         const endTime = new Date().getTime();
-        logger_1.logger.info(loggerOptions, `Updated finalized block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+        logger_1.logger.info(loggerOptions, `Updated finalized block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
     }
     catch (error) {
         logger_1.logger.error(loggerOptions, `Error updating finalized block #${blockNumber}: ${error}`);

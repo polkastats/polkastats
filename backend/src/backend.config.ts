@@ -25,6 +25,7 @@ export const backendConfig = {
       name: 'blockFinalizer',
       enabled: !process.env.BLOCK_FINALIZER_DISABLE,
       crawler: './built/crawlers/blockFinalizer.js',
+      statsPrecision: parseInt(process.env.BACKEND_STATS_PRECISION, 10) || 2,
       startDelay:
         parseInt(process.env.BLOCK_FINALIZER_START_DELAY_MS, 10) || 60 * 1000,
     },
