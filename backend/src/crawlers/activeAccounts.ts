@@ -64,7 +64,7 @@ const crawler = async (delayedStart: boolean) => {
       `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${(
         (chunkEndTime - chunkStartTime) /
         1000
-      ).toFixed(3)}s`,
+      ).toFixed(config.statsPrecision)}s`,
     );
   }
 
