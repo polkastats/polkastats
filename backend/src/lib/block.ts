@@ -183,33 +183,29 @@ export const harvestBlock = async (
 
     const apiAt = await api.at(blockHash);
     const [
-      { block },
-      blockEvents,
-      blockHeader,
+      derivedBlock,
       totalIssuance,
       runtimeVersion,
       activeEra,
       currentIndex,
-      timestamp,
     ] = await Promise.all([
-      api.rpc.chain.getBlock(blockHash),
-      apiAt.query.system.events(),
-      api.derive.chain.getHeader(blockHash),
+      api.derive.chain.getBlock(blockHash),
       apiAt.query.balances.totalIssuance(),
       api.rpc.state.getRuntimeVersion(blockHash),
       apiAt.query?.staking.activeEra
         ? apiAt.query.staking.activeEra().then((res) => res.unwrap().index)
         : 0,
       apiAt.query.session.currentIndex(),
-      apiAt.query.timestamp.now(),
     ]);
 
-    const blockAuthor = blockHeader.author || '';
-    const blockAuthorIdentity = await api.derive.accounts.info(
-      blockHeader.author,
-    );
+    const { block, author: blockAuthor, events: blockEvents } = derivedBlock;
+    const { parentHash, extrinsicsRoot, stateRoot } = block.header;
+    const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
-    const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
+    const timestamp = block.extrinsics.find(
+      ({ method: { section, method } }) =>
+        section === 'timestamp' && method === 'set',
+    ).args[0];
 
     // Totals
     const totalEvents = blockEvents.length;
@@ -347,7 +343,7 @@ export const harvestBlock = async (
       processLogs(
         client,
         blockNumber,
-        blockHeader.digest.logs,
+        block.header.digest.logs,
         timestamp.toNumber(),
         loggerOptions,
       ),

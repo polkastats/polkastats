@@ -386,7 +386,7 @@ export const processEvents = async (
   client: Client,
   blockNumber: number,
   activeEra: number,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: EventRecord[],
   blockExtrinsics: Vec<GenericExtrinsic<AnyTuple>>,
   timestamp: number,
   loggerOptions: LoggerOptions,

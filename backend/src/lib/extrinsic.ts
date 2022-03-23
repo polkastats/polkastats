@@ -451,7 +451,7 @@ export const processExtrinsics = async (
   blockNumber: number,
   blockHash: BlockHash,
   extrinsics: Vec<GenericExtrinsic<AnyTuple>>,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: EventRecord[],
   timestamp: number,
   loggerOptions: LoggerOptions,
 ): Promise<void> => {
