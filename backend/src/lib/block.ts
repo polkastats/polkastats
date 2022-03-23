@@ -202,10 +202,15 @@ export const harvestBlock = async (
     const { parentHash, extrinsicsRoot, stateRoot } = block.header;
     const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
-    const timestamp = block.extrinsics.find(
-      ({ method: { section, method } }) =>
-        section === 'timestamp' && method === 'set',
-    ).args[0];
+    const timestamp = parseInt(
+      block.extrinsics
+        .find(
+          ({ method: { section, method } }) =>
+            section === 'timestamp' && method === 'set',
+        )
+        .args[0].toString(),
+      10,
+    );
 
     // Totals
     const totalEvents = blockEvents.length;
@@ -311,7 +316,7 @@ export const harvestBlock = async (
         blockHash.toString(),
         specName.toString(),
         specVersion.toNumber(),
-        timestamp.toNumber(),
+        timestamp,
         loggerOptions,
       );
     }
@@ -326,7 +331,7 @@ export const harvestBlock = async (
         blockHash,
         block.extrinsics,
         blockEvents,
-        timestamp.toNumber(),
+        timestamp,
         loggerOptions,
       ),
       // Store module events
@@ -336,7 +341,7 @@ export const harvestBlock = async (
         parseInt(activeEra.toString()),
         blockEvents,
         block.extrinsics,
-        timestamp.toNumber(),
+        timestamp,
         loggerOptions,
       ),
       // Store block logs
@@ -344,7 +349,7 @@ export const harvestBlock = async (
         client,
         blockNumber,
         block.header.digest.logs,
-        timestamp.toNumber(),
+        timestamp,
         loggerOptions,
       ),
     ]);
