@@ -19,8 +19,8 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-// Used for processing events and extrinsics
-const chunkSize = 100;
+// events chunk size
+const chunkSize = 20;
 
 export const getSlashedValidatorAccount = (
   index: number,
