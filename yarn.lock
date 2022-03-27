@@ -2568,7 +2568,7 @@
     eventemitter3 "^4.0.7"
     rxjs "^7.5.5"
 
-"@polkadot/keyring@^8.5.1":
+"@polkadot/keyring@8.5.1", "@polkadot/keyring@^8.5.1":
   version "8.5.1"
   resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-8.5.1.tgz#2c8907341302016a1f3d8e5d0f7d01e4d35b3575"
   integrity sha512-ivJ/pEfu9Pu78h3Gldf3p5odXr5weAbwcz22VyjmTpege1bIHmw4HdYC0lOZznTDAIGUMk7IoswHYmvZWTHgNA==
@@ -2688,15 +2688,15 @@
     "@polkadot/util-crypto" "^8.5.1"
     rxjs "^7.5.5"
 
-"@polkadot/ui-shared@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/ui-shared/-/ui-shared-1.2.1.tgz#ad54307ca7a009a7f843a846e5eb9dabb578dbd8"
-  integrity sha512-ZQML7VsOiUFXJcottWuFnjFbcxiyXn3bAHLRLlelic0AxAu/De0drFWqtQYcMOMagc+uGi7Vf5zq0vJTKVnc3A==
+"@polkadot/ui-shared@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@polkadot/ui-shared/-/ui-shared-1.1.1.tgz#44ab27309643594c0c5fbabe32ca57f91d502e72"
+  integrity sha512-ekUZsTKmWlSZRSs2hymnI60B0+8Cfl9pU2trfhWj48/lVku4IZJ0pl/oNUjrMwnoy6KV4qtAqShUALCtAPJTTQ==
   dependencies:
     "@babel/runtime" "^7.17.2"
     color "^3.2.1"
 
-"@polkadot/util-crypto@8.5.1", "@polkadot/util-crypto@^8.5.1":
+"@polkadot/util-crypto@8.5.1", "@polkadot/util-crypto@^8.4.1", "@polkadot/util-crypto@^8.5.1":
   version "8.5.1"
   resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-8.5.1.tgz#e2d36c079a69d5b37b6ac6965ede6202bded7a56"
   integrity sha512-/+4Cwcd4vlIzvIVFXfNjNeoLWw4wSZY58OiXlq8apISrJly63u8KCa8DwV9SxxgMBU0xzpWi/4W1m7hihGh8RQ==
@@ -2713,7 +2713,7 @@
     ed2curve "^0.3.0"
     tweetnacl "^1.0.3"
 
-"@polkadot/util@8.5.1", "@polkadot/util@^8.5.1":
+"@polkadot/util@8.5.1", "@polkadot/util@^8.4.1", "@polkadot/util@^8.5.1":
   version "8.5.1"
   resolved "https://registry.yarnpkg.com/@polkadot/util/-/util-8.5.1.tgz#49c4775fcdf711cce2464110aae7df8bf5a891b8"
   integrity sha512-B+W3VdLo4ignLZXRTA/gAF7TwFe+kgW6XTt+BBWJL9dcjGVU66aL8xjTbohUNUtwlaD2p5kua6jJqTJC/3u3hQ==
@@ -2727,15 +2727,15 @@
     bn.js "^5.2.0"
     ip-regex "^4.3.0"
 
-"@polkadot/vue-identicon@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/vue-identicon/-/vue-identicon-1.2.1.tgz#c866263d53660aff7c071eab28b5f8958ee1bdc0"
-  integrity sha512-r3oW3nHTm9NBPfvIVJU8h7+cIk01ijeAVBT815WO9uKjTIv94GlE1KI3SEkoJh4MzD//cYXeRqRcxTBnenEdjA==
+"@polkadot/vue-identicon@1.1.1", "@polkadot/vue-identicon@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@polkadot/vue-identicon/-/vue-identicon-1.1.1.tgz#4d43b94c0ec0f94161bd1758a0b8ef83612ad383"
+  integrity sha512-YUpTQDVqTdg8kIdUt5SljjDiEr8VOWhrVBZz33vJt3rP1PMg9cUgUlV9vXAQDlabJPLNgGliSTsJbgFJ9rRAGA==
   dependencies:
     "@babel/runtime" "^7.17.2"
-    "@polkadot/ui-shared" "1.2.1"
-    "@polkadot/util" "^8.5.1"
-    "@polkadot/util-crypto" "^8.5.1"
+    "@polkadot/ui-shared" "1.1.1"
+    "@polkadot/util" "^8.4.1"
+    "@polkadot/util-crypto" "^8.4.1"
     jdenticon "3.1.1"
 
 "@polkadot/wasm-crypto-asmjs@^4.6.1":
