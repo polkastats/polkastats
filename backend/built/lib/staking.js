@@ -1,26 +1,52 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.insertEraValidatorStatsAvg = exports.getLastEraInDb = exports.getAddressCreation = exports.insertEraValidatorStats = exports.insertRankingValidator = exports.addNewFeaturedValidator = exports.getClusterInfo = exports.getPayoutRating = exports.getCommissionRating = exports.getCommissionHistory = exports.parseIdentity = exports.getIdentityRating = exports.subIdentity = exports.getClusterName = exports.getName = exports.isVerifiedIdentity = exports.getThousandValidators = void 0;
 // @ts-check
-import * as Sentry from '@sentry/node';
-import axios from 'axios';
-import { BigNumber } from 'bignumber.js';
-import { dbParamQuery, dbQuery } from './db';
-import { backendConfig } from '../backend.config';
-import { logger } from './logger';
+const Sentry = __importStar(require("@sentry/node"));
+const axios_1 = __importDefault(require("axios"));
+const bignumber_js_1 = require("bignumber.js");
+const db_1 = require("./db");
+const backend_config_1 = require("../backend.config");
+const logger_1 = require("./logger");
 Sentry.init({
-    dsn: backendConfig.sentryDSN,
+    dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
 });
-export const getThousandValidators = async (loggerOptions) => {
+const getThousandValidators = async (loggerOptions) => {
     try {
-        const response = await axios.get('https://kusama.w3f.community/candidates');
+        const response = await axios_1.default.get('https://kusama.w3f.community/candidates');
         return response.data;
     }
     catch (error) {
-        logger.error(loggerOptions, `Error fetching Thousand Validator Program stats: ${JSON.stringify(error)}`);
+        logger_1.logger.error(loggerOptions, `Error fetching Thousand Validator Program stats: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
         return [];
     }
 };
-export const isVerifiedIdentity = (identity) => {
+exports.getThousandValidators = getThousandValidators;
+const isVerifiedIdentity = (identity) => {
     if (identity.judgements.length === 0) {
         return false;
     }
@@ -28,7 +54,8 @@ export const isVerifiedIdentity = (identity) => {
         .filter(([, judgement]) => !judgement.isFeePaid)
         .some(([, judgement]) => judgement.isKnownGood || judgement.isReasonable);
 };
-export const getName = (identity) => {
+exports.isVerifiedIdentity = isVerifiedIdentity;
+const getName = (identity) => {
     if (identity.displayParent &&
         identity.displayParent !== '' &&
         identity.display &&
@@ -37,8 +64,10 @@ export const getName = (identity) => {
     }
     return identity.display || '';
 };
-export const getClusterName = (identity) => identity.displayParent || '';
-export const subIdentity = (identity) => {
+exports.getName = getName;
+const getClusterName = (identity) => identity.displayParent || '';
+exports.getClusterName = getClusterName;
+const subIdentity = (identity) => {
     if (identity.displayParent &&
         identity.displayParent !== '' &&
         identity.display &&
@@ -47,7 +76,8 @@ export const subIdentity = (identity) => {
     }
     return false;
 };
-export const getIdentityRating = (name, verifiedIdentity, hasAllFields) => {
+exports.subIdentity = subIdentity;
+const getIdentityRating = (name, verifiedIdentity, hasAllFields) => {
     if (verifiedIdentity && hasAllFields) {
         return 3;
     }
@@ -59,17 +89,18 @@ export const getIdentityRating = (name, verifiedIdentity, hasAllFields) => {
     }
     return 0;
 };
-export const parseIdentity = (identity) => {
-    const verifiedIdentity = isVerifiedIdentity(identity);
-    const hasSubIdentity = subIdentity(identity);
-    const name = getName(identity);
+exports.getIdentityRating = getIdentityRating;
+const parseIdentity = (identity) => {
+    const verifiedIdentity = (0, exports.isVerifiedIdentity)(identity);
+    const hasSubIdentity = (0, exports.subIdentity)(identity);
+    const name = (0, exports.getName)(identity);
     const hasAllFields = (identity === null || identity === void 0 ? void 0 : identity.display) !== undefined &&
         (identity === null || identity === void 0 ? void 0 : identity.legal) !== undefined &&
         (identity === null || identity === void 0 ? void 0 : identity.web) !== undefined &&
         (identity === null || identity === void 0 ? void 0 : identity.email) !== undefined &&
         (identity === null || identity === void 0 ? void 0 : identity.twitter) !== undefined &&
         (identity === null || identity === void 0 ? void 0 : identity.riot) !== undefined;
-    const identityRating = getIdentityRating(name, verifiedIdentity, hasAllFields);
+    const identityRating = (0, exports.getIdentityRating)(name, verifiedIdentity, hasAllFields);
     return {
         verifiedIdentity,
         hasSubIdentity,
@@ -77,25 +108,27 @@ export const parseIdentity = (identity) => {
         identityRating,
     };
 };
-export const getCommissionHistory = (accountId, erasPreferences) => {
+exports.parseIdentity = parseIdentity;
+const getCommissionHistory = (accountId, erasPreferences) => {
     const commissionHistory = [];
     erasPreferences.forEach(({ era, validators }) => {
         if (validators[accountId]) {
             commissionHistory.push({
-                era: new BigNumber(era.toString()).toString(10),
+                era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                 commission: (validators[accountId].commission / 10000000).toFixed(2),
             });
         }
         else {
             commissionHistory.push({
-                era: new BigNumber(era.toString()).toString(10),
+                era: new bignumber_js_1.BigNumber(era.toString()).toString(10),
                 commission: null,
             });
         }
     });
     return commissionHistory;
 };
-export const getCommissionRating = (commission, commissionHistory) => {
+exports.getCommissionHistory = getCommissionHistory;
+const getCommissionRating = (commission, commissionHistory) => {
     if (commission !== 100 && commission !== 0) {
         if (commission > 10) {
             return 1;
@@ -113,7 +146,8 @@ export const getCommissionRating = (commission, commissionHistory) => {
     }
     return 0;
 };
-export const getPayoutRating = (config, payoutHistory) => {
+exports.getCommissionRating = getCommissionRating;
+const getPayoutRating = (config, payoutHistory) => {
     const pendingEras = payoutHistory.filter((era) => era.status === 'pending').length;
     if (pendingEras <= config.erasPerDay) {
         return 3;
@@ -126,7 +160,8 @@ export const getPayoutRating = (config, payoutHistory) => {
     }
     return 0;
 };
-export const getClusterInfo = (hasSubIdentity, validators, validatorIdentity) => {
+exports.getPayoutRating = getPayoutRating;
+const getClusterInfo = (hasSubIdentity, validators, validatorIdentity) => {
     if (!hasSubIdentity) {
         // string detection
         // samples: DISC-SOFT-01, BINANCE_KSM_9, SNZclient-1
@@ -149,12 +184,13 @@ export const getClusterInfo = (hasSubIdentity, validators, validatorIdentity) =>
         };
     }
     const clusterMembers = validators.filter(({ identity }) => identity.displayParent === validatorIdentity.displayParent).length;
-    const clusterName = getClusterName(validatorIdentity);
+    const clusterName = (0, exports.getClusterName)(validatorIdentity);
     return {
         clusterName,
         clusterMembers,
     };
 };
+exports.getClusterInfo = getClusterInfo;
 //
 //   featured rules:
 //
@@ -162,11 +198,11 @@ export const getClusterInfo = (hasSubIdentity, validators, validatorIdentity) =>
 // - at least 20 KSM own stake
 // - no previously featured
 //
-export const addNewFeaturedValidator = async (config, client, ranking, loggerOptions) => {
+const addNewFeaturedValidator = async (config, client, ranking, loggerOptions) => {
     // get previously featured
     const alreadyFeatured = [];
     const sql = 'SELECT stash_address, timestamp FROM featured';
-    const res = await dbQuery(client, sql, loggerOptions);
+    const res = await (0, db_1.dbQuery)(client, sql, loggerOptions);
     res.rows.forEach((validator) => alreadyFeatured.push(validator.stash_address));
     // get candidates that meet the rules
     const featuredCandidates = ranking
@@ -179,10 +215,11 @@ export const addNewFeaturedValidator = async (config, client, ranking, loggerOpt
     const shuffled = [...featuredCandidates].sort(() => 0.5 - Math.random());
     const randomRank = shuffled[0];
     const featured = ranking.find((validator) => validator.rank === randomRank);
-    await dbQuery(client, `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`, loggerOptions);
-    logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
+    await (0, db_1.dbQuery)(client, `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`, loggerOptions);
+    logger_1.logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
 };
-export const insertRankingValidator = async (client, validator, blockHeight, startTime, loggerOptions) => {
+exports.addNewFeaturedValidator = addNewFeaturedValidator;
+const insertRankingValidator = async (client, validator, blockHeight, startTime, loggerOptions) => {
     const sql = `INSERT INTO ranking (
       block_height,
       rank,
@@ -337,9 +374,10 @@ export const insertRankingValidator = async (client, validator, blockHeight, sta
         validator.dominated,
         startTime,
     ];
-    await dbParamQuery(client, sql, data, loggerOptions);
+    await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
 };
-export const insertEraValidatorStats = async (client, validator, activeEra, loggerOptions) => {
+exports.insertRankingValidator = insertRankingValidator;
+const insertEraValidatorStats = async (client, validator, activeEra, loggerOptions) => {
     let sql = `INSERT INTO era_vrc_score (
       stash_address,
       era,
@@ -352,7 +390,7 @@ export const insertEraValidatorStats = async (client, validator, activeEra, logg
     ON CONFLICT ON CONSTRAINT era_vrc_score_pkey 
     DO NOTHING;`;
     let data = [validator.stashAddress, activeEra, validator.totalRating];
-    await dbParamQuery(client, sql, data, loggerOptions);
+    await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
     for (const commissionHistoryItem of validator.commissionHistory) {
         if (commissionHistoryItem.commission) {
             sql = `INSERT INTO era_commission (
@@ -371,7 +409,7 @@ export const insertEraValidatorStats = async (client, validator, activeEra, logg
                 commissionHistoryItem.era,
                 commissionHistoryItem.commission,
             ];
-            await dbParamQuery(client, sql, data, loggerOptions);
+            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     for (const perfHistoryItem of validator.relativePerformanceHistory) {
@@ -393,7 +431,7 @@ export const insertEraValidatorStats = async (client, validator, activeEra, logg
                 perfHistoryItem.era,
                 perfHistoryItem.relativePerformance,
             ];
-            await dbParamQuery(client, sql, data, loggerOptions);
+            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     for (const stakefHistoryItem of validator.stakeHistory) {
@@ -414,7 +452,7 @@ export const insertEraValidatorStats = async (client, validator, activeEra, logg
                 stakefHistoryItem.era,
                 stakefHistoryItem.self,
             ];
-            await dbParamQuery(client, sql, data, loggerOptions);
+            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     for (const eraPointsHistoryItem of validator.eraPointsHistory) {
@@ -435,13 +473,14 @@ export const insertEraValidatorStats = async (client, validator, activeEra, logg
                 eraPointsHistoryItem.era,
                 eraPointsHistoryItem.points,
             ];
-            await dbParamQuery(client, sql, data, loggerOptions);
+            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
 };
-export const getAddressCreation = async (client, address, loggerOptions) => {
+exports.insertEraValidatorStats = insertEraValidatorStats;
+const getAddressCreation = async (client, address, loggerOptions) => {
     const query = "SELECT block_number FROM event WHERE method = 'NewAccount' AND data LIKE $1";
-    const res = await dbParamQuery(client, query, [`%${address}%`], loggerOptions);
+    const res = await (0, db_1.dbParamQuery)(client, query, [`%${address}%`], loggerOptions);
     if (res) {
         if (res.rows.length > 0) {
             if (res.rows[0].block_number) {
@@ -452,11 +491,12 @@ export const getAddressCreation = async (client, address, loggerOptions) => {
     // if not found we assume it was created in genesis block
     return 0;
 };
-export const getLastEraInDb = async (client, loggerOptions) => {
+exports.getAddressCreation = getAddressCreation;
+const getLastEraInDb = async (client, loggerOptions) => {
     // TODO: check also:
     // era_points_avg, era_relative_performance_avg, era_self_stake_avg
     const query = 'SELECT era FROM era_commission_avg ORDER BY era DESC LIMIT 1';
-    const res = await dbQuery(client, query, loggerOptions);
+    const res = await (0, db_1.dbQuery)(client, query, loggerOptions);
     if (res) {
         if (res.rows.length > 0) {
             if (res.rows[0].era) {
@@ -466,23 +506,24 @@ export const getLastEraInDb = async (client, loggerOptions) => {
     }
     return '0';
 };
-export const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
-    const era = new BigNumber(eraIndex.toString()).toString(10);
+exports.getLastEraInDb = getLastEraInDb;
+const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions) => {
+    const era = new bignumber_js_1.BigNumber(eraIndex.toString()).toString(10);
     let data = [era];
     let sql = 'SELECT AVG(commission) AS commission_avg FROM era_commission WHERE era = $1 AND commission != 100';
-    let res = await dbParamQuery(client, sql, data, loggerOptions);
+    let res = await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].commission_avg) {
             data = [era, res.rows[0].commission_avg];
             sql =
                 'INSERT INTO era_commission_avg (era, commission_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_commission_avg_pkey DO NOTHING;';
-            await dbParamQuery(client, sql, data, loggerOptions);
+            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     sql =
         'SELECT AVG(self_stake) AS self_stake_avg FROM era_self_stake WHERE era = $1';
     data = [era];
-    res = await dbParamQuery(client, sql, data, loggerOptions);
+    res = await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].self_stake_avg) {
             const selfStakeAvg = res.rows[0].self_stake_avg
@@ -491,30 +532,31 @@ export const insertEraValidatorStatsAvg = async (client, eraIndex, loggerOptions
             data = [era, selfStakeAvg];
             sql =
                 'INSERT INTO era_self_stake_avg (era, self_stake_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_self_stake_avg_pkey DO NOTHING;';
-            await dbParamQuery(client, sql, data, loggerOptions);
+            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     sql =
         'SELECT AVG(relative_performance) AS relative_performance_avg FROM era_relative_performance WHERE era = $1';
     data = [era];
-    res = await dbParamQuery(client, sql, data, loggerOptions);
+    res = await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].relative_performance_avg) {
             data = [era, res.rows[0].relative_performance_avg];
             sql =
                 'INSERT INTO era_relative_performance_avg (era, relative_performance_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_relative_performance_avg_pkey DO NOTHING;';
-            await dbParamQuery(client, sql, data, loggerOptions);
+            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
     sql = 'SELECT AVG(points) AS points_avg FROM era_points WHERE era = $1';
     data = [era];
-    res = await dbParamQuery(client, sql, data, loggerOptions);
+    res = await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
     if (res.rows.length > 0) {
         if (res.rows[0].points_avg) {
             data = [era, res.rows[0].points_avg];
             sql =
                 'INSERT INTO era_points_avg (era, points_avg) VALUES ($1, $2) ON CONFLICT ON CONSTRAINT era_points_avg_pkey DO NOTHING;';
-            await dbParamQuery(client, sql, data, loggerOptions);
+            await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
         }
     }
 };
+exports.insertEraValidatorStatsAvg = insertEraValidatorStatsAvg;

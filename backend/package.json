@@ -5,7 +5,7 @@
   "author": "Mario Pino Uceda",
   "license": "Apache-2.0",
   "main": "built/index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "node built/index.js",
     "tsc": "tsc",

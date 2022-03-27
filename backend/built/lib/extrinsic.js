@@ -1,36 +1,60 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.processExtrinsics = exports.processExtrinsic = exports.processTransfer = exports.getTransferAllAmount = exports.getExtrinsicSuccessOrErrorMessage = exports.getExtrinsicFeeDetails = exports.getExtrinsicFeeInfo = void 0;
 // @ts-check
-import * as Sentry from '@sentry/node';
-import { BigNumber } from 'bignumber.js';
-import { chunker, shortHash } from './utils';
-import { backendConfig } from '../backend.config';
-import { logger } from './logger';
+const Sentry = __importStar(require("@sentry/node"));
+const bignumber_js_1 = require("bignumber.js");
+const utils_1 = require("./utils");
+const backend_config_1 = require("../backend.config");
+const logger_1 = require("./logger");
 Sentry.init({
-    dsn: backendConfig.sentryDSN,
+    dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
 });
 // extrinsics chunk size
 const chunkSize = 20;
-export const getExtrinsicFeeInfo = async (api, hexExtrinsic, blockHash, loggerOptions) => {
+const getExtrinsicFeeInfo = async (api, hexExtrinsic, blockHash, loggerOptions) => {
     try {
         const feeInfo = await api.rpc.payment.queryInfo(hexExtrinsic, blockHash);
         return feeInfo;
     }
     catch (error) {
-        logger.debug(loggerOptions, `Error getting extrinsic fee info: ${error}`);
+        logger_1.logger.debug(loggerOptions, `Error getting extrinsic fee info: ${error}`);
     }
     return null;
 };
-export const getExtrinsicFeeDetails = async (api, hexExtrinsic, blockHash, loggerOptions) => {
+exports.getExtrinsicFeeInfo = getExtrinsicFeeInfo;
+const getExtrinsicFeeDetails = async (api, hexExtrinsic, blockHash, loggerOptions) => {
     try {
         const feeDetails = await api.rpc.payment.queryFeeDetails(hexExtrinsic, blockHash);
         return feeDetails;
     }
     catch (error) {
-        logger.debug(loggerOptions, `Error getting extrinsic fee details: ${error}`);
+        logger_1.logger.debug(loggerOptions, `Error getting extrinsic fee details: ${error}`);
     }
     return null;
 };
-export const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents, blockNumber) => {
+exports.getExtrinsicFeeDetails = getExtrinsicFeeDetails;
+const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents, blockNumber) => {
     let extrinsicSuccess = false;
     let extrinsicErrorMessage = '';
     blockEvents
@@ -60,7 +84,8 @@ export const getExtrinsicSuccessOrErrorMessage = (apiAt, index, blockEvents, blo
     });
     return [extrinsicSuccess, extrinsicErrorMessage];
 };
-export const getTransferAllAmount = (blockNumber, index, blockEvents) => {
+exports.getExtrinsicSuccessOrErrorMessage = getExtrinsicSuccessOrErrorMessage;
+const getTransferAllAmount = (blockNumber, index, blockEvents) => {
     try {
         return blockEvents
             .find(({ event, phase }) => phase.isApplyExtrinsic &&
@@ -75,8 +100,9 @@ export const getTransferAllAmount = (blockNumber, index, blockEvents) => {
         Sentry.captureException(error, scope);
     }
 };
+exports.getTransferAllAmount = getTransferAllAmount;
 // TODO: Use in multiple extrinsics included in utility.batch and proxy.proxy
-export const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash, signer, feeInfo, success, errorMessage, timestamp, loggerOptions) => {
+const processTransfer = async (client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash, signer, feeInfo, success, errorMessage, timestamp, loggerOptions) => {
     // Store transfer
     const source = signer;
     let destination = '';
@@ -95,7 +121,7 @@ export const processTransfer = async (client, blockNumber, extrinsicIndex, block
         amount =
             source === destination
                 ? 0
-                : getTransferAllAmount(blockNumber, extrinsicIndex, blockEvents);
+                : (0, exports.getTransferAllAmount)(blockNumber, extrinsicIndex, blockEvents);
     }
     else if (method === 'transferAll' && !success) {
         // no event is emitted so we can't get amount
@@ -109,7 +135,7 @@ export const processTransfer = async (client, blockNumber, extrinsicIndex, block
     }
     // fee calculation not supported for some runtimes
     const feeAmount = !!feeInfo
-        ? new BigNumber(JSON.stringify(feeInfo.toJSON().partialFee)).toString(10)
+        ? new bignumber_js_1.BigNumber(JSON.stringify(feeInfo.toJSON().partialFee)).toString(10)
         : null;
     const data = [
         blockNumber,
@@ -119,7 +145,7 @@ export const processTransfer = async (client, blockNumber, extrinsicIndex, block
         hash,
         source,
         destination,
-        new BigNumber(amount).toString(10),
+        new bignumber_js_1.BigNumber(amount).toString(10),
         feeAmount,
         success,
         errorMessage,
@@ -157,16 +183,17 @@ export const processTransfer = async (client, blockNumber, extrinsicIndex, block
     ;`;
     try {
         await client.query(sql, data);
-        logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${shortHash(hash.toString())}) ${section} ➡ ${method}`);
+        logger_1.logger.debug(loggerOptions, `Added transfer ${blockNumber}-${extrinsicIndex} (${(0, utils_1.shortHash)(hash.toString())}) ${section} ➡ ${method}`);
     }
     catch (error) {
-        logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+        logger_1.logger.error(loggerOptions, `Error adding transfer ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
         const scope = new Sentry.Scope();
         scope.setTag('blockNumber', blockNumber);
         Sentry.captureException(error, scope);
     }
 };
-export const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions) => {
+exports.processTransfer = processTransfer;
+const processExtrinsic = async (api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions) => {
     const [extrinsicIndex, extrinsic] = indexedExtrinsic;
     const { isSigned } = extrinsic;
     const signer = isSigned ? extrinsic.signer.toString() : '';
@@ -177,12 +204,12 @@ export const processExtrinsic = async (api, apiAt, client, blockNumber, blockHas
     const hash = extrinsic.hash.toHex();
     const doc = JSON.stringify(extrinsic.meta.docs.toJSON());
     // See: https://polkadot.js.org/docs/api/cookbook/blocks/#how-do-i-determine-if-an-extrinsic-succeededfailed
-    const [success, errorMessage] = getExtrinsicSuccessOrErrorMessage(apiAt, extrinsicIndex, blockEvents, blockNumber);
+    const [success, errorMessage] = (0, exports.getExtrinsicSuccessOrErrorMessage)(apiAt, extrinsicIndex, blockEvents, blockNumber);
     let feeInfo = null;
     let feeDetails = null;
     if (isSigned) {
-        feeInfo = await getExtrinsicFeeInfo(api, extrinsic.toHex(), blockHash, loggerOptions);
-        feeDetails = await getExtrinsicFeeDetails(api, extrinsic.toHex(), blockHash, loggerOptions);
+        feeInfo = await (0, exports.getExtrinsicFeeInfo)(api, extrinsic.toHex(), blockHash, loggerOptions);
+        feeDetails = await (0, exports.getExtrinsicFeeDetails)(api, extrinsic.toHex(), blockHash, loggerOptions);
     }
     let data = [
         blockNumber,
@@ -239,10 +266,10 @@ export const processExtrinsic = async (api, apiAt, client, blockNumber, blockHas
     ;`;
     try {
         await client.query(sql, data);
-        logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
+        logger_1.logger.debug(loggerOptions, `Added extrinsic ${blockNumber}-${extrinsicIndex} (${(0, utils_1.shortHash)(hash)}) ${section} ➡ ${method}`);
     }
     catch (error) {
-        logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+        logger_1.logger.error(loggerOptions, `Error adding extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
         const scope = new Sentry.Scope();
         scope.setTag('blockNumber', blockNumber);
         Sentry.captureException(error, scope);
@@ -301,10 +328,10 @@ export const processExtrinsic = async (api, apiAt, client, blockNumber, blockHas
     ;`;
         try {
             await client.query(sql, data);
-            logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${shortHash(hash)}) ${section} ➡ ${method}`);
+            logger_1.logger.debug(loggerOptions, `Added signed extrinsic ${blockNumber}-${extrinsicIndex} (${(0, utils_1.shortHash)(hash)}) ${section} ➡ ${method}`);
         }
         catch (error) {
-            logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
+            logger_1.logger.error(loggerOptions, `Error adding signed extrinsic ${blockNumber}-${extrinsicIndex}: ${JSON.stringify(error)}`);
             Sentry.captureException(error);
         }
         if (section === 'balances' &&
@@ -313,19 +340,21 @@ export const processExtrinsic = async (api, apiAt, client, blockNumber, blockHas
                 method === 'transferAll' ||
                 method === 'transferKeepAlive')) {
             // Store transfer
-            processTransfer(client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash.toString(), signer, feeInfo, success, errorMessage, timestamp, loggerOptions);
+            (0, exports.processTransfer)(client, blockNumber, extrinsicIndex, blockEvents, section, method, args, hash.toString(), signer, feeInfo, success, errorMessage, timestamp, loggerOptions);
         }
     }
 };
-export const processExtrinsics = async (api, apiAt, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => {
+exports.processExtrinsic = processExtrinsic;
+const processExtrinsics = async (api, apiAt, client, blockNumber, blockHash, extrinsics, blockEvents, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     const indexedExtrinsics = extrinsics.map((extrinsic, index) => [index, extrinsic]);
-    const chunks = chunker(indexedExtrinsics, chunkSize);
+    const chunks = (0, utils_1.chunker)(indexedExtrinsics, chunkSize);
     for (const chunk of chunks) {
-        await Promise.all(chunk.map((indexedExtrinsic) => processExtrinsic(api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
+        await Promise.all(chunk.map((indexedExtrinsic) => (0, exports.processExtrinsic)(api, apiAt, client, blockNumber, blockHash, indexedExtrinsic, blockEvents, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
-    logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) /
+    logger_1.logger.debug(loggerOptions, `Added ${extrinsics.length} extrinsics in ${((endTime - startTime) /
         1000).toFixed(3)}s`);
 };
+exports.processExtrinsics = processExtrinsics;
