@@ -2552,7 +2552,7 @@
     "@polkadot/util-crypto" "^8.7.1"
     rxjs "^7.5.5"
 
-"@polkadot/api@7.14.1", "@polkadot/api@^7.14.1":
+"@polkadot/api@7.14.1", "@polkadot/api@^7.12.1":
   version "7.14.1"
   resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-7.14.1.tgz#b73bfdd832f2c65549307af4c72a987d333212b9"
   integrity sha512-FGWx70CgUCFQR5aW+kz7mCHmacp8u9BhwFFGaiarrQFPVDzMAeM/q0fCecofDYRw7ntBbM7JKE3VOhHo6MVMTw==
@@ -2575,7 +2575,7 @@
     eventemitter3 "^4.0.7"
     rxjs "^7.5.5"
 
-"@polkadot/keyring@^8.7.1":
+"@polkadot/keyring@^8.5.1", "@polkadot/keyring@^8.7.1":
   version "8.7.1"
   resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-8.7.1.tgz#07cf6d6ee351dcf70fbf965b1d6d96c5025ae1b8"
   integrity sha512-t6ZgQVC+nQT7XwbWtEhkDpiAzxKVJw8Xd/gWdww6xIrawHu7jo3SGB4QNdPgkf8TvDHYAAJiupzVQYAlOIq3GA==
