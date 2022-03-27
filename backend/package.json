@@ -47,5 +47,11 @@
     "prettier": "^2.5.1",
     "source-map": "^0.7.3",
     "typescript": "^4.5.5"
+  },
+  "resolutions": {
+    "@polkadot/api": "7.12.1",
+    "@polkadot/keyring": "8.5.1",
+    "@polkadot/util": "8.5.1",
+    "@polkadot/util-crypto": "8.5.1"
   }
 }
