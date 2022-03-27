@@ -13,7 +13,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@polkadot/api": "^7.14.1",
+    "@polkadot/api": "^7.12.1",
     "@sentry/node": "^6.17.9",
     "@sentry/tracing": "^6.17.9",
     "axios": "^0.21.1",
