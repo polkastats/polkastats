@@ -22,12 +22,6 @@
   "homepage": "https://github.com/Colm3na/polkastats-ng#readme",
   "workspaces": ["frontend", "backend", "api"],
   "scripts": {},
-  "resolutions": {
-    "@polkadot/api": "7.12.1",
-    "@polkadot/keyring": "8.5.1",
-    "@polkadot/util": "8.5.1",
-    "@polkadot/util-crypto": "8.5.1",
-    "@polkadot/vue-identicon": "1.1.1"
-  }
+  "type": "module"
  }
  
