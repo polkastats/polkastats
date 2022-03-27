@@ -202,15 +202,19 @@ export const harvestBlock = async (
     const { parentHash, extrinsicsRoot, stateRoot } = block.header;
     const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
-    const timestamp = parseInt(
-      block.extrinsics
-        .find(
-          ({ method: { section, method } }) =>
-            section === 'timestamp' && method === 'set',
+    // genesis block doesn't expose timestamp or any other extrinsic
+    const timestamp =
+      blockNumber !== 0
+        ? parseInt(
+          block.extrinsics
+            .find(
+              ({ method: { section, method } }) =>
+                section === 'timestamp' && method === 'set',
+            )
+            .args[0].toString(),
+          10,
         )
-        .args[0].toString(),
-      10,
-    );
+        : 0;
 
     // Totals
     const totalEvents = blockEvents.length;
