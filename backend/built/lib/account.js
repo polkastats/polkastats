@@ -1,43 +1,16 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAccountsInfo = exports.updateAccountInfo = exports.processAccountsChunk = exports.fetchAccountIds = exports.getAccountIdFromArgs = void 0;
 // @ts-check
-const Sentry = __importStar(require("@sentry/node"));
-const lodash_1 = __importDefault(require("lodash"));
-const db_1 = require("./db");
-const logger_1 = require("./logger");
-const backend_config_1 = require("../backend.config");
+import * as Sentry from '@sentry/node';
+import _ from 'lodash';
+import { dbParamQuery } from './db';
+import { logger } from './logger';
+import { backendConfig } from '../backend.config';
 Sentry.init({
-    dsn: backend_config_1.backendConfig.sentryDSN,
+    dsn: backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
 });
-const getAccountIdFromArgs = (account) => account.map(({ args }) => args).map(([e]) => e.toHuman());
-exports.getAccountIdFromArgs = getAccountIdFromArgs;
-const fetchAccountIds = async (api) => (0, exports.getAccountIdFromArgs)(await api.query.system.account.keys());
-exports.fetchAccountIds = fetchAccountIds;
-const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
+export const getAccountIdFromArgs = (account) => account.map(({ args }) => args).map(([e]) => e.toHuman());
+export const fetchAccountIds = async (api) => getAccountIdFromArgs(await api.query.system.account.keys());
+export const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
     const timestamp = Math.floor(parseInt(Date.now().toString(), 10) / 1000);
     const [block, identity, balances] = await Promise.all([
         api.rpc.chain
@@ -121,10 +94,9 @@ const processAccountsChunk = async (api, client, accountId, loggerOptions) => {
       block_height = EXCLUDED.block_height
     WHERE EXCLUDED.block_height > account.block_height
   ;`;
-    await (0, db_1.dbParamQuery)(client, query, data, loggerOptions);
+    await dbParamQuery(client, query, data, loggerOptions);
 };
-exports.processAccountsChunk = processAccountsChunk;
-const updateAccountInfo = async (api, client, blockNumber, timestamp, address, loggerOptions) => {
+export const updateAccountInfo = async (api, client, blockNumber, timestamp, address, loggerOptions) => {
     const [balances, { identity }] = await Promise.all([
         api.derive.balances.all(address),
         api.derive.accounts.info(address),
@@ -207,15 +179,14 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
   ;`;
     try {
         await client.query(query, data);
-        logger_1.logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
+        logger.debug(loggerOptions, `Updated account info for event/s involved address ${address}`);
     }
     catch (error) {
-        logger_1.logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
+        logger.error(loggerOptions, `Error updating account info for event/s involved address: ${JSON.stringify(error)}`);
         Sentry.captureException(error);
     }
 };
-exports.updateAccountInfo = updateAccountInfo;
-const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
+export const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
     const startTime = new Date().getTime();
     const involvedAddresses = [];
     blockEvents.forEach(({ event }) => {
@@ -226,11 +197,10 @@ const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOpt
             }
         });
     });
-    const uniqueAddresses = lodash_1.default.uniq(involvedAddresses);
-    await Promise.all(uniqueAddresses.map((address) => (0, exports.updateAccountInfo)(api, client, blockNumber, timestamp, address, loggerOptions)));
+    const uniqueAddresses = _.uniq(involvedAddresses);
+    await Promise.all(uniqueAddresses.map((address) => updateAccountInfo(api, client, blockNumber, timestamp, address, loggerOptions)));
     // Log execution time
     const endTime = new Date().getTime();
-    logger_1.logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) /
+    logger.debug(loggerOptions, `Updated ${uniqueAddresses.length} accounts in ${((endTime - startTime) /
         1000).toFixed(3)}s`);
 };
-exports.updateAccountsInfo = updateAccountsInfo;

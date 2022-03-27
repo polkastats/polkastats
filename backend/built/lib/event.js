@@ -1,38 +1,16 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.processEvents = exports.processEvent = exports.getSlashedValidatorAccount = void 0;
 // @ts-check
-const Sentry = __importStar(require("@sentry/node"));
-const bignumber_js_1 = require("bignumber.js");
-const utils_1 = require("./utils");
-const backend_config_1 = require("../backend.config");
-const logger_1 = require("./logger");
+import * as Sentry from '@sentry/node';
+import { BigNumber } from 'bignumber.js';
+import { chunker } from './utils';
+import { backendConfig } from '../backend.config';
+import { logger } from './logger';
 Sentry.init({
-    dsn: backend_config_1.backendConfig.sentryDSN,
+    dsn: backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
 });
 // events chunk size
 const chunkSize = 20;
-const getSlashedValidatorAccount = (index, IndexedBlockEvents) => {
+export const getSlashedValidatorAccount = (index, IndexedBlockEvents) => {
     let validatorAccountId = '';
     for (let i = index; i >= 0; i--) {
         const { event } = IndexedBlockEvents[i][1];
@@ -43,8 +21,7 @@ const getSlashedValidatorAccount = (index, IndexedBlockEvents) => {
     }
     return validatorAccountId;
 };
-exports.getSlashedValidatorAccount = getSlashedValidatorAccount;
-const processEvent = async (client, blockNumber, activeEra, indexedEvent, IndexedBlockEvents, IndexedBlockExtrinsics, timestamp, loggerOptions) => {
+export const processEvent = async (client, blockNumber, activeEra, indexedEvent, IndexedBlockEvents, IndexedBlockExtrinsics, timestamp, loggerOptions) => {
     const [eventIndex, { event, phase }] = indexedEvent;
     const doc = JSON.stringify(event.meta.docs.toJSON());
     const types = JSON.stringify(event.typeDef);
@@ -85,10 +62,10 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
   ;`;
     try {
         await client.query(sql, data);
-        logger_1.logger.debug(loggerOptions, `Added event #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+        logger.debug(loggerOptions, `Added event #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
     }
     catch (error) {
-        logger_1.logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+        logger.error(loggerOptions, `Error adding event #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
         Sentry.captureException(error);
     }
     // Store staking reward
@@ -161,7 +138,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
                 event.data[0].toString(),
                 validator.toString(),
                 era.toString(),
-                new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
+                new BigNumber(event.data[1].toString()).toString(10),
                 timestamp,
             ];
             sql = `INSERT INTO staking_reward (
@@ -190,7 +167,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
                 blockNumber,
                 eventIndex,
                 event.data[0].toString(),
-                new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
+                new BigNumber(event.data[1].toString()).toString(10),
                 timestamp,
             ];
             sql = `INSERT INTO staking_reward (
@@ -212,10 +189,10 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
         }
         try {
             await client.query(sql, data);
-            logger_1.logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+            logger.debug(loggerOptions, `Added staking reward #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
         }
         catch (error) {
-            logger_1.logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+            logger.error(loggerOptions, `Error adding staking reward #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
             const scope = new Sentry.Scope();
             scope.setTag('blockNumber', blockNumber);
             Sentry.captureException(error, scope);
@@ -235,7 +212,7 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
             event.data[0].toString(),
             event.data[0].toString(),
             activeEra - 1,
-            new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
+            new BigNumber(event.data[1].toString()).toString(10),
             timestamp,
         ];
         sql = `INSERT INTO staking_slash (
@@ -260,24 +237,24 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
     ;`;
         try {
             await client.query(sql, data);
-            logger_1.logger.debug(loggerOptions, `Added validator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+            logger.debug(loggerOptions, `Added validator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
         }
         catch (error) {
-            logger_1.logger.error(loggerOptions, `Error adding validator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+            logger.error(loggerOptions, `Error adding validator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
             Sentry.captureException(error);
         }
     }
     // Store nominator staking slash
     if (event.section === 'balances' &&
         (event.method === 'Slash' || event.method === 'Slashed')) {
-        const validatorStashAddress = (0, exports.getSlashedValidatorAccount)(eventIndex, IndexedBlockEvents);
+        const validatorStashAddress = getSlashedValidatorAccount(eventIndex, IndexedBlockEvents);
         data = [
             blockNumber,
             eventIndex,
             event.data[0].toString(),
             validatorStashAddress,
             activeEra - 1,
-            new bignumber_js_1.BigNumber(event.data[1].toString()).toString(10),
+            new BigNumber(event.data[1].toString()).toString(10),
             timestamp,
         ];
         sql = `INSERT INTO staking_slash (
@@ -302,28 +279,26 @@ const processEvent = async (client, blockNumber, activeEra, indexedEvent, Indexe
     ;`;
         try {
             await client.query(sql, data);
-            logger_1.logger.debug(loggerOptions, `Added nominator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
+            logger.debug(loggerOptions, `Added nominator staking slash #${blockNumber}-${eventIndex} ${event.section} ➡ ${event.method}`);
         }
         catch (error) {
-            logger_1.logger.error(loggerOptions, `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
+            logger.error(loggerOptions, `Error adding nominator staking slash #${blockNumber}-${eventIndex}: ${error}, sql: ${sql}`);
             const scope = new Sentry.Scope();
             scope.setTag('blockNumber', blockNumber);
             Sentry.captureException(error, scope);
         }
     }
 };
-exports.processEvent = processEvent;
-const processEvents = async (client, blockNumber, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => {
+export const processEvents = async (client, blockNumber, activeEra, blockEvents, blockExtrinsics, timestamp, loggerOptions) => {
     const startTime = new Date().getTime();
     const IndexedBlockEvents = blockEvents.map((event, index) => [index, event]);
     const IndexedBlockExtrinsics = blockExtrinsics.map((extrinsic, index) => [index, extrinsic]);
-    const chunks = (0, utils_1.chunker)(IndexedBlockEvents, chunkSize);
+    const chunks = chunker(IndexedBlockEvents, chunkSize);
     for (const chunk of chunks) {
-        await Promise.all(chunk.map((indexedEvent) => (0, exports.processEvent)(client, blockNumber, activeEra, indexedEvent, IndexedBlockEvents, IndexedBlockExtrinsics, timestamp, loggerOptions)));
+        await Promise.all(chunk.map((indexedEvent) => processEvent(client, blockNumber, activeEra, indexedEvent, IndexedBlockEvents, IndexedBlockExtrinsics, timestamp, loggerOptions)));
     }
     // Log execution time
     const endTime = new Date().getTime();
-    logger_1.logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) /
+    logger.debug(loggerOptions, `Added ${blockEvents.length} events in ${((endTime - startTime) /
         1000).toFixed(3)}s`);
 };
-exports.processEvents = processEvents;
