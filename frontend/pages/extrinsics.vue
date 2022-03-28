@@ -26,6 +26,9 @@
           </b-row>
           <b-row style="margin-bottom: 1rem">
             <b-col cols="4">
+              <p class="mb-0">
+                <small><strong>runtime</strong></small>
+              </p>
               <b-form-select
                 v-model="selectedRuntimeVersion"
                 :options="runtimeSpecVersionOptions"
@@ -36,6 +39,9 @@
               ></b-form-select>
             </b-col>
             <b-col cols="4">
+              <p class="mb-0">
+                <small><strong>pallet</strong></small>
+              </p>
               <b-form-select
                 v-model="selectedPalletName"
                 :options="palletNameOptions"
@@ -46,6 +52,9 @@
               ></b-form-select>
             </b-col>
             <b-col cols="4">
+              <p class="mb-0">
+                <small><strong>extrinsic</strong></small>
+              </p>
               <b-form-select
                 v-model="selectedPalletExtrinsic"
                 :options="palletExtrinsicsOptions"
@@ -53,10 +62,10 @@
               ></b-form-select>
             </b-col>
           </b-row>
-          <p>
+          <!-- <p>
             runtime: {{ selectedRuntimeVersion }} / module:
             {{ selectedPalletName }} / extrinsic: {{ selectedPalletExtrinsic }}
-          </p>
+          </p> -->
           <div v-if="loading" class="text-center py-4">
             <Loading />
           </div>
@@ -184,27 +193,27 @@ export default {
         {
           key: 'block_number',
           label: 'Extrinsic',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'timestamp',
           label: 'Date',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'hash',
           label: 'Hash',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'section',
           label: 'Extrinsic',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'success',
           label: 'Success',
-          sortable: true,
+          sortable: false,
         },
       ],
       runtimeVersions: [],

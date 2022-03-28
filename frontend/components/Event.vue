@@ -18,6 +18,7 @@
           <td>Timestamp</td>
           <td>
             <p class="mb-0">
+              <font-awesome-icon icon="clock" class="text-light" />
               {{ getDateFromTimestamp(event.timestamp) }} ({{
                 fromNow(event.timestamp)
               }})

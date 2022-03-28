@@ -152,37 +152,37 @@ export default {
         {
           key: 'block_number',
           label: 'Block',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'finalized',
           label: 'Finalized',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'timestamp',
           label: 'Date',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'block_hash',
           label: 'Hash',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'total_extrinsics',
           label: 'Extrinsics',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'total_events',
           label: 'Events',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'block_author',
           label: 'Author',
-          sortable: true,
+          sortable: false,
         },
       ],
     }

@@ -18,6 +18,7 @@
           <td>Timestamp</td>
           <td>
             <p class="mb-0">
+              <font-awesome-icon icon="clock" class="text-light" />
               {{ getDateFromTimestamp(extrinsic.timestamp) }} ({{
                 fromNow(extrinsic.timestamp)
               }})
@@ -47,7 +48,7 @@
             <font-awesome-icon v-else icon="times" class="text-danger" />
           </td>
         </tr>
-        <tr>
+        <tr v-if="extrinsic.is_signed">
           <td>Signer</td>
           <td>
             <div v-if="extrinsic.signer">
@@ -91,7 +92,7 @@
             </template>
           </td>
         </tr>
-        <tr>
+        <tr v-if="extrinsic.is_signed">
           <td>Weight</td>
           <td>
             <div v-if="extrinsic.fee_info">
@@ -99,7 +100,7 @@
             </div>
           </td>
         </tr>
-        <tr>
+        <tr v-if="extrinsic.is_signed">
           <td>Fee class</td>
           <td>
             <div v-if="extrinsic.fee_info">
@@ -107,7 +108,7 @@
             </div>
           </td>
         </tr>
-        <tr>
+        <tr v-if="extrinsic.is_signed">
           <td>Fee</td>
           <td class="amount">
             <div v-if="extrinsic.fee_info">

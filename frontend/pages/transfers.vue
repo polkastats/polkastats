@@ -178,37 +178,37 @@ export default {
         {
           key: 'hash',
           label: 'Hash',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'block_number',
           label: 'Block',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'timestamp',
           label: 'Date',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'source',
           label: 'From',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'destination',
           label: 'To',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'amount',
           label: 'Amount',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'success',
           label: 'Success',
-          sortable: true,
+          sortable: false,
         },
       ],
     }

@@ -27,6 +27,9 @@
           </b-row>
           <b-row style="margin-bottom: 1rem">
             <b-col cols="4">
+              <p class="mb-0">
+                <small><strong>runtime</strong></small>
+              </p>
               <b-form-select
                 v-model="selectedRuntimeVersion"
                 :options="runtimeSpecVersionOptions"
@@ -37,6 +40,9 @@
               ></b-form-select>
             </b-col>
             <b-col cols="4">
+              <p class="mb-0">
+                <small><strong>pallet</strong></small>
+              </p>
               <b-form-select
                 v-model="selectedPalletName"
                 :options="palletNameOptions"
@@ -47,6 +53,9 @@
               ></b-form-select>
             </b-col>
             <b-col cols="4">
+              <p class="mb-0">
+                <small><strong>event</strong></small>
+              </p>
               <b-form-select
                 v-model="selectedPalletEvent"
                 :options="palletEventOptions"
@@ -54,10 +63,10 @@
               ></b-form-select>
             </b-col>
           </b-row>
-          <p>
+          <!-- <p>
             runtime: {{ selectedRuntimeVersion }} / module:
             {{ selectedPalletName }} / event: {{ selectedPalletEvent }}
-          </p>
+          </p> -->
           <div v-if="loading" class="text-center py-4">
             <Loading />
           </div>
@@ -177,7 +186,7 @@ export default {
         {
           key: 'timestamp',
           label: 'Date',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'event_index',

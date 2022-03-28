@@ -55,9 +55,7 @@
                   {{ formatAmount(JSON.parse(event.data)[2]) }}
                 </span>
               </template>
-              <template v-else>
-                {{ event.data }}
-              </template>
+              <template v-else> {{ event.data.substring(0, 32) }}...</template>
             </td>
           </tr>
         </tbody>
