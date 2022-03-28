@@ -49,7 +49,7 @@
             </p>
           </template>
           <template #cell(validator_stash_address)="data">
-            <p class="mb-0">
+            <p v-if="data.item.validator_stash_address" class="mb-0">
               <nuxt-link
                 :to="`/validator/${data.item.validator_stash_address}`"
                 :title="$t('pages.accounts.account_details')"
@@ -60,6 +60,11 @@
                 />
                 {{ shortAddress(data.item.validator_stash_address) }}
               </nuxt-link>
+            </p>
+          </template>
+          <template #cell(era)="data">
+            <p class="mb-0">
+              {{ data.item.era }}
             </p>
           </template>
           <template #cell(timestamp)="data">

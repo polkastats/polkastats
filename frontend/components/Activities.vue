@@ -59,6 +59,11 @@
               </nuxt-link>
             </p>
           </template>
+          <template #cell(timestamp)="data">
+            <p class="mb-0">
+              {{ getDateFromTimestamp(data.item.timestamp) }}
+            </p>
+          </template>
           <template #cell(signer)="data">
             <p class="mb-0">
               <nuxt-link
@@ -151,6 +156,11 @@ export default {
           sortable: true,
         },
         {
+          key: 'timestamp',
+          label: 'Date',
+          sortable: false,
+        },
+        {
           key: 'signer',
           label: 'Signer',
           sortable: true,
@@ -202,6 +212,7 @@ export default {
               section
               method
               success
+              timestamp
             }
           }
         `,

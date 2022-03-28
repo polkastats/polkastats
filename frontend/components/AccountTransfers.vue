@@ -59,6 +59,11 @@
               </nuxt-link>
             </p>
           </template>
+          <template #cell(timestamp)="data">
+            <p class="mb-0">
+              {{ getDateFromTimestamp(data.item.timestamp) }}
+            </p>
+          </template>
           <template #cell(destination)="data">
             <p class="mb-0">
               <nuxt-link
@@ -148,6 +153,11 @@ export default {
           label: 'Block number',
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: true,
+        },
+        {
+          key: 'timestamp',
+          label: 'Date',
+          sortable: false,
         },
         {
           key: 'source',
