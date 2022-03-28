@@ -7,6 +7,7 @@
       <h5>{{ $t('components.staking_slashes.no_slash_found') }}</h5>
     </div>
     <div v-else>
+      <StakingSlashesChart :account-id="accountId" />
       <JsonCSV
         :data="stakingSlashes"
         class="download-csv mb-2"
@@ -106,12 +107,14 @@ import { gql } from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
 import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
+import StakingSlashesChart from '@/components/StakingSlashesChart.vue'
 import { paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
     Loading,
     JsonCSV,
+    StakingSlashesChart,
   },
   mixins: [commonMixin],
   props: {

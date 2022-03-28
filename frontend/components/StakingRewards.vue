@@ -7,6 +7,7 @@
       <h5>{{ $t('components.staking_rewards.no_reward_found') }}</h5>
     </div>
     <div v-else>
+      <StakingRewardsChart :account-id="accountId" />
       <JsonCSV
         :data="stakingRewards"
         class="download-csv mb-2"
@@ -111,12 +112,14 @@ import { gql } from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
 import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
+import StakingRewardsChart from '@/components/StakingRewardsChart.vue'
 import { paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
     Loading,
     JsonCSV,
+    StakingRewardsChart,
   },
   mixins: [commonMixin],
   props: {

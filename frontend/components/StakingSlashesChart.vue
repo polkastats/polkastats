@@ -29,7 +29,11 @@ export default {
           display: false,
         },
         title: {
-          display: false,
+          display: true,
+          text: 'staking slashes',
+          fontSize: 18,
+          fontColor: '#000',
+          fontStyle: 'lighter',
         },
         tooltips: {
           backgroundColor: '#000000',
@@ -60,7 +64,7 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'reward',
+                labelString: 'slash',
               },
             },
           ],
