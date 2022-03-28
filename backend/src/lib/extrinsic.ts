@@ -22,8 +22,8 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-// Used for processing events and extrinsics
-const chunkSize = 100;
+// extrinsics chunk size
+const chunkSize = 20;
 
 export const getExtrinsicFeeInfo = async (
   api: ApiPromise,
@@ -64,7 +64,7 @@ export const getExtrinsicFeeDetails = async (
 export const getExtrinsicSuccessOrErrorMessage = (
   apiAt: ApiDecoration<'promise'>,
   index: number,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: EventRecord[],
   blockNumber: number,
 ): [boolean, string] => {
   let extrinsicSuccess = false;
@@ -99,7 +99,7 @@ export const getExtrinsicSuccessOrErrorMessage = (
 export const getTransferAllAmount = (
   blockNumber: number,
   index: number,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: EventRecord[],
 ): string => {
   try {
     return blockEvents
@@ -123,7 +123,7 @@ export const processTransfer = async (
   client: Client,
   blockNumber: number,
   extrinsicIndex: number,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: EventRecord[],
   section: string,
   method: string,
   args: string,
@@ -238,7 +238,7 @@ export const processExtrinsic = async (
   blockNumber: number,
   blockHash: BlockHash,
   indexedExtrinsic: IndexedBlockExtrinsic,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: EventRecord[],
   timestamp: number,
   loggerOptions: LoggerOptions,
 ): Promise<void> => {
@@ -451,7 +451,7 @@ export const processExtrinsics = async (
   blockNumber: number,
   blockHash: BlockHash,
   extrinsics: Vec<GenericExtrinsic<AnyTuple>>,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: EventRecord[],
   timestamp: number,
   loggerOptions: LoggerOptions,
 ): Promise<void> => {

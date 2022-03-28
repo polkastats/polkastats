@@ -60,7 +60,7 @@ const crawler = async (delayedStart) => {
         await Promise.all(chunk.map((accountId) => (0, account_1.processAccountsChunk)(api, client, accountId, loggerOptions)));
         const chunkEndTime = new Date().getTime();
         logger_1.logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) /
-            1000).toFixed(3)}s`);
+            1000).toFixed(config.statsPrecision)}s`);
     }
     logger_1.logger.debug(loggerOptions, 'Disconnecting from API');
     await api.disconnect().catch((error) => {

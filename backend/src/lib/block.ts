@@ -183,33 +183,38 @@ export const harvestBlock = async (
 
     const apiAt = await api.at(blockHash);
     const [
-      { block },
-      blockEvents,
-      blockHeader,
+      derivedBlock,
       totalIssuance,
       runtimeVersion,
       activeEra,
       currentIndex,
-      timestamp,
     ] = await Promise.all([
-      api.rpc.chain.getBlock(blockHash),
-      apiAt.query.system.events(),
-      api.derive.chain.getHeader(blockHash),
+      api.derive.chain.getBlock(blockHash),
       apiAt.query.balances.totalIssuance(),
       api.rpc.state.getRuntimeVersion(blockHash),
       apiAt.query?.staking.activeEra
         ? apiAt.query.staking.activeEra().then((res) => res.unwrap().index)
         : 0,
       apiAt.query.session.currentIndex(),
-      apiAt.query.timestamp.now(),
     ]);
 
-    const blockAuthor = blockHeader.author || '';
-    const blockAuthorIdentity = await api.derive.accounts.info(
-      blockHeader.author,
-    );
+    const { block, author: blockAuthor, events: blockEvents } = derivedBlock;
+    const { parentHash, extrinsicsRoot, stateRoot } = block.header;
+    const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
-    const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
+    // genesis block doesn't expose timestamp or any other extrinsic
+    const timestamp =
+      blockNumber !== 0
+        ? parseInt(
+          block.extrinsics
+            .find(
+              ({ method: { section, method } }) =>
+                section === 'timestamp' && method === 'set',
+            )
+            .args[0].toString(),
+          10,
+        )
+        : 0;
 
     // Totals
     const totalEvents = blockEvents.length;
@@ -315,7 +320,7 @@ export const harvestBlock = async (
         blockHash.toString(),
         specName.toString(),
         specVersion.toNumber(),
-        timestamp.toNumber(),
+        timestamp,
         loggerOptions,
       );
     }
@@ -330,7 +335,7 @@ export const harvestBlock = async (
         blockHash,
         block.extrinsics,
         blockEvents,
-        timestamp.toNumber(),
+        timestamp,
         loggerOptions,
       ),
       // Store module events
@@ -340,15 +345,15 @@ export const harvestBlock = async (
         parseInt(activeEra.toString()),
         blockEvents,
         block.extrinsics,
-        timestamp.toNumber(),
+        timestamp,
         loggerOptions,
       ),
       // Store block logs
       processLogs(
         client,
         blockNumber,
-        blockHeader.digest.logs,
-        timestamp.toNumber(),
+        block.header.digest.logs,
+        timestamp,
         loggerOptions,
       ),
     ]);
@@ -486,6 +491,7 @@ export const harvestBlocks = async (
 };
 
 export const updateFinalizedBlock = async (
+  config: CrawlerConfig,
   api: ApiPromise,
   client: Client,
   blockNumber: number,
@@ -527,7 +533,7 @@ export const updateFinalizedBlock = async (
       loggerOptions,
       `Updated finalized block #${blockNumber} (${shortHash(
         blockHash.toString(),
-      )}) in ${((endTime - startTime) / 1000).toFixed(3)}s`,
+      )}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`,
     );
   } catch (error) {
     logger.error(

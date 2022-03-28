@@ -56,7 +56,13 @@ const crawler = async () => {
       blockToUpdate <= blockNumber;
       blockToUpdate++
     ) {
-      await updateFinalizedBlock(api, client, blockToUpdate, loggerOptions);
+      await updateFinalizedBlock(
+        config,
+        api,
+        client,
+        blockToUpdate,
+        loggerOptions,
+      );
     }
     trackedBlock = blockNumber;
   });

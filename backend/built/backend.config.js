@@ -27,6 +27,7 @@ exports.backendConfig = {
             name: 'blockFinalizer',
             enabled: !process.env.BLOCK_FINALIZER_DISABLE,
             crawler: './built/crawlers/blockFinalizer.js',
+            statsPrecision: parseInt(process.env.BACKEND_STATS_PRECISION, 10) || 2,
             startDelay: parseInt(process.env.BLOCK_FINALIZER_START_DELAY_MS, 10) || 60 * 1000,
         },
         {
@@ -50,7 +51,8 @@ exports.backendConfig = {
             historySize: 84,
             erasPerDay: 4,
             tokenDecimals: 12,
-            featuredTimespan: 60 * 60 * 24 * 7 * 2 * 1000, // 2 weeks
+            featuredTimespan: 60 * 60 * 24 * 7 * 2 * 1000,
+            statsPrecision: parseInt(process.env.BACKEND_STATS_PRECISION, 10) || 2,
         },
         {
             name: 'activeAccounts',
@@ -59,7 +61,8 @@ exports.backendConfig = {
             startDelay: parseInt(process.env.ACTIVE_ACCOUNTS_START_DELAY_MS, 10) || 60 * 1000,
             chunkSize: parseInt(process.env.ACTIVE_ACCOUNTS_CHUNK_SIZE, 10) || 100,
             pollingTime: parseInt(process.env.ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10) ||
-                6 * 60 * 60 * 1000, // 6 hours
+                6 * 60 * 60 * 1000,
+            statsPrecision: parseInt(process.env.BACKEND_STATS_PRECISION, 10) || 2,
         },
     ],
 };

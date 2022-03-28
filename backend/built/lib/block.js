@@ -155,22 +155,25 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
     try {
         const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
         const apiAt = await api.at(blockHash);
-        const [{ block }, blockEvents, blockHeader, totalIssuance, runtimeVersion, activeEra, currentIndex, timestamp,] = await Promise.all([
-            api.rpc.chain.getBlock(blockHash),
-            apiAt.query.system.events(),
-            api.derive.chain.getHeader(blockHash),
+        const [derivedBlock, totalIssuance, runtimeVersion, activeEra, currentIndex,] = await Promise.all([
+            api.derive.chain.getBlock(blockHash),
             apiAt.query.balances.totalIssuance(),
             api.rpc.state.getRuntimeVersion(blockHash),
             ((_a = apiAt.query) === null || _a === void 0 ? void 0 : _a.staking.activeEra)
                 ? apiAt.query.staking.activeEra().then((res) => res.unwrap().index)
                 : 0,
             apiAt.query.session.currentIndex(),
-            apiAt.query.timestamp.now(),
         ]);
-        const blockAuthor = blockHeader.author || '';
-        const blockAuthorIdentity = await api.derive.accounts.info(blockHeader.author);
+        const { block, author: blockAuthor, events: blockEvents } = derivedBlock;
+        const { parentHash, extrinsicsRoot, stateRoot } = block.header;
+        const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
         const blockAuthorName = (0, exports.getDisplayName)(blockAuthorIdentity.identity);
-        const { parentHash, extrinsicsRoot, stateRoot } = blockHeader;
+        // genesis block doesn't expose timestamp or any other extrinsic
+        const timestamp = blockNumber !== 0
+            ? parseInt(block.extrinsics
+                .find(({ method: { section, method } }) => section === 'timestamp' && method === 'set')
+                .args[0].toString(), 10)
+            : 0;
         // Totals
         const totalEvents = blockEvents.length;
         const totalExtrinsics = block.extrinsics.length;
@@ -254,15 +257,15 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             // TODO: enable again
             // see: https://github.com/polkadot-js/api/issues/4596
             // const metadata = await api.rpc.state.getMetadata(blockHash);
-            await (0, exports.storeMetadata)(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp.toNumber(), loggerOptions);
+            await (0, exports.storeMetadata)(client, blockNumber, blockHash.toString(), specName.toString(), specVersion.toNumber(), timestamp, loggerOptions);
         }
         await Promise.all([
             // Store block extrinsics
-            (0, extrinsic_1.processExtrinsics)(api, apiAt, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp.toNumber(), loggerOptions),
+            (0, extrinsic_1.processExtrinsics)(api, apiAt, client, blockNumber, blockHash, block.extrinsics, blockEvents, timestamp, loggerOptions),
             // Store module events
-            (0, event_1.processEvents)(client, blockNumber, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp.toNumber(), loggerOptions),
+            (0, event_1.processEvents)(client, blockNumber, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp, loggerOptions),
             // Store block logs
-            (0, log_1.processLogs)(client, blockNumber, blockHeader.digest.logs, timestamp.toNumber(), loggerOptions),
+            (0, log_1.processLogs)(client, blockNumber, block.header.digest.logs, timestamp, loggerOptions),
         ]);
     }
     catch (error) {
@@ -341,7 +344,7 @@ const harvestBlocks = async (config, api, client, startBlock, endBlock, loggerOp
     }
 };
 exports.harvestBlocks = harvestBlocks;
-const updateFinalizedBlock = async (api, client, blockNumber, loggerOptions) => {
+const updateFinalizedBlock = async (config, api, client, blockNumber, loggerOptions) => {
     const startTime = new Date().getTime();
     try {
         const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
@@ -370,7 +373,7 @@ const updateFinalizedBlock = async (api, client, blockNumber, loggerOptions) => 
         // Update finalized blocks
         await (0, exports.updateFinalized)(client, blockNumber, loggerOptions);
         const endTime = new Date().getTime();
-        logger_1.logger.info(loggerOptions, `Updated finalized block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s`);
+        logger_1.logger.info(loggerOptions, `Updated finalized block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
     }
     catch (error) {
         logger_1.logger.error(loggerOptions, `Error updating finalized block #${blockNumber}: ${error}`);

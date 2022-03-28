@@ -30,8 +30,8 @@ Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
 });
-// Used for processing events and extrinsics
-const chunkSize = 100;
+// extrinsics chunk size
+const chunkSize = 20;
 const getExtrinsicFeeInfo = async (api, hexExtrinsic, blockHash, loggerOptions) => {
     try {
         const feeInfo = await api.rpc.payment.queryInfo(hexExtrinsic, blockHash);
