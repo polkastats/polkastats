@@ -79,7 +79,6 @@ export default {
                 block_number: { _eq: $block_number }
                 phase: { _eq: $phase }
               }
-              limit: 10
             ) {
               block_number
               event_index
