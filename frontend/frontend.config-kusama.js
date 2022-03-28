@@ -8,6 +8,7 @@ export const network = {
   nodeWs: 'wss://kusama-rpc.polkadot.io',
   backendWs: 'wss://kusama.polkastats.io/graphql',
   backendHttp: 'https://kusama.polkastats.io/graphql',
+  backendAPI: 'https://kusama.polkastats.io',
   googleAnalytics: 'UA-172854168-1',
   theme: '@/assets/scss/themes/polkastats.scss',
   // ranking

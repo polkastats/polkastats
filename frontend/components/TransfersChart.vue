@@ -15,6 +15,7 @@
 import axios from 'axios'
 import Loading from '@/components/Loading.vue'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
+import { network } from '@/frontend.config.js'
 export default {
   components: {
     Loading,
@@ -99,9 +100,7 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get(
-        'https://dev.kusama.polkastats.io/api/v1/charts/transfers'
-      )
+      const response = await axios.get(`${network.backendAPI}/api/charts/transfers`)
       this.apiData = response.data.data
     } catch (error) {
       // eslint-disable-next-line no-console

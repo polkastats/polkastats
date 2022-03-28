@@ -8,6 +8,7 @@ export const network = {
   nodeWs: 'wss://rpc.polkadot.network',
   backendWs: 'wss://polkadot.polkastats.io/graphql',
   backendHttp: 'https://polkadot.polkastats.io/graphql',
+  backendAPI: 'https://polkadot.polkastats.io',
   googleAnalytics: 'UA-144344973-1',
   theme: '@/assets/scss/themes/polkastats.scss',
   // ranking
