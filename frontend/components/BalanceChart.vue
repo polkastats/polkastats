@@ -37,7 +37,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'balance over the last 30 days',
+          text: 'balance over the last 7 days',
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -79,8 +79,8 @@ export default {
       },
       loading: true,
       balances: [],
-      points: 30, // 1 point per day
-      historySize: 10 * 1440 * 30, // 30 days
+      points: 7, // 1 point per day
+      historySize: 10 * 1440 * 7, // 30 days
     }
   },
   computed: {
