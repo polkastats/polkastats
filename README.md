@@ -48,7 +48,13 @@ yarn
 
 ### Backend
 
-Before build dockers be sure to edit `HASURA_GRAPHQL_ADMIN_SECRET` environmment variable in the proper docker-compose file `backend/docker/docker-compose-polkadot.yml` or `backend/docker/docker-compose-kusama.yml`.
+Before build dockers we need to copy and edit an `.env` file:
+
+```
+cp backend/.env-sample backend/.env
+```
+
+NOTE: change Hasura password in `HASURA_GRAPHQL_ADMIN_SECRET` environmment variable. Also you can add your Sentry instance URL.
 
 Polkadot:
 
@@ -67,11 +73,12 @@ That will build and start all the required dockers:
 - PostgreSQL
 - Hasura GraphQL server
 - Parity Polkadot client
-- Nodejs crawler
+- Node.js crawler
+- Substrate API Sidecar
 
 ### Hasura console
 
-After that you can access to Hasura console at http://server_ip_address:8082 and login as admin using the password you previously set in `HASURA_GRAPHQL_ADMIN_SECRET`
+After that you can access to Hasura console at http://server_ip_address:8082 and login as admin using the password you previously set in `HASURA_GRAPHQL_ADMIN_SECRET` environment variable.
 
 ### Nginx configuration
 
@@ -91,6 +98,13 @@ server {
 
     location /graphql {
         proxy_pass http://localhost:8082/v1/graphql;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    location ~ ^/api/ {
+        proxy_pass http://localhost:8000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
