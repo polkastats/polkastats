@@ -29,7 +29,11 @@ export default {
           display: false,
         },
         title: {
-          display: false,
+          display: true,
+          text: 'staking rewards over the last 7 days',
+          fontSize: 18,
+          fontColor: '#000',
+          fontStyle: 'lighter',
         },
         tooltips: {
           backgroundColor: '#000000',
@@ -95,10 +99,16 @@ export default {
     $subscribe: {
       rewards: {
         query: gql`
-          subscription staking_reward($accountId: String!) {
+          subscription staking_reward(
+            $accountId: String!
+            $timestamp: bigint!
+          ) {
             staking_reward(
               order_by: { era: asc }
-              where: { account_id: { _eq: $accountId } }
+              where: {
+                account_id: { _eq: $accountId }
+                timestamp: { _gte: $timestamp }
+              }
             ) {
               era
               amount
@@ -109,6 +119,7 @@ export default {
         variables() {
           return {
             accountId: this.accountId,
+            timestamp: Date.now() - 7 * 24 * 60 * 60 * 1000, // last week
           }
         },
         skip() {
