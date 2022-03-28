@@ -5,7 +5,7 @@ export const network = {
   tokenDecimals: 10,
   ss58Format: 0,
   coinGeckoDenom: 'polkadot',
-  nodeWs: 'wss://rpc.polkadot.network',
+  nodeWs: 'wss://rpc.polkadot.io',
   backendWs: 'wss://polkadot.polkastats.io/graphql',
   backendHttp: 'https://polkadot.polkastats.io/graphql',
   backendAPI: 'https://polkadot.polkastats.io',
