@@ -352,8 +352,8 @@ const crawler = async (delayedStart: boolean) => {
         );
         const thousandValidator = includedThousandValidators
           ? thousandValidators.find(
-              ({ stash }: { stash: any }) => stash === stashAddress,
-            )
+            ({ stash }: { stash: any }) => stash === stashAddress,
+          )
           : '';
 
         // controller
@@ -381,10 +381,10 @@ const crawler = async (delayedStart: boolean) => {
         const nominators = active
           ? validator.exposure.others.length
           : nominations.filter((nomination) =>
-              nomination.targets.some(
-                (target: any) => target === validator.accountId.toString(),
-              ),
-            ).length;
+            nomination.targets.some(
+              (target: any) => target === validator.accountId.toString(),
+            ),
+          ).length;
         const nominatorsRating =
           nominators > 0 &&
           nominators <= maxNominatorRewardedPerValidator.toNumber()
@@ -417,15 +417,15 @@ const crawler = async (delayedStart: boolean) => {
         // governance
         const councilBacking = validator.identity?.parent
           ? councilVotes.some(
-              (vote) => vote[0].toString() === validator.accountId.toString(),
-            ) ||
+            (vote) => vote[0].toString() === validator.accountId.toString(),
+          ) ||
             councilVotes.some(
               (vote) =>
                 vote[0].toString() === validator.identity.parent.toString(),
             )
           : councilVotes.some(
-              (vote) => vote[0].toString() === validator.accountId.toString(),
-            );
+            (vote) => vote[0].toString() === validator.accountId.toString(),
+          );
         const activeInGovernance = validator.identity?.parent
           ? participateInGovernance.includes(validator.accountId.toString()) ||
             participateInGovernance.includes(

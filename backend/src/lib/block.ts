@@ -206,14 +206,14 @@ export const harvestBlock = async (
     const timestamp =
       blockNumber !== 0
         ? parseInt(
-            block.extrinsics
-              .find(
-                ({ method: { section, method } }) =>
-                  section === 'timestamp' && method === 'set',
-              )
-              .args[0].toString(),
-            10,
-          )
+          block.extrinsics
+            .find(
+              ({ method: { section, method } }) =>
+                section === 'timestamp' && method === 'set',
+            )
+            .args[0].toString(),
+          10,
+        )
         : 0;
 
     // Totals
