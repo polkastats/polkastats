@@ -77,11 +77,19 @@
                     </nuxt-link>
                   </p>
                 </template>
+                <template #cell(timestamp)="data">
+                  <p class="mb-0">
+                    {{ fromNow(data.item.timestamp) }}
+                  </p>
+                </template>
                 <template #cell(section)="data">
                   <p class="mb-0">
                     {{ data.item.section }} ➡
                     {{ data.item.method }}
                   </p>
+                </template>
+                <template #cell(data)="data">
+                  <p class="mb-0">{{ data.item.data.substring(0, 32) }}...</p>
                 </template>
               </b-table>
             </div>
@@ -165,6 +173,11 @@ export default {
           key: 'block_number',
           label: 'Event',
           sortable: false,
+        },
+        {
+          key: 'timestamp',
+          label: 'Date',
+          sortable: true,
         },
         {
           key: 'event_index',
@@ -276,6 +289,7 @@ export default {
               method
               phase
               section
+              timestamp
             }
           }
         `,

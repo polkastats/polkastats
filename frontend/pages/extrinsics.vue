@@ -79,6 +79,11 @@
                 <template #cell(hash)="data">
                   <p class="mb-0">{{ shortHash(data.item.hash) }}</p>
                 </template>
+                <template #cell(timestamp)="data">
+                  <p class="mb-0">
+                    {{ fromNow(data.item.timestamp) }}
+                  </p>
+                </template>
                 <template #cell(section)="data">
                   <p class="mb-0">
                     {{ data.item.section }} ➡
@@ -179,6 +184,11 @@ export default {
         {
           key: 'block_number',
           label: 'Extrinsic',
+          sortable: true,
+        },
+        {
+          key: 'timestamp',
+          label: 'Date',
           sortable: true,
         },
         {
@@ -295,6 +305,7 @@ export default {
               method
               hash
               success
+              timestamp
             }
           }
         `,

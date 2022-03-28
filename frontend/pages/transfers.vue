@@ -48,6 +48,11 @@
                     </nuxt-link>
                   </p>
                 </template>
+                <template #cell(timestamp)="data">
+                  <p class="mb-0">
+                    {{ fromNow(data.item.timestamp) }}
+                  </p>
+                </template>
                 <template #cell(source)="data">
                   <p class="mb-0">
                     <Identicon :address="data.item.source" :size="20" />
@@ -181,6 +186,11 @@ export default {
           sortable: true,
         },
         {
+          key: 'timestamp',
+          label: 'Date',
+          sortable: true,
+        },
+        {
           key: 'source',
           label: 'From',
           sortable: true,
@@ -256,6 +266,7 @@ export default {
               destination
               amount
               success
+              timestamp
             }
           }
         `,

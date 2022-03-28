@@ -155,18 +155,13 @@ export default {
           sortable: true,
         },
         {
-          key: 'timestamp',
-          label: 'Date',
-          sortable: true,
-        },
-        {
           key: 'finalized',
           label: 'Finalized',
           sortable: true,
         },
         {
-          key: 'block_author',
-          label: 'Author',
+          key: 'timestamp',
+          label: 'Date',
           sortable: true,
         },
         {
@@ -182,6 +177,11 @@ export default {
         {
           key: 'total_events',
           label: 'Events',
+          sortable: true,
+        },
+        {
+          key: 'block_author',
+          label: 'Author',
           sortable: true,
         },
       ],
