@@ -100,7 +100,9 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get(`${network.backendAPI}/api/charts/transfers`)
+      const response = await axios.get(
+        `${network.backendAPI}/api/v1/charts/transfers`
+      )
       this.apiData = response.data.data
     } catch (error) {
       // eslint-disable-next-line no-console
