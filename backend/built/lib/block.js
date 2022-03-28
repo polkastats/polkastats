@@ -164,7 +164,9 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
                 : 0,
             apiAt.query.session.currentIndex(),
         ]);
-        const { block, author: blockAuthor, events: blockEvents } = derivedBlock;
+        const { block, author, events: blockEvents } = derivedBlock;
+        // genesis block doesn't have author
+        const blockAuthor = author ? author.toString() : '';
         const { parentHash, extrinsicsRoot, stateRoot } = block.header;
         const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
         const blockAuthorName = (0, exports.getDisplayName)(blockAuthorIdentity.identity);
@@ -180,7 +182,7 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
         const data = [
             blockNumber,
             false,
-            blockAuthor.toString(),
+            (blockAuthor === null || blockAuthor === void 0 ? void 0 : blockAuthor.toString()) ? blockAuthor.toString() : '',
             blockAuthorName,
             blockHash.toString(),
             parentHash.toString(),
