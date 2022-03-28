@@ -180,7 +180,6 @@ export const harvestBlock = async (
   const startTime = new Date().getTime();
   try {
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-
     const apiAt = await api.at(blockHash);
     const [
       derivedBlock,
@@ -197,7 +196,6 @@ export const harvestBlock = async (
         : 0,
       apiAt.query.session.currentIndex(),
     ]);
-
     const { block, author, events: blockEvents } = derivedBlock;
     // genesis block doesn't have author
     const blockAuthor = author ? author.toString() : '';
@@ -208,14 +206,14 @@ export const harvestBlock = async (
     const timestamp =
       blockNumber !== 0
         ? parseInt(
-          block.extrinsics
-            .find(
-              ({ method: { section, method } }) =>
-                section === 'timestamp' && method === 'set',
-            )
-            .args[0].toString(),
-          10,
-        )
+            block.extrinsics
+              .find(
+                ({ method: { section, method } }) =>
+                  section === 'timestamp' && method === 'set',
+              )
+              .args[0].toString(),
+            10,
+          )
         : 0;
 
     // Totals
