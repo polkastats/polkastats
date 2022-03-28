@@ -138,6 +138,18 @@ systemctl restart nginx
 
 ### Frontend
 
+First, copy the frontend config file either for Kusama:
+
+```
+cp frontend/frontend.config-kusama.js frontend/frontend.config.js
+```
+
+Or Polkadot:
+
+```
+cp frontend/frontend.config-polkadot.js frontend/frontend.config.js
+```
+
 Start a dev frontend with hot reload at http://localhost:3000
 
 ```
