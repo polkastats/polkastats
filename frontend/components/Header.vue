@@ -3,7 +3,7 @@
     <b-container class="px-sm-3">
       <b-navbar-brand>
         <nuxt-link to="/" class="navbar-brand" title="Reef block explorer">
-          <img class="logo" src="/img/polkastats_logo_dark@2x.png" />
+          <img class="logo" src="/img/polkastats_logo_dark@1x.png" />
         </nuxt-link>
       </b-navbar-brand>
       <a
