@@ -98,7 +98,10 @@
                   </p>
                 </template>
                 <template #cell(data)="data">
-                  <p class="mb-0">{{ data.item.data.substring(0, 32) }}...</p>
+                  <p class="mb-0">
+                    {{ data.item.data.substring(0, 32)
+                    }}{{ data.item.data.length > 32 ? '...' : '' }}
+                  </p>
                 </template>
               </b-table>
             </div>
