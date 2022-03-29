@@ -37,6 +37,10 @@ export default {
                 display: true,
                 color: 'rgba(200, 200, 200, 0.4)',
               },
+              scaleLabel: {
+                display: true,
+                labelString: 'era',
+              },
             },
           ],
           yAxes: [
@@ -58,7 +62,7 @@ export default {
   computed: {
     chartData() {
       return {
-        labels: this.relativePerformanceHistory.map(({ era }) => `Era ${era}`),
+        labels: this.relativePerformanceHistory.map(({ era }) => era),
         datasets: [
           {
             labels: 'relative performance',

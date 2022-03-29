@@ -39,6 +39,10 @@ export default {
                 display: true,
                 color: 'rgba(200, 200, 200, 0.4)',
               },
+              scaleLabel: {
+                display: true,
+                labelString: 'era',
+              },
             },
           ],
           yAxes: [
@@ -61,7 +65,7 @@ export default {
   computed: {
     chartData() {
       return {
-        labels: this.payoutHistory.map(({ era }) => `Era ${era}`),
+        labels: this.payoutHistory.map(({ era }) => era),
         datasets: [
           {
             labels: 'payments',

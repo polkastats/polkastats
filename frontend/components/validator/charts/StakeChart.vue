@@ -24,7 +24,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'elected self stake',
+          text: `elected self stake (${config.tokenSymbol})`,
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -38,6 +38,10 @@ export default {
               gridLines: {
                 display: true,
                 color: 'rgba(200, 200, 200, 0.4)',
+              },
+              scaleLabel: {
+                display: true,
+                labelString: 'era',
               },
             },
           ],
@@ -60,7 +64,7 @@ export default {
   computed: {
     chartData() {
       return {
-        labels: this.stakeHistory.map(({ era }) => `Era ${era}`),
+        labels: this.stakeHistory.map(({ era }) => era),
         datasets: [
           {
             labels: 'elected own stake',
