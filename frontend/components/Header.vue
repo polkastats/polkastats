@@ -23,18 +23,18 @@
       <b-navbar-toggle target="nav-collapse" />
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="ml-auto">
+          <b-nav-item right to="/polkastats-validator">{{
+            $t('layout.default.validator')
+          }}</b-nav-item>
+          <b-nav-item right to="/how-to-stake">{{
+            $t('layout.default.how_to_stake')
+          }}</b-nav-item>
           <b-nav-item-dropdown text="Staking">
             <b-dropdown-item to="/staking-dashboard">
               {{ $t('layout.default.staking_dashboard') }}
             </b-dropdown-item>
-            <b-dropdown-item to="/polkastats-validator">
-              {{ $t('layout.default.validator') }}
-            </b-dropdown-item>
             <b-dropdown-item to="/validators">
               {{ $t('layout.default.validators') }}
-            </b-dropdown-item>
-            <b-dropdown-item to="/how-to-stake">
-              {{ $t('layout.default.how_to_stake') }}
             </b-dropdown-item>
           </b-nav-item-dropdown>
           <b-nav-item-dropdown text="Blockchain">
