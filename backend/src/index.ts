@@ -28,12 +28,12 @@ const runCrawler = async (crawler: string) => {
   child.on('close', (code) => {
     logger.error(loggerOptions, `Crawler closed with code ${code}`);
     // attempt to restart crawler
-    runCrawler(crawler);
+    // runCrawler(crawler);
   });
   child.on('exit', (code) => {
     logger.error(loggerOptions, `Crawler exited with code ${code}`);
     // attempt to restart crawler
-    runCrawler(crawler);
+    // runCrawler(crawler);
   });
 };
 
