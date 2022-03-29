@@ -2,7 +2,11 @@
   <b-navbar toggleable="xl">
     <b-container class="px-sm-3">
       <b-navbar-brand>
-        <nuxt-link to="/" class="navbar-brand" title="Reef block explorer">
+        <nuxt-link
+          to="/"
+          class="navbar-brand"
+          title="PolkaStats block explorer"
+        >
           <img class="logo" src="/img/polkastats_logo_dark@1x.png" />
         </nuxt-link>
       </b-navbar-brand>
@@ -19,15 +23,20 @@
       <b-navbar-toggle target="nav-collapse" />
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="ml-auto">
-          <b-nav-item right to="/polkastats-validator">{{
-            $t('layout.default.validator')
-          }}</b-nav-item>
-          <b-nav-item right to="/validators">{{
-            $t('layout.default.validators')
-          }}</b-nav-item>
-          <b-nav-item right to="/how-to-stake">{{
-            $t('layout.default.how_to_stake')
-          }}</b-nav-item>
+          <b-nav-item-dropdown text="Staking">
+            <b-dropdown-item to="/staking-dashboard">
+              {{ $t('layout.default.staking_dashboard') }}
+            </b-dropdown-item>
+            <b-dropdown-item to="/polkastats-validator">
+              {{ $t('layout.default.validator') }}
+            </b-dropdown-item>
+            <b-dropdown-item to="/validators">
+              {{ $t('layout.default.validators') }}
+            </b-dropdown-item>
+            <b-dropdown-item to="/how-to-stake">
+              {{ $t('layout.default.how_to_stake') }}
+            </b-dropdown-item>
+          </b-nav-item-dropdown>
           <b-nav-item-dropdown text="Blockchain">
             <b-dropdown-item to="/blocks">
               {{ $t('layout.default.blocks') }}

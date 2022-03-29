@@ -698,3 +698,13 @@ section .section-title {
 .extrinsic-arg hr {
   border-top: 1px solid #e83e8c;
 }
+
+// dashboard
+.dashboard-global-stats .stat {
+  font-size: 2rem;
+  font-weight: 200;
+}
+.dashboard-global-stats .box {
+  padding: 1rem 0.5rem;
+  border: 1px solid rgb(226, 224, 224);
+}

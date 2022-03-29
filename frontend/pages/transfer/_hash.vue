@@ -37,18 +37,6 @@ export default {
       transfer: undefined,
     }
   },
-  head() {
-    return {
-      title: 'Explorer | Reef Network',
-      meta: [
-        {
-          hid: 'description',
-          name: 'description',
-          content: 'Reef Chain is an EVM compatible chain for DeFi',
-        },
-      ],
-    }
-  },
   watch: {
     $route() {
       this.hash = this.$route.params.hash
