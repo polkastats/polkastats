@@ -35,7 +35,6 @@ const getClient = async () => {
     return client;
 };
 const getPolkadotAPI = async () => {
-    console.log(`Connecting to ${wsProviderUrl}`);
     const provider = new api_1.WsProvider(wsProviderUrl);
     const api = await api_1.ApiPromise.create({ provider });
     await api.isReady;
@@ -51,9 +50,9 @@ const hexToUtf8 = (s) => {
 // Example query: /api/v1/block?page[size]=5
 //
 app.get('/api/v1/block', async (req, res) => {
+    const client = await getClient();
     try {
         const pageSize = req.query.page.size;
-        const client = await getClient();
         const query = `
       SELECT
         block_number,
@@ -87,13 +86,15 @@ app.get('/api/v1/block', async (req, res) => {
                 message: 'There was an error processing your request',
             });
         }
-        await client.end();
     }
     catch (error) {
         res.send({
             status: false,
             message: 'There was an error processing your request',
         });
+    }
+    finally {
+        await client.end();
     }
 });
 //
@@ -102,6 +103,7 @@ app.get('/api/v1/block', async (req, res) => {
 // Get sytem.remarks extrinsics in the last 8 hours
 //
 app.get('/api/v1/batsignal/system.remarks', async (_req, res) => {
+    const client = await getClient();
     try {
         const api = await getPolkadotAPI();
         const councilMembers = await api.query.council.members();
@@ -109,7 +111,6 @@ app.get('/api/v1/batsignal/system.remarks', async (_req, res) => {
         await api.disconnect();
         const councilAndTCAddresses = JSON.parse(JSON.stringify(councilMembers.concat(technicalCommitteeMembers)));
         const timestamp = Math.floor(Date.now() / 1000 - 28800); // last 8h
-        const client = await getClient();
         const query = `
       SELECT
         block_number,
@@ -153,7 +154,6 @@ app.get('/api/v1/batsignal/system.remarks', async (_req, res) => {
                 data: [],
             });
         }
-        await client.end();
     }
     catch (error) {
         console.log(error);
@@ -161,6 +161,9 @@ app.get('/api/v1/batsignal/system.remarks', async (_req, res) => {
             status: false,
             message: 'There was an error processing your request',
         });
+    }
+    finally {
+        await client.end();
     }
 });
 //
@@ -173,10 +176,10 @@ app.get('/api/v1/batsignal/system.remarks', async (_req, res) => {
 // summary: A motion (given hash) has been proposed (by given account) with a threshold (given MemberCount). [account, proposal_index, proposal_hash, threshold]
 //
 app.get('/api/v1/batsignal/council-events', async (_req, res) => {
+    const client = await getClient();
     try {
         // const timestamp = Math.floor((Date.now() / 1000) - 28800); // last 8h
         const timestamp = Math.floor(Date.now() / 1000 - 30 * 24 * 60 * 60); // last 30d
-        const client = await getClient();
         const query = `
       SELECT
         block_number,
@@ -248,13 +251,15 @@ app.get('/api/v1/batsignal/council-events', async (_req, res) => {
                 data: [],
             });
         }
-        await client.end();
     }
     catch (error) {
         res.send({
             status: false,
             message: 'There was an error processing your request',
         });
+    }
+    finally {
+        await client.end();
     }
 });
 // transfers in the last 30 days
