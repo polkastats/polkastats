@@ -2,7 +2,7 @@
 import * as Sentry from '@sentry/node';
 import { getClient } from '../lib/db';
 import { getPolkadotAPI, isNodeSynced } from '../lib/chain';
-import { fetchAccountIds, processAccountsChunk, deleteInactiveAccounts } from '../lib/account';
+import { fetchAccountIds, processAccountsChunk } from '../lib/account';
 import { chunker, wait } from '../lib/utils';
 import { backendConfig } from '../backend.config';
 import { CrawlerConfig } from '../lib/types';
@@ -67,9 +67,6 @@ const crawler = async (delayedStart: boolean) => {
       ).toFixed(config.statsPrecision)}s`,
     );
   }
-
-  // TODO: delete non active accounts from db
-  await deleteInactiveAccounts(client, accountIds, loggerOptions);
 
   logger.debug(loggerOptions, 'Disconnecting from API');
   await api.disconnect().catch((error) => {

@@ -218,27 +218,6 @@ export const updateAccountInfo = async (
   }
 };
 
-export const deleteInactiveAccounts = async (
-  client: Client,
-  accountIds: any[],
-  loggerOptions: LoggerOptions,
-): Promise<void> => {
-
-  logger.info(
-    loggerOptions,
-    'Deleting inactive accounts...',
-  );
-
-  const query = 'DELETE FROM account WHERE account_id != ALL($1::text[]);';
-  await dbParamQuery(client, query, [accountIds], loggerOptions);
-
-  logger.info(
-    loggerOptions,
-    'Deleting inactive accounts finished!',
-  );
-
-};
-
 export const updateAccountsInfo = async (
   api: ApiPromise,
   client: Client,
