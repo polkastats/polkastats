@@ -33,6 +33,7 @@ const logger_1 = require("./logger");
 const log_1 = require("./log");
 const event_1 = require("./event");
 const extrinsic_1 = require("./extrinsic");
+const account_1 = require("./account");
 Sentry.init({
     dsn: backend_config_1.backendConfig.sentryDSN,
     tracesSampleRate: 1.0,
@@ -149,7 +150,7 @@ const storeMetadata = async (client, blockNumber, blockHash, specName, specVersi
     await (0, db_1.dbParamQuery)(client, query, data, loggerOptions);
 };
 exports.storeMetadata = storeMetadata;
-const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => {
+const harvestBlock = async (config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions) => {
     var _a;
     const startTime = new Date().getTime();
     try {
@@ -268,6 +269,8 @@ const harvestBlock = async (config, api, client, blockNumber, loggerOptions) => 
             (0, event_1.processEvents)(client, blockNumber, parseInt(activeEra.toString()), blockEvents, block.extrinsics, timestamp, loggerOptions),
             // Store block logs
             (0, log_1.processLogs)(client, blockNumber, block.header.digest.logs, timestamp, loggerOptions),
+            // Update account info for addresses found in events (only for block listener)
+            doUpdateAccountsInfo ? (0, account_1.updateAccountsInfo)(api, client, blockNumber, timestamp, loggerOptions, blockEvents) : false,
         ]);
     }
     catch (error) {
@@ -289,9 +292,11 @@ const harvestBlocksSeq = async (config, api, client, startBlock, endBlock, logge
     let maxTimeMs = 0;
     let minTimeMs = 1000000;
     let avgTimeMs = 0;
+    // dont update accounts info for addresses found on block events data
+    const doUpdateAccountsInfo = false;
     for (const blockNumber of blocks) {
         const blockStartTime = Date.now();
-        await (0, exports.harvestBlock)(config, api, client, blockNumber, loggerOptions);
+        await (0, exports.harvestBlock)(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions);
         const blockEndTime = new Date().getTime();
         // Cook some stats
         const blockProcessingTimeMs = blockEndTime - blockStartTime;
@@ -321,9 +326,11 @@ const harvestBlocks = async (config, api, client, startBlock, endBlock, loggerOp
     let minTimeMs = 1000000;
     let avgTimeMs = 0;
     let avgBlocksPerSecond = 0;
+    // dont update accounts info for addresses found on block events data
+    const doUpdateAccountsInfo = false;
     for (const chunk of chunks) {
         const chunkStartTime = Date.now();
-        await Promise.all(chunk.map((blockNumber) => (0, exports.harvestBlock)(config, api, client, blockNumber, loggerOptions)));
+        await Promise.all(chunk.map((blockNumber) => (0, exports.harvestBlock)(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions)));
         const chunkEndTime = new Date().getTime();
         // Cook some stats
         const chunkProcessingTimeMs = chunkEndTime - chunkStartTime;

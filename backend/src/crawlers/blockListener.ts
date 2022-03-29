@@ -35,6 +35,9 @@ const crawler = async () => {
     synced = await isNodeSynced(api, loggerOptions);
   }
 
+  // update accounts info for addresses found on block events data
+  const doUpdateAccountsInfo = true;
+
   // Subscribe to new blocks
   let iteration = 0;
   await api.rpc.chain.subscribeNewHeads(async (blockHeader) => {
@@ -42,7 +45,7 @@ const crawler = async () => {
     const blockNumber = blockHeader.number.toNumber();
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
     try {
-      await harvestBlock(config, api, client, blockNumber, loggerOptions);
+      await harvestBlock(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions);
 
       // store current runtime metadata in first iteration
       if (iteration === 1) {

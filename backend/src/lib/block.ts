@@ -12,6 +12,7 @@ import { logger } from './logger';
 import { processLogs } from './log';
 import { processEvents } from './event';
 import { processExtrinsics } from './extrinsic';
+import { updateAccountsInfo } from './account';
 
 Sentry.init({
   dsn: backendConfig.sentryDSN,
@@ -175,6 +176,7 @@ export const harvestBlock = async (
   api: ApiPromise,
   client: Client,
   blockNumber: number,
+  doUpdateAccountsInfo: boolean,
   loggerOptions: LoggerOptions,
 ): Promise<void> => {
   const startTime = new Date().getTime();
@@ -356,6 +358,8 @@ export const harvestBlock = async (
         timestamp,
         loggerOptions,
       ),
+      // Update account info for addresses found in events (only for block listener)
+      doUpdateAccountsInfo ? updateAccountsInfo(api, client, blockNumber, timestamp, loggerOptions, blockEvents) : false,
     ]);
   } catch (error) {
     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
@@ -384,9 +388,12 @@ export const harvestBlocksSeq = async (
   let minTimeMs = 1000000;
   let avgTimeMs = 0;
 
+  // dont update accounts info for addresses found on block events data
+  const doUpdateAccountsInfo = false;
+
   for (const blockNumber of blocks) {
     const blockStartTime = Date.now();
-    await harvestBlock(config, api, client, blockNumber, loggerOptions);
+    await harvestBlock(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions);
     const blockEndTime = new Date().getTime();
 
     // Cook some stats
@@ -442,11 +449,14 @@ export const harvestBlocks = async (
   let avgTimeMs = 0;
   let avgBlocksPerSecond = 0;
 
+  // dont update accounts info for addresses found on block events data
+  const doUpdateAccountsInfo = false;
+
   for (const chunk of chunks) {
     const chunkStartTime = Date.now();
     await Promise.all(
       chunk.map((blockNumber: number) =>
-        harvestBlock(config, api, client, blockNumber, loggerOptions),
+        harvestBlock(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions),
       ),
     );
     const chunkEndTime = new Date().getTime();

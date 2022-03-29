@@ -245,7 +245,7 @@ export const updateAccountsInfo = async (
   blockNumber: number,
   timestamp: number,
   loggerOptions: LoggerOptions,
-  blockEvents: Vec<EventRecord>,
+  blockEvents: EventRecord[],
 ): Promise<void> => {
   const startTime = new Date().getTime();
   const involvedAddresses: string[] = [];
