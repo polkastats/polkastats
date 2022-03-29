@@ -37,12 +37,12 @@ export default {
         {
           key: 'block_number',
           label: 'Id',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'section',
           label: 'Event',
-          sortable: true,
+          sortable: false,
         },
       ],
     }

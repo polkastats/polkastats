@@ -73,23 +73,22 @@ export default {
         {
           key: 'hash',
           label: 'Hash',
-          class: 'd-none d-sm-none d-md-none d-lg-block d-xl-block',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'source',
           label: 'From',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'destination',
           label: 'To',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'amount',
           label: 'Amount',
-          sortable: true,
+          sortable: false,
         },
       ],
     }

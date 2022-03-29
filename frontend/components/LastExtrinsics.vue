@@ -44,18 +44,17 @@ export default {
         {
           key: 'block_number',
           label: 'Id',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'hash',
           label: 'Hash',
-          class: 'd-none d-sm-none d-md-none d-lg-block d-xl-block',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'section',
           label: 'Extrinsic',
-          sortable: true,
+          sortable: false,
         },
       ],
     }
