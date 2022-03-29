@@ -1,4 +1,4 @@
-export const network = {
+export const config = {
   id: 'kusama',
   name: 'Kusama',
   tokenSymbol: 'KSM',

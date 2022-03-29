@@ -1,4 +1,4 @@
-import { network } from './frontend.config.js'
+import { config } from './frontend.config.js'
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
@@ -25,7 +25,7 @@ export default {
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
-  css: [network.theme],
+  css: [config.theme],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
@@ -89,8 +89,8 @@ export default {
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint: network.backendHttp,
-        wsEndpoint: network.backendWs,
+        httpEndpoint: config.backendHttp,
+        wsEndpoint: config.backendWs,
         websocketsOnly: true,
       },
     },
@@ -107,7 +107,7 @@ export default {
     },
   },
   googleAnalytics: {
-    id: network.googleAnalytics,
+    id: config.googleAnalytics,
   },
   redirect: [{ from: '^/intention/(.*)$', to: '/validator/$1' }],
 

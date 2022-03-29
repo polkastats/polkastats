@@ -4,7 +4,7 @@
 <script>
 import { BigNumber } from 'bignumber.js'
 import LineChart from '@/components/charts/LineChart.js'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 export default {
   components: {
     LineChart,
@@ -66,7 +66,7 @@ export default {
             labels: 'elected own stake',
             data: this.stakeHistory.map(({ self }) =>
               new BigNumber(self)
-                .div(new BigNumber(10).pow(network.tokenDecimals))
+                .div(new BigNumber(10).pow(config.tokenDecimals))
                 .toNumber()
             ),
             backgroundColor: 'rgba(255, 255, 255, 0.8)',

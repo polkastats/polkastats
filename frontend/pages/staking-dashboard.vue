@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 import commonMixin from '@/mixins/commonMixin.js'
 import Stats from '@/components/dashboard/Stats.vue'
 import Suggestions from '@/components/dashboard/Suggestions.vue'
@@ -32,7 +32,6 @@ import DashboardCommission from '@/components/dashboard/charts/DashboardCommissi
 import DashboardSelfStake from '@/components/dashboard/charts/DashboardSelfStake.vue'
 import DashboardPerformance from '@/components/dashboard/charts/DashboardPerformance.vue'
 import DashboardEraPoints from '@/components/dashboard/charts/DashboardEraPoints.vue'
-const config = network
 export default {
   components: {
     Stats,

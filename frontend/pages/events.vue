@@ -161,7 +161,7 @@
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
-import { network, paginationOptions } from '@/frontend.config.js'
+import { config, paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -170,7 +170,7 @@ export default {
   mixins: [commonMixin],
   data() {
     return {
-      network,
+      config,
       loading: true,
       filter: '',
       events: [],
@@ -217,14 +217,14 @@ export default {
   head() {
     return {
       title: this.$t('pages.events.head_title', {
-        networkName: network.name,
+        networkName: config.name,
       }),
       meta: [
         {
           hid: 'description',
           name: 'description',
           content: this.$t('pages.events.head_content', {
-            networkName: network.name,
+            networkName: config.name,
           }),
         },
       ],

@@ -175,13 +175,13 @@
 import { gql } from 'graphql-tag'
 import BN from 'bn.js'
 import commonMixin from '../mixins/commonMixin.js'
-import { network } from '../frontend.config.js'
+import { config } from '../frontend.config.js'
 
 export default {
   mixins: [commonMixin],
   data() {
     return {
-      network,
+      config,
       lastBlock: 0,
       lastFinalizedBlock: 0,
       currentIndex: 0,

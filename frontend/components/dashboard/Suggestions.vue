@@ -13,9 +13,8 @@
 </template>
 <script>
 import { gql } from 'graphql-tag'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 import commonMixin from '@/mixins/commonMixin.js'
-const config = network
 export default {
   mixins: [commonMixin],
   props: {

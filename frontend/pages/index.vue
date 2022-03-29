@@ -72,7 +72,7 @@ import TransfersChart from '@/components/TransfersChart.vue'
 import Chain from '@/components/Chain.vue'
 import Search from '@/components/Search.vue'
 // import Top10Rich from '@/components/Top10Rich.vue'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -88,7 +88,7 @@ export default {
   },
   data: () => {
     return {
-      network,
+      config,
     }
   },
   head() {

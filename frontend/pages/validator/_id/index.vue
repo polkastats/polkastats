@@ -4,7 +4,7 @@
       <Loading />
     </div>
     <div v-else>
-      <b-row v-if="network.showValSelectorInPage">
+      <b-row v-if="config.showValSelectorInPage">
         <b-col offset="9" cols="3">
           <b-dropdown
             id="selected-validators"
@@ -17,7 +17,7 @@
               <span v-if="loading">Selected</span>
               <span v-else>
                 {{ selectedValidatorAddresses.length }}/{{
-                  network.validatorSetSize
+                  config.validatorSetSize
                 }}
                 selected
               </span>
@@ -297,7 +297,7 @@ import EraPointsChart from '@/components/validator/charts/EraPointsChart.vue'
 import PayoutsChart from '@/components/validator/charts/PayoutsChart.vue'
 import StakeChart from '@/components/validator/charts/StakeChart.vue'
 import CommissionChart from '@/components/validator/charts/CommissionChart.vue'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -320,7 +320,7 @@ export default {
   mixins: [commonMixin],
   data() {
     return {
-      network,
+      config,
       accountId: this.$route.params.id,
       polling: null,
       validator: null,
@@ -330,8 +330,8 @@ export default {
   head() {
     return {
       title: `Validator ${this.accountId} metrics | ${
-        network.title
-      } for ${this.capitalize(network.name)}`,
+        config.title
+      } for ${this.capitalize(config.name)}`,
       meta: [
         {
           hid: 'description',

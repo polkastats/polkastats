@@ -4,7 +4,7 @@ import { gql } from 'graphql-tag'
 import { decodeAddress, encodeAddress } from '@polkadot/keyring'
 import { checkAddressChecksum } from 'web3-utils'
 import moment from 'moment'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 
 export default {
   methods: {
@@ -26,8 +26,8 @@ export default {
     },
     formatAmount(amount, precission = 3) {
       return `${new BigNumber(amount)
-        .div(new BigNumber(10).pow(network.tokenDecimals))
-        .toFixed(precission)} ${network.tokenSymbol}`
+        .div(new BigNumber(10).pow(config.tokenDecimals))
+        .toFixed(precission)} ${config.tokenSymbol}`
     },
     capitalize(s) {
       if (typeof s !== 'string') return ''

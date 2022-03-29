@@ -5,7 +5,7 @@
       No validators selected
     </p>
     <div v-else class="row mb-3">
-      <div class="col-8">{{ list.length }}/{{ network.validatorSetSize }}</div>
+      <div class="col-8">{{ list.length }}/{{ config.validatorSetSize }}</div>
       <div class="col-4 text-right">
         <span
           v-b-tooltip.hover
@@ -66,13 +66,13 @@
 </template>
 
 <script>
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 import commonMixin from '@/mixins/commonMixin.js'
 export default {
   mixins: [commonMixin],
   data() {
     return {
-      network,
+      config,
     }
   },
   computed: {

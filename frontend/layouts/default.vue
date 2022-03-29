@@ -10,7 +10,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 export default {
   components: {
     Header,
@@ -35,11 +35,11 @@ export default {
     if (this.$store.state.ranking.list.length === 0) {
       await this.$store.dispatch('ranking/updateList')
     }
-    if (this.$cookies.get(`${network.name}-exclude`)) {
-      this.exclude = this.$cookies.get(`${network.name}-exclude`)
+    if (this.$cookies.get(`${config.name}-exclude`)) {
+      this.exclude = this.$cookies.get(`${config.name}-exclude`)
     }
-    if (this.$cookies.get(`${network.name}-filter`)) {
-      this.filter = this.$cookies.get(`${network.name}-filter`)
+    if (this.$cookies.get(`${config.name}-filter`)) {
+      this.filter = this.$cookies.get(`${config.name}-filter`)
     }
     // update ranking every 1 min
     this.polling = setInterval(async () => {
@@ -63,7 +63,7 @@ export default {
       this.toggled = !this.toggled
     },
     async importChainValidatorAddresses(address) {
-      const wsProvider = new WsProvider(network.nodeWs)
+      const wsProvider = new WsProvider(config.nodeWs)
       const api = await ApiPromise.create({ provider: wsProvider })
       await api.isReady
       const chainStaking = await api.query.staking.nominators(address)

@@ -208,7 +208,7 @@ import { gql } from 'graphql-tag'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
-import { network, paginationOptions } from '@/frontend.config.js'
+import { config, paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -276,14 +276,14 @@ export default {
   head() {
     return {
       title: this.$t('pages.accounts.head_title', {
-        networkName: network.name,
+        networkName: config.name,
       }),
       meta: [
         {
           hid: 'description',
           name: 'description',
           content: this.$t('pages.accounts.head_content', {
-            networkName: network.name,
+            networkName: config.name,
           }),
         },
       ],

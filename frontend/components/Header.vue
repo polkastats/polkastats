@@ -11,12 +11,12 @@
         </nuxt-link>
       </b-navbar-brand>
       <a
-        v-if="network.coinGeckoDenom && USDConversion && USD24hChange"
-        :href="`https://www.coingecko.com/en/coins/${network.coinGeckoDenom}`"
+        v-if="config.coinGeckoDenom && USDConversion && USD24hChange"
+        :href="`https://www.coingecko.com/en/coins/${config.coinGeckoDenom}`"
         target="_blank"
         class="fiat mh-2"
       >
-        <strong>{{ network.tokenSymbol }}</strong> ${{ USDConversion }} ({{
+        <strong>{{ config.tokenSymbol }}</strong> ${{ USDConversion }} ({{
           USD24hChange
         }}%)
       </a>
@@ -59,9 +59,9 @@
           <template #button-content>
             <img
               class="network-logo"
-              :src="`/img/networks/icons/${network.id}.svg`"
+              :src="`/img/networks/icons/${config.id}.svg`"
             />
-            {{ network.name }}
+            {{ config.name }}
           </template>
           <b-dropdown-item href="https://kusama.polkastats.io">
             <img class="network-logo" src="/img/networks/icons/kusama.svg" />
@@ -78,11 +78,11 @@
 </template>
 
 <script>
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 export default {
   data() {
     return {
-      network,
+      config,
     }
   },
   computed: {
@@ -95,7 +95,7 @@ export default {
   },
   created() {
     // Refresh fiat conversion values every minute
-    if (this.network.coinGeckoDenom) {
+    if (this.config.coinGeckoDenom) {
       this.$store.dispatch('fiat/update')
       setInterval(() => {
         this.$store.dispatch('fiat/update')

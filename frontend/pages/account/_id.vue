@@ -229,7 +229,7 @@ import StakingRewards from '@/components/StakingRewards.vue'
 import StakingSlashes from '@/components/StakingSlashes.vue'
 import BalanceChart from '@/components/BalanceChart.vue'
 import commonMixin from '@/mixins/commonMixin.js'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -244,7 +244,7 @@ export default {
   mixins: [commonMixin],
   data() {
     return {
-      network,
+      config,
       loading: true,
       accountId: this.$route.params.id,
       parsedAccount: undefined,

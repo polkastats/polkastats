@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js'
 import { gql } from 'graphql-tag'
 import { BToast } from 'bootstrap-vue'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 
 export const state = () => ({
   list: [],
@@ -46,7 +46,7 @@ export const mutations = {
   },
   loadSelected(state) {
     const selectedAddresses =
-      this.$cookies.get(`${network.name}-selectedValidatorAddresses`) || []
+      this.$cookies.get(`${config.name}-selectedValidatorAddresses`) || []
     state.selectedAddresses = selectedAddresses
   },
   toggleSelected(state, { accountId }) {
@@ -57,7 +57,7 @@ export const mutations = {
         ({ stashAddress }) => accountId === stashAddress
       )
       validator.selected = false
-    } else if (selectedAddresses.length < network.validatorSetSize) {
+    } else if (selectedAddresses.length < config.validatorSetSize) {
       // check if a member of the same cluster is already in the set
       const validator = state.list.find(
         ({ stashAddress }) => accountId === stashAddress
@@ -104,7 +104,7 @@ export const mutations = {
       bootStrapToaster.$bvToast.toast(
         'Please remove before selecting a new one',
         {
-          title: `Select up to ${network.validatorSetSize} validators`,
+          title: `Select up to ${config.validatorSetSize} validators`,
           variant: 'danger',
           autoHideDelay: 5000,
           appendToast: false,
@@ -113,7 +113,7 @@ export const mutations = {
     }
     state.selectedAddresses = selectedAddresses
     this.$cookies.set(
-      `${network.name}-selectedValidatorAddresses`,
+      `${config.name}-selectedValidatorAddresses`,
       selectedAddresses,
       {
         path: '/',

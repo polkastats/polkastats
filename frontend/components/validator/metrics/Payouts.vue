@@ -36,7 +36,7 @@
   </div>
 </template>
 <script>
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 export default {
   props: {
     payoutHistory: {
@@ -50,7 +50,7 @@ export default {
   },
   data() {
     return {
-      network,
+      config,
     }
   },
   computed: {

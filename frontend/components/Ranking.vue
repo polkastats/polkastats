@@ -298,7 +298,7 @@
 <script>
 import { BigNumber } from 'bignumber.js'
 import commonMixin from '@/mixins/commonMixin.js'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 
 export default {
   mixins: [commonMixin],
@@ -432,7 +432,7 @@ export default {
   },
   watch: {
     exclude(exclude) {
-      this.$cookies.set(`${network.name}-exclude`, exclude, {
+      this.$cookies.set(`${config.name}-exclude`, exclude, {
         path: '/',
         maxAge: 60 * 60 * 24 * 7,
       })
@@ -465,7 +465,7 @@ export default {
       this.rows = filteredItems.length
       this.currentPage = 1
       // update cookie
-      this.$cookies.set(`${network.name}-filter`, this.filter, {
+      this.$cookies.set(`${config.name}-filter`, this.filter, {
         path: '/',
         maxAge: 60 * 60 * 24 * 7,
       })

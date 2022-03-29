@@ -10,7 +10,7 @@
 import { gql } from 'graphql-tag'
 import { BigNumber } from 'bignumber.js'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 export default {
   components: {
     ReactiveLineChart,
@@ -82,7 +82,7 @@ export default {
             labels: 'slashes',
             data: this.slashes.map(({ amount }) =>
               new BigNumber(amount)
-                .div(new BigNumber(10).pow(network.tokenDecimals))
+                .div(new BigNumber(10).pow(config.tokenDecimals))
                 .toNumber()
             ),
             backgroundColor: 'rgba(255, 255, 255, 0.8)',

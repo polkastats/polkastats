@@ -16,7 +16,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api'
 import { BigNumber } from 'bignumber.js'
 import Loading from '@/components/Loading.vue'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 export default {
   components: {
     Loading,
@@ -120,7 +120,7 @@ export default {
     },
   },
   async created() {
-    const wsProvider = new WsProvider(network.nodeWs)
+    const wsProvider = new WsProvider(config.nodeWs)
     const api = await ApiPromise.create({ provider: wsProvider })
     await api.isReady
     // get latest block
@@ -156,7 +156,7 @@ export default {
             hash: hashResults[i + 1],
           })
         }
-        console.log('block hashes:', blockHashes)
+        // console.log('block hashes:', blockHashes)
 
         const balancePromises = []
 
@@ -194,7 +194,7 @@ export default {
             total,
           })
         }
-        console.log('balances:', balances)
+        // console.log('balances:', balances)
         return balances
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -204,7 +204,7 @@ export default {
     formatBalance(balance) {
       return parseFloat(
         new BigNumber(balance)
-          .div(new BigNumber(10).pow(network.tokenDecimals))
+          .div(new BigNumber(10).pow(config.tokenDecimals))
           .toFixed(3)
       )
     },

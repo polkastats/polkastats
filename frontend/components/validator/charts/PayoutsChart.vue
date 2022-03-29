@@ -3,7 +3,7 @@
 </template>
 <script>
 import BarChart from '@/components/charts/BarChart.js'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 export default {
   components: {
     BarChart,
@@ -16,7 +16,7 @@ export default {
   },
   data() {
     return {
-      network,
+      config,
       chartOptions: {
         responsive: true,
         legend: {

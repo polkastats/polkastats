@@ -11,14 +11,14 @@
                 <p>
                   <Identicon
                     address="15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t"
-                    size="25"
+                    :size="25"
                   />
                   <span>15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t</span>
                 </p>
                 <p>
                   <Identicon
                     address="13dPstbBatxBkKJzP19KF3ETBrGfat6F5rgUStVjjpRrNPrv"
-                    size="25"
+                    :size="25"
                   />
                   <span>13dPstbBatxBkKJzP19KF3ETBrGfat6F5rgUStVjjpRrNPrv</span>
                 </p>
@@ -35,14 +35,14 @@
                 <p>
                   <Identicon
                     address="GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY"
-                    size="25"
+                    :size="25"
                   />
                   <span>GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY</span>
                 </p>
                 <p>
                   <Identicon
                     address="EPStAMtjApGg8Ap6xKe9gyuinjmetz1MNhzu1cPmLQkWKUA"
-                    size="25"
+                    :size="25"
                   />
                   <span>EPStAMtjApGg8Ap6xKe9gyuinjmetz1MNhzu1cPmLQkWKUA</span>
                 </p>
@@ -128,14 +128,14 @@
                 <p>
                   <Identicon
                     address="15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t"
-                    size="25"
+                    :size="25"
                   />
                   <span>15psTaipmWG86U5vNkF7Guv9TRPMRLKHkGS8cXT74v3RCC5t</span>
                 </p>
                 <p>
                   <Identicon
                     address="13dPstbBatxBkKJzP19KF3ETBrGfat6F5rgUStVjjpRrNPrv"
-                    size="25"
+                    :size="25"
                   />
                   <span>13dPstbBatxBkKJzP19KF3ETBrGfat6F5rgUStVjjpRrNPrv</span>
                 </p>
@@ -157,14 +157,14 @@
                 <p>
                   <Identicon
                     address="GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY"
-                    size="25"
+                    :size="25"
                   />
                   <span>GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY</span>
                 </p>
                 <p>
                   <Identicon
                     address="EPStAMtjApGg8Ap6xKe9gyuinjmetz1MNhzu1cPmLQkWKUA"
-                    size="25"
+                    :size="25"
                   />
                   <span>EPStAMtjApGg8Ap6xKe9gyuinjmetz1MNhzu1cPmLQkWKUA</span>
                 </p>
@@ -249,24 +249,24 @@
   </div>
 </template>
 <script>
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 export default {
   data() {
     return {
-      network,
+      config,
     }
   },
   head() {
     return {
       title: this.$t('pages.polkastats_validator.head_title', {
-        networkName: network.name,
+        networkName: config.name,
       }),
       meta: [
         {
           hid: 'description',
           name: 'description',
           content: this.$t('pages.polkastats_validator.head_content', {
-            networkName: network.name,
+            networkName: config.name,
           }),
         },
       ],

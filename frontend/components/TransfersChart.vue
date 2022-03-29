@@ -15,7 +15,7 @@
 import axios from 'axios'
 import Loading from '@/components/Loading.vue'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
-import { network } from '@/frontend.config.js'
+import { config } from '@/frontend.config.js'
 export default {
   components: {
     Loading,
@@ -101,7 +101,7 @@ export default {
   async created() {
     try {
       const response = await axios.get(
-        `${network.backendAPI}/api/v1/charts/transfers`
+        `${config.backendAPI}/api/v1/charts/transfers`
       )
       this.apiData = response.data.data
     } catch (error) {

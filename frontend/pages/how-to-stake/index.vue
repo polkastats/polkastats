@@ -5,7 +5,7 @@
         <h1 class="mb-4">
           {{
             $t('pages.how_to_stake.title', {
-              networkName: network.name,
+              networkName: config.name,
             })
           }}
         </h1>
@@ -44,13 +44,13 @@
 </template>
 <script>
 import commonMixin from '~/mixins/commonMixin.js'
-import { network } from '~/frontend.config.js'
+import { config } from '~/frontend.config.js'
 
 export default {
   mixins: [commonMixin],
   data() {
     return {
-      network,
+      config,
       breadcrumbsItems: [
         {
           text: this.$t('pages.home.title'),
@@ -58,7 +58,7 @@ export default {
         },
         {
           text: this.$t('pages.how_to_stake.title', {
-            networkName: network.name,
+            networkName: config.name,
           }),
           href: '#',
         },

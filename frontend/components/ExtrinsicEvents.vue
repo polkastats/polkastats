@@ -76,7 +76,7 @@ export default {
   data: () => {
     return {
       events: [],
-      paginationOptions,
+      tableOptions: paginationOptions,
       perPage: localStorage.paginationOptions
         ? parseInt(localStorage.paginationOptions)
         : 10,
