@@ -234,7 +234,6 @@ export default {
               amount
               fee_amount
               success
-              error_message
               timestamp
             }
           }
