@@ -80,7 +80,7 @@ export default {
       loading: true,
       balances: [],
       points: 7, // 1 point per day
-      historySize: 10 * 1440 * 7, // 30 days
+      historySize: 10 * 60 * 24 * 7, // 7 days
     }
   },
   computed: {
@@ -156,7 +156,7 @@ export default {
             hash: hashResults[i + 1],
           })
         }
-        // console.log('block hashes:', blockHashes)
+        console.log('block hashes:', blockHashes)
 
         const balancePromises = []
 
@@ -194,7 +194,7 @@ export default {
             total,
           })
         }
-        // console.log('balances:', balances)
+        console.log('balances:', balances)
         return balances
       } catch (error) {
         // eslint-disable-next-line no-console

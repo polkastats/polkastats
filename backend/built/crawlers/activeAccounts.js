@@ -62,6 +62,8 @@ const crawler = async (delayedStart) => {
         logger_1.logger.info(loggerOptions, `Processed chunk ${chunks.indexOf(chunk) + 1}/${chunks.length} in ${((chunkEndTime - chunkStartTime) /
             1000).toFixed(config.statsPrecision)}s`);
     }
+    // TODO: delete non active accounts from db
+    await (0, account_1.deleteInactiveAccounts)(client, accountIds, loggerOptions);
     logger_1.logger.debug(loggerOptions, 'Disconnecting from API');
     await api.disconnect().catch((error) => {
         logger_1.logger.error(loggerOptions, `API disconnect error: ${JSON.stringify(error)}`);

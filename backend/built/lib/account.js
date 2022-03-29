@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAccountsInfo = exports.updateAccountInfo = exports.processAccountsChunk = exports.fetchAccountIds = exports.getAccountIdFromArgs = void 0;
+exports.updateAccountsInfo = exports.deleteInactiveAccounts = exports.updateAccountInfo = exports.processAccountsChunk = exports.fetchAccountIds = exports.getAccountIdFromArgs = void 0;
 // @ts-check
 const Sentry = __importStar(require("@sentry/node"));
 const lodash_1 = __importDefault(require("lodash"));
@@ -215,6 +215,13 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
     }
 };
 exports.updateAccountInfo = updateAccountInfo;
+const deleteInactiveAccounts = async (client, accountIds, loggerOptions) => {
+    logger_1.logger.info(loggerOptions, 'Deleting inactive accounts...');
+    const query = 'DELETE FROM account WHERE account_id != ANY($1::text[]);';
+    await (0, db_1.dbParamQuery)(client, query, [accountIds], loggerOptions);
+    logger_1.logger.info(loggerOptions, 'Deleting inactive accounts finished!');
+};
+exports.deleteInactiveAccounts = deleteInactiveAccounts;
 const updateAccountsInfo = async (api, client, blockNumber, timestamp, loggerOptions, blockEvents) => {
     const startTime = new Date().getTime();
     const involvedAddresses = [];
