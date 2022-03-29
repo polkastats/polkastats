@@ -103,7 +103,7 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: 'postgres://polkastats:polkastats@postgres:5432/polkastats'
       HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to 'false' to disable console
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: 'startup, http-log, webhook-log, websocket-log, query-log'
-      HASURA_GRAPHQL_CORS_DOMAIN: http://localhost:3000, https://kusama.polkastats.io, https://dev.kusama.polkastats.io
+      HASURA_GRAPHQL_CORS_DOMAIN: http://localhost:3000, https://kusama.polkastats.io, https://dev.kusama.polkastats.io, http://kusama.polkastats.io
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
       HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
   
