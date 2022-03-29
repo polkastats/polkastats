@@ -52,8 +52,8 @@
             <p class="mb-0">
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/block?blockNumber=${data.item.block_number}`"
-                title="Check block information"
+                :to="`/extrinsic/${data.item.hash}`"
+                title="Check extrinsic information"
               >
                 {{ shortHash(data.item.hash) }}
               </nuxt-link>
@@ -150,8 +150,13 @@ export default {
       totalRows: 1,
       fields: [
         {
+          key: 'hash',
+          label: 'Hash',
+          sortable: true,
+        },
+        {
           key: 'block_number',
-          label: 'Block number',
+          label: 'Block',
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: true,
         },
@@ -163,11 +168,6 @@ export default {
         {
           key: 'signer',
           label: 'Signer',
-          sortable: true,
-        },
-        {
-          key: 'hash',
-          label: 'Hash',
           sortable: true,
         },
         {
