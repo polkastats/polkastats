@@ -2,7 +2,7 @@
   <!-- Filter -->
   <b-row class="mb-4">
     <b-col cols="12">
-      <b-input-group size="sm" class="mb-2">
+      <b-input-group size="xl" class="mb-2">
         <b-input-group-prepend is-text>
           <font-awesome-icon icon="search" />
         </b-input-group-prepend>
