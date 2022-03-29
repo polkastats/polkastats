@@ -229,7 +229,7 @@ export const deleteInactiveAccounts = async (
     'Deleting inactive accounts...',
   );
 
-  const query = 'DELETE FROM account WHERE account_id != ANY($1::text[]);';
+  const query = 'DELETE FROM account WHERE account_id != ALL($1::text[]);';
   await dbParamQuery(client, query, [accountIds], loggerOptions);
 
   logger.info(

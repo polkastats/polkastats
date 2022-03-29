@@ -217,7 +217,7 @@ const updateAccountInfo = async (api, client, blockNumber, timestamp, address, l
 exports.updateAccountInfo = updateAccountInfo;
 const deleteInactiveAccounts = async (client, accountIds, loggerOptions) => {
     logger_1.logger.info(loggerOptions, 'Deleting inactive accounts...');
-    const query = 'DELETE FROM account WHERE account_id != ANY($1::text[]);';
+    const query = 'DELETE FROM account WHERE account_id != ALL($1::text[]);';
     await (0, db_1.dbParamQuery)(client, query, [accountIds], loggerOptions);
     logger_1.logger.info(loggerOptions, 'Deleting inactive accounts finished!');
 };
