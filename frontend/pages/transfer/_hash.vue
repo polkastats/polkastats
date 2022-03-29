@@ -13,6 +13,10 @@
             <div class="card-body">
               <h4 class="text-center mb-4">Transfer {{ shortHash(hash) }}</h4>
               <Transfer :transfer="transfer" />
+              <ExtrinsicEvents
+                :block-number="parseInt(transfer.block_number)"
+                :extrinsic-index="parseInt(transfer.extrinsic_index)"
+              />
             </div>
           </div>
         </template>
@@ -24,10 +28,12 @@
 import { gql } from 'graphql-tag'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
+import ExtrinsicEvents from '@/components/ExtrinsicEvents.vue'
 
 export default {
   components: {
     Loading,
+    ExtrinsicEvents,
   },
   mixins: [commonMixin],
   data() {

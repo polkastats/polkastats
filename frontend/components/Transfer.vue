@@ -14,6 +14,7 @@
           <td>Timestamp</td>
           <td>
             <p class="mb-0">
+              <font-awesome-icon icon="clock" class="text-light" />
               {{ getDateFromTimestamp(transfer.timestamp) }} ({{
                 fromNow(transfer.timestamp)
               }})
@@ -40,6 +41,12 @@
           <td>Hash</td>
           <td>
             {{ transfer.hash }}
+          </td>
+        </tr>
+        <tr>
+          <td>Method</td>
+          <td>
+            {{ transfer.method }}
           </td>
         </tr>
         <tr>
