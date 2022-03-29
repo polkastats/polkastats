@@ -37,6 +37,17 @@
           :filter="filter"
           @filtered="onFiltered"
         >
+          <template #cell(hash)="data">
+            <p class="mb-0">
+              <nuxt-link
+                v-b-tooltip.hover
+                :to="`/transfer/${data.item.hash}`"
+                title="Check transfer information"
+              >
+                {{ shortHash(data.item.hash) }}
+              </nuxt-link>
+            </p>
+          </template>
           <template #cell(block_number)="data">
             <p class="mb-0">
               <nuxt-link
@@ -149,8 +160,14 @@ export default {
       totalRows: 1,
       fields: [
         {
+          key: 'hash',
+          label: 'Hash',
+          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
+          sortable: true,
+        },
+        {
           key: 'block_number',
-          label: 'Block number',
+          label: 'Block',
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: true,
         },

@@ -34,6 +34,7 @@
               <h4 class="text-center mb-4 amount">
                 {{ formatAmount(parsedAccount.totalBalance) }}
               </h4>
+              <BalanceChart :account-id="accountId" />
               <div class="table-responsive pb-4">
                 <table class="table table-striped">
                   <tbody>
@@ -185,7 +186,6 @@
                   </tbody>
                 </table>
               </div>
-              <BalanceChart :account-id="accountId" />
               <b-tabs class="mt-4" content-class="mt-4" fill>
                 <b-tab active>
                   <template #title>
