@@ -534,7 +534,7 @@ export const updateFinalizedBlock = async (
         state_root = $6
       WHERE block_number = $7`;
     const { rowCount } = await dbParamQuery(client, sql, data, loggerOptions);
-    console.log(`rowCount is ${rowCount}`);
+    console.log(`Finalized block number is ${blockNumber} and rowCount is ${rowCount}`);
 
     // Update finalized blocks
     await updateFinalized(client, blockNumber, loggerOptions);
