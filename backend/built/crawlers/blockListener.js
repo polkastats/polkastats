@@ -55,22 +55,6 @@ const crawler = async () => {
         iteration++;
         const blockNumber = blockHeader.number.toNumber();
         const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-        // track block finalization
-        const finalizedBlockHash = await api.rpc.chain.getFinalizedHead();
-        const { block: finalizedBlock } = await api.rpc.chain.getBlock(finalizedBlockHash);
-        const finalizedBlockNumber = finalizedBlock.header.number.toNumber();
-        if (initTracking) {
-            trackedFinalizedBlock = finalizedBlockNumber;
-            initTracking = false;
-        }
-        // handle missing finalized blocks from subscription
-        if (finalizedBlockNumber > trackedFinalizedBlock) {
-            for (let blockToUpdate = trackedFinalizedBlock + 1; blockToUpdate <= finalizedBlockNumber; blockToUpdate++) {
-                await (0, block_1.updateFinalizedBlock)(config, api, client, blockToUpdate, loggerOptions);
-            }
-        }
-        trackedFinalizedBlock = finalizedBlockNumber;
-        // end track block finalization
         try {
             await (0, block_1.harvestBlock)(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions);
             // store current runtime metadata in first iteration
@@ -87,6 +71,22 @@ const crawler = async () => {
             logger_1.logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
             Sentry.captureException(error);
         }
+        // track block finalization
+        const finalizedBlockHash = await api.rpc.chain.getFinalizedHead();
+        const { block: finalizedBlock } = await api.rpc.chain.getBlock(finalizedBlockHash);
+        const finalizedBlockNumber = finalizedBlock.header.number.toNumber();
+        if (initTracking) {
+            trackedFinalizedBlock = finalizedBlockNumber;
+            initTracking = false;
+        }
+        // handle missing finalized blocks from subscription
+        if (finalizedBlockNumber > trackedFinalizedBlock) {
+            for (let blockToUpdate = trackedFinalizedBlock + 1; blockToUpdate <= finalizedBlockNumber; blockToUpdate++) {
+                await (0, block_1.updateFinalizedBlock)(config, api, client, blockToUpdate, loggerOptions);
+            }
+        }
+        trackedFinalizedBlock = finalizedBlockNumber;
+        // end track block finalization
     });
 };
 crawler().catch((error) => {
