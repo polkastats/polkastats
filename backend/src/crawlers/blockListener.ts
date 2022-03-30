@@ -80,7 +80,7 @@ const crawler = async () => {
     const { block: finalizedBlock } = await api.rpc.chain.getBlock(finalizedBlockHash);
     const finalizedBlockNumber = finalizedBlock.header.number.toNumber();
     if (initTracking) {
-      trackedFinalizedBlock = finalizedBlockNumber + 1;
+      trackedFinalizedBlock = finalizedBlockNumber;
       initTracking = false;
     }
     // handle missing finalized blocks from subscription
