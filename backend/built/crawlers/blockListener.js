@@ -63,9 +63,11 @@ const crawler = async () => {
             trackedFinalizedBlock = finalizedBlockNumber;
             initTracking = false;
         }
-        // Handle missing finalized blocks from subscription
-        for (let blockToUpdate = trackedFinalizedBlock; blockToUpdate <= finalizedBlockNumber; blockToUpdate++) {
-            await (0, block_1.updateFinalizedBlock)(config, api, client, blockToUpdate, loggerOptions);
+        // handle missing finalized blocks from subscription
+        if (finalizedBlockNumber > trackedFinalizedBlock) {
+            for (let blockToUpdate = trackedFinalizedBlock; blockToUpdate <= finalizedBlockNumber; blockToUpdate++) {
+                await (0, block_1.updateFinalizedBlock)(config, api, client, blockToUpdate, loggerOptions);
+            }
         }
         trackedFinalizedBlock = finalizedBlockNumber;
         // end track block finalization
