@@ -379,6 +379,7 @@ const updateFinalizedBlock = async (config, api, client, blockNumber, loggerOpti
         state_root = $6
       WHERE block_number = $7`;
         const { rowCount } = await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
+        console.log(`rowCount is ${rowCount}`);
         // Update finalized blocks
         await (0, exports.updateFinalized)(client, blockNumber, loggerOptions);
         const endTime = new Date().getTime();
