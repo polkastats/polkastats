@@ -49,6 +49,8 @@ const crawler = async () => {
     const doUpdateAccountsInfo = true;
     // Subscribe to new blocks
     let iteration = 0;
+    let trackedFinalizedBlock = 0;
+    let initTracking = true;
     await api.rpc.chain.subscribeNewHeads(async (blockHeader) => {
         iteration++;
         const blockNumber = blockHeader.number.toNumber();
@@ -69,6 +71,22 @@ const crawler = async () => {
             logger_1.logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
             Sentry.captureException(error);
         }
+        // track block finalization
+        const finalizedBlockHash = await api.rpc.chain.getFinalizedHead();
+        const { block: finalizedBlock } = await api.rpc.chain.getBlock(finalizedBlockHash);
+        const finalizedBlockNumber = finalizedBlock.header.number.toNumber();
+        if (initTracking) {
+            trackedFinalizedBlock = finalizedBlockNumber;
+            initTracking = false;
+        }
+        // handle missing finalized blocks from subscription
+        if (trackedFinalizedBlock < finalizedBlockNumber) {
+            for (let blockToUpdate = trackedFinalizedBlock + 1; blockToUpdate <= finalizedBlockNumber; blockToUpdate++) {
+                await (0, block_1.updateFinalizedBlock)(config, api, client, blockToUpdate, loggerOptions);
+            }
+        }
+        trackedFinalizedBlock = finalizedBlockNumber;
+        // end track block finalization
     });
 };
 crawler().catch((error) => {

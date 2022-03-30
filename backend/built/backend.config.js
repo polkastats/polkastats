@@ -24,13 +24,6 @@ exports.backendConfig = {
             statsPrecision: parseInt(process.env.BACKEND_STATS_PRECISION, 10) || 2,
         },
         {
-            name: 'blockFinalizer',
-            enabled: !process.env.BLOCK_FINALIZER_DISABLE,
-            crawler: './built/crawlers/blockFinalizer.js',
-            statsPrecision: parseInt(process.env.BACKEND_STATS_PRECISION, 10) || 2,
-            startDelay: parseInt(process.env.BLOCK_FINALIZER_START_DELAY_MS, 10) || 60 * 1000,
-        },
-        {
             name: 'blockHarvester',
             enabled: !process.env.BLOCK_HARVESTER_DISABLE,
             crawler: './built/crawlers/blockHarvester.js',
