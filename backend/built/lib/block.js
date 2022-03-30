@@ -378,11 +378,13 @@ const updateFinalizedBlock = async (config, api, client, blockNumber, loggerOpti
         extrinsics_root = $5,
         state_root = $6
       WHERE block_number = $7`;
-        await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
+        const { rowCount } = await (0, db_1.dbParamQuery)(client, sql, data, loggerOptions);
         // Update finalized blocks
         await (0, exports.updateFinalized)(client, blockNumber, loggerOptions);
         const endTime = new Date().getTime();
-        logger_1.logger.info(loggerOptions, `Updated finalized block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+        if (rowCount > 0) {
+            logger_1.logger.info(loggerOptions, `Updated finalized block #${blockNumber} (${(0, utils_1.shortHash)(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`);
+        }
     }
     catch (error) {
         logger_1.logger.error(loggerOptions, `Error updating finalized block #${blockNumber}: ${error}`);

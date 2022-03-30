@@ -2,7 +2,7 @@
 import * as Sentry from '@sentry/node';
 import { getClient } from '../lib/db';
 import { getPolkadotAPI, isNodeSynced } from '../lib/chain';
-import { harvestBlock, storeMetadata } from '../lib/block';
+import { harvestBlock, updateFinalizedBlock, storeMetadata } from '../lib/block';
 import { wait } from '../lib/utils';
 import { backendConfig } from '../backend.config';
 import { CrawlerConfig } from '../lib/types';
@@ -40,10 +40,38 @@ const crawler = async () => {
 
   // Subscribe to new blocks
   let iteration = 0;
+  let trackedFinalizedBlock = 0;
+  let initTracking = true;
   await api.rpc.chain.subscribeNewHeads(async (blockHeader) => {
     iteration++;
     const blockNumber = blockHeader.number.toNumber();
     const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
+    
+    // track block finalization
+    const finalizedBlockHash = await api.rpc.chain.getFinalizedHead();
+    const { block: finalizedBlock } = await api.rpc.chain.getBlock(finalizedBlockHash);
+    const finalizedBlockNumber = finalizedBlock.header.number.toNumber();
+    if (initTracking) {
+      trackedFinalizedBlock = finalizedBlockNumber;
+      initTracking = false;
+    }
+    // Handle missing finalized blocks from subscription
+    for (
+      let blockToUpdate = trackedFinalizedBlock + 1;
+      blockToUpdate <= blockNumber;
+      blockToUpdate++
+    ) {
+      await updateFinalizedBlock(
+        config,
+        api,
+        client,
+        blockToUpdate,
+        loggerOptions,
+      );
+    }
+    trackedFinalizedBlock = blockNumber;
+    // end track block finalization
+
     try {
       await harvestBlock(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions);
 
@@ -71,6 +99,8 @@ const crawler = async () => {
       );
       Sentry.captureException(error);
     }
+
+    
   });
 };
 

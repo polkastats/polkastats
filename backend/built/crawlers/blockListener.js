@@ -49,10 +49,26 @@ const crawler = async () => {
     const doUpdateAccountsInfo = true;
     // Subscribe to new blocks
     let iteration = 0;
+    let trackedFinalizedBlock = 0;
+    let initTracking = true;
     await api.rpc.chain.subscribeNewHeads(async (blockHeader) => {
         iteration++;
         const blockNumber = blockHeader.number.toNumber();
         const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
+        // track block finalization
+        const finalizedBlockHash = await api.rpc.chain.getFinalizedHead();
+        const { block: finalizedBlock } = await api.rpc.chain.getBlock(finalizedBlockHash);
+        const finalizedBlockNumber = finalizedBlock.header.number.toNumber();
+        if (initTracking) {
+            trackedFinalizedBlock = finalizedBlockNumber;
+            initTracking = false;
+        }
+        // Handle missing finalized blocks from subscription
+        for (let blockToUpdate = trackedFinalizedBlock + 1; blockToUpdate <= blockNumber; blockToUpdate++) {
+            await (0, block_1.updateFinalizedBlock)(config, api, client, blockToUpdate, loggerOptions);
+        }
+        trackedFinalizedBlock = blockNumber;
+        // end track block finalization
         try {
             await (0, block_1.harvestBlock)(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions);
             // store current runtime metadata in first iteration

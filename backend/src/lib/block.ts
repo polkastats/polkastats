@@ -533,18 +533,20 @@ export const updateFinalizedBlock = async (
         extrinsics_root = $5,
         state_root = $6
       WHERE block_number = $7`;
-    await dbParamQuery(client, sql, data, loggerOptions);
+    const { rowCount } = await dbParamQuery(client, sql, data, loggerOptions);
 
     // Update finalized blocks
     await updateFinalized(client, blockNumber, loggerOptions);
 
     const endTime = new Date().getTime();
-    logger.info(
-      loggerOptions,
-      `Updated finalized block #${blockNumber} (${shortHash(
-        blockHash.toString(),
-      )}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`,
-    );
+    if (rowCount > 0) {
+      logger.info(
+        loggerOptions,
+        `Updated finalized block #${blockNumber} (${shortHash(
+          blockHash.toString(),
+        )}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`,
+      );
+    }
   } catch (error) {
     logger.error(
       loggerOptions,
