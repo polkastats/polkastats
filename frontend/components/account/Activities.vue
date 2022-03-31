@@ -1,43 +1,14 @@
 <template>
-  <div class="staking-slashes">
+  <div class="sent-transfers">
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
-    <div v-else-if="stakingSlashes.length === 0" class="text-center py-4">
-      <h5>{{ $t('components.staking_slashes.no_slash_found') }}</h5>
+    <div v-else-if="activities.length === 0" class="text-center py-4">
+      <h5>{{ $t('components.transfers.no_transfer_found') }}</h5>
     </div>
     <div v-else>
-      <StakingSlashesChart :account-id="accountId" />
-      <JsonCSV
-        :data="stakingSlashes"
-        class="download-csv mb-2"
-        :name="`polkastats_staking_slashes_${accountId}.csv`"
-      >
-        <font-awesome-icon icon="file-csv" />
-        {{ $t('pages.accounts.download_csv') }}
-      </JsonCSV>
-      <!-- Filter -->
-      <b-row style="margin-bottom: 1rem">
-        <b-col cols="12">
-          <b-form-input
-            id="filterInput"
-            v-model="filter"
-            type="search"
-            :placeholder="$t('components.staking_slashes.search')"
-          />
-        </b-col>
-      </b-row>
       <div class="table-responsive">
-        <b-table
-          striped
-          hover
-          :fields="fields"
-          :per-page="perPage"
-          :current-page="currentPage"
-          :items="stakingSlashes"
-          :filter="filter"
-          @filtered="onFiltered"
-        >
+        <b-table striped hover :fields="fields" :items="activities">
           <template #cell(block_number)="data">
             <p class="mb-0">
               <nuxt-link
@@ -49,17 +20,14 @@
               </nuxt-link>
             </p>
           </template>
-          <template #cell(validator_stash_address)="data">
+          <template #cell(hash)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/validator/${data.item.validator_stash_address}`"
-                :title="$t('pages.accounts.account_details')"
+                v-b-tooltip.hover
+                :to="`/extrinsic/${data.item.hash}`"
+                title="Check extrinsic information"
               >
-                <Identicon
-                  :address="data.item.validator_stash_address"
-                  :size="20"
-                />
-                {{ shortAddress(data.item.validator_stash_address) }}
+                {{ shortHash(data.item.hash) }}
               </nuxt-link>
             </p>
           </template>
@@ -68,14 +36,31 @@
               {{ getDateFromTimestamp(data.item.timestamp) }}
             </p>
           </template>
-          <template #cell(timeago)="data">
+          <template #cell(signer)="data">
             <p class="mb-0">
-              {{ fromNow(data.item.timestamp) }}
+              <nuxt-link
+                :to="`/account/${data.item.signer}`"
+                :title="$t('pages.accounts.account_details')"
+              >
+                <Identicon :address="data.item.signer" :size="20" />
+                {{ shortAddress(data.item.signer) }}
+              </nuxt-link>
             </p>
           </template>
-          <template #cell(amount)="data">
+          <template #cell(section)="data">
             <p class="mb-0">
-              {{ formatAmount(data.item.amount, 6) }}
+              {{ data.item.section }} ➡
+              {{ data.item.method }}
+            </p>
+          </template>
+          <template #cell(success)="data">
+            <p class="mb-0">
+              <font-awesome-icon
+                v-if="data.item.success"
+                icon="check"
+                class="text-success"
+              />
+              <font-awesome-icon v-else icon="times" class="text-danger" />
             </p>
           </template>
         </b-table>
@@ -84,8 +69,10 @@
             v-model="currentPage"
             :total-rows="totalRows"
             :per-page="perPage"
-            aria-controls="staking-slashes"
-          />
+            aria-controls="my-table"
+            variant="dark"
+            align="right"
+          ></b-pagination>
           <b-button-group class="ml-2">
             <b-button
               v-for="(item, index) in tableOptions"
@@ -104,17 +91,15 @@
 
 <script>
 import { gql } from 'graphql-tag'
-import JsonCSV from 'vue-json-csv'
 import commonMixin from '@/mixins/commonMixin.js'
+import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
-import StakingSlashesChart from '@/components/StakingSlashesChart.vue'
 import { paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
+    Identicon,
     Loading,
-    JsonCSV,
-    StakingSlashesChart,
   },
   mixins: [commonMixin],
   props: {
@@ -126,9 +111,7 @@ export default {
   data() {
     return {
       loading: true,
-      stakingSlashes: [],
-      filter: null,
-      filterOn: [],
+      activities: [],
       tableOptions: paginationOptions,
       perPage: localStorage.paginationOptions
         ? parseInt(localStorage.paginationOptions)
@@ -137,34 +120,34 @@ export default {
       totalRows: 1,
       fields: [
         {
+          key: 'hash',
+          label: 'Hash',
+          sortable: true,
+        },
+        {
           key: 'block_number',
-          label: 'Block number',
+          label: 'Block',
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: true,
         },
         {
           key: 'timestamp',
           label: 'Date',
+          sortable: false,
+        },
+        {
+          key: 'signer',
+          label: 'Signer',
           sortable: true,
         },
         {
-          key: 'era',
-          label: 'Era',
+          key: 'section',
+          label: 'Extrinsic',
           sortable: true,
         },
         {
-          key: 'validator_stash_address',
-          label: 'Validator',
-          sortable: true,
-        },
-        {
-          key: 'timeago',
-          label: 'Time ago',
-          sortable: true,
-        },
-        {
-          key: 'amount',
-          label: 'Slash',
+          key: 'success',
+          label: 'Success',
           sortable: true,
         },
       ],
@@ -175,44 +158,76 @@ export default {
       localStorage.paginationOptions = num
       this.perPage = parseInt(num)
     },
-    onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length
-      this.currentPage = 1
-    },
   },
   apollo: {
     $subscribe: {
-      event: {
+      extrinsic: {
         query: gql`
-          subscription slashes($accountId: String!) {
-            staking_slash(
+          subscription extrinsic(
+            $signer: String!
+            $perPage: Int!
+            $offset: Int!
+          ) {
+            signed_extrinsic(
               order_by: { block_number: desc }
-              where: { account_id: { _eq: $accountId } }
+              where: { signer: { _eq: $signer } }
+              limit: $perPage
+              offset: $offset
             ) {
               block_number
-              validator_stash_address
-              era
-              amount
+              signer
+              hash
+              section
+              method
+              success
               timestamp
             }
           }
         `,
         variables() {
           return {
-            accountId: this.accountId,
+            signer: this.accountId,
+            perPage: this.perPage,
+            offset: (this.currentPage - 1) * this.perPage,
           }
         },
         skip() {
           return !this.accountId
         },
         result({ data }) {
-          this.stakingSlashes = data.staking_slash
-          this.totalRows = this.stakingSlashes.length
+          this.activities = data.signed_extrinsic
           this.loading = false
+        },
+      },
+      count: {
+        query: gql`
+          subscription extrinsic($signer: String!) {
+            signed_extrinsic_aggregate(where: { signer: { _eq: $signer } }) {
+              aggregate {
+                count
+              }
+            }
+          }
+        `,
+        variables() {
+          return {
+            signer: this.accountId,
+          }
+        },
+        result({ data }) {
+          this.totalRows = data.signed_extrinsic_aggregate.aggregate.count
         },
       },
     },
   },
 }
 </script>
+
+<style>
+.sent-transfers {
+  background-color: white;
+}
+.spinner {
+  color: #d3d2d2;
+}
+</style>

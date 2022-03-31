@@ -3,40 +3,9 @@
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
-    <div v-else-if="transfers.length === 0" class="text-center py-4">
-      <h5>{{ $t('components.transfers.no_transfer_found') }}</h5>
-    </div>
     <div v-else>
-      <!-- Filter -->
-      <b-row style="margin-bottom: 1rem">
-        <b-col cols="12">
-          <b-form-input
-            id="filterInput"
-            v-model="filter"
-            type="search"
-            :placeholder="$t('components.transfers.search')"
-          />
-        </b-col>
-      </b-row>
-      <JsonCSV
-        :data="transfers"
-        class="download-csv mb-2"
-        :name="`polkastats_transfers_${accountId}.csv`"
-      >
-        <font-awesome-icon icon="file-csv" />
-        {{ $t('pages.accounts.download_csv') }}
-      </JsonCSV>
       <div class="table-responsive">
-        <b-table
-          striped
-          hover
-          :fields="fields"
-          :per-page="perPage"
-          :current-page="currentPage"
-          :items="transfers"
-          :filter="filter"
-          @filtered="onFiltered"
-        >
+        <b-table striped hover :fields="fields" :items="transfers">
           <template #cell(hash)="data">
             <p class="mb-0">
               <nuxt-link
@@ -107,8 +76,10 @@
             v-model="currentPage"
             :total-rows="totalRows"
             :per-page="perPage"
-            aria-controls="validators-table"
-          />
+            aria-controls="my-table"
+            variant="dark"
+            align="right"
+          ></b-pagination>
           <b-button-group class="ml-2">
             <b-button
               v-for="(item, index) in tableOptions"
@@ -127,7 +98,6 @@
 
 <script>
 import { gql } from 'graphql-tag'
-import JsonCSV from 'vue-json-csv'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
@@ -136,7 +106,6 @@ import { paginationOptions } from '@/frontend.config.js'
 export default {
   components: {
     Identicon,
-    JsonCSV,
     Loading,
   },
   mixins: [commonMixin],
@@ -150,8 +119,6 @@ export default {
     return {
       loading: true,
       transfers: [],
-      filter: null,
-      filterOn: [],
       tableOptions: paginationOptions,
       perPage: localStorage.paginationOptions
         ? parseInt(localStorage.paginationOptions)
@@ -163,13 +130,13 @@ export default {
           key: 'hash',
           label: 'Hash',
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'block_number',
           label: 'Block',
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'timestamp',
@@ -179,22 +146,22 @@ export default {
         {
           key: 'source',
           label: 'From',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'destination',
           label: 'To',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'amount',
           label: 'Amount',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'success',
           label: 'Success',
-          sortable: true,
+          sortable: false,
         },
       ],
     }
@@ -204,17 +171,16 @@ export default {
       localStorage.paginationOptions = num
       this.perPage = parseInt(num)
     },
-    onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length
-      this.currentPage = 1
-    },
   },
   apollo: {
     $subscribe: {
       transfer: {
         query: gql`
-          subscription transfer($accountId: String!) {
+          subscription transfer(
+            $accountId: String!
+            $perPage: Int!
+            $offset: Int!
+          ) {
             transfer(
               order_by: { block_number: desc }
               where: {
@@ -223,6 +189,8 @@ export default {
                   { destination: { _eq: $accountId } }
                 ]
               }
+              limit: $perPage
+              offset: $offset
             ) {
               block_number
               extrinsic_index
@@ -241,6 +209,8 @@ export default {
         variables() {
           return {
             accountId: this.accountId,
+            perPage: this.perPage,
+            offset: (this.currentPage - 1) * this.perPage,
           }
         },
         skip() {
@@ -248,8 +218,33 @@ export default {
         },
         result({ data }) {
           this.transfers = data.transfer
-          this.totalRows = this.transfers.length
           this.loading = false
+        },
+      },
+      count: {
+        query: gql`
+          subscription count($accountId: String!) {
+            transfer_aggregate(
+              where: {
+                _or: [
+                  { source: { _eq: $accountId } }
+                  { destination: { _eq: $accountId } }
+                ]
+              }
+            ) {
+              aggregate {
+                count
+              }
+            }
+          }
+        `,
+        variables() {
+          return {
+            accountId: this.accountId,
+          }
+        },
+        result({ data }) {
+          this.totalRows = data.transfer_aggregate.aggregate.count
         },
       },
     },
