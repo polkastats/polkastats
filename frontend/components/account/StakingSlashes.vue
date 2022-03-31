@@ -1,17 +1,17 @@
 <template>
-  <div class="staking-rewards">
+  <div class="staking-slashes">
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
-    <div v-else-if="stakingRewards.length === 0" class="text-center py-4">
-      <h5>{{ $t('components.staking_rewards.no_reward_found') }}</h5>
+    <div v-else-if="stakingSlashes.length === 0" class="text-center py-4">
+      <h5>{{ $t('components.staking_slashes.no_slash_found') }}</h5>
     </div>
     <div v-else>
-      <StakingRewardsChart :account-id="accountId" />
+      <StakingSlashesChart :account-id="accountId" />
       <JsonCSV
-        :data="stakingRewards"
+        :data="stakingSlashes"
         class="download-csv mb-2"
-        :name="`polkastats_staking_rewards_${accountId}.csv`"
+        :name="`polkastats_staking_slashes_${accountId}.csv`"
       >
         <font-awesome-icon icon="file-csv" />
         {{ $t('pages.accounts.download_csv') }}
@@ -23,7 +23,7 @@
             id="filterInput"
             v-model="filter"
             type="search"
-            :placeholder="$t('components.staking_rewards.search')"
+            :placeholder="$t('components.staking_slashes.search')"
           />
         </b-col>
       </b-row>
@@ -34,7 +34,7 @@
           :fields="fields"
           :per-page="perPage"
           :current-page="currentPage"
-          :items="stakingRewards"
+          :items="stakingSlashes"
           :filter="filter"
           @filtered="onFiltered"
         >
@@ -50,7 +50,7 @@
             </p>
           </template>
           <template #cell(validator_stash_address)="data">
-            <p v-if="data.item.validator_stash_address" class="mb-0">
+            <p class="mb-0">
               <nuxt-link
                 :to="`/validator/${data.item.validator_stash_address}`"
                 :title="$t('pages.accounts.account_details')"
@@ -61,11 +61,6 @@
                 />
                 {{ shortAddress(data.item.validator_stash_address) }}
               </nuxt-link>
-            </p>
-          </template>
-          <template #cell(era)="data">
-            <p class="mb-0">
-              {{ data.item.era }}
             </p>
           </template>
           <template #cell(timestamp)="data">
@@ -89,7 +84,7 @@
             v-model="currentPage"
             :total-rows="totalRows"
             :per-page="perPage"
-            aria-controls="staking-rewards"
+            aria-controls="staking-slashes"
           />
           <b-button-group class="ml-2">
             <b-button
@@ -112,14 +107,14 @@ import { gql } from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
 import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
-import StakingRewardsChart from '@/components/StakingRewardsChart.vue'
+import StakingSlashesChart from '@/components/account/StakingSlashesChart.vue'
 import { paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
     Loading,
     JsonCSV,
-    StakingRewardsChart,
+    StakingSlashesChart,
   },
   mixins: [commonMixin],
   props: {
@@ -131,7 +126,7 @@ export default {
   data() {
     return {
       loading: true,
-      stakingRewards: [],
+      stakingSlashes: [],
       filter: null,
       filterOn: [],
       tableOptions: paginationOptions,
@@ -169,7 +164,7 @@ export default {
         },
         {
           key: 'amount',
-          label: 'Reward',
+          label: 'Slash',
           sortable: true,
         },
       ],
@@ -188,10 +183,10 @@ export default {
   },
   apollo: {
     $subscribe: {
-      staking_rewards: {
+      event: {
         query: gql`
-          subscription staking_rewards($accountId: String!) {
-            staking_reward(
+          subscription slashes($accountId: String!) {
+            staking_slash(
               order_by: { block_number: desc }
               where: { account_id: { _eq: $accountId } }
             ) {
@@ -212,8 +207,8 @@ export default {
           return !this.accountId
         },
         result({ data }) {
-          this.stakingRewards = data.staking_reward
-          this.totalRows = this.stakingRewards.length
+          this.stakingSlashes = data.staking_slash
+          this.totalRows = this.stakingSlashes.length
           this.loading = false
         },
       },

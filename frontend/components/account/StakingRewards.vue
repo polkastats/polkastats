@@ -1,31 +1,32 @@
 <template>
-  <div class="sent-transfers">
+  <div class="staking-rewards">
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
-    <div v-else-if="activities.length === 0" class="text-center py-4">
-      <h5>{{ $t('components.transfers.no_transfer_found') }}</h5>
+    <div v-else-if="stakingRewards.length === 0" class="text-center py-4">
+      <h5>{{ $t('components.staking_rewards.no_reward_found') }}</h5>
     </div>
     <div v-else>
+      <StakingRewardsChart :account-id="accountId" />
+      <JsonCSV
+        :data="stakingRewards"
+        class="download-csv mb-2"
+        :name="`polkastats_staking_rewards_${accountId}.csv`"
+      >
+        <font-awesome-icon icon="file-csv" />
+        {{ $t('pages.accounts.download_csv') }}
+      </JsonCSV>
       <!-- Filter -->
-      <!-- <b-row style="margin-bottom: 1rem">
+      <b-row style="margin-bottom: 1rem">
         <b-col cols="12">
           <b-form-input
             id="filterInput"
             v-model="filter"
             type="search"
-            :placeholder="$t('components.transfers.search')"
+            :placeholder="$t('components.staking_rewards.search')"
           />
         </b-col>
-      </b-row> -->
-      <JsonCSV
-        :data="activities"
-        class="download-csv mb-2"
-        :name="`polkastats_${accountId}_activity.csv`"
-      >
-        <font-awesome-icon icon="file-csv" />
-        {{ $t('pages.accounts.download_csv') }}
-      </JsonCSV>
+      </b-row>
       <div class="table-responsive">
         <b-table
           striped
@@ -33,7 +34,7 @@
           :fields="fields"
           :per-page="perPage"
           :current-page="currentPage"
-          :items="activities"
+          :items="stakingRewards"
           :filter="filter"
           @filtered="onFiltered"
         >
@@ -48,15 +49,23 @@
               </nuxt-link>
             </p>
           </template>
-          <template #cell(hash)="data">
-            <p class="mb-0">
+          <template #cell(validator_stash_address)="data">
+            <p v-if="data.item.validator_stash_address" class="mb-0">
               <nuxt-link
-                v-b-tooltip.hover
-                :to="`/extrinsic/${data.item.hash}`"
-                title="Check extrinsic information"
+                :to="`/validator/${data.item.validator_stash_address}`"
+                :title="$t('pages.accounts.account_details')"
               >
-                {{ shortHash(data.item.hash) }}
+                <Identicon
+                  :address="data.item.validator_stash_address"
+                  :size="20"
+                />
+                {{ shortAddress(data.item.validator_stash_address) }}
               </nuxt-link>
+            </p>
+          </template>
+          <template #cell(era)="data">
+            <p class="mb-0">
+              {{ data.item.era }}
             </p>
           </template>
           <template #cell(timestamp)="data">
@@ -64,31 +73,14 @@
               {{ getDateFromTimestamp(data.item.timestamp) }}
             </p>
           </template>
-          <template #cell(signer)="data">
+          <template #cell(timeago)="data">
             <p class="mb-0">
-              <nuxt-link
-                :to="`/account/${data.item.signer}`"
-                :title="$t('pages.accounts.account_details')"
-              >
-                <Identicon :address="data.item.signer" :size="20" />
-                {{ shortAddress(data.item.signer) }}
-              </nuxt-link>
+              {{ fromNow(data.item.timestamp) }}
             </p>
           </template>
-          <template #cell(section)="data">
+          <template #cell(amount)="data">
             <p class="mb-0">
-              {{ data.item.section }} ➡
-              {{ data.item.method }}
-            </p>
-          </template>
-          <template #cell(success)="data">
-            <p class="mb-0">
-              <font-awesome-icon
-                v-if="data.item.success"
-                icon="check"
-                class="text-success"
-              />
-              <font-awesome-icon v-else icon="times" class="text-danger" />
+              {{ formatAmount(data.item.amount, 6) }}
             </p>
           </template>
         </b-table>
@@ -97,7 +89,7 @@
             v-model="currentPage"
             :total-rows="totalRows"
             :per-page="perPage"
-            aria-controls="validators-table"
+            aria-controls="staking-rewards"
           />
           <b-button-group class="ml-2">
             <b-button
@@ -119,15 +111,15 @@
 import { gql } from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
 import commonMixin from '@/mixins/commonMixin.js'
-import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
+import StakingRewardsChart from '@/components/account/StakingRewardsChart.vue'
 import { paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
-    Identicon,
-    JsonCSV,
     Loading,
+    JsonCSV,
+    StakingRewardsChart,
   },
   mixins: [commonMixin],
   props: {
@@ -139,7 +131,7 @@ export default {
   data() {
     return {
       loading: true,
-      activities: [],
+      stakingRewards: [],
       filter: null,
       filterOn: [],
       tableOptions: paginationOptions,
@@ -150,34 +142,34 @@ export default {
       totalRows: 1,
       fields: [
         {
-          key: 'hash',
-          label: 'Hash',
-          sortable: true,
-        },
-        {
           key: 'block_number',
-          label: 'Block',
+          label: 'Block number',
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: true,
         },
         {
           key: 'timestamp',
           label: 'Date',
-          sortable: false,
-        },
-        {
-          key: 'signer',
-          label: 'Signer',
           sortable: true,
         },
         {
-          key: 'section',
-          label: 'Extrinsic',
+          key: 'era',
+          label: 'Era',
           sortable: true,
         },
         {
-          key: 'success',
-          label: 'Success',
+          key: 'validator_stash_address',
+          label: 'Validator',
+          sortable: true,
+        },
+        {
+          key: 'timeago',
+          label: 'Time ago',
+          sortable: true,
+        },
+        {
+          key: 'amount',
+          label: 'Reward',
           sortable: true,
         },
       ],
@@ -188,9 +180,6 @@ export default {
       localStorage.paginationOptions = num
       this.perPage = parseInt(num)
     },
-    isFavorite(accountId) {
-      return this.favorites.includes(accountId)
-    },
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length
@@ -199,34 +188,32 @@ export default {
   },
   apollo: {
     $subscribe: {
-      extrinsic: {
+      staking_rewards: {
         query: gql`
-          subscription extrinsic($signer: String!) {
-            signed_extrinsic(
+          subscription staking_rewards($accountId: String!) {
+            staking_reward(
               order_by: { block_number: desc }
-              where: { signer: { _eq: $signer } }
+              where: { account_id: { _eq: $accountId } }
             ) {
               block_number
-              signer
-              hash
-              section
-              method
-              success
+              validator_stash_address
+              era
+              amount
               timestamp
             }
           }
         `,
         variables() {
           return {
-            signer: this.accountId,
+            accountId: this.accountId,
           }
         },
         skip() {
           return !this.accountId
         },
         result({ data }) {
-          this.activities = data.signed_extrinsic
-          this.totalRows = this.activities.length
+          this.stakingRewards = data.staking_reward
+          this.totalRows = this.stakingRewards.length
           this.loading = false
         },
       },
@@ -234,12 +221,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.sent-transfers {
-  background-color: white;
-}
-.spinner {
-  color: #d3d2d2;
-}
-</style>
