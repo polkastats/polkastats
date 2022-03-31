@@ -3,6 +3,21 @@
     <table class="table table-striped extrinsic-table">
       <tbody>
         <tr>
+          <td>Extrinsic hash</td>
+          <td>
+            {{ extrinsic.hash }}
+          </td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td>
+            <Status
+              :status="extrinsic.success"
+              :error-message="extrinsic.error_message"
+            />
+          </td>
+        </tr>
+        <tr>
           <td>Block number</td>
           <td>
             <nuxt-link
@@ -29,12 +44,6 @@
           <td>Extrinsic index</td>
           <td>
             {{ extrinsic.extrinsic_index }}
-          </td>
-        </tr>
-        <tr>
-          <td>Extrinsic hash</td>
-          <td>
-            {{ extrinsic.hash }}
           </td>
         </tr>
         <tr>
@@ -116,23 +125,6 @@
             </div>
           </td>
         </tr>
-        <tr>
-          <td>Success</td>
-          <td>
-            <font-awesome-icon
-              v-if="extrinsic.success"
-              icon="check"
-              class="text-success"
-            />
-            <font-awesome-icon v-else icon="times" class="text-danger" />
-          </td>
-        </tr>
-        <tr v-if="extrinsic.error_message">
-          <td>Error message</td>
-          <td>
-            {{ extrinsic.error_message }}
-          </td>
-        </tr>
       </tbody>
     </table>
   </div>
@@ -140,7 +132,11 @@
 
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
+import Status from '@/components/Status.vue'
 export default {
+  components: {
+    Status,
+  },
   mixins: [commonMixin],
   props: {
     extrinsic: {

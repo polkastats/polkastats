@@ -3,6 +3,21 @@
     <table class="table table-striped transfer-table">
       <tbody>
         <tr>
+          <td>Hash</td>
+          <td>
+            {{ transfer.hash }}
+          </td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td>
+            <Status
+              :status="transfer.success"
+              :error-message="transfer.error_message"
+            />
+          </td>
+        </tr>
+        <tr>
           <td>Block number</td>
           <td>
             <nuxt-link :to="`/block?blockNumber=${transfer.block_number}`">
@@ -19,34 +34,6 @@
                 fromNow(transfer.timestamp)
               }})
             </p>
-          </td>
-        </tr>
-        <tr>
-          <td>Extrinsic</td>
-          <td>
-            <p class="mb-0">
-              <nuxt-link
-                v-b-tooltip.hover
-                :to="`/extrinsic/${transfer.block_number}/${transfer.extrinsic_index}`"
-                title="Check extrinsic information"
-              >
-                #{{ formatNumber(transfer.block_number) }}-{{
-                  transfer.extrinsic_index
-                }}
-              </nuxt-link>
-            </p>
-          </td>
-        </tr>
-        <tr>
-          <td>Hash</td>
-          <td>
-            {{ transfer.hash }}
-          </td>
-        </tr>
-        <tr>
-          <td>Method</td>
-          <td>
-            {{ transfer.method }}
           </td>
         </tr>
         <tr>
@@ -92,20 +79,25 @@
           </td>
         </tr>
         <tr>
-          <td>Success</td>
+          <td>Extrinsic</td>
           <td>
-            <font-awesome-icon
-              v-if="transfer.success"
-              icon="check"
-              class="text-success"
-            />
-            <font-awesome-icon v-else icon="times" class="text-danger" />
+            <p class="mb-0">
+              <nuxt-link
+                v-b-tooltip.hover
+                :to="`/extrinsic/${transfer.block_number}/${transfer.extrinsic_index}`"
+                title="Check extrinsic information"
+              >
+                #{{ formatNumber(transfer.block_number) }}-{{
+                  transfer.extrinsic_index
+                }}
+              </nuxt-link>
+            </p>
           </td>
         </tr>
-        <tr v-if="transfer.error_message">
-          <td>Error message</td>
+        <tr>
+          <td>Method</td>
           <td>
-            {{ transfer.error_message }}
+            {{ transfer.method }}
           </td>
         </tr>
       </tbody>
@@ -115,7 +107,11 @@
 
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
+import Status from '@/components/Status.vue'
 export default {
+  components: {
+    Status,
+  },
   mixins: [commonMixin],
   props: {
     transfer: {
