@@ -168,6 +168,7 @@ CREATE TABLE IF NOT EXISTS ranking (
   show_cluster_member BOOLEAN NOT NULL,
   nominators INT NOT NULL,
   nominators_rating INT NOT NULL,
+  nominations JSON NOT NULL,
   commission TEXT NOT NULL,
   commission_history TEXT NOT NULL,
   commission_rating INT NOT NULL,

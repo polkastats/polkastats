@@ -303,6 +303,7 @@ export const insertRankingValidator = async (
       show_cluster_member,
       nominators,
       nominators_rating,
+      nominations,
       commission,
       commission_history,
       commission_rating,
@@ -378,7 +379,8 @@ export const insertRankingValidator = async (
       $46,
       $47,
       $48,
-      $49
+      $49,
+      $50
     )
     ON CONFLICT ON CONSTRAINT ranking_pkey 
     DO NOTHING`;
@@ -406,6 +408,7 @@ export const insertRankingValidator = async (
     validator.showClusterMember,
     validator.nominators,
     validator.nominatorsRating,
+    validator.nominations,
     validator.commission,
     JSON.stringify(validator.commissionHistory),
     validator.commissionRating,

@@ -244,6 +244,7 @@ const insertRankingValidator = async (client, validator, blockHeight, startTime,
       show_cluster_member,
       nominators,
       nominators_rating,
+      nominations,
       commission,
       commission_history,
       commission_rating,
@@ -319,7 +320,8 @@ const insertRankingValidator = async (client, validator, blockHeight, startTime,
       $46,
       $47,
       $48,
-      $49
+      $49,
+      $50
     )
     ON CONFLICT ON CONSTRAINT ranking_pkey 
     DO NOTHING`;
@@ -347,6 +349,7 @@ const insertRankingValidator = async (client, validator, blockHeight, startTime,
         validator.showClusterMember,
         validator.nominators,
         validator.nominatorsRating,
+        validator.nominations,
         validator.commission,
         JSON.stringify(validator.commissionHistory),
         validator.commissionRating,
