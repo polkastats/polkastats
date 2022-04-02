@@ -408,7 +408,7 @@ export const insertRankingValidator = async (
     validator.showClusterMember,
     validator.nominators,
     validator.nominatorsRating,
-    validator.nominations,
+    JSON.stringify(validator.nominations),
     validator.commission,
     JSON.stringify(validator.commissionHistory),
     validator.commissionRating,
