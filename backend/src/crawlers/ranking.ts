@@ -263,7 +263,7 @@ const crawler = async (delayedStart: boolean) => {
     ]);
 
     // eslint-disable-next-line
-    const nominations = nominators.map(([key, nominations]: [any, any]) => {
+    const allNominations = nominators.map(([key, nominations]: [any, any]) => {
       const nominator = key.toHuman()[0];
       // eslint-disable-next-line
       const targets = nominations.toJSON()['targets'];
@@ -380,7 +380,7 @@ const crawler = async (delayedStart: boolean) => {
         // eslint-disable-next-line
         const nominators = active
           ? validator.exposure.others.length
-          : nominations.filter((nomination) =>
+          : allNominations.filter((nomination) =>
             nomination.targets.some(
               (target: any) => target === validator.accountId.toString(),
             ),
@@ -390,6 +390,13 @@ const crawler = async (delayedStart: boolean) => {
           nominators <= maxNominatorRewardedPerValidator.toNumber()
             ? 2
             : 0;
+        const nominations = active
+          ? validator.exposure.others
+          : allNominations.filter((nomination) =>
+            nomination.targets.some(
+              (target: any) => target === validator.accountId.toString(),
+            ),
+          );
 
         // slashes
         const slashes =
@@ -583,6 +590,7 @@ const crawler = async (delayedStart: boolean) => {
           showClusterMember,
           nominators,
           nominatorsRating,
+          nominations,
           commission,
           commissionHistory,
           commissionRating,

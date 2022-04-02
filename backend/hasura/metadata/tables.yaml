@@ -316,6 +316,7 @@
       - show_cluster_member
       - nominators
       - nominators_rating
+      - nominations
       - commission
       - commission_history
       - commission_rating

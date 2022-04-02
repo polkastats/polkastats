@@ -179,7 +179,7 @@ const crawler = async (delayedStart) => {
             (0, db_1.dbQuery)(client, `UPDATE total SET count = '${minimumStake}' WHERE name = 'minimum_stake'`, loggerOptions),
         ]);
         // eslint-disable-next-line
-        const nominations = nominators.map(([key, nominations]) => {
+        const allNominations = nominators.map(([key, nominations]) => {
             const nominator = key.toHuman()[0];
             // eslint-disable-next-line
             const targets = nominations.toJSON()['targets'];
@@ -264,11 +264,14 @@ const crawler = async (delayedStart) => {
             // eslint-disable-next-line
             const nominators = active
                 ? validator.exposure.others.length
-                : nominations.filter((nomination) => nomination.targets.some((target) => target === validator.accountId.toString())).length;
+                : allNominations.filter((nomination) => nomination.targets.some((target) => target === validator.accountId.toString())).length;
             const nominatorsRating = nominators > 0 &&
                 nominators <= maxNominatorRewardedPerValidator.toNumber()
                 ? 2
                 : 0;
+            const nominations = active
+                ? validator.exposure.others
+                : allNominations.filter((nomination) => nomination.targets.some((target) => target === validator.accountId.toString()));
             // slashes
             const slashes = erasSlashes.filter(
             // eslint-disable-next-line
@@ -420,6 +423,7 @@ const crawler = async (delayedStart) => {
                 showClusterMember,
                 nominators,
                 nominatorsRating,
+                nominations,
                 commission,
                 commissionHistory,
                 commissionRating,
