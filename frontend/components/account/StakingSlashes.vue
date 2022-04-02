@@ -209,6 +209,7 @@ export default {
         result({ data }) {
           this.stakingSlashes = data.staking_slash
           this.totalRows = this.stakingSlashes.length
+          this.$emit('totalSlashes', this.totalRows)
           this.loading = false
         },
       },

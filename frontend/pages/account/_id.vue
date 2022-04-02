@@ -189,27 +189,43 @@
               <b-tabs class="mt-4" content-class="mt-4" fill>
                 <b-tab active>
                   <template #title>
-                    <h5>Activity</h5>
+                    <h5 class="d-inline-block">Extrinsics</h5>
+                    <span v-if="totalExtrinsics">[{{ totalExtrinsics }}]</span>
                   </template>
-                  <Activities :account-id="accountId" />
+                  <Extrinsics
+                    :account-id="accountId"
+                    @totalExtrinsics="onTotalExtrinsics"
+                  />
                 </b-tab>
                 <b-tab>
                   <template #title>
-                    <h5>Transfers</h5>
+                    <h5 class="d-inline-block">Transfers</h5>
+                    <span v-if="totalTransfers">[{{ totalTransfers }}]</span>
                   </template>
-                  <AccountTransfers :account-id="accountId" />
+                  <AccountTransfers
+                    :account-id="accountId"
+                    @totalTransfers="onTotalTransfers"
+                  />
                 </b-tab>
                 <b-tab>
                   <template #title>
-                    <h5>Rewards</h5>
+                    <h5 class="d-inline-block">Rewards</h5>
+                    <span v-if="totalRewards">[{{ totalRewards }}]</span>
                   </template>
-                  <StakingRewards :account-id="accountId" />
+                  <StakingRewards
+                    :account-id="accountId"
+                    @totalRewards="onTotalRewards"
+                  />
                 </b-tab>
                 <b-tab>
                   <template #title>
-                    <h5>Slashes</h5>
+                    <h5 class="d-inline-block">Slashes</h5>
+                    <span v-if="totalSlashes">[{{ totalSlashes }}]</span>
                   </template>
-                  <StakingSlashes :account-id="accountId" />
+                  <StakingSlashes
+                    :account-id="accountId"
+                    @totalSlashes="onTotalSlashes"
+                  />
                 </b-tab>
               </b-tabs>
             </div>
@@ -223,7 +239,7 @@
 import { gql } from 'graphql-tag'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
-import Activities from '@/components/account/Activities.vue'
+import Extrinsics from '@/components/account/Extrinsics.vue'
 import AccountTransfers from '@/components/account/AccountTransfers.vue'
 import StakingRewards from '@/components/account/StakingRewards.vue'
 import StakingSlashes from '@/components/account/StakingSlashes.vue'
@@ -235,7 +251,7 @@ export default {
   components: {
     Identicon,
     Loading,
-    Activities,
+    Extrinsics,
     AccountTransfers,
     StakingRewards,
     StakingSlashes,
@@ -272,11 +288,29 @@ export default {
           sortable: true,
         },
       ],
+      totalExtrinsics: undefined,
+      totalTransfers: undefined,
+      totalRewards: undefined,
+      totalSlashes: undefined,
     }
   },
   watch: {
     $route() {
       this.accountId = this.$route.params.id
+    },
+  },
+  methods: {
+    onTotalExtrinsics(value) {
+      this.totalExtrinsics = value
+    },
+    onTotalTransfers(value) {
+      this.totalTransfers = value
+    },
+    onTotalRewards(value) {
+      this.totalRewards = value
+    },
+    onTotalSlashes(value) {
+      this.totalSlashes = value
     },
   },
   apollo: {

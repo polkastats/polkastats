@@ -3,12 +3,12 @@
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
-    <div v-else-if="activities.length === 0" class="text-center py-4">
+    <div v-else-if="extrinsics.length === 0" class="text-center py-4">
       <h5>{{ $t('components.transfers.no_transfer_found') }}</h5>
     </div>
     <div v-else>
       <div class="table-responsive">
-        <b-table striped hover :fields="fields" :items="activities">
+        <b-table striped hover :fields="fields" :items="extrinsics">
           <template #cell(block_number)="data">
             <p class="mb-0">
               <nuxt-link
@@ -111,7 +111,7 @@ export default {
   data() {
     return {
       loading: true,
-      activities: [],
+      extrinsics: [],
       tableOptions: paginationOptions,
       perPage: localStorage.paginationOptions
         ? parseInt(localStorage.paginationOptions)
@@ -195,7 +195,7 @@ export default {
           return !this.accountId
         },
         result({ data }) {
-          this.activities = data.signed_extrinsic
+          this.extrinsics = data.signed_extrinsic
           this.loading = false
         },
       },
@@ -216,6 +216,7 @@ export default {
         },
         result({ data }) {
           this.totalRows = data.signed_extrinsic_aggregate.aggregate.count
+          this.$emit('totalExtrinsics', this.totalRows)
         },
       },
     },

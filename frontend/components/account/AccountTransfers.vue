@@ -245,6 +245,7 @@ export default {
         },
         result({ data }) {
           this.totalRows = data.transfer_aggregate.aggregate.count
+          this.$emit('totalTransfers', this.totalRows)
         },
       },
     },

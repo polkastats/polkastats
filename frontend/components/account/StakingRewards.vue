@@ -214,6 +214,7 @@ export default {
         result({ data }) {
           this.stakingRewards = data.staking_reward
           this.totalRows = this.stakingRewards.length
+          this.$emit('totalRewards', this.totalRows)
           this.loading = false
         },
       },
