@@ -122,13 +122,13 @@ export default {
         {
           key: 'hash',
           label: 'Hash',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'block_number',
           label: 'Block',
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'timestamp',
@@ -138,17 +138,17 @@ export default {
         {
           key: 'signer',
           label: 'Signer',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'section',
           label: 'Extrinsic',
-          sortable: true,
+          sortable: false,
         },
         {
           key: 'success',
           label: 'Success',
-          sortable: true,
+          sortable: false,
         },
       ],
     }
