@@ -149,7 +149,6 @@
         </div>
         <!-- identity end -->
       </b-card>
-
       <b-tabs content-class="py-4">
         <b-tab title="Metrics" active>
           <b-alert
@@ -274,6 +273,9 @@
             <div class="col-xl-6 pb-4"></div>
           </div>
         </b-tab>
+        <b-tab title="Nominations">
+          <Nominations :nominations="validator.nominations" />
+        </b-tab>
       </b-tabs>
     </div>
   </div>
@@ -297,6 +299,7 @@ import EraPointsChart from '@/components/validator/charts/EraPointsChart.vue'
 import PayoutsChart from '@/components/validator/charts/PayoutsChart.vue'
 import StakeChart from '@/components/validator/charts/StakeChart.vue'
 import CommissionChart from '@/components/validator/charts/CommissionChart.vue'
+import Nominations from '@/components/validator/Nominations.vue'
 import { config } from '@/frontend.config.js'
 
 export default {
@@ -316,6 +319,7 @@ export default {
     PayoutsChart,
     StakeChart,
     CommissionChart,
+    Nominations,
   },
   mixins: [commonMixin],
   data() {
@@ -393,6 +397,7 @@ export default {
               name
               nominators
               nominators_rating
+              nominations
               other_stake
               part_of_cluster
               payout_history
@@ -451,6 +456,7 @@ export default {
             name: validator.name,
             nominators: validator.nominators,
             nominatorsRating: validator.nominators_rating,
+            nominations: JSON.parse(validator.nominations),
             otherStake: validator.other_stake,
             partOfCluster: validator.part_of_cluster,
             payoutHistory: JSON.parse(validator.payout_history),
