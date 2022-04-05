@@ -8,7 +8,7 @@
   </div>
 </template>
 <script>
-import Block from '@/components/Block.vue'
+import Block from '@/components/block/Block.vue'
 
 export default {
   components: {

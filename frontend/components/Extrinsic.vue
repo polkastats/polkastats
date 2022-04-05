@@ -144,11 +144,5 @@ export default {
       default: undefined,
     },
   },
-  methods: {
-    setPageSize(num) {
-      localStorage.paginationOptions = num
-      this.perPage = parseInt(num)
-    },
-  },
 }
 </script>

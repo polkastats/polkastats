@@ -46,7 +46,7 @@
             v-for="(item, index) in tableOptions"
             :key="index"
             variant="primary2"
-            @click="handleNumFields(item)"
+            @click="setPageSize(item)"
           >
             {{ item }}
           </b-button>

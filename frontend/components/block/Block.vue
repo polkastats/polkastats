@@ -120,21 +120,32 @@
           <b-tabs class="mt-4" content-class="mt-4" fill>
             <b-tab active>
               <template #title>
-                <h5>{{ $t('details.block.extrinsics') }}</h5>
+                <h5 class="d-inline-block">
+                  {{ $t('details.block.extrinsics') }}
+                </h5>
+                <span v-if="totalExtrinsics">[{{ totalExtrinsics }}]</span>
               </template>
-              <BlockExtrinsics :block-number="blockNumber" />
+              <BlockExtrinsics
+                :block-number="blockNumber"
+                @totalExtrinsics="onTotalExtrinsics"
+              />
             </b-tab>
             <b-tab>
               <template #title>
-                <h5>{{ $t('details.block.events') }}</h5>
+                <h5 class="d-inline-block">{{ $t('details.block.events') }}</h5>
+                <span v-if="totalEvents">[{{ totalEvents }}]</span>
               </template>
-              <BlockEvents :block-number="blockNumber" />
+              <BlockEvents
+                :block-number="blockNumber"
+                @totalEvents="onTotalEvents"
+              />
             </b-tab>
             <b-tab>
               <template #title>
-                <h5>{{ $t('details.block.logs') }}</h5>
+                <h5 class="d-inline-block">{{ $t('details.block.logs') }}</h5>
+                <span v-if="totalLogs">[{{ totalLogs }}]</span>
               </template>
-              <BlockLogs :block-number="blockNumber" />
+              <BlockLogs :block-number="blockNumber" @totalLogs="onTotalLogs" />
             </b-tab>
           </b-tabs>
         </div>
@@ -144,9 +155,9 @@
 </template>
 <script>
 import { gql } from 'graphql-tag'
-import BlockExtrinsics from './BlockExtrinsics.vue'
-import BlockEvents from './BlockEvents.vue'
-import BlockLogs from './BlockLogs.vue'
+import BlockExtrinsics from '@/components/block/BlockExtrinsics.vue'
+import BlockEvents from '@/components/block/BlockEvents.vue'
+import BlockLogs from '@/components/block/BlockLogs.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 export default {
   components: {
@@ -165,7 +176,21 @@ export default {
     return {
       loading: true,
       parsedBlock: undefined,
+      totalExtrinsics: undefined,
+      totalEvents: undefined,
+      totalLogs: undefined,
     }
+  },
+  methods: {
+    onTotalExtrinsics(value) {
+      this.totalExtrinsics = value
+    },
+    onTotalEvents(value) {
+      this.totalEvents = value
+    },
+    onTotalLogs(value) {
+      this.totalLogs = value
+    },
   },
   apollo: {
     $subscribe: {
