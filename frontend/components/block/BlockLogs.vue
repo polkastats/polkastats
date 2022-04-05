@@ -57,6 +57,7 @@ export default {
         },
         result({ data }) {
           this.parsedLogs = data.log
+          this.$emit('totalLogs', this.parsedLogs.length)
         },
       },
     },

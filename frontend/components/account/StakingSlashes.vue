@@ -91,7 +91,7 @@
               v-for="(item, index) in tableOptions"
               :key="index"
               variant="primary2"
-              @click="handleNumFields(item)"
+              @click="setPageSize(item)"
             >
               {{ item }}
             </b-button>
@@ -171,7 +171,7 @@ export default {
     }
   },
   methods: {
-    handleNumFields(num) {
+    setPageSize(num) {
       localStorage.paginationOptions = num
       this.perPage = parseInt(num)
     },

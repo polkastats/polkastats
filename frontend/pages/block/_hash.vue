@@ -9,7 +9,7 @@
 </template>
 <script>
 import { gql } from 'graphql-tag'
-import Block from '@/components/Block.vue'
+import Block from '@/components/block/Block.vue'
 export default {
   components: {
     Block,
