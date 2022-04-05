@@ -3,9 +3,9 @@
     <table class="table table-striped extrinsic-table">
       <tbody>
         <tr>
-          <td>Extrinsic hash</td>
+          <td>Hash</td>
           <td>
-            {{ extrinsic.hash }}
+            <Hash :hash="extrinsic.hash" />
           </td>
         </tr>
         <tr>
@@ -139,10 +139,12 @@
 import commonMixin from '@/mixins/commonMixin.js'
 import Status from '@/components/Status.vue'
 import FIATConversion from '@/components/FIATConversion.vue'
+import Hash from '@/components/Hash.vue'
 export default {
   components: {
     Status,
     FIATConversion,
+    Hash,
   },
   mixins: [commonMixin],
   props: {

@@ -5,7 +5,7 @@
         <tr>
           <td>Hash</td>
           <td>
-            {{ transfer.hash }}
+            <Hash :hash="transfer.hash" />
           </td>
         </tr>
         <tr>
@@ -113,10 +113,12 @@
 import commonMixin from '@/mixins/commonMixin.js'
 import Status from '@/components/Status.vue'
 import FIATConversion from '@/components/FIATConversion.vue'
+import Hash from '@/components/Hash.vue'
 export default {
   components: {
     Status,
     FIATConversion,
+    Hash,
   },
   mixins: [commonMixin],
   props: {

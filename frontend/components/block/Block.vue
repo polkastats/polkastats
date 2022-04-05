@@ -71,7 +71,7 @@
               <tr>
                 <td>{{ $t('details.block.block_hash') }}</td>
                 <td class="text-right">
-                  <p class="mb-0">{{ parsedBlock.block_hash }}</p>
+                  <p class="mb-0"><Hash :hash="parsedBlock.block_hash" /></p>
                 </td>
               </tr>
               <tr>
@@ -160,12 +160,14 @@ import { gql } from 'graphql-tag'
 import BlockExtrinsics from '@/components/block/BlockExtrinsics.vue'
 import BlockEvents from '@/components/block/BlockEvents.vue'
 import BlockLogs from '@/components/block/BlockLogs.vue'
+import Hash from '@/components/Hash.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 export default {
   components: {
     BlockExtrinsics,
     BlockEvents,
     BlockLogs,
+    Hash,
   },
   mixins: [commonMixin],
   props: {
