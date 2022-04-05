@@ -117,7 +117,7 @@
               {{ $t('components.network.total_issuance') }}
             </h4>
             <h6 class="d-inline-block">
-              {{ formatAmount(totalIssuance) }}
+              {{ formatAmount(totalIssuance, 2, true) }}
             </h6>
           </div>
         </div>
@@ -130,7 +130,7 @@
           <div class="card-body">
             <h4 class="mb-3">{{ $t('components.network.total_staked') }}</h4>
             <h6 class="d-inline-block">
-              {{ formatAmount(totalStaked) }}
+              {{ formatAmount(totalStaked, 2, true) }}
               ({{ formatNumber(totalStakedPercentage) }}%)
             </h6>
           </div>

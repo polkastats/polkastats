@@ -18,7 +18,9 @@
               :to="`/event/${data.item.block_number}/${data.item.event_index}`"
               title="Check event information"
             >
-              #{{ data.item.block_number }}-{{ data.item.event_index }}
+              #{{ formatNumber(data.item.block_number) }}-{{
+                data.item.event_index
+              }}
             </nuxt-link>
           </p>
         </template>

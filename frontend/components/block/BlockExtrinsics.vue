@@ -18,7 +18,9 @@
               :to="`/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`"
               title="Check extrinsic information"
             >
-              #{{ data.item.block_number }}-{{ data.item.extrinsic_index }}
+              #{{ formatNumber(data.item.block_number) }}-{{
+                data.item.extrinsic_index
+              }}
             </nuxt-link>
           </p>
         </template>

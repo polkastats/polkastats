@@ -24,10 +24,15 @@ export default {
         return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
       }
     },
-    formatAmount(amount, precission = 3) {
-      return `${new BigNumber(amount)
-        .div(new BigNumber(10).pow(config.tokenDecimals))
-        .toFixed(precission)} ${config.tokenSymbol}`
+    formatAmount(amount, precission = 3, format = false) {
+      const convertedAmount = new BigNumber(amount).div(
+        new BigNumber(10).pow(config.tokenDecimals)
+      )
+      return format
+        ? `${this.formatNumber(convertedAmount.toFixed(precission))} ${
+            config.tokenSymbol
+          }`
+        : `${convertedAmount.toFixed(precission)} ${config.tokenSymbol}`
     },
     capitalize(s) {
       if (typeof s !== 'string') return ''
