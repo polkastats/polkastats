@@ -1,6 +1,6 @@
 <template>
   <div class="extrinsic-events">
-    <h4 class="my-4">Triggered events</h4>
+    <h4 class="my-4 text-center">Events</h4>
     <div class="table-responsive">
       <b-table
         striped
@@ -9,6 +9,8 @@
         :items="events"
         :per-page="perPage"
         :current-page="currentPage"
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
       >
         <template #cell(block_number)="data">
           <p class="mb-0">
@@ -82,6 +84,8 @@ export default {
         : 10,
       currentPage: 1,
       totalRows: 1,
+      sortBy: 'event_index',
+      sortDesc: false,
       fields: [
         {
           key: 'block_number',

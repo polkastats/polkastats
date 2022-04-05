@@ -119,9 +119,14 @@
         </tr>
         <tr v-if="extrinsic.is_signed">
           <td>Fee</td>
-          <td class="amount">
+          <td>
             <div v-if="extrinsic.fee_info">
-              {{ formatAmount(JSON.parse(extrinsic.fee_info).partialFee, 6) }}
+              <span class="amount">{{
+                formatAmount(JSON.parse(extrinsic.fee_info).partialFee, 6)
+              }}</span>
+              <FIATConversion
+                :units="JSON.parse(extrinsic.fee_info).partialFee"
+              />
             </div>
           </td>
         </tr>
@@ -133,9 +138,11 @@
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
 import Status from '@/components/Status.vue'
+import FIATConversion from '@/components/FIATConversion.vue'
 export default {
   components: {
     Status,
+    FIATConversion,
   },
   mixins: [commonMixin],
   props: {

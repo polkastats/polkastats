@@ -67,14 +67,18 @@
         <tr>
           <td>Amount</td>
           <td>
-            {{ formatAmount(transfer.amount, 6) }}
+            <span class="amount">{{ formatAmount(transfer.amount, 6) }}</span>
+            <FIATConversion :units="transfer.amount" />
           </td>
         </tr>
         <tr>
           <td>Fee</td>
-          <td class="amount">
+          <td>
             <div v-if="transfer.fee_amount">
-              {{ formatAmount(transfer.fee_amount, 6) }}
+              <span class="amount">{{
+                formatAmount(transfer.fee_amount, 6)
+              }}</span>
+              <FIATConversion :units="transfer.fee_amount" />
             </div>
           </td>
         </tr>
@@ -108,9 +112,11 @@
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
 import Status from '@/components/Status.vue'
+import FIATConversion from '@/components/FIATConversion.vue'
 export default {
   components: {
     Status,
+    FIATConversion,
   },
   mixins: [commonMixin],
   props: {
