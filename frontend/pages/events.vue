@@ -188,7 +188,7 @@ export default {
         },
         {
           key: 'timestamp',
-          label: 'Date',
+          label: 'Age',
           sortable: false,
         },
         {

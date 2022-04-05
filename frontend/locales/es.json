@@ -329,7 +329,8 @@
       "index": "Índice",
       "engine": "Motor",
       "total_issuance": "Emisión total",
-      "event": "Evento"
+      "event": "Evento",
+      "status": "Status"
     }
   },
   "extrinsic": {

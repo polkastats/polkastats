@@ -62,9 +62,11 @@
                 <template #cell(finalized)="data">
                   <p v-if="data.item.finalized" class="mb-0">
                     <font-awesome-icon icon="check" class="text-success" />
+                    Finalized
                   </p>
                   <p v-else class="mb-0">
-                    <font-awesome-icon icon="clock" class="text-light" />
+                    <font-awesome-icon icon="spinner" class="text-light" spin />
+                    Processing
                   </p>
                 </template>
                 <template #cell(block_hash)="data">
@@ -156,12 +158,12 @@ export default {
         },
         {
           key: 'finalized',
-          label: 'Finalized',
+          label: 'Status',
           sortable: false,
         },
         {
           key: 'timestamp',
-          label: 'Date',
+          label: 'Age',
           sortable: false,
         },
         {

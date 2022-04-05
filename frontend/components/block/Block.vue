@@ -56,13 +56,15 @@
                 </td>
               </tr>
               <tr>
-                <td>{{ $t('details.block.finalized') }}</td>
+                <td>{{ $t('details.block.status') }}</td>
                 <td class="text-right">
                   <p v-if="parsedBlock.finalized" class="mb-0">
                     <font-awesome-icon icon="check" class="text-success" />
+                    Finalized
                   </p>
                   <p v-else class="mb-0">
-                    <font-awesome-icon icon="clock" class="text-light" />
+                    <font-awesome-icon icon="spinner" class="text-light" spin />
+                    Processing
                   </p>
                 </td>
               </tr>

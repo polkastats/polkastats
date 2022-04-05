@@ -107,9 +107,28 @@ export default {
       }
       return true
     },
-    fromNow: (timestamp) => {
+    fromNow(timestamp) {
       const date = moment.unix(timestamp / 1000)
-      return moment(date).fromNow()
+      let diff = moment().diff(date, 'seconds')
+      if (diff === 0) diff = 1
+      let text
+
+      if (diff >= 86400) {
+        diff = Math.floor(diff / 60 / 60 / 24)
+        if (diff === 1) text = 'day'
+        else text = 'days'
+      } else if (diff >= 3600) {
+        diff = Math.floor(diff / 60 / 60)
+        if (diff === 1) text = 'hour'
+        else text = 'hours'
+      } else if (diff >= 60) {
+        diff = Math.floor(diff / 60)
+        if (diff === 1) text = 'minute'
+        else text = 'minutes'
+      } else if (diff === 1) text = 'second'
+      else text = 'seconds'
+
+      return `${diff} ${text} ago`
     },
     uncapitalize: (str) => {
       return str.charAt(0).toLowerCase() + str.slice(1)

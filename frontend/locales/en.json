@@ -330,7 +330,8 @@
       "index": "Index",
       "engine": "Engine",
       "total_issuance": "Total issuance",
-      "event": "Event"
+      "event": "Event",
+      "status": "Status"
     },
     "extrinsic": {
       "extrinsic_details": "Extrinsic details"

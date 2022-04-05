@@ -64,10 +64,13 @@ export default {
       extrinsic: {
         query: gql`
           subscription extrinsics {
-            extrinsic(order_by: { block_number: desc }, where: {}, limit: 10) {
+            signed_extrinsic(
+              order_by: { block_number: desc }
+              where: {}
+              limit: 10
+            ) {
               block_number
               extrinsic_index
-              is_signed
               signer
               section
               method
@@ -77,7 +80,7 @@ export default {
           }
         `,
         result({ data }) {
-          this.extrinsics = data.extrinsic
+          this.extrinsics = data.signed_extrinsic
         },
       },
     },
