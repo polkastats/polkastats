@@ -98,7 +98,7 @@ export default {
       transfers: {
         query: gql`
           subscription transfers {
-            transfer(limit: 10) {
+            transfer(order_by: { block_number: desc }, limit: 10) {
               hash
               source
               destination

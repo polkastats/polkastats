@@ -713,3 +713,12 @@ section .section-title {
   color: $primary2;
   font-weight: 700;
 }
+
+.selected-validators .dropdown-menu {
+  width: 400px;
+  padding: 1rem;
+  color: gray;
+}
+.selected-validators .dropdown-menu a span {
+  color: gray;
+}
