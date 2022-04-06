@@ -112,7 +112,7 @@ body {
   text-shadow: aliceblue;
 }
 .navbar-dark {
-  border-bottom: 1px solid#fdf5f5cc;
+  border-bottom: 1px solid #fdf5f5cc;
 }
 .custom-switch .custom-control-label {
   cursor: pointer;
@@ -545,6 +545,9 @@ section .section-title {
 .collapsed > .when-open,
 .not-collapsed > .when-closed {
   display: none;
+}
+.text-selected {
+  color: #00effc;
 }
 
 // rating component
