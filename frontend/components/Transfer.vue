@@ -68,7 +68,10 @@
           <td>Amount</td>
           <td>
             <span class="amount">{{ formatAmount(transfer.amount, 6) }}</span>
-            <FIATConversion :units="transfer.amount" />
+            <FIATConversion
+              :units="transfer.amount"
+              :date="getDateFromTimestampDDMMYYYY(transfer.timestamp)"
+            />
           </td>
         </tr>
         <tr>
@@ -78,7 +81,10 @@
               <span class="amount">{{
                 formatAmount(transfer.fee_amount, 6)
               }}</span>
-              <FIATConversion :units="transfer.fee_amount" />
+              <FIATConversion
+                :units="transfer.fee_amount"
+                :date="getDateFromTimestampDDMMYYYY(transfer.timestamp)"
+              />
             </div>
           </td>
         </tr>

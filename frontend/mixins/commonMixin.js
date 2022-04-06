@@ -94,6 +94,10 @@ export default {
       const date = moment.unix(timestamp / 1000)
       return `${date.utc().format('YYYY-MM-DD HH:mm:ss')} UTC`
     },
+    getDateFromTimestampDDMMYYYY(timestamp) {
+      const date = moment.unix(timestamp / 1000)
+      return date.utc().format('DD-MM-YYYY')
+    },
     isValidAddressPolkadotAddress: (address) => {
       try {
         encodeAddress(

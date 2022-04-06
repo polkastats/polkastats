@@ -126,6 +126,7 @@
               }}</span>
               <FIATConversion
                 :units="JSON.parse(extrinsic.fee_info).partialFee"
+                :date="getDateFromTimestampDDMMYYYY(extrinsic.timestamp)"
               />
             </div>
           </td>
