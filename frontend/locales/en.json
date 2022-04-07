@@ -75,6 +75,12 @@
       "destination": "To",
       "amount": "Amount",
       "success": "Status"
+    },
+    "extrinsic_events": {
+      "title": "Events",
+      "id": "ID",
+      "section": "Section and method",
+      "data": "Data"
     }
   },
   "layout": {
@@ -117,6 +123,7 @@
       "title": "Home"
     },
     "accounts": {
+      "account": "Account",
       "active_accounts": "Active accounts",
       "search_placeholder": "Search account by address or identity",
       "sort": "Sort",
@@ -211,7 +218,14 @@
       "title": "Blocks",
       "head_title": "PolkaStats - {networkName} blocks",
       "head_content": "{networkName} blocks",
-      "search_placeholder": "Search by block number"
+      "search_placeholder": "Search by block number",
+      "block_number": "Block",
+      "finalized": "Status",
+      "timestamp": "Date",
+      "block_hash": "Hash",
+      "total_extrinsics": "Extrinsics",
+      "total_events": "Events",
+      "block_author": "Author"
     },
     "block": {
       "title": "Block",
@@ -232,7 +246,16 @@
       "title": "Transfers",
       "head_title": "PolkaStats - {networkName} transfers",
       "head_content": "{networkName} transfers",
-      "search_placeholder": "Search transfer by block number, hash, source or destination address"
+      "search_placeholder": "Search transfer by block number, hash, source or destination address",
+      "transfer_details": "Check transfer information",
+      "block_details": "Check block information",
+      "hash": "Hash",
+      "block_number": "Block",
+      "timestamp": "Date",
+      "source": "Source",
+      "destination": "To",
+      "amount": "Amount",
+      "success": "Status"
     },
     "transfer": {
       "title": "Transfer",

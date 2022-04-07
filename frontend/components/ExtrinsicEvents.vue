@@ -1,6 +1,8 @@
 <template>
   <div class="extrinsic-events">
-    <h4 class="my-4 text-center">Events</h4>
+    <h4 class="my-4 text-center">
+      {{ $t('components.extrinsic_events.title') }}
+    </h4>
     <div class="table-responsive">
       <b-table
         striped
@@ -102,7 +104,7 @@ export default {
       default: () => 0,
     },
   },
-  data: () => {
+  data() {
     return {
       events: [],
       paginationOptions,
@@ -116,22 +118,17 @@ export default {
       fields: [
         {
           key: 'block_number',
-          label: 'Id',
+          label: this.$t('components.extrinsic_events.id'),
           sortable: true,
         },
         {
           key: 'section',
-          label: 'Event',
-          sortable: true,
-        },
-        {
-          key: 'section',
-          label: 'Event',
+          label: this.$t('components.extrinsic_events.section'),
           sortable: true,
         },
         {
           key: 'data',
-          label: 'Data',
+          label: this.$t('components.extrinsic_events.data'),
           sortable: true,
         },
       ],

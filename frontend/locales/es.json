@@ -75,6 +75,12 @@
       "destination": "Destino",
       "amount": "Cantidad",
       "success": "Estado"
+    },
+    "extrinsic_events": {
+      "title": "Eventos",
+      "id": "ID",
+      "section": "Sección y método",
+      "data": "Datos"
     }
   },
   "layout": {
@@ -117,6 +123,7 @@
       "title": "Inicio"
     },
     "accounts": {
+      "account": "Cuenta",
       "active_accounts": "Cuentas activas",
       "search_placeholder": "Buscar cuenta por dirección o identidad",
       "sort": "Ordenar",
@@ -211,7 +218,14 @@
       "title": "Bloques",
       "head_title": "PolkaStats - Bloques en {networkName}",
       "head_content": "Bloques en {networkName}",
-      "search_placeholder": "Buscar por número de bloque"
+      "search_placeholder": "Buscar por número de bloque",
+      "block_number": "Bloque",
+      "finalized": "Estado",
+      "timestamp": "Fecha",
+      "block_hash": "Hash",
+      "total_extrinsics": "Extrinsics",
+      "total_events": "Eventos",
+      "block_author": "Autor"
     },
     "block": {
       "title": "Bloque",
@@ -232,7 +246,14 @@
       "title": "Transferencias",
       "head_title": "PolkaStats - Transferencias en {networkName}",
       "head_content": "Transferencias en {networkName}",
-      "search_placeholder": "Buscar transferencia por número de bloque, hash o dirección de procedencia"
+      "search_placeholder": "Buscar transferencia por número de bloque, hash o dirección de procedencia",
+      "hash": "Hash",
+      "block_number": "Bloque",
+      "timestamp": "Fecha",
+      "source": "Origen",
+      "destination": "Destino",
+      "amount": "Cantidad",
+      "success": "Estado"
     },
     "transfer": {
       "title": "Transferencia",

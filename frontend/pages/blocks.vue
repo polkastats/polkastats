@@ -6,7 +6,7 @@
           <b-col cols="12">
             <h1>
               {{ $t('pages.blocks.title') }}
-              <small v-if="totalRows !== 1" class="ml-1" style="font-size: 1rem"
+              <small class="ml-1" style="font-size: 1rem"
                 >[{{ formatNumber(totalRows) }}]</small
               >
             </h1>
@@ -153,37 +153,37 @@ export default {
       fields: [
         {
           key: 'block_number',
-          label: 'Block',
+          label: this.$t('pages.blocks.block_number'),
           sortable: false,
         },
         {
           key: 'finalized',
-          label: 'Status',
+          label: this.$t('pages.blocks.finalized'),
           sortable: false,
         },
         {
           key: 'timestamp',
-          label: 'Age',
+          label: this.$t('pages.blocks.timestamp'),
           sortable: false,
         },
         {
           key: 'block_hash',
-          label: 'Hash',
+          label: this.$t('pages.blocks.block_hash'),
           sortable: false,
         },
         {
           key: 'total_extrinsics',
-          label: 'Extrinsics',
+          label: this.$t('pages.blocks.total_extrinsics'),
           sortable: false,
         },
         {
           key: 'total_events',
-          label: 'Events',
+          label: this.$t('pages.blocks.total_events'),
           sortable: false,
         },
         {
           key: 'block_author',
-          label: 'Author',
+          label: this.$t('pages.blocks.block_author'),
           sortable: false,
         },
       ],

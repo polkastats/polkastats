@@ -231,7 +231,11 @@ export default {
       totalRows: 1,
       agggregateRows: 1,
       fields: [
-        { key: 'account_id', label: 'Account', sortable: false },
+        {
+          key: 'account_id',
+          label: this.$t('pages.accounts.account'),
+          sortable: false,
+        },
         {
           key: 'free_balance',
           label: this.$t('pages.accounts.free_balance'),

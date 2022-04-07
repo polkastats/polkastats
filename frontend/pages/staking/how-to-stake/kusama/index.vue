@@ -11,44 +11,12 @@
         </h1>
         <b-breadcrumb :items="breadcrumbsItems"></b-breadcrumb>
         <div class="row">
-          <!-- <div class="col-md-4 mb-4">
-            <b-card class="text-center">
-              <nuxt-link
-                to="/how-to-stake/kusama/using-polkastats"
-                active-class="nuxt-link-exact-active"
-                class="nav-link"
-              >
-                <img
-                  class="wallet-logo img-fluid mb-2"
-                  src="/img/Avatar_Light@2x.png"
-                />
-                <h4 class="pt-4">
-                  {{ $t('pages.how_to_stake.kusama.polkastats.title') }}
-                </h4>
-              </nuxt-link>
-            </b-card>
-          </div>
           <div class="col-md-4 mb-4">
             <b-card class="text-center">
               <nuxt-link
-                to="/how-to-stake/kusama/using-lunie"
-                active-class="nuxt-link-exact-active"
-                class="nav-link"
-              >
-                <img
-                  class="wallet-logo img-fluid mb-2 pt-2 pb-2"
-                  src="/img/lunie.svg"
-                />
-                <h4 class="pt-4">
-                  {{ $t('pages.how_to_stake.kusama.lunie.title') }}
-                </h4>
-              </nuxt-link>
-            </b-card>
-          </div> -->
-          <div class="col-md-4 mb-4">
-            <b-card class="text-center">
-              <nuxt-link
-                to="/staking/how-to-stake/kusama/using-polkadotjs"
+                :to="
+                  localePath('/staking/how-to-stake/kusama/using-polkadotjs')
+                "
                 active-class="nuxt-link-exact-active"
                 class="nav-link"
               >
@@ -78,14 +46,16 @@ export default {
       config,
       breadcrumbsItems: [
         {
-          text: this.$t('pages.home.title'),
-          href: '/',
+          text: this.$t('pages.home.title', {
+            networkName: config.name,
+          }),
+          href: this.localePath('/'),
         },
         {
           text: this.$t('pages.how_to_stake.title', {
             networkName: config.name,
           }),
-          href: '/staking/how-to-stake',
+          href: this.localePath('/staking/how-to-stake'),
         },
         {
           text: this.$t('pages.how_to_stake.kusama.title', {

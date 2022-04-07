@@ -249,19 +249,19 @@ export default {
       breadcrumbsItems: [
         {
           text: this.$t('pages.home.title'),
-          href: '/',
+          href: this.localePath('/'),
         },
         {
           text: this.$t('pages.how_to_stake.title', {
             networkName: config.name,
           }),
-          href: '/how-to-stake',
+          href: this.localePath('/staking/how-to-stake'),
         },
         {
           text: this.$t('pages.how_to_stake.kusama.title', {
             networkName: config.name,
           }),
-          href: '/how-to-stake/kusama',
+          href: this.localePath('/staking/how-to-stake/kusama'),
         },
         {
           text: this.$t('pages.how_to_stake.kusama.polkadotjs.title', {

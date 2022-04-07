@@ -181,37 +181,37 @@ export default {
       fields: [
         {
           key: 'hash',
-          label: 'Hash',
+          label: this.$t('pages.transfers.hash'),
           sortable: false,
         },
         {
           key: 'block_number',
-          label: 'Block',
+          label: this.$t('pages.transfers.block_number'),
           sortable: false,
         },
         {
           key: 'timestamp',
-          label: 'Age',
+          label: this.$t('pages.transfers.timestamp'),
           sortable: false,
         },
         {
           key: 'source',
-          label: 'From',
+          label: this.$t('pages.transfers.source'),
           sortable: false,
         },
         {
           key: 'destination',
-          label: 'To',
+          label: this.$t('pages.transfers.destination'),
           sortable: false,
         },
         {
           key: 'amount',
-          label: 'Amount',
+          label: this.$t('pages.transfers.amount'),
           sortable: false,
         },
         {
           key: 'success',
-          label: 'Success',
+          label: this.$t('pages.transfers.success'),
           sortable: false,
         },
       ],
