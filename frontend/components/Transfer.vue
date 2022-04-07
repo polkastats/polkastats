@@ -3,13 +3,13 @@
     <table class="table table-striped transfer-table">
       <tbody>
         <tr>
-          <td>Hash</td>
+          <td>{{ $t('components.transfer.hash') }}</td>
           <td>
             <Hash :hash="transfer.hash" />
           </td>
         </tr>
         <tr>
-          <td>Status</td>
+          <td>{{ $t('components.transfer.status') }}</td>
           <td>
             <Status
               :status="transfer.success"
@@ -18,7 +18,7 @@
           </td>
         </tr>
         <tr>
-          <td>Block number</td>
+          <td>{{ $t('components.transfer.block_number') }}</td>
           <td>
             <nuxt-link :to="`/block?blockNumber=${transfer.block_number}`">
               #{{ formatNumber(transfer.block_number) }}
@@ -26,7 +26,7 @@
           </td>
         </tr>
         <tr>
-          <td>Timestamp</td>
+          <td>{{ $t('components.transfer.timestamp') }}</td>
           <td>
             <p class="mb-0">
               <font-awesome-icon icon="clock" class="text-light" />
@@ -37,7 +37,7 @@
           </td>
         </tr>
         <tr>
-          <td>From</td>
+          <td>{{ $t('components.transfer.from') }}</td>
           <td>
             <div v-if="transfer.source">
               <Identicon
@@ -52,7 +52,7 @@
           </td>
         </tr>
         <tr>
-          <td>To</td>
+          <td>{{ $t('components.transfer.to') }}</td>
           <td>
             <Identicon
               :key="transfer.destination"
@@ -65,7 +65,7 @@
           </td>
         </tr>
         <tr>
-          <td>Amount</td>
+          <td>{{ $t('components.transfer.amount') }}</td>
           <td>
             <span class="amount">{{ formatAmount(transfer.amount, 6) }}</span>
             <FIATConversion
@@ -75,7 +75,7 @@
           </td>
         </tr>
         <tr>
-          <td>Fee</td>
+          <td>{{ $t('components.transfer.fee') }}</td>
           <td>
             <div v-if="transfer.fee_amount">
               <span class="amount">{{
@@ -89,7 +89,7 @@
           </td>
         </tr>
         <tr>
-          <td>Extrinsic</td>
+          <td>{{ $t('components.transfer.extrinsic') }}</td>
           <td>
             <p class="mb-0">
               <nuxt-link
@@ -105,7 +105,7 @@
           </td>
         </tr>
         <tr>
-          <td>Method</td>
+          <td>{{ $t('components.transfer.method') }}</td>
           <td>
             {{ transfer.method }}
           </td>

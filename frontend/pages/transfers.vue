@@ -34,7 +34,11 @@
                   <p class="mb-0">
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/block?blockNumber=${data.item.block_number}`"
+                      :to="
+                        localePath(
+                          `/block?blockNumber=${data.item.block_number}`
+                        )
+                      "
                       title="Check block information"
                     >
                       #{{ formatNumber(data.item.block_number) }}
@@ -43,7 +47,7 @@
                 </template>
                 <template #cell(hash)="data">
                   <p class="mb-0">
-                    <nuxt-link :to="`/transfer/${data.item.hash}`">
+                    <nuxt-link :to="localePath(`/transfer/${data.item.hash}`)">
                       {{ shortHash(data.item.hash) }}
                     </nuxt-link>
                   </p>
@@ -58,7 +62,7 @@
                     <Identicon :address="data.item.source" :size="20" />
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/account/${data.item.source}`"
+                      :to="localePath(`/account/${data.item.source}`)"
                       :title="$t('pages.accounts.account_details')"
                     >
                       {{ shortAddress(data.item.source) }}
@@ -70,7 +74,7 @@
                     <Identicon :address="data.item.destination" :size="20" />
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/account/${data.item.destination}`"
+                      :to="localePath(`/account/${data.item.destination}`)"
                       :title="$t('pages.accounts.account_details')"
                     >
                       {{ shortAddress(data.item.destination) }}

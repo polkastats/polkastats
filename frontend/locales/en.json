@@ -42,6 +42,18 @@
       "search": "Search transfer by block number, hash or source address",
       "no_transfer_found": "No transfer found"
     },
+    "transfer": {
+      "hash": "Hash",
+      "status": "Status",
+      "block_number": "Block number",
+      "timestamp": "Timestamp",
+      "from": "From",
+      "to": "To",
+      "amount": "Amount",
+      "fee": "Fee",
+      "extrinsic": "Extrinsic",
+      "method": "Method"
+    },
     "staking_rewards": {
       "search": "Search reward by block number",
       "no_reward_found": "No reward found"
@@ -52,6 +64,17 @@
     },
     "loading": {
       "loading_data": "Loading data, please be patient..."
+    },
+    "account_transfers": {
+      "transfer_details": "Check transfer information",
+      "block_details": "Check block information",
+      "hash": "Hash",
+      "block_number": "Block",
+      "timestamp": "Date",
+      "source": "Source",
+      "destination": "To",
+      "amount": "Amount",
+      "success": "Status"
     }
   },
   "layout": {
@@ -214,7 +237,8 @@
     "transfer": {
       "title": "Transfer",
       "head_title": "PolkaStats - {networkName} transfer {hash}",
-      "head_content": "{networkName} transfer {hash}"
+      "head_content": "{networkName} transfer {hash}",
+      "not_found": "Transfer not found!"
     },
     "activity": {
       "title": "Activity",

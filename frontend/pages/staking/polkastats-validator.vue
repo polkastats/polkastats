@@ -141,11 +141,6 @@
                 </p>
                 <p class="text-right mb-0 pt-4">
                   <nuxt-link to="/how-to-stake/polkadot/" class="btn btn-stake">
-                    How to nominate on Polkadot
-                  </nuxt-link>
-                </p>
-                <p class="text-right mb-0 pt-4">
-                  <nuxt-link to="/how-to-stake/polkadot/" class="btn btn-stake">
                     Como nominar en Polkadot
                   </nuxt-link>
                 </p>
