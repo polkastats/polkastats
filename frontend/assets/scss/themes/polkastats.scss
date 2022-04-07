@@ -726,6 +726,11 @@ section .section-title {
   color: gray;
 }
 
+.selected-validators .nominate,
+.selected-validators .clear {
+  font-size: 0.8rem;
+}
+
 .reload {
   cursor: pointer;
 }
