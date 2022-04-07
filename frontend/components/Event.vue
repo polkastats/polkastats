@@ -31,7 +31,7 @@
             {{ event.event_index }}
           </td>
         </tr>
-        <tr>
+        <tr v-if="isTriggeredByExtrinsic(event.phase)">
           <td>Triggered by extrinsic</td>
           <td>
             <nuxt-link
@@ -103,6 +103,14 @@ export default {
         // console.log(error)
       }
       return descriptorOrType
+    },
+    isTriggeredByExtrinsic(phase) {
+      try {
+        return JSON.parse(phase).applyExtrinsic
+      } catch (error) {
+        // console.log(error)
+      }
+      return false
     },
   },
 }

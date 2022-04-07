@@ -136,6 +136,9 @@ export default {
     }
   },
   computed: {
+    loading() {
+      return this.$store.state.ranking.loading
+    },
     USDConversion() {
       return parseFloat(this.$store.state.fiat.usd).toFixed(3)
     },
