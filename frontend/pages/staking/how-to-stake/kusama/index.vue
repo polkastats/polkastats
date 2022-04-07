@@ -1,10 +1,10 @@
 <template>
   <div>
     <section>
-      <b-container class="main py-5 how_to_stake-polkadot">
+      <b-container class="main py-5 how_to_stake-kusama">
         <h1 class="mb-4">
           {{
-            $t('pages.how_to_stake.polkadot.title', {
+            $t('pages.how_to_stake.kusama.title', {
               networkName: config.name,
             })
           }}
@@ -14,7 +14,7 @@
           <!-- <div class="col-md-4 mb-4">
             <b-card class="text-center">
               <nuxt-link
-                to="/how-to-stake/polkadot/using-polkastats"
+                to="/how-to-stake/kusama/using-polkastats"
                 active-class="nuxt-link-exact-active"
                 class="nav-link"
               >
@@ -23,7 +23,7 @@
                   src="/img/Avatar_Light@2x.png"
                 />
                 <h4 class="pt-4">
-                  {{ $t('pages.how_to_stake.polkadot.polkastats.title') }}
+                  {{ $t('pages.how_to_stake.kusama.polkastats.title') }}
                 </h4>
               </nuxt-link>
             </b-card>
@@ -31,7 +31,7 @@
           <div class="col-md-4 mb-4">
             <b-card class="text-center">
               <nuxt-link
-                to="/how-to-stake/polkadot/using-lunie"
+                to="/how-to-stake/kusama/using-lunie"
                 active-class="nuxt-link-exact-active"
                 class="nav-link"
               >
@@ -40,7 +40,7 @@
                   src="/img/lunie.svg"
                 />
                 <h4 class="pt-4">
-                  {{ $t('pages.how_to_stake.polkadot.lunie.title') }}
+                  {{ $t('pages.how_to_stake.kusama.lunie.title') }}
                 </h4>
               </nuxt-link>
             </b-card>
@@ -48,7 +48,7 @@
           <div class="col-md-4 mb-4">
             <b-card class="text-center">
               <nuxt-link
-                to="/how-to-stake/polkadot/using-polkadotjs"
+                to="/staking/how-to-stake/kusama/using-polkadotjs"
                 active-class="nuxt-link-exact-active"
                 class="nav-link"
               >
@@ -57,7 +57,7 @@
                   src="/img/PolkadotJS.png"
                 />
                 <h4 class="pt-4">
-                  {{ $t('pages.how_to_stake.polkadot.polkadotjs.title') }}
+                  {{ $t('pages.how_to_stake.kusama.polkadotjs.title') }}
                 </h4>
               </nuxt-link>
             </b-card>
@@ -85,10 +85,10 @@ export default {
           text: this.$t('pages.how_to_stake.title', {
             networkName: config.name,
           }),
-          href: '/how-to-stake',
+          href: '/staking/how-to-stake',
         },
         {
-          text: this.$t('pages.how_to_stake.polkadot.title', {
+          text: this.$t('pages.how_to_stake.kusama.title', {
             networkName: config.name,
           }),
           href: '#',
@@ -98,12 +98,12 @@ export default {
   },
   head() {
     return {
-      title: this.$t('pages.how_to_stake.polkadot.head_title'),
+      title: this.$t('pages.how_to_stake.kusama.head_title'),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: this.$t('pages.how_to_stake.polkadot.head_content'),
+          content: this.$t('pages.how_to_stake.kusama.head_content'),
         },
       ],
     }
@@ -111,10 +111,10 @@ export default {
 }
 </script>
 <style>
-.how_to_stake-polkadot .card {
+.how_to_stake-kusama .card {
   min-height: 250px;
 }
-.how_to_stake-polkadot .wallet-logo {
+.how_to_stake-kusama .wallet-logo {
   max-height: 80px;
   height: 100%;
 }

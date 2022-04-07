@@ -333,14 +333,18 @@ export default {
   },
   head() {
     return {
-      title: `Validator ${this.accountId} metrics | ${
-        config.title
-      } for ${this.capitalize(config.name)}`,
+      title: this.$t('pages.validator.head_title', {
+        networkName: config.name,
+        address: this.accountId,
+      }),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: `Validator ${this.accountId} metrics`,
+          content: this.$t('pages.validator.head_content', {
+            networkName: config.name,
+            address: this.accountId,
+          }),
         },
       ],
     }

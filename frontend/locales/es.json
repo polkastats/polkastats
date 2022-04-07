@@ -190,16 +190,31 @@
       "head_content": "Bloques en {networkName}",
       "search_placeholder": "Buscar por número de bloque"
     },
+    "block": {
+      "title": "Bloque",
+      "head_title": "PolkaStats - Bloque en {networkName}",
+      "head_content": "Bloque en {networkName}"
+    },
     "extrinsics": {
       "title": "Extrinsics",
       "head_title": "PolkaStats - Extrinsics en {networkName}",
       "head_content": "Extrinsics en {networkName}"
+    },
+    "extrinsic": {
+      "title": "Extrinsic",
+      "head_title": "PolkaStats - Extrinsic en {networkName}",
+      "head_content": "Extrinsic en {networkName}"
     },
     "transfers": {
       "title": "Transferencias",
       "head_title": "PolkaStats - Transferencias en {networkName}",
       "head_content": "Transferencias en {networkName}",
       "search_placeholder": "Buscar transferencia por número de bloque, hash o dirección de procedencia"
+    },
+    "transfer": {
+      "title": "Transferencia",
+      "head_title": "PolkaStats - Transferencia {hash} en {networkName}",
+      "head_content": "Transferencia {hash} en {networkName}"
     },
     "activity": {
       "title": "Actividad",
@@ -212,6 +227,11 @@
       "head_title": "PolkaStats - Eventos en {networkName}",
       "head_content": "Eventos en {networkName}",
       "search_placeholder": "Buscar por número de bloque"
+    },
+    "event": {
+      "title": "Evento",
+      "head_title": "PolkaStats - Evento en {networkName}",
+      "head_content": "Evento en {networkName}"
     },
     "support-us": {
       "support_polkastats": "APOYA POLKASTATS",
@@ -283,6 +303,26 @@
       "title": "Validadores",
       "head_title": "PolkaStats - Validatores proof of stake de {networkName}",
       "head_content": "Validatores proof of stake de {networkName}"
+    },
+    "validator": {
+      "title": "Validador",
+      "head_title": "PolkaStats - {networkName} validador",
+      "head_content": "{networkName} validador {address}"
+    },
+    "team": {
+      "title": "Equipo",
+      "head_title": "PolkaStats - El equipo",
+      "head_content": "El equipo detrás del explorador de bloques PolkaStats"
+    },
+    "nominate": {
+      "title": "Nominar validadores",
+      "head_title": "PolkaStats - Nominar validadores",
+      "head_content": "Nominar validadores"
+    },
+    "staking_dashboard": {
+      "title": "Staking dashboard",
+      "head_title": "PolkaStats - {networkName} staking dashboard",
+      "head_content": "{networkName} staking dashboard"
     }
   },
   "details": {

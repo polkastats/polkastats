@@ -66,16 +66,16 @@
               $t('layout.default.transfers')
             }}</b-nav-item>
             <b-nav-item-dropdown text="Staking">
-              <b-dropdown-item to="/staking-dashboard">
+              <b-dropdown-item to="/staking/dashboard">
                 {{ $t('layout.default.staking_dashboard') }}
               </b-dropdown-item>
-              <b-dropdown-item to="/validators">
+              <b-dropdown-item to="/staking/validators">
                 {{ $t('layout.default.validators') }}
               </b-dropdown-item>
-              <b-dropdown-item to="/polkastats-validator">
+              <b-dropdown-item to="/staking/polkastats-validator">
                 {{ $t('layout.default.validator') }}
               </b-dropdown-item>
-              <b-dropdown-item to="/how-to-stake">
+              <b-dropdown-item to="/staking/how-to-stake">
                 {{ $t('layout.default.how_to_stake') }}
               </b-dropdown-item>
             </b-nav-item-dropdown>

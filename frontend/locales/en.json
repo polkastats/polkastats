@@ -190,16 +190,31 @@
       "head_content": "{networkName} blocks",
       "search_placeholder": "Search by block number"
     },
+    "block": {
+      "title": "Block",
+      "head_title": "PolkaStats - {networkName} block",
+      "head_content": "{networkName} block"
+    },
     "extrinsics": {
       "title": "Extrinsics",
       "head_title": "PolkaStats - {networkName} extrinsics",
       "head_content": "{networkName} extrinsics"
+    },
+    "extrinsic": {
+      "title": "Extrinsic",
+      "head_title": "PolkaStats - {networkName} extrinsic",
+      "head_content": "{networkName} extrinsic"
     },
     "transfers": {
       "title": "Transfers",
       "head_title": "PolkaStats - {networkName} transfers",
       "head_content": "{networkName} transfers",
       "search_placeholder": "Search transfer by block number, hash, source or destination address"
+    },
+    "transfer": {
+      "title": "Transfer",
+      "head_title": "PolkaStats - {networkName} transfer {hash}",
+      "head_content": "{networkName} transfer {hash}"
     },
     "activity": {
       "title": "Activity",
@@ -212,6 +227,11 @@
       "head_title": "PolkaStats - {networkName} events",
       "head_content": "{networkName} events",
       "search_placeholder": "Search by block number"
+    },
+    "event": {
+      "title": "Event",
+      "head_title": "PolkaStats - {networkName} event",
+      "head_content": "{networkName} event"
     },
     "support-us": {
       "support_polkastats": "SUPPORT POLKASTATS",
@@ -283,6 +303,26 @@
       "title": "Validators",
       "head_title": "PolkaStats - {networkName} proof of stake validators",
       "head_content": "{networkName} proof of stake validators"
+    },
+    "validator": {
+      "title": "Validator",
+      "head_title": "PolkaStats - {networkName} validator",
+      "head_content": "{networkName} validator {address}"
+    },
+    "team": {
+      "title": "Team",
+      "head_title": "PolkaStats - The team",
+      "head_content": "The people behind PolkaStats block explorer"
+    },
+    "nominate": {
+      "title": "Nominate validators",
+      "head_title": "PolkaStats - Nominate validators",
+      "head_content": "Nominate validators"
+    },
+    "staking_dashboard": {
+      "title": "Staking dashboard",
+      "head_title": "PolkaStats - {networkName} staking dashboard",
+      "head_content": "{networkName} staking dashboard"
     }
   },
   "details": {

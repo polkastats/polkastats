@@ -175,14 +175,12 @@ export default {
   },
   head() {
     return {
-      title: `Nominate | ${this.config.title} for ${this.capitalize(
-        this.config.name
-      )}`,
+      title: this.$t('pages.nominate.head_title'),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: 'Nominate selected validators',
+          content: this.$t('pages.nominate.head_content'),
         },
       ],
     }

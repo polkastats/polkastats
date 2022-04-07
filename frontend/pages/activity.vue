@@ -136,7 +136,7 @@
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
-import { paginationOptions } from '@/frontend.config.js'
+import { config, paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -179,6 +179,22 @@ export default {
           key: 'success',
           label: 'Success',
           sortable: true,
+        },
+      ],
+    }
+  },
+  head() {
+    return {
+      title: this.$t('pages.activity.head_title', {
+        networkName: config.name,
+      }),
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('pages.activity.head_content', {
+            networkName: config.name,
+          }),
         },
       ],
     }

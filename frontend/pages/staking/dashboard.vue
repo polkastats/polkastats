@@ -47,6 +47,22 @@ export default {
       config,
     }
   },
+  head() {
+    return {
+      title: this.$t('pages.staking_dashboard.head_title', {
+        networkName: config.name,
+      }),
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('pages.staking_dashboard.head_content', {
+            networkName: config.name,
+          }),
+        },
+      ],
+    }
+  },
   computed: {
     eras() {
       return this.rows.map((row) => row.era)

@@ -14,7 +14,7 @@
           <div class="col-md-4 mb-4">
             <b-card class="text-center" img-src="/img/Polkadot_bg.png" img-top>
               <nuxt-link
-                to="/how-to-stake/polkadot"
+                to="/staking/how-to-stake/polkadot"
                 active-class="nuxt-link-exact-active"
                 class="nav-link"
               >
@@ -27,7 +27,7 @@
           <div class="col-md-4 mb-4">
             <b-card class="text-center" img-src="/img/Kusama_bg.png" img-top>
               <nuxt-link
-                to="/how-to-stake/kusama"
+                to="/staking/how-to-stake/kusama"
                 active-class="nuxt-link-exact-active"
                 class="nav-link"
               >

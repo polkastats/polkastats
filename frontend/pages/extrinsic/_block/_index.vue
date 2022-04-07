@@ -31,6 +31,7 @@ import { gql } from 'graphql-tag'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import ExtrinsicEvents from '@/components/ExtrinsicEvents.vue'
+import { config } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -48,12 +49,16 @@ export default {
   },
   head() {
     return {
-      title: 'PolkaStats NG block explorer',
+      title: this.$t('pages.extrinsic.head_title', {
+        networkName: config.name,
+      }),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: 'PolkaStats block explorer',
+          content: this.$t('pages.extrinsic.head_content', {
+            networkName: config.name,
+          }),
         },
       ],
     }

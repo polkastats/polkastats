@@ -294,6 +294,24 @@ export default {
       totalSlashes: undefined,
     }
   },
+  head() {
+    return {
+      title: this.$t('pages.account.head_title', {
+        networkName: config.name,
+        address: this.accountId,
+      }),
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('pages.account.head_content', {
+            networkName: config.name,
+            address: this.accountId,
+          }),
+        },
+      ],
+    }
+  },
   watch: {
     $route() {
       this.accountId = this.$route.params.id
