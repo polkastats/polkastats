@@ -1,8 +1,8 @@
 <template>
-  <b-dropdown id="languages" variant="none" class="mb-0" :text="lang">
+  <b-nav-item-dropdown id="languages" variant="none" class="mb-0" :text="lang">
     <b-dropdown-item @click="setLanguage('en')">EN</b-dropdown-item>
     <b-dropdown-item @click="setLanguage('es')">ES</b-dropdown-item>
-  </b-dropdown>
+  </b-nav-item-dropdown>
 </template>
 
 <script>

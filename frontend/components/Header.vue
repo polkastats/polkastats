@@ -34,7 +34,6 @@
         </template>
         <SelectedValidators />
       </b-dropdown>
-      <languages />
     </div>
     <b-navbar toggleable="xl">
       <b-container class="px-sm-3">
@@ -93,27 +92,31 @@
                 {{ $t('layout.default.events') }}
               </b-dropdown-item>
             </b-nav-item-dropdown>
+            <b-nav-item-dropdown>
+              <template #button-content>
+                <img
+                  class="network-logo"
+                  :src="`/img/networks/icons/${config.id}.svg`"
+                />
+                {{ config.name }}
+              </template>
+              <b-dropdown-item href="https://kusama.polkastats.io">
+                <img
+                  class="network-logo"
+                  src="/img/networks/icons/kusama.svg"
+                />
+                KUSAMA
+              </b-dropdown-item>
+              <b-dropdown-item href="https://polkastats.io">
+                <img
+                  class="network-logo"
+                  src="/img/networks/icons/polkadot.svg"
+                />
+                POLKADOT
+              </b-dropdown-item>
+            </b-nav-item-dropdown>
+            <Languages />
           </b-navbar-nav>
-          <b-dropdown class="my-md-2 ml-md-2 pr-0 network" variant="primary2">
-            <template #button-content>
-              <img
-                class="network-logo"
-                :src="`/img/networks/icons/${config.id}.svg`"
-              />
-              {{ config.name }}
-            </template>
-            <b-dropdown-item href="https://kusama.polkastats.io">
-              <img class="network-logo" src="/img/networks/icons/kusama.svg" />
-              KUSAMA
-            </b-dropdown-item>
-            <b-dropdown-item href="https://polkastats.io">
-              <img
-                class="network-logo"
-                src="/img/networks/icons/polkadot.svg"
-              />
-              POLKADOT
-            </b-dropdown-item>
-          </b-dropdown>
         </b-collapse>
       </b-container>
       <b-modal id="wallet-modal" size="lg" hide-header hide-footer>
