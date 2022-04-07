@@ -34,12 +34,13 @@
         </template>
         <SelectedValidators />
       </b-dropdown>
+      <languages />
     </div>
     <b-navbar toggleable="xl">
       <b-container class="px-sm-3">
         <b-navbar-brand>
           <nuxt-link
-            to="/"
+            :to="localePath('/')"
             class="navbar-brand"
             title="PolkaStats block explorer"
           >
@@ -59,34 +60,36 @@
         <b-navbar-toggle target="nav-collapse" />
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav class="ml-auto">
-            <b-nav-item right to="/accounts">{{
+            <b-nav-item right :to="localePath('/accounts')">{{
               $t('layout.default.accounts')
             }}</b-nav-item>
-            <b-nav-item right to="/transfers">{{
+            <b-nav-item right :to="localePath('/transfers')">{{
               $t('layout.default.transfers')
             }}</b-nav-item>
             <b-nav-item-dropdown text="Staking">
-              <b-dropdown-item to="/staking/dashboard">
+              <b-dropdown-item :to="localePath('/staking/dashboard')">
                 {{ $t('layout.default.staking_dashboard') }}
               </b-dropdown-item>
-              <b-dropdown-item to="/staking/validators">
+              <b-dropdown-item :to="localePath('/staking/validators')">
                 {{ $t('layout.default.validators') }}
               </b-dropdown-item>
-              <b-dropdown-item to="/staking/polkastats-validator">
+              <b-dropdown-item
+                :to="localePath('/staking/polkastats-validator')"
+              >
                 {{ $t('layout.default.validator') }}
               </b-dropdown-item>
-              <b-dropdown-item to="/staking/how-to-stake">
+              <b-dropdown-item :to="localePath('/staking/how-to-stake')">
                 {{ $t('layout.default.how_to_stake') }}
               </b-dropdown-item>
             </b-nav-item-dropdown>
             <b-nav-item-dropdown text="Blockchain">
-              <b-dropdown-item to="/blocks">
+              <b-dropdown-item :to="localePath('/blocks')">
                 {{ $t('layout.default.blocks') }}
               </b-dropdown-item>
-              <b-dropdown-item to="/extrinsics">
+              <b-dropdown-item :to="localePath('/extrinsics')">
                 {{ $t('layout.default.extrinsics') }}
               </b-dropdown-item>
-              <b-dropdown-item to="/events">
+              <b-dropdown-item :to="localePath('/events')">
                 {{ $t('layout.default.events') }}
               </b-dropdown-item>
             </b-nav-item-dropdown>
@@ -128,7 +131,11 @@
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
 import { config } from '@/frontend.config.js'
+import Languages from '@/components/Languages.vue'
 export default {
+  components: {
+    Languages,
+  },
   mixins: [commonMixin],
   data() {
     return {
