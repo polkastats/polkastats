@@ -132,6 +132,9 @@ pre {
   text-transform: uppercase;
   font-size: 14px;
 }
+.navbar-brand {
+  margin-right: 0.5rem;
+}
 ul {
   list-style: none;
   padding-left: 0;
@@ -147,6 +150,7 @@ h1 {
   font-weight: 100;
   text-decoration: none !important;
   font-size: 0.8rem;
+  padding-top: 0.3rem;
 }
 .g-recaptcha div {
   margin: 0 auto 1.2rem auto;
