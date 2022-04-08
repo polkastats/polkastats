@@ -1,5 +1,14 @@
 <template>
   <div class="last-transfers">
+    <h3>
+      <nuxt-link
+        v-b-tooltip.hover
+        :to="`/transfers`"
+        title="Click to see latest transfers"
+      >
+        {{ $t('components.last_transfers.title') }}
+      </nuxt-link>
+    </h3>
     <div class="table-responsive">
       <b-table striped hover :fields="fields" :items="transfers">
         <template #cell(hash)="data">
@@ -72,22 +81,22 @@ export default {
       fields: [
         {
           key: 'hash',
-          label: 'Hash',
+          label: this.$t('components.last_transfers.hash'),
           sortable: false,
         },
         {
           key: 'source',
-          label: 'From',
+          label: this.$t('components.last_transfers.source'),
           sortable: false,
         },
         {
           key: 'destination',
-          label: 'To',
+          label: this.$t('components.last_transfers.destination'),
           sortable: false,
         },
         {
           key: 'amount',
-          label: 'Amount',
+          label: this.$t('components.last_transfers.amount'),
           sortable: false,
         },
       ],

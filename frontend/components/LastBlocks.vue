@@ -1,5 +1,14 @@
 <template>
   <div class="last-blocks">
+    <h3>
+      <nuxt-link
+        v-b-tooltip.hover
+        :to="`/blocks`"
+        title="Click to see last blocks"
+      >
+        {{ $t('components.last_blocks.title') }}
+      </nuxt-link>
+    </h3>
     <div class="table-responsive">
       <b-table striped hover :fields="fields" :items="blocks">
         <template #cell(block_number)="data">
@@ -39,33 +48,33 @@ import commonMixin from '@/mixins/commonMixin.js'
 
 export default {
   mixins: [commonMixin],
-  data: () => {
+  data() {
     return {
       blocks: [],
       fields: [
         {
           key: 'block_number',
-          label: 'Block',
+          label: this.$t('components.last_blocks.block_number'),
           sortable: false,
         },
         {
           key: 'finalized',
-          label: 'Status',
+          label: this.$t('components.last_blocks.finalized'),
           sortable: false,
         },
         {
           key: 'block_hash',
-          label: 'Hash',
+          label: this.$t('components.last_blocks.hash'),
           sortable: false,
         },
         {
           key: 'total_extrinsics',
-          label: 'Extrinsics',
+          label: this.$t('components.last_blocks.total_extrinsics'),
           sortable: false,
         },
         {
           key: 'total_events',
-          label: 'Events',
+          label: this.$t('components.last_blocks.total_events'),
           sortable: false,
         },
       ],
@@ -76,7 +85,7 @@ export default {
       block: {
         query: gql`
           subscription blocks {
-            block(order_by: { block_number: desc }, where: {}, limit: 10) {
+            block(order_by: { block_number: desc }, limit: 10) {
               block_number
               finalized
               block_hash

@@ -1,5 +1,14 @@
 <template>
   <div class="last-events">
+    <h3>
+      <nuxt-link
+        v-b-tooltip.hover
+        :to="`/events`"
+        title="Click to see latest events"
+      >
+        {{ $t('components.last_events.title') }}
+      </nuxt-link>
+    </h3>
     <div class="table-responsive">
       <b-table striped hover :fields="fields" :items="events">
         <template #cell(block_number)="data">
@@ -30,18 +39,18 @@ import commonMixin from '@/mixins/commonMixin.js'
 
 export default {
   mixins: [commonMixin],
-  data: () => {
+  data() {
     return {
       events: [],
       fields: [
         {
           key: 'block_number',
-          label: 'Id',
+          label: this.$t('components.last_events.id'),
           sortable: false,
         },
         {
           key: 'section',
-          label: 'Event',
+          label: this.$t('components.last_events.event'),
           sortable: false,
         },
       ],
@@ -52,13 +61,11 @@ export default {
       event: {
         query: gql`
           subscription events {
-            event(order_by: { block_number: desc }, where: {}, limit: 10) {
+            event(order_by: { block_number: desc }, limit: 10) {
               block_number
               event_index
-              data
-              method
-              phase
               section
+              method
             }
           }
         `,

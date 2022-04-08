@@ -4,11 +4,11 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.last_block') }}</h4>
+            <h4 class="mb-3">{{ $t('components.chain.last_block') }}</h4>
             <nuxt-link
               v-b-tooltip.hover
               :to="`/block?blockNumber=${lastBlock}`"
-              title="Click to see block info!"
+              :title="$t('components.chain.block_details')"
             >
               <h6 class="d-inline-block">#{{ formatNumber(lastBlock) }}</h6>
             </nuxt-link>
@@ -19,12 +19,12 @@
         <div class="card h-100">
           <div class="card-body">
             <h4 class="mb-3">
-              {{ $t('components.network.last_block_finalized') }}
+              {{ $t('components.chain.last_block_finalized') }}
             </h4>
             <nuxt-link
               v-b-tooltip.hover
               :to="`/block?blockNumber=${lastFinalizedBlock}`"
-              title="Click to see block info!"
+              :title="$t('components.chain.block_details')"
             >
               <h6 class="d-inline-block">
                 #{{ formatNumber(lastFinalizedBlock) }}
@@ -36,11 +36,13 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">Total Extrinsics</h4>
+            <h4 class="mb-3">
+              {{ $t('components.chain.total_extrinsics') }}
+            </h4>
             <nuxt-link
               v-b-tooltip.hover
               to="/extrinsics"
-              title="Click to see extrinsics!"
+              :title="$t('components.chain.extrinsics_details')"
             >
               <h6 class="d-inline-block">
                 {{ formatNumber(totalExtrinsics) }}
@@ -52,11 +54,11 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">Total Events</h4>
+            <h4 class="mb-3">{{ $t('components.chain.total_events') }}</h4>
             <nuxt-link
               v-b-tooltip.hover
               to="/events"
-              title="Click to see events!"
+              :title="$t('components.chain.events_details')"
             >
               <h6 class="d-inline-block">{{ formatNumber(totalEvents) }}</h6>
             </nuxt-link>
@@ -69,11 +71,11 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.accounts') }}</h4>
+            <h4 class="mb-3">{{ $t('components.chain.accounts') }}</h4>
             <nuxt-link
               v-b-tooltip.hover
               to="/accounts"
-              title="Click to see accounts!"
+              :title="$t('components.chain.accounts_details')"
             >
               <h6 class="d-inline-block">
                 {{ formatNumber(totalAccounts) }}
@@ -86,12 +88,12 @@
         <div class="card h-100">
           <div class="card-body">
             <h4 class="mb-3">
-              {{ $t('components.network.transfers') }}
+              {{ $t('components.chain.transfers') }}
             </h4>
             <nuxt-link
               v-b-tooltip.hover
               to="/transfers"
-              title="Click to see tranfers!"
+              :title="$t('components.chain.transfers_details')"
             >
               <h6 class="d-inline-block">{{ formatNumber(totalTransfers) }}</h6>
             </nuxt-link>
@@ -102,7 +104,7 @@
         <div class="card h-100">
           <div class="card-body">
             <h4 class="mb-3">
-              {{ $t('components.network.active_era') }}
+              {{ $t('components.chain.active_era') }}
             </h4>
             <h6 class="d-inline-block">
               {{ formatNumber(activeEra) }}
@@ -114,7 +116,7 @@
         <div class="card h-100">
           <div class="card-body">
             <h4 class="mb-3">
-              {{ $t('components.network.total_issuance') }}
+              {{ $t('components.chain.total_issuance') }}
             </h4>
             <h6 class="d-inline-block">
               {{ formatAmount(totalIssuance, 2, true) }}
@@ -128,7 +130,7 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.total_staked') }}</h4>
+            <h4 class="mb-3">{{ $t('components.chain.total_staked') }}</h4>
             <h6 class="d-inline-block">
               {{ formatAmount(totalStaked, 2, true) }}
               ({{ formatNumber(totalStakedPercentage) }}%)
@@ -139,7 +141,7 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.current_index') }}</h4>
+            <h4 class="mb-3">{{ $t('components.chain.current_index') }}</h4>
             <h6 class="d-inline-block">
               {{ formatNumber(currentIndex) }}
             </h6>
@@ -149,7 +151,7 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.validators') }}</h4>
+            <h4 class="mb-3">{{ $t('components.chain.validators') }}</h4>
             <h6 class="d-inline-block">
               {{ formatNumber(totalValidators) }} /
               {{ formatNumber(totalWaiting) }}
@@ -160,7 +162,7 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.nominators') }}</h4>
+            <h4 class="mb-3">{{ $t('components.chain.nominators') }}</h4>
             <h6 class="d-inline-block">
               {{ formatNumber(totalNominators) }}
             </h6>

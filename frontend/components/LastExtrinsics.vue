@@ -1,5 +1,14 @@
 <template>
   <div class="last-extrinsics">
+    <h3>
+      <nuxt-link
+        v-b-tooltip.hover
+        :to="`/extrinsics`"
+        title="Click to see latest extrinsics"
+      >
+        {{ $t('components.last_extrinsics.title') }}
+      </nuxt-link>
+    </h3>
     <div class="table-responsive">
       <b-table striped hover :fields="fields" :items="extrinsics">
         <template #cell(block_number)="data">
@@ -43,17 +52,17 @@ export default {
       fields: [
         {
           key: 'block_number',
-          label: 'Id',
+          label: this.$t('components.last_extrinsics.id'),
           sortable: false,
         },
         {
           key: 'hash',
-          label: 'Hash',
+          label: this.$t('components.last_extrinsics.hash'),
           sortable: false,
         },
         {
           key: 'section',
-          label: 'Extrinsic',
+          label: this.$t('components.last_extrinsics.extrinsic'),
           sortable: false,
         },
       ],
@@ -64,11 +73,7 @@ export default {
       extrinsic: {
         query: gql`
           subscription extrinsics {
-            signed_extrinsic(
-              order_by: { block_number: desc }
-              where: {}
-              limit: 10
-            ) {
+            signed_extrinsic(order_by: { block_number: desc }, limit: 10) {
               block_number
               extrinsic_index
               signer

@@ -6,37 +6,24 @@
       "address": "Dirección ",
       "copied_to_the_clipboard": " copiada al portapapeles"
     },
-    "network": {
-      "last_block": "Último bloque",
-      "last_block_finalized": "Finalizado",
-      "validator_count": "Núm Validadores",
-      "active_era": "Era activa",
-      "current_index": "Sesión actual",
-      "epoch": "Época",
-      "current_era": "Era actual",
-      "era": "Era",
-      "accounts": "Cuentas",
-      "total_staked": "Total stakeado",
-      "total_issuance": "Emisión total",
-      "transfers": "Transferencias",
-      "nominators": "Nominadores",
-      "validators": "Validadores"
-    },
     "chain": {
       "last_block": "Último bloque",
+      "block_details": "Ver información del bloque",
       "last_block_finalized": "Finalizado",
-      "validators": "Validadores",
-      "validator_count": "Validadores activos",
-      "validator_ideal_number": "Número ideal de validadores",
-      "current_session": "Sesión",
-      "epoch": "Epoch",
-      "current_era": "Era",
-      "era": "Era",
+      "total_extrinsics": "Extrinsics",
+      "extrinsics_details": "Ver todas las extrinsics",
+      "total_events": "Eventos",
+      "events_details": "Ver todos los eventos",
+      "accounts": "Cuentas",
+      "accounts_details": "Ver todas las cuentas",
+      "transfers": "Transferencias",
+      "transfers_details": "Ver todas las transferencias",
+      "active_era": "Era activa",
       "total_issuance": "Emisión total",
-      "staked": "Participación",
-      "waiting_validators": "En cola",
-      "nominators": "Nominadores",
-      "progress": "Progreso"
+      "total_staked": "Total stakeado",
+      "current_index": "Sesión actual",
+      "validators": "Validadores",
+      "nominators": "Nominadores"      
     },
     "transfers": {
       "search": "Buscar transferencia por número de bloque, hash, dirección de origen o destino",
@@ -81,6 +68,38 @@
       "id": "ID",
       "section": "Sección y método",
       "data": "Datos"
+    },
+    "last_activity": {
+      "title": "Últimas actividades",
+      "id": "ID",
+      "signer": "Firmante",
+      "extrinsic": "Extrinsic"
+    },
+    "last_blocks": {
+      "title": "Últimos bloques",
+      "block_number": "Bloque",
+      "finalized": "Estado",
+      "hash": "Hash",
+      "total_extrinsics": "Extrinsics",
+      "total_events": "Eventos"
+    },
+    "last_events": {
+      "title": "Últimos eventos",
+      "id": "ID",
+      "event": "Evento"
+    },
+    "last_extrinsics": {
+      "title": "Últimas extrinsics",
+      "id": "ID",
+      "hash": "Hash",
+      "extrinsic": "Extrinsic"
+    },
+    "last_transfers": {
+      "title": "Últimas transferencias",
+      "hash": "Hash",
+      "source": "Origen",
+      "destination": "Destino",
+      "amount": "Cantidad"
     }
   },
   "layout": {
