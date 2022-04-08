@@ -79,7 +79,7 @@
                           `/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`
                         )
                       "
-                      title="Check extrinsic information"
+                      :title="$t('common.extrinsic_details')"
                     >
                       {{ data.item.block_number }}-{{
                         data.item.extrinsic_index
@@ -193,27 +193,27 @@ export default {
       fields: [
         {
           key: 'block_number',
-          label: 'Extrinsic',
+          label: this.$t('pages.extrinsics.id'),
           sortable: false,
         },
         {
           key: 'timestamp',
-          label: 'Age',
+          label: this.$t('pages.extrinsics.timestamp'),
           sortable: false,
         },
         {
           key: 'hash',
-          label: 'Hash',
+          label: this.$t('pages.extrinsics.hash'),
           sortable: false,
         },
         {
           key: 'section',
-          label: 'Extrinsic',
+          label: this.$t('pages.extrinsics.extrinsic'),
           sortable: false,
         },
         {
           key: 'success',
-          label: 'Success',
+          label: this.$t('pages.extrinsics.success'),
           sortable: false,
         },
       ],

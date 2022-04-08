@@ -101,7 +101,7 @@
                     `/extrinsic/${transfer.block_number}/${transfer.extrinsic_index}`
                   )
                 "
-                title="Check extrinsic information"
+                :title="$t('common.extrinsic_details')"
               >
                 #{{ formatNumber(transfer.block_number) }}-{{
                   transfer.extrinsic_index

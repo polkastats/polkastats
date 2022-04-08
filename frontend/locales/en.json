@@ -321,7 +321,12 @@
     "extrinsics": {
       "title": "Extrinsics",
       "head_title": "PolkaStats - {networkName} extrinsics",
-      "head_content": "{networkName} extrinsics"
+      "head_content": "{networkName} extrinsics",
+      "id": "ID",
+      "timestamp": "Date",
+      "hash": "Hash",
+      "extrinsic": "Extrinsic",
+      "success": "Status"
     },
     "extrinsic": {
       "title": "Extrinsic",

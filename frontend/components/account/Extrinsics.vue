@@ -25,7 +25,7 @@
               <nuxt-link
                 v-b-tooltip.hover
                 :to="localePath(`/extrinsic/${data.item.hash}`)"
-                title="Check extrinsic information"
+                :title="$t('common.extrinsic_details')"
               >
                 {{ shortHash(data.item.hash) }}
               </nuxt-link>
