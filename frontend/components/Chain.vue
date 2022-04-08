@@ -41,7 +41,7 @@
             </h4>
             <nuxt-link
               v-b-tooltip.hover
-              to="/extrinsics"
+              :to="localePath('/extrinsics')"
               :title="$t('components.chain.extrinsics_details')"
             >
               <h6 class="d-inline-block">
@@ -57,7 +57,7 @@
             <h4 class="mb-3">{{ $t('components.chain.total_events') }}</h4>
             <nuxt-link
               v-b-tooltip.hover
-              to="/events"
+              :to="localePath('/events')"
               :title="$t('components.chain.events_details')"
             >
               <h6 class="d-inline-block">{{ formatNumber(totalEvents) }}</h6>
@@ -74,7 +74,7 @@
             <h4 class="mb-3">{{ $t('components.chain.accounts') }}</h4>
             <nuxt-link
               v-b-tooltip.hover
-              to="/accounts"
+              :to="localePath('/accounts')"
               :title="$t('components.chain.accounts_details')"
             >
               <h6 class="d-inline-block">
@@ -92,7 +92,7 @@
             </h4>
             <nuxt-link
               v-b-tooltip.hover
-              to="/transfers"
+              :to="localePath('/transfers')"
               :title="$t('components.chain.transfers_details')"
             >
               <h6 class="d-inline-block">{{ formatNumber(totalTransfers) }}</h6>
