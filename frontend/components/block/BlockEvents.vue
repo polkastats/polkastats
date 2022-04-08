@@ -20,7 +20,7 @@
                   `/event/${data.item.block_number}/${data.item.event_index}`
                 )
               "
-              title="Check event information"
+              :title="$t('components_block_events.event_details')"
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.event_index

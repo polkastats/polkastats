@@ -8,7 +8,7 @@
             <nuxt-link
               v-b-tooltip.hover
               :to="localePath(`/block?blockNumber=${event.block_number}`)"
-              title="Check block information"
+              :title="$t('common.block_details')"
             >
               #{{ formatNumber(event.block_number) }}
             </nuxt-link>

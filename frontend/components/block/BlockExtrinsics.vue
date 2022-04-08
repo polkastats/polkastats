@@ -20,7 +20,7 @@
                   `/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`
                 )
               "
-              title="Check extrinsic information"
+              :title="$t('components_block_extrinsics.extrinsic_details')"
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.extrinsic_index

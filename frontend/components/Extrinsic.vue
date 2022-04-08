@@ -23,7 +23,7 @@
             <nuxt-link
               v-b-tooltip.hover
               :to="localePath(`/block?blockNumber=${extrinsic.block_number}`)"
-              title="Check block information"
+              :title="$t('common.block_details')"
             >
               #{{ formatNumber(extrinsic.block_number) }}
             </nuxt-link>

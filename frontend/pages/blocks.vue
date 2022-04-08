@@ -39,7 +39,7 @@
                           `/block?blockNumber=${data.item.block_number}`
                         )
                       "
-                      title="Check block information"
+                      :title="$t('common.block_details')"
                     >
                       #{{ formatNumber(data.item.block_number) }}
                     </nuxt-link>

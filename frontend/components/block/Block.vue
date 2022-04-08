@@ -4,7 +4,7 @@
       <Loading />
     </div>
     <template v-else-if="!parsedBlock">
-      <h1 class="text-center">Block not found!</h1>
+      <h1 class="text-center">{{ $t('components.block.not_found') }}</h1>
     </template>
     <template v-else>
       <div class="card mt-4 mb-3">
@@ -60,11 +60,11 @@
                 <td class="text-right">
                   <p v-if="parsedBlock.finalized" class="mb-0">
                     <font-awesome-icon icon="check" class="text-success" />
-                    Finalized
+                    {{ $t('components.block.finalized') }}
                   </p>
                   <p v-else class="mb-0">
                     <font-awesome-icon icon="spinner" class="text-light" spin />
-                    Processing
+                    {{ $t('components.block.processing') }}
                   </p>
                 </td>
               </tr>

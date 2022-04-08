@@ -99,7 +99,7 @@
                 <a
                   v-b-tooltip.hover
                   :href="`https://polkascan.io/kusama/block/${blockHash}`"
-                  title="Check block information"
+                  :title="$t('common.block_details')"
                   target="_blank"
                 >
                   <Promised :promise="getBlockNumber(blockHash)">

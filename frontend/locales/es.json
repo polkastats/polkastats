@@ -1,4 +1,9 @@
 {
+  "common": {
+    "block_details": "Ver información del bloque",
+    "event_details": "Ver información del evento",
+    "extrinsic_details": "Ver información del extrinsic"
+  },
   "components": {
     "identicon": {
       "copy_address": "Se ha copiado la dirección ",
@@ -112,6 +117,11 @@
     "search": {
       "caption": "Buscar por bloque, hash de bloque, hash de extrinsic o dirección"
     },
+    "block": {
+      "finalized": "Finalizado",
+      "processing": "Procesando",
+      "not_found": "bloque no encontrado!"
+    },
     "event": {
       "block_number": "Bloque",
       "timestamp": "Fecha",
@@ -136,6 +146,29 @@
       "weight": "Peso",
       "fee_class": "Clase de comisión",
       "fee": "Comisión"
+    },
+    "block_events": {
+      "event_details": "Ver información del evento"
+    },
+    "block_extrinsics": {
+      "extrinsic_details": "Ver información del extrinsic"
+    },
+    "balance_chart": {
+      "title": "balance en los últimos 7 días",
+      "block": "bloque"
+    },
+    "transfers_chart": {
+      "title": "transferencias en los últimos 30 días",
+      "date": "fecha",
+      "balance_transfers": "# de transferencias"
+    },
+    "staking_rewards_chart": {
+      "title": "recompensas de staking en los últimos 7 días",
+      "reward": "recompensa"
+    },
+    "staking_slashes_chart": {
+      "title": "penalizaciones de staking en los últimos 7 días",
+      "slash": "penalización"
     }
   },
   "layout": {
@@ -295,7 +328,9 @@
     "extrinsic": {
       "title": "Extrinsic",
       "head_title": "PolkaStats - Extrinsic en {networkName}",
-      "head_content": "Extrinsic en {networkName}"
+      "head_content": "Extrinsic en {networkName}",
+      "extrinsic_not_found": "¡Extrinsic no encontrada!",
+      "extrinsic": "Extrinsic"
     },
     "transfers": {
       "title": "Transferencias",
@@ -333,7 +368,9 @@
     "event": {
       "title": "Evento",
       "head_title": "PolkaStats - Evento en {networkName}",
-      "head_content": "Evento en {networkName}"
+      "head_content": "Evento en {networkName}",
+      "event_not_found": "¡Evento no encontrado!",
+      "event": "Evento"
     },
     "support-us": {
       "support_polkastats": "APOYA POLKASTATS",
@@ -409,7 +446,9 @@
     "validator": {
       "title": "Validador",
       "head_title": "PolkaStats - {networkName} validador",
-      "head_content": "{networkName} validador {address}"
+      "head_content": "{networkName} validador {address}",
+      "selected": "seleccionado",
+      "metrics": "Esta información está verificada a partir de los datos históricos de la red {networkName}"
     },
     "team": {
       "title": "Equipo",

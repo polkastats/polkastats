@@ -14,12 +14,14 @@
             right
           >
             <template #button-content>
-              <span v-if="loading">Selected</span>
+              <span v-if="loading">{{
+                capitalize($t('pages.validator.selected'))
+              }}</span>
               <span v-else>
                 {{ selectedValidatorAddresses.length }}/{{
                   config.validatorSetSize
                 }}
-                selected
+                {{ $t('pages.validator.selected') }}
               </span>
               <font-awesome-icon icon="hand-paper" />
             </template>
@@ -44,7 +46,7 @@
               :href="`https://thousand-validators.kusama.network/#/leaderboard/${accountId}`"
               target="_blank"
               class="badge badge-pill badge-info"
-              >Thousand Validators Program</a
+              >1KV Program</a
             >
           </h4>
           <span class="py-2">&nbsp;</span>
@@ -159,8 +161,7 @@
             variant="info"
             class="text-center py-3 glitch"
           >
-            This information is verified and provided by historical data on the
-            Kusama blockchain
+            {{ $t('pages.validator.metrics', { networkName: config.name }) }}
           </b-alert>
           <div class="row pt-4">
             <div class="col-md-6 mb-5">

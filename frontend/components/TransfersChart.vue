@@ -36,7 +36,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'balance transfers in the last 30 days',
+          text: this.$t('components.transfers_chart.title'),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -53,7 +53,7 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'date',
+                labelString: this.$t('components.transfers_chart.date'),
               },
             },
           ],
@@ -70,7 +70,9 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'balance transfers',
+                labelString: this.$t(
+                  'components.transfers_chart.balance_transfers'
+                ),
               },
             },
           ],

@@ -6,13 +6,17 @@
           <Loading />
         </div>
         <template v-else-if="!parsedExtrinsic">
-          <h1 class="text-center">Extrinsic not found!</h1>
+          <h1 class="text-center">
+            {{ $('pages.extrinsic.extrinsic_not_found') }}
+          </h1>
         </template>
         <template v-else>
           <div class="card mt-4 mb-3">
             <div class="card-body">
               <h4 class="text-center mb-4">
-                Extrinsic {{ blockNumber }}-{{ extrinsicIndex }}
+                {{ $('pages.extrinsic.extrinsic') }} {{ blockNumber }}-{{
+                  extrinsicIndex
+                }}
               </h4>
               <Extrinsic :extrinsic="parsedExtrinsic" />
             </div>
