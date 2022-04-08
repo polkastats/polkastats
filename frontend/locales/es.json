@@ -78,28 +78,64 @@
     "last_blocks": {
       "title": "Últimos bloques",
       "block_number": "Bloque",
-      "finalized": "Estado",
+      "status": "Estado",
       "hash": "Hash",
       "total_extrinsics": "Extrinsics",
-      "total_events": "Eventos"
+      "total_events": "Eventos",
+      "blocks_details": "Ver todos los bloques",
+      "block_details": "Ver información del bloque",
+      "finalized": "Finalizado",
+      "processing": "Procesando"
     },
     "last_events": {
       "title": "Últimos eventos",
       "id": "ID",
-      "event": "Evento"
+      "event": "Evento",
+      "events_details": "Ver todos los eventos"
     },
     "last_extrinsics": {
       "title": "Últimas extrinsics",
       "id": "ID",
       "hash": "Hash",
-      "extrinsic": "Extrinsic"
+      "extrinsic": "Extrinsic",
+      "extrinsics_details": "Ver todas las extrinsics",
+      "extrinsic_details": "Detalles del extrinsic"
     },
     "last_transfers": {
       "title": "Últimas transferencias",
       "hash": "Hash",
       "source": "Origen",
       "destination": "Destino",
-      "amount": "Cantidad"
+      "amount": "Cantidad",
+      "transfers_details": "Ver todas las transferencias"
+    },
+    "search": {
+      "caption": "Buscar por bloque, hash de bloque, hash de extrinsic o dirección"
+    },
+    "event": {
+      "block_number": "Bloque",
+      "timestamp": "Fecha",
+      "event_index": "Índice del evento",
+      "triggered_by_extrinsic": "Disparado por extrinsic",
+      "section_and_method": "Sección y método",
+      "documentation": "Documentación",
+      "phase": "Fase",
+      "data": "Datos"
+    },
+    "extrinsic": {
+      "hash": "Hash",
+      "status": "Estado",
+      "block_number": "Bloque",
+      "timestamp": "Fecha",
+      "extrinsic_index": "Índice del extrinsic",
+      "signed": "¿Firmado?",
+      "signer": "Firmante",
+      "section_and_method": "Sección y método",
+      "documentation": "Documentación",
+      "arguments": "Argumentos",
+      "weight": "Peso",
+      "fee_class": "Clase de comisión",
+      "fee": "Comisión"
     }
   },
   "layout": {

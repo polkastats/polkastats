@@ -78,28 +78,64 @@
     "last_blocks": {
       "title": "Latest blocks",
       "block_number": "Block",
-      "finalized": "Status",
+      "status": "Status",
       "hash": "Hash",
       "total_extrinsics": "Extrinsics",
-      "total_events": "Events"
+      "total_events": "Events",
+      "blocks_details": "View all blocks",
+      "block_details": "Check block information",
+      "finalized": "Finalized",
+      "processing": "Processing"
     },
     "last_events": {
       "title": "Latest events",
       "id": "ID",
-      "event": "Event"
+      "event": "Event",
+      "events_details":"View all events"
     },
     "last_extrinsics": {
       "title": "Latest extrinsics",
       "id": "ID",
       "hash": "Hash",
-      "extrinsic": "Extrinsic"
+      "extrinsic": "Extrinsic",
+      "extrinsics_details": "View all extrinsics",
+      "extrinsic_details": "Extrinsic details"
     },
     "last_transfers": {
       "title": "Latest transfers",
       "hash": "Hash",
       "source": "Source",
       "destination": "To",
-      "amount": "Amount"
+      "amount": "Amount",
+      "transfers_details": "View all transfers"
+    },
+    "search": {
+      "caption": "Search by block number, block hash, extrinsic hash or account address"
+    },
+    "event": {
+      "block_number": "Block number",
+      "timestamp": "Date",
+      "event_index": "Event index",
+      "triggered_by_extrinsic": "Triggered by extrinsic",
+      "section_and_method": "Section and method",
+      "documentation": "Documentation",
+      "phase": "Phase",
+      "data": "Data"
+    },
+    "extrinsic": {
+      "hash": "Hash",
+      "status": "Status",
+      "block_number": "Block number",
+      "timestamp": "Date",
+      "extrinsic_index": "Extrinsic index",
+      "signed": "Signed?",
+      "signer": "Signer",
+      "section_and_method": "Section and method",
+      "documentation": "Documentation",
+      "arguments": "Arguments",
+      "weight": "Weight",
+      "fee_class": "Fee class",
+      "fee": "Fee"
     }
   },
   "layout": {

@@ -1,5 +1,5 @@
 <template>
-  <!-- Filter -->
+  <!-- Search -->
   <b-row class="mb-4">
     <b-col cols="12">
       <b-input-group size="xl" class="mb-2">
@@ -10,7 +10,7 @@
           id="searchInput"
           v-model="searchInput"
           type="search"
-          placeholder="Search by block number, block hash, extrinsic hash or account address"
+          :placeholder="$t('components.search.caption')"
           @keydown.native="doSearch"
         />
       </b-input-group>
@@ -32,19 +32,19 @@ export default {
       if (event.keyCode === 13) {
         if (await this.isExtrinsicHash(this.searchInput)) {
           this.$router.push({
-            path: `/extrinsic/${this.searchInput}`,
+            path: this.localePath(`/extrinsic/${this.searchInput}`),
           })
         } else if (await this.isBlockHash(this.searchInput)) {
           this.$router.push({
-            path: `/block/${this.searchInput}`,
+            path: this.localePath(`/block/${this.searchInput}`),
           })
         } else if (this.isAddress(this.searchInput)) {
           this.$router.push({
-            path: `/account/${this.searchInput}`,
+            path: this.localePath(`/account/${this.searchInput}`),
           })
         } else if (this.isBlockNumber(this.searchInput)) {
           this.$router.push({
-            path: `/block?blockNumber=${this.searchInput}`,
+            path: this.localePath(`/block?blockNumber=${this.searchInput}`),
           })
         }
       }

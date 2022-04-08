@@ -3,8 +3,8 @@
     <h3>
       <nuxt-link
         v-b-tooltip.hover
-        :to="`/transfers`"
-        title="Click to see latest transfers"
+        :to="localePath(`/transfers`)"
+        :title="$t('components.last_transfers.transfers_details')"
       >
         {{ $t('components.last_transfers.title') }}
       </nuxt-link>
@@ -13,22 +13,22 @@
       <b-table striped hover :fields="fields" :items="transfers">
         <template #cell(hash)="data">
           <p class="mb-0">
-            <nuxt-link :to="`/transfer/${data.item.hash}`">
+            <nuxt-link :to="localePath(`/transfer/${data.item.hash}`)">
               {{ shortHash(data.item.hash) }}
             </nuxt-link>
           </p>
         </template>
         <template #cell(source)="data">
           <p class="mb-0">
+            <Identicon
+              :key="data.item.source"
+              :address="data.item.source"
+              :size="20"
+            />
             <nuxt-link
-              :to="`/account/${data.item.source}`"
+              :to="localePath(`/account/${data.item.source}`)"
               :title="$t('pages.accounts.account_details')"
             >
-              <Identicon
-                :key="data.item.source"
-                :address="data.item.source"
-                :size="20"
-              />
               {{ shortAddress(data.item.source) }}
             </nuxt-link>
           </p>
@@ -36,15 +36,15 @@
         <template #cell(destination)="data">
           <div v-if="isValidAddressPolkadotAddress(data.item.destination)">
             <p class="mb-0">
+              <Identicon
+                :key="data.item.destination"
+                :address="data.item.destination"
+                :size="20"
+              />
               <nuxt-link
-                :to="`/account/${data.item.destination}`"
+                :to="localePath(`/account/${data.item.destination}`)"
                 :title="$t('pages.accounts.account_details')"
               >
-                <Identicon
-                  :key="data.item.destination"
-                  :address="data.item.destination"
-                  :size="20"
-                />
                 {{ shortAddress(data.item.destination) }}
               </nuxt-link>
             </p>

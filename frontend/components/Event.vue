@@ -3,11 +3,11 @@
     <table class="table table-striped event-table">
       <tbody>
         <tr>
-          <td>Block number</td>
+          <td>{{ $t('components.event.block_number') }}</td>
           <td>
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/block?blockNumber=${event.block_number}`"
+              :to="localePath(`/block?blockNumber=${event.block_number}`)"
               title="Check block information"
             >
               #{{ formatNumber(event.block_number) }}
@@ -15,7 +15,7 @@
           </td>
         </tr>
         <tr>
-          <td>Timestamp</td>
+          <td>{{ $t('components.event.timestamp') }}</td>
           <td>
             <p class="mb-0">
               <font-awesome-icon icon="clock" class="text-light" />
@@ -26,18 +26,22 @@
           </td>
         </tr>
         <tr>
-          <td>Event index</td>
+          <td>{{ $t('components.event.event_index') }}</td>
           <td>
             {{ event.event_index }}
           </td>
         </tr>
         <tr v-if="isTriggeredByExtrinsic(event.phase)">
-          <td>Triggered by extrinsic</td>
+          <td>{{ $t('components.event.triggered_by_extrinsic') }}</td>
           <td>
             <nuxt-link
-              :to="`/extrinsic/${event.block_number}/${
-                JSON.parse(event.phase).applyExtrinsic
-              }`"
+              :to="
+                localePath(
+                  `/extrinsic/${event.block_number}/${
+                    JSON.parse(event.phase).applyExtrinsic
+                  }`
+                )
+              "
             >
               #{{ formatNumber(event.block_number) }}-{{
                 JSON.parse(event.phase).applyExtrinsic
@@ -46,14 +50,14 @@
           </td>
         </tr>
         <tr>
-          <td>Section and method</td>
+          <td>{{ $t('components.event.section_and_method') }}</td>
           <td>
             {{ event.section }} ➡
             {{ event.method }}
           </td>
         </tr>
         <tr>
-          <td>Documentation</td>
+          <td>{{ $t('components.event.documentation') }}</td>
           <td>
             <div
               class="extrinsic-doc"
@@ -62,13 +66,13 @@
           </td>
         </tr>
         <tr>
-          <td>Phase</td>
+          <td>{{ $t('components.event.phase') }}</td>
           <td>
             {{ event.phase }}
           </td>
         </tr>
         <tr>
-          <td>Data</td>
+          <td>{{ $t('components.event.data') }}</td>
           <td class="event-arg">
             <template v-for="(data, index) in JSON.parse(event.data)">
               <b-card :key="`event-data-${index}`" class="mb-2">

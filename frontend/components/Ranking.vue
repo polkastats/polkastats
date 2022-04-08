@@ -134,7 +134,7 @@
           <!-- desktop -->
           <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
             <Identicon :address="data.item.stashAddress" :size="24" />
-            <nuxt-link :to="`/validator/${data.item.stashAddress}`">
+            <nuxt-link :to="localePath(`/validator/${data.item.stashAddress}`)">
               <span v-if="data.item.name">{{ data.item.name }}</span>
               <span v-else>{{ shortAddress(data.item.stashAddress) }}</span>
             </nuxt-link>
@@ -145,7 +145,9 @@
             <b-row>
               <b-col cols="10">
                 <Identicon :address="data.item.stashAddress" :size="24" />
-                <nuxt-link :to="`/validator/${data.item.stashAddress}`">
+                <nuxt-link
+                  :to="localePath(`/validator/${data.item.stashAddress}`)"
+                >
                   <span v-if="data.item.name">{{ data.item.name }}</span>
                   <span v-else>{{ shortAddress(data.item.stashAddress) }}</span>
                 </nuxt-link>

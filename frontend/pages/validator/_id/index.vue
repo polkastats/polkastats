@@ -76,7 +76,7 @@
           </div>
           <div class="col-md-9 mb-1 fee">
             <Identicon :address="validator.stashAddress" :size="20" />
-            <nuxt-link :to="`/account/${validator.stashAddress}`">
+            <nuxt-link :to="localePath(`/account/${validator.stashAddress}`)">
               {{ shortAddress(validator.stashAddress) }}
             </nuxt-link>
           </div>
@@ -87,7 +87,9 @@
           </div>
           <div class="col-md-9 mb-1 fee">
             <Identicon :address="validator.controllerAddress" :size="20" />
-            <nuxt-link :to="`/account/${validator.controllerAddress}`">
+            <nuxt-link
+              :to="localePath(`/account/${validator.controllerAddress}`)"
+            >
               {{ shortAddress(validator.controllerAddress) }}
             </nuxt-link>
           </div>

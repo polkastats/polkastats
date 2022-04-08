@@ -17,7 +17,11 @@
         <template #cell(block_number)="data">
           <p class="mb-0">
             <nuxt-link
-              :to="`/event/${data.item.block_number}/${data.item.event_index}`"
+              :to="
+                localePath(
+                  `/event/${data.item.block_number}/${data.item.event_index}`
+                )
+              "
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.event_index

@@ -3,8 +3,8 @@
     <h3>
       <nuxt-link
         v-b-tooltip.hover
-        :to="`/events`"
-        title="Click to see latest events"
+        :to="localePath(`/events`)"
+        :title="$t('components.last_events.events_details')"
       >
         {{ $t('components.last_events.title') }}
       </nuxt-link>
@@ -14,7 +14,11 @@
         <template #cell(block_number)="data">
           <p class="mb-0">
             <nuxt-link
-              :to="`/event/${data.item.block_number}/${data.item.event_index}`"
+              :to="
+                localePath(
+                  `/event/${data.item.block_number}/${data.item.event_index}`
+                )
+              "
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.event_index

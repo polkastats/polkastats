@@ -20,7 +20,9 @@
         <tr>
           <td>{{ $t('components.transfer.block_number') }}</td>
           <td>
-            <nuxt-link :to="`/block?blockNumber=${transfer.block_number}`">
+            <nuxt-link
+              :to="localePath(`/block?blockNumber=${transfer.block_number}`)"
+            >
               #{{ formatNumber(transfer.block_number) }}
             </nuxt-link>
           </td>
@@ -45,7 +47,7 @@
                 :address="transfer.source"
                 :size="20"
               />
-              <nuxt-link :to="`/account/${transfer.source}`">
+              <nuxt-link :to="localePath(`/account/${transfer.source}`)">
                 {{ transfer.source }}
               </nuxt-link>
             </div>
@@ -59,7 +61,7 @@
               :address="transfer.destination"
               :size="20"
             />
-            <nuxt-link :to="`/account/${transfer.destination}`">
+            <nuxt-link :to="localePath(`/account/${transfer.destination}`)">
               {{ transfer.destination }}
             </nuxt-link>
           </td>
@@ -94,7 +96,11 @@
             <p class="mb-0">
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/extrinsic/${transfer.block_number}/${transfer.extrinsic_index}`"
+                :to="
+                  localePath(
+                    `/extrinsic/${transfer.block_number}/${transfer.extrinsic_index}`
+                  )
+                "
                 title="Check extrinsic information"
               >
                 #{{ formatNumber(transfer.block_number) }}-{{

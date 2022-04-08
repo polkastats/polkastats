@@ -14,7 +14,7 @@
         <template #cell(who)="data">
           <p class="mb-0">
             <nuxt-link
-              :to="`/account/${data.item.who}`"
+              :to="localePath(`/account/${data.item.who}`)"
               :title="$t('pages.accounts.account_details')"
             >
               <Identicon :address="data.item.who" :size="20" />

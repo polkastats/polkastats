@@ -27,7 +27,7 @@
     >
       <div class="col-10 selected-validator">
         <Identicon :address="validator.stashAddress" :size="20" />
-        <nuxt-link :to="`/validator/${validator.stashAddress}`">
+        <nuxt-link :to="localePath(`/validator/${validator.stashAddress}`)">
           <span v-if="validator.name">
             {{ validator.name }}
             <VerifiedIcon />

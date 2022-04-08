@@ -7,7 +7,7 @@
             <h4 class="mb-3">{{ $t('components.chain.last_block') }}</h4>
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/block?blockNumber=${lastBlock}`"
+              :to="localePath(`/block?blockNumber=${lastBlock}`)"
               :title="$t('components.chain.block_details')"
             >
               <h6 class="d-inline-block">#{{ formatNumber(lastBlock) }}</h6>
@@ -23,7 +23,7 @@
             </h4>
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/block?blockNumber=${lastFinalizedBlock}`"
+              :to="localePath(`/block?blockNumber=${lastFinalizedBlock}`)"
               :title="$t('components.chain.block_details')"
             >
               <h6 class="d-inline-block">

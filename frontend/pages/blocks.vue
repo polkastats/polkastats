@@ -34,7 +34,11 @@
                   <p class="mb-0">
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/block?blockNumber=${data.item.block_number}`"
+                      :to="
+                        localePath(
+                          `/block?blockNumber=${data.item.block_number}`
+                        )
+                      "
                       title="Check block information"
                     >
                       #{{ formatNumber(data.item.block_number) }}
@@ -49,7 +53,9 @@
                 <template #cell(block_author)="data">
                   <p class="mb-0">
                     <Identicon :address="data.item.block_author" :size="22" />
-                    <nuxt-link :to="`/validator/${data.item.block_author}`">
+                    <nuxt-link
+                      :to="localePath(`/validator/${data.item.block_author}`)"
+                    >
                       <span v-if="data.item.block_author_name">{{
                         data.item.block_author_name
                       }}</span>

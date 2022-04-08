@@ -35,7 +35,7 @@
                   </span>
                   <span v-else>
                     <nuxt-link
-                      :to="`/validator/${parsedBlock.block_author}`"
+                      :to="localePath(`/validator/${parsedBlock.block_author}`)"
                       class="d-block"
                     >
                       <Identicon
@@ -86,7 +86,11 @@
                   <span v-if="parsedBlock.block_number === 0"> -- </span>
                   <span v-else>
                     <nuxt-link
-                      :to="`/block?blockNumber=${parsedBlock.block_number - 1}`"
+                      :to="
+                        localePath(
+                          `/block?blockNumber=${parsedBlock.block_number - 1}`
+                        )
+                      "
                     >
                       {{ parsedBlock.parent_hash }}
                     </nuxt-link>

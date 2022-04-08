@@ -13,7 +13,7 @@
             <p class="mb-0">
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/block?blockNumber=${data.item.block_number}`"
+                :to="localePath(`/block?blockNumber=${data.item.block_number}`)"
                 title="Check block information"
               >
                 #{{ formatNumber(data.item.block_number) }}
@@ -24,7 +24,7 @@
             <p class="mb-0">
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/extrinsic/${data.item.hash}`"
+                :to="localePath(`/extrinsic/${data.item.hash}`)"
                 title="Check extrinsic information"
               >
                 {{ shortHash(data.item.hash) }}
@@ -39,7 +39,7 @@
           <template #cell(signer)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/account/${data.item.signer}`"
+                :to="localePath(`/account/${data.item.signer}`)"
                 :title="$t('pages.accounts.account_details')"
               >
                 <Identicon :address="data.item.signer" :size="20" />

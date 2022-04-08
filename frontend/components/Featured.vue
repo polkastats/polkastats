@@ -8,7 +8,7 @@
         increased rewards when they become active.
       </p>
       <Identicon :address="featured.stash_address" :size="24" />
-      <nuxt-link :to="`/validator/${featured.stash_address}`">
+      <nuxt-link :to="localePath(`/validator/${featured.stash_address}`)">
         <span v-if="featured.name">{{ featured.name }}</span>
         <span v-else>{{ shortAddress(featured.stash_address) }}</span>
       </nuxt-link>

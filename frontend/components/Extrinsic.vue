@@ -3,13 +3,13 @@
     <table class="table table-striped extrinsic-table">
       <tbody>
         <tr>
-          <td>Hash</td>
+          <td>{{ $t('components.extrinsic.hash') }}</td>
           <td>
             <Hash :hash="extrinsic.hash" />
           </td>
         </tr>
         <tr>
-          <td>Status</td>
+          <td>{{ $t('components.extrinsic.status') }}</td>
           <td>
             <Status
               :status="extrinsic.success"
@@ -18,11 +18,11 @@
           </td>
         </tr>
         <tr>
-          <td>Block number</td>
+          <td>{{ $t('components.extrinsic.block_number') }}</td>
           <td>
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/block?blockNumber=${extrinsic.block_number}`"
+              :to="localePath(`/block?blockNumber=${extrinsic.block_number}`)"
               title="Check block information"
             >
               #{{ formatNumber(extrinsic.block_number) }}
@@ -30,7 +30,7 @@
           </td>
         </tr>
         <tr>
-          <td>Timestamp</td>
+          <td>{{ $t('components.extrinsic.timestamp') }}</td>
           <td>
             <p class="mb-0">
               <font-awesome-icon icon="clock" class="text-light" />
@@ -41,13 +41,13 @@
           </td>
         </tr>
         <tr>
-          <td>Extrinsic index</td>
+          <td>{{ $t('components.extrinsic.extrinsic_index') }}</td>
           <td>
             {{ extrinsic.extrinsic_index }}
           </td>
         </tr>
         <tr>
-          <td>Signed?</td>
+          <td>{{ $t('components.extrinsic.signed') }}</td>
           <td>
             <font-awesome-icon
               v-if="extrinsic.is_signed"
@@ -58,13 +58,13 @@
           </td>
         </tr>
         <tr v-if="extrinsic.is_signed">
-          <td>Signer</td>
+          <td>{{ $t('components.extrinsic.signer') }}</td>
           <td>
             <div v-if="extrinsic.signer">
               <Identicon :address="extrinsic.signer" :size="20" />
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/account/${extrinsic.signer}`"
+                :to="localePath(`/account/${extrinsic.signer}`)"
                 :title="$t('details.block.account_details')"
               >
                 {{ shortAddress(extrinsic.signer) }}
@@ -73,14 +73,14 @@
           </td>
         </tr>
         <tr>
-          <td>Section and method</td>
+          <td>{{ $t('components.extrinsic.section_and_method') }}</td>
           <td>
             {{ extrinsic.section }} ➡
             {{ extrinsic.method }}
           </td>
         </tr>
         <tr>
-          <td>Documentation</td>
+          <td>{{ $t('components.extrinsic.documentation') }}</td>
           <td>
             <div
               class="extrinsic-doc"
@@ -89,7 +89,7 @@
           </td>
         </tr>
         <tr>
-          <td>Arguments</td>
+          <td>{{ $t('components.extrinsic.arguments') }}</td>
           <td class="extrinsic-arg">
             <template v-for="(arg, index) in JSON.parse(extrinsic.args)">
               <b-card :key="`extrinsic-arg-def-${index}`" class="mb-2">
@@ -102,7 +102,7 @@
           </td>
         </tr>
         <tr v-if="extrinsic.is_signed">
-          <td>Weight</td>
+          <td>{{ $t('components.extrinsic.weight') }}</td>
           <td>
             <div v-if="extrinsic.fee_info">
               {{ formatNumber(JSON.parse(extrinsic.fee_info).weight) }}
@@ -110,7 +110,7 @@
           </td>
         </tr>
         <tr v-if="extrinsic.is_signed">
-          <td>Fee class</td>
+          <td>{{ $t('components.extrinsic.fee_class') }}</td>
           <td>
             <div v-if="extrinsic.fee_info">
               {{ JSON.parse(extrinsic.fee_info).class }}
@@ -118,7 +118,7 @@
           </td>
         </tr>
         <tr v-if="extrinsic.is_signed">
-          <td>Fee</td>
+          <td>{{ $t('components.extrinsic.fee') }}</td>
           <td>
             <div v-if="extrinsic.fee_info">
               <span class="amount">{{

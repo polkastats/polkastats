@@ -3,8 +3,8 @@
     <h3>
       <nuxt-link
         v-b-tooltip.hover
-        :to="`/blocks`"
-        title="Click to see last blocks"
+        :to="localePath(`/blocks`)"
+        :title="$t('components.last_blocks.blocks_details')"
       >
         {{ $t('components.last_blocks.title') }}
       </nuxt-link>
@@ -15,8 +15,8 @@
           <p class="mb-0">
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/block?blockNumber=${data.item.block_number}`"
-              title="Check block information"
+              :to="localePath(`/block?blockNumber=${data.item.block_number}`)"
+              :title="$t('components.last_blocks.block_details')"
             >
               #{{ formatNumber(data.item.block_number) }}
             </nuxt-link>
@@ -25,11 +25,11 @@
         <template #cell(finalized)="data">
           <p v-if="data.item.finalized" class="mb-0">
             <font-awesome-icon icon="check" class="text-success" />
-            Finalized
+            {{ $t('components.last_blocks.finalized') }}
           </p>
           <p v-else class="mb-0">
             <font-awesome-icon icon="spinner" class="text-light" spin />
-            Processing
+            {{ $t('components.last_blocks.processing') }}
           </p>
         </template>
         <template #cell(block_hash)="data">
@@ -59,7 +59,7 @@ export default {
         },
         {
           key: 'finalized',
-          label: this.$t('components.last_blocks.finalized'),
+          label: this.$t('components.last_blocks.status'),
           sortable: false,
         },
         {

@@ -3,8 +3,8 @@
     <h3>
       <nuxt-link
         v-b-tooltip.hover
-        :to="`/extrinsics`"
-        title="Click to see latest extrinsics"
+        :to="localePath(`/extrinsics`)"
+        :title="$t('components.last_extrinsics.extrinsics_details')"
       >
         {{ $t('components.last_extrinsics.title') }}
       </nuxt-link>
@@ -15,8 +15,12 @@
           <p class="mb-0">
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`"
-              title="Check extrinsic information"
+              :to="
+                localePath(
+                  `/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`
+                )
+              "
+              :title="$t('components.last_extrinsics.extrinsic_details')"
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.extrinsic_index
