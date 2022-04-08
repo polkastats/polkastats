@@ -457,11 +457,10 @@
       "amount": "Amount",
       "reward": "Reward",
       "slashes": "Slashes",
-      "produced_block": "Produced Block",
+      "produced_blocks": "Produced Block",
       "status": "Status",
       "date_time": "Date and Time",
       "charts": "Charts",
-      "produced_blocks": "Produced blocks",
       "stash": "Stash",
       "controller": "Controller"
     }
