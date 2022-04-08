@@ -25,11 +25,11 @@
         <template #cell(finalized)="data">
           <p v-if="data.item.finalized" class="mb-0">
             <font-awesome-icon icon="check" class="text-success" />
-            {{ $t('components.last_blocks.finalized') }}
+            {{ $t('common.finalized') }}
           </p>
           <p v-else class="mb-0">
             <font-awesome-icon icon="spinner" class="text-light" spin />
-            {{ $t('components.last_blocks.processing') }}
+            {{ $t('common.processing') }}
           </p>
         </template>
         <template #cell(block_hash)="data">

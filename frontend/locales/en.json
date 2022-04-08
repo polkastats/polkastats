@@ -2,7 +2,9 @@
   "common": {
     "block_details": "Check block information",
     "event_details": "Check event information",
-    "extrinsic_details": "Check extrinsic information"
+    "extrinsic_details": "Check extrinsic information",
+    "processing": "Processing",
+    "finalized": "Finalized"
   },
   "components": {
     "identicon": {
@@ -88,9 +90,7 @@
       "total_extrinsics": "Extrinsics",
       "total_events": "Events",
       "blocks_details": "View all blocks",
-      "block_details": "Check block information",
-      "finalized": "Finalized",
-      "processing": "Processing"
+      "block_details": "Check block information"
     },
     "last_events": {
       "title": "Latest events",
@@ -118,8 +118,6 @@
       "caption": "Search by block number, block hash, extrinsic hash or account address"
     },
     "block": {
-      "finalized": "Finalized",
-      "processing": "Processing",
       "not_found": "Block not found!"
     },
     "event": {

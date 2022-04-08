@@ -68,11 +68,11 @@
                 <template #cell(finalized)="data">
                   <p v-if="data.item.finalized" class="mb-0">
                     <font-awesome-icon icon="check" class="text-success" />
-                    Finalized
+                    {{ $t('common.finalized') }}
                   </p>
                   <p v-else class="mb-0">
                     <font-awesome-icon icon="spinner" class="text-light" spin />
-                    Processing
+                    {{ $t('common.processing') }}
                   </p>
                 </template>
                 <template #cell(block_hash)="data">

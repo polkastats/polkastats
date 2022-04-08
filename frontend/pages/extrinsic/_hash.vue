@@ -7,14 +7,14 @@
         </div>
         <template v-else-if="!parsedExtrinsic">
           <h1 class="text-center">
-            {{ $('pages.extrinsic.extrinsic_not_found') }}
+            {{ $t('pages.extrinsic.extrinsic_not_found') }}
           </h1>
         </template>
         <template v-else>
           <div class="card mt-4 mb-3">
             <div class="card-body">
               <h4 class="text-center mb-4">
-                {{ $('pages.extrinsic.extrinsic') }}
+                {{ $t('pages.extrinsic.extrinsic') }}
                 {{ parsedExtrinsic.block_number }}-{{
                   parsedExtrinsic.extrinsic_index
                 }}

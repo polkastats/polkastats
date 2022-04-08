@@ -60,11 +60,11 @@
                 <td class="text-right">
                   <p v-if="parsedBlock.finalized" class="mb-0">
                     <font-awesome-icon icon="check" class="text-success" />
-                    {{ $t('components.block.finalized') }}
+                    {{ $t('common.finalized') }}
                   </p>
                   <p v-else class="mb-0">
                     <font-awesome-icon icon="spinner" class="text-light" spin />
-                    {{ $t('components.block.processing') }}
+                    {{ $t('common.processing') }}
                   </p>
                 </td>
               </tr>

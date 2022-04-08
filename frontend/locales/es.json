@@ -2,7 +2,9 @@
   "common": {
     "block_details": "Ver información del bloque",
     "event_details": "Ver información del evento",
-    "extrinsic_details": "Ver información del extrinsic"
+    "extrinsic_details": "Ver información del extrinsic",
+    "processing": "Procesando",
+    "finalized": "Finalizado"
   },
   "components": {
     "identicon": {
@@ -88,9 +90,7 @@
       "total_extrinsics": "Extrinsics",
       "total_events": "Eventos",
       "blocks_details": "Ver todos los bloques",
-      "block_details": "Ver información del bloque",
-      "finalized": "Finalizado",
-      "processing": "Procesando"
+      "block_details": "Ver información del bloque"
     },
     "last_events": {
       "title": "Últimos eventos",
@@ -118,8 +118,6 @@
       "caption": "Buscar por bloque, hash de bloque, hash de extrinsic o dirección"
     },
     "block": {
-      "finalized": "Finalizado",
-      "processing": "Procesando",
       "not_found": "bloque no encontrado!"
     },
     "event": {
