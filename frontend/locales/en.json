@@ -11,7 +11,9 @@
       "copy_address": "Copy address ",
       "to_clipboard": " to clipboard",
       "address": "Address ",
-      "copied_to_the_clipboard": " copied to the clipboard"
+      "copied_to_the_clipboard": " copied to the clipboard",
+      "click_to_copy": "Click to copy address to clipboard",
+      "address_copied": "Address copied to clipboard!"
     },
     "chain": {
       "last_block": "Last block",
@@ -167,6 +169,81 @@
     "staking_slashes_chart": {
       "title": "staking slashes over the last 7 days",
       "slash": "slash"
+    },
+    "wallet_selector": {
+      "title": "Select your account",
+      "description": "Connect your account to get alerts and suggestions for your current on-chain validator set",
+      "connect": "CONNECT"
+    },
+    "validator": {
+      "score": "Validator score"
+    },
+    "total_issuance_chart": {
+      "title": "total issuance over the last 30 days",
+      "block": "block",
+      "total_issuance": "total issuance"
+    },
+    "status": {
+      "success": "Success",
+      "error": "Error"
+    },
+    "selected_validators": {
+      "loading": "Loading",
+      "no_validators_selected": "No validators selected",
+      "clear": "Clear",
+      "nominate": "Nominate"
+    },
+    "rating": {
+      "very_good": "Very good",
+      "good": "Good",
+      "neutral": "Neutral",
+      "bad": "Bad",
+      "loading": "Loading"
+    },
+    "ranking": {
+      "exclude_from_search": "Exclude from search",
+      "allow_only_one_cluster_member": "Allow only one cluster member",
+      "search_results": "Search results",
+      "elected_validator": "Elected validator",
+      "not_elected_validator": "Not elected validator",
+      "all": "All",
+      "elected": "Elected",
+      "name": "Name",
+      "relative_performance": "Performance",
+      "self_stake": "Self stake",
+      "active_eras": "Active eras",
+      "score": "Score",
+      "selected": "Selected",
+      "inactive": "Not elected",
+      "greedy": "100% commission",
+      "slashed": "Slashed",
+      "oversubscribed": "Oversubscribed",
+      "no_identity": "No identity",
+      "no_verified_identity": "No verified identity",
+      "no_auto_payout": "No auto-payout",
+      "below_average_era_points": "Below average era points",
+      "no_participate_governance": "No participation in governance",
+      "part_of_cluster": "Cluster member excess",
+      "select_unselect": "Select / Unselect validator"
+    },
+    "metric_weights": {
+      "help": "You can customize the weights of the VRC score and thereby deviate from the default option (equal weight of each metric)",
+      "customize_validator_score": "Customize validator score",
+      "elected": "ELECTED",
+      "commission_changes": "COMMISSION CHANGES",
+      "era_points_avg": "ERA POINTS AVG",
+      "governance_participation": "GOVERNANCE PARTICIPATION",
+      "identity": "IDENTITY",
+      "number_of_nominators": "NUMBER OF NOMINATORS",
+      "address_creation": "ADDRESS CREATION",
+      "payout_frequency": "PAYOUT FREQUENCY",
+      "slashes": "SLASHES",
+      "subaccounts": "SUBACCOUNTS",
+      "updating_score": "updating score"
+    },
+    "header": {
+      "connect": "Connect",
+      "selected": "selected"
     }
   },
   "layout": {

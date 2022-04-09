@@ -37,7 +37,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'total issuance over the last 30 days',
+          text: this.$t('components.total_issuance_chart.title'),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -54,7 +54,7 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'block',
+                labelString: this.$t('components.total_issuance_chart.block'),
               },
             },
           ],
@@ -63,7 +63,6 @@ export default {
               ticks: {
                 beginAtZero: true,
                 suggestedMin: 0,
-                // suggestedMax: 100,
               },
               gridLines: {
                 display: true,
@@ -71,7 +70,9 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'total issuance',
+                labelString: this.$t(
+                  'components.total_issuance_chart.total_issuance'
+                ),
               },
             },
           ],

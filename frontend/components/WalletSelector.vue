@@ -1,10 +1,11 @@
 <template>
   <div class="wallet-selector">
-    <h2 class="text-center d-block">Select your account</h2>
+    <h2 class="text-center d-block">
+      {{ $t('components.wallet_selector.title') }}
+    </h2>
     <hr />
     <p class="text-center mb-4">
-      Connect your account to get alerts and suggestions<br />
-      for your current on-chain validator set
+      {{ $t('components.wallet_selector.description') }}
     </p>
     <div v-if="loading">
       <Loading color="gray" />
@@ -27,8 +28,10 @@
         </template>
         <template #cell(selected)="data">
           <p class="text-right mb-0">
-            <b-button variant="info" @click="selectAddress(data.item.address)"
-              >CONNECT</b-button
+            <b-button
+              variant="info"
+              @click="selectAddress(data.item.address)"
+              >{{ $t('components.wallet_selector.connect') }}</b-button
             >
           </p>
         </template>

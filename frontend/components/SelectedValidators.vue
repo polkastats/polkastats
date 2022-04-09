@@ -1,8 +1,10 @@
 <template>
   <div class="selected-validators">
-    <p v-if="loading" class="mb-0 text-center">Loading data...</p>
+    <p v-if="loading" class="mb-0 text-center">
+      {{ $t('components.selected_validators.loading') }}
+    </p>
     <p v-else-if="list.length === 0" class="mb-0 text-center">
-      No validators selected
+      {{ $t('components.selected_validators.no_validators_selected') }}
     </p>
     <div v-else class="row mb-3">
       <div class="col-8">{{ list.length }}/{{ config.validatorSetSize }}</div>
@@ -53,12 +55,15 @@
       <div class="col-4">
         <b-button variant="danger" class="clear btn-block" @click="clean()">
           <font-awesome-icon icon="trash-alt" />
-          Clear
+          {{ $t('components.selected_validators.clear') }}
         </b-button>
       </div>
       <div class="col-8">
-        <b-button variant="primary2" class="nominate btn-block" to="/nominate"
-          >Nominate</b-button
+        <b-button
+          variant="primary2"
+          class="nominate btn-block"
+          to="/nominate"
+          >{{ $t('components.selected_validators.nominate') }}</b-button
         >
       </div>
     </div>

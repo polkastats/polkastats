@@ -11,7 +11,7 @@
           <Identicon :address="selectedAddress" :size="22" />
           {{ shortAddress(selectedAddress) }}
         </span>
-        <span v-else>Connect</span>
+        <span v-else>{{ $t('components.header.connect') }}</span>
       </button>
       <b-dropdown
         id="selected-validators"
@@ -21,14 +21,14 @@
         right
       >
         <template #button-content>
-          <span v-if="loading" style="font-size: 0.8rem !important"
-            >Selected</span
-          >
+          <span v-if="loading" style="font-size: 0.8rem !important">{{
+            capitalize($t('components.header.selected'))
+          }}</span>
           <span v-else style="font-size: 0.8rem !important">
             {{ selectedValidatorAddresses.length }}/{{
               config.validatorSetSize
             }}
-            selected
+            {{ $t('components.header.selected') }}
           </span>
           <font-awesome-icon icon="hand-paper" />
         </template>

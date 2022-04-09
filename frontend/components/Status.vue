@@ -2,13 +2,13 @@
   <div v-if="status">
     <div class="status-label status-success text-success">
       <font-awesome-icon icon="check" class="text-success" />
-      Success
+      {{ $t('components.status.success') }}
     </div>
   </div>
   <div v-else>
     <div class="status-label status-error text-danger">
       <font-awesome-icon icon="times" class="text-danger" />
-      Error
+      {{ $t('components.status.error') }}
     </div>
     <p v-if="errorMessage" class="d-inline-block text-danger mb-0">
       {{ errorMessage }}

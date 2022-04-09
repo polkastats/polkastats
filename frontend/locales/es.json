@@ -11,7 +11,9 @@
       "copy_address": "Se ha copiado la dirección ",
       "to_clipboard": " al portapapeles",
       "address": "Dirección ",
-      "copied_to_the_clipboard": " copiada al portapapeles"
+      "copied_to_the_clipboard": " copiada al portapapeles",
+      "click_to_copy": "Clic para copiar la dirección al portapapeles",
+      "address_copied": "¡Dirección copiada al portapapeles!"
     },
     "chain": {
       "last_block": "Último bloque",
@@ -167,6 +169,81 @@
     "staking_slashes_chart": {
       "title": "penalizaciones de staking en los últimos 7 días",
       "slash": "penalización"
+    },
+    "wallet_selector": {
+      "title": "Conecta tu cuenta",
+      "description": "Conecta tu cuenta para obtener alertas y sugerencias sobre tus validadores",
+      "connect": "CONECTAR"
+    },
+    "validator": {
+      "score": "Puntos del validador"
+    },
+    "total_issuance_chart": {
+      "title": "emisión total en los últimos 30 días",
+      "block": "bloque",
+      "total_issuance": "emisión total"
+    },
+    "status": {
+      "success": "Éxito",
+      "error": "Error"
+    },
+    "selected_validators": {
+      "loading": "Cargando",
+      "no_validators_selected": "Ningún validador seleccionado",
+      "clear": "Limpiar",
+      "nominate": "Nominar"
+    },
+    "rating": {
+      "very_good": "Muy bueno",
+      "good": "Bueno",
+      "neutral": "Neutral",
+      "bad": "Malo",
+      "loading": "Cargando"
+    },
+    "ranking": {
+      "exclude_from_search": "EExcluir de la búsqueda",
+      "allow_only_one_cluster_member": "Permitir solo un miembro de cada cluster",
+      "search_results": "Resultados de la búsqueda",
+      "elected_validator": "Validator electo",
+      "not_elected_validator": "Validator no electo",
+      "all": "Todos",
+      "elected": "Electo",
+      "name": "Nombre",
+      "relative_performance": "Rendimiento",
+      "self_stake": "Stake propio",
+      "active_eras": "Eras activo",
+      "score": "Puntuación",
+      "selected": "Seleccionado",
+      "inactive": "No electo",
+      "greedy": "100% comisión",
+      "slashed": "Slashed",
+      "oversubscribed": "Sobresuscrito",
+      "no_identity": "Sin identidad",
+      "no_verified_identity": "Sin identidad verificada",
+      "no_auto_payout": "Sin auto-pago",
+      "below_average_era_points": "Por debajo de la media de puntos de era",
+      "no_participate_governance": "No participa en la gobernanza",
+      "part_of_cluster": "Exceso miembros cluster",
+      "select_unselect": "Seleccionar / Deseleccionar validador"
+    },
+    "metric_weights": {
+      "help": "Es posible ajustar los pesos de cada métrica del ranking de validadores",
+      "customize_validator_score": "Personalizar puntuación validador",
+      "elected": "ELECTO",
+      "commission_changes": "CAMBIOS COMISIÓN",
+      "era_points_avg": "MEDIA PUNTOS ERA",
+      "governance_participation": "PARTICIPACIÓN GOVERNANZA",
+      "identity": "IDENTIDAD",
+      "number_of_nominators": "NÚMERO DE NOMINADORES",
+      "address_creation": "CREACIÓN CUENTA",
+      "payout_frequency": "FRECUENCIA PAGOS",
+      "slashes": "SLASHES",
+      "subaccounts": "SUBCUENTAS",
+      "updating_score": "actualizando puntuación"
+    },
+    "header": {
+      "connect": "Conectar",
+      "selected": "seleccionado"
     }
   },
   "layout": {

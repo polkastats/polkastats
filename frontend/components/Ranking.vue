@@ -20,7 +20,7 @@
                   style="font-size: 1rem"
                 />
               </nuxt-link>
-              Exclude from search
+              {{ $t('components.ranking.exclude_from_search') }}
             </h5>
           </div>
           <div class="col-2 text-right">
@@ -53,7 +53,7 @@
               :checked="onlyOneClusterMember"
               @change="toggleOnlyOneClusterMember()"
             >
-              Allow only one cluster member
+              {{ $t('components.ranking.allow_only_one_cluster_member') }}
             </b-form-checkbox>
           </p>
         </b-collapse>
@@ -75,7 +75,8 @@
       <b-row>
         <b-col cols="12">
           <p class="mb-2 text-primary2">
-            Search results: {{ filteredRows }} / {{ ranking.length }}
+            {{ $t('components.ranking.search_results') }}: {{ filteredRows }} /
+            {{ ranking.length }}
           </p>
         </b-col>
       </b-row>
@@ -106,7 +107,7 @@
           <span
             v-if="data.item.active"
             v-b-tooltip.hover
-            title="Elected validator"
+            :title="$t('components.ranking.elected_validator')"
           >
             <font-awesome-layers class="align-middle">
               <font-awesome-icon icon="circle" class="elected-icon" />
@@ -118,7 +119,11 @@
               />
             </font-awesome-layers>
           </span>
-          <span v-else v-b-tooltip.hover title="Not elected validator">
+          <span
+            v-else
+            v-b-tooltip.hover
+            :title="$t('components.ranking.not_elected_validator')"
+          >
             <font-awesome-layers>
               <font-awesome-icon icon="circle" class="not-elected-icon" />
               <font-awesome-icon
@@ -221,7 +226,7 @@
             <a
               v-b-tooltip.hover
               class="select"
-              title="Select / Unselect validator"
+              :title="$t('components.ranking.select_unselect')"
               @click="toggleSelected(data.item.stashAddress)"
             >
               <font-awesome-icon
@@ -264,8 +269,8 @@
               <b-button
                 variant="outline-primary2"
                 :class="{ 'selected-per-page': perPage === 1000 }"
-                @click="setPageSize(1000)"
-                >All</b-button
+                @click="setPageSize(10000)"
+                >{{ $t('components.ranking.all') }}</b-button
               >
             </b-button-group>
           </div>
@@ -279,7 +284,9 @@
               <b-dropdown-item @click="setPageSize(10)">10</b-dropdown-item>
               <b-dropdown-item @click="setPageSize(50)">50</b-dropdown-item>
               <b-dropdown-item @click="setPageSize(100)">100</b-dropdown-item>
-              <b-dropdown-item @click="setPageSize(1000)">All</b-dropdown-item>
+              <b-dropdown-item @click="setPageSize(10000)">{{
+                $t('components.ranking.all')
+              }}</b-dropdown-item>
             </b-dropdown>
           </div>
         </div>
@@ -313,37 +320,43 @@ export default {
       fields: [
         {
           key: 'active',
-          label: 'Elected',
+          label: this.$t('components.ranking.elected'),
           sortable: true,
           class:
             'text-center d-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
-        { key: 'name', sortable: true },
+        {
+          key: 'name',
+          label: this.$t('components.ranking.name'),
+          sortable: true,
+        },
         {
           key: 'relativePerformance',
-          label: 'R. Performance',
+          label: this.$t('components.ranking.relative_performance'),
           sortable: true,
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         {
           key: 'selfStake',
+          label: this.$t('components.ranking.self_stake'),
           sortable: true,
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         {
           key: 'activeEras',
+          label: this.$t('components.ranking.active_eras'),
           sortable: true,
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         {
           key: 'customVRCScore',
-          label: 'Score',
+          label: this.$t('components.ranking.score'),
           sortable: true,
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         {
           key: 'selected',
-          label: 'Select',
+          label: this.$t('components.ranking.selected'),
           sortable: true,
           class:
             'text-center d-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
@@ -351,23 +364,35 @@ export default {
       ],
       exclude: [],
       options: [
-        { text: 'Not elected', value: 'inactive' },
-        { text: '100% commission', value: 'greedy' },
-        { text: 'Slashed', value: 'slashed' },
-        { text: 'Oversubscribed', value: 'oversubscribed' },
-        { text: 'No identity', value: 'noIdentity' },
-        { text: 'No verified identity', value: 'noVerifiedIdentity' },
-        { text: 'No auto-payout', value: 'noAutoPayout' },
+        { text: this.$t('components.ranking.inactive'), value: 'inactive' },
+        { text: this.$t('components.ranking.greedy'), value: 'greedy' },
+        { text: this.$t('components.ranking.slashed'), value: 'slashed' },
         {
-          text: 'Below average era points',
+          text: this.$t('components.ranking.oversubscribed'),
+          value: 'oversubscribed',
+        },
+        {
+          text: this.$t('components.ranking.no_identity'),
+          value: 'noIdentity',
+        },
+        {
+          text: this.$t('components.ranking.no_verified_identity'),
+          value: 'noVerifiedIdentity',
+        },
+        {
+          text: this.$t('components.ranking.no_auto_payout'),
+          value: 'noAutoPayout',
+        },
+        {
+          text: this.$t('components.ranking.below_average_era_points'),
           value: 'belowAverageEraPoints',
         },
         {
-          text: 'No participation in governance',
+          text: this.$t('components.ranking.no_participate_governance'),
           value: 'noParticipateGovernance',
         },
         {
-          text: 'Cluster member excess',
+          text: this.$t('components.ranking.part_of_cluster'),
           value: 'partOfCluster',
         },
       ],

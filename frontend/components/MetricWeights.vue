@@ -6,7 +6,7 @@
           <nuxt-link
             v-b-tooltip.hover
             to="/help#custom-vrc-score"
-            title="You can customize the weights of the VRC score and thereby deviate from the default option (equal weight of each metric)"
+            :title="$t('components.metric_weights.help')"
           >
             <font-awesome-icon
               icon="question-circle"
@@ -14,7 +14,7 @@
               style="font-size: 1rem"
             />
           </nuxt-link>
-          Customize VRC score
+          {{ $t('components.metric_weights.customize_validator_score') }}
         </h5>
       </div>
       <div class="col-2 text-right">
@@ -31,7 +31,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  ELECTED
+                  {{ $t('components.metric_weights.elected') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#elected"
@@ -62,7 +62,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  COMMISSION CHANGES
+                  {{ $t('components.metric_weights.commission_changes') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#commission"
@@ -97,7 +97,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  ERA POINTS AVG
+                  {{ $t('components.metric_weights.era_points_avg') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#erapoints"
@@ -130,7 +130,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  GOVERNANCE PARTICIPATION
+                  {{ $t('components.metric_weights.governance_participation') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#governance"
@@ -165,7 +165,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  IDENTITY
+                  {{ $t('components.metric_weights.identity') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#identity"
@@ -196,7 +196,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  NUMBER OF NOMINATORS
+                  {{ $t('components.metric_weights.number_of_nominators') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#nominators"
@@ -231,7 +231,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  ADDRESS CREATION
+                  {{ $t('components.metric_weights.address_creation') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#address"
@@ -262,7 +262,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  PAYOUT FREQUENCY
+                  {{ $t('components.metric_weights.payout_frequency') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#payouts"
@@ -295,7 +295,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  SLASHES
+                  {{ $t('components.metric_weights.slashes') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#slashes"
@@ -326,7 +326,7 @@
             <div class="col-md-6">
               <div class="row">
                 <div class="col-8 col-md-6">
-                  SUBACCOUNTS
+                  {{ $t('components.metric_weights.subaccounts') }}
                   <nuxt-link
                     v-b-tooltip.hover
                     to="/help/metrics#subaccounts"
@@ -368,7 +368,9 @@
           @change="toggle()"
         />
       </div>
-      <p v-if="loading" class="text-center mb-2">updating score...</p>
+      <p v-if="loading" class="text-center mb-2">
+        {{ $t('components.metric_weights.updating_score') }}...
+      </p>
     </b-collapse>
   </div>
 </template>
