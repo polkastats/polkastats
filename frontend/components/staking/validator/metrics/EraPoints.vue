@@ -3,11 +3,11 @@
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
-          Era points
+          {{ $t('components.era_points.title') }}
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#erapoints"
-            title="Evaluate if the era points earned by the validator in the history are below or above average"
+            :title="$t('components.era_points.help')"
           >
             <font-awesome-icon
               icon="question-circle"
@@ -23,14 +23,20 @@
     </div>
     <div class="description">
       <p v-if="rating === 2">
-        Above average! Validator got {{ percent.toFixed(2) }}% of the total era
-        points in the last 21 days while average was
-        {{ average.toFixed(2) }}%<br />
+        {{
+          $t('components.address.description_1', {
+            percent: percent.toFixed(2),
+            average: average.toFixed(2),
+          })
+        }}<br />
       </p>
       <p v-else>
-        Below average! Validator got {{ percent.toFixed(2) }}% of the total era
-        points in the last 21 days while average was
-        {{ average.toFixed(2) }}%<br />
+        {{
+          $t('components.address.description_2', {
+            percent: percent.toFixed(2),
+            average: average.toFixed(2),
+          })
+        }}<br />
       </p>
     </div>
   </div>

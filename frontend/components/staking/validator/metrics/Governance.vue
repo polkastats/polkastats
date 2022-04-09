@@ -3,11 +3,11 @@
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
-          Governance
+          {{ $t('components.governance.title') }}
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#governance"
-            title="Evaluate if the validator is backing a council member and if is participating in a current proposal or referendum (as proposer or voter)"
+            :title="$t('components.governance.help')"
           >
             <font-awesome-icon
               icon="question-circle"
@@ -23,17 +23,15 @@
     </div>
     <div class="description">
       <p v-if="councilBacking && active">
-        The validator is backing a council member and is participating in a
-        active democracy proposal or refererendum
+        {{ $t('components.governance.description_1') }}
       </p>
       <p v-else-if="councilBacking && !active">
-        The validator is backing a council member
+        {{ $t('components.governance.description_2') }}
       </p>
       <p v-else-if="!councilBacking && active">
-        The validator is participating in a active democracy proposal or
-        refererendum
+        {{ $t('components.governance.description_3') }}
       </p>
-      <p v-else>The validator is not participating in governance</p>
+      <p v-else>{{ $t('components.governance.description_4') }}</p>
     </div>
   </div>
 </template>

@@ -25,7 +25,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'payouts',
+          text: this.$t('components.payouts_chart.title'),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -69,7 +69,7 @@ export default {
         labels: this.payoutHistory.map(({ era }) => era),
         datasets: [
           {
-            labels: 'payments',
+            labels: this.$t('components.payouts_chart.payments'),
             data: this.payoutHistory.map(({ status }) => {
               if (status === 'paid') {
                 return 1

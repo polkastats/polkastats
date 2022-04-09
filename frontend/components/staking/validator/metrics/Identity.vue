@@ -3,11 +3,11 @@
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
-          Identity
+          {{ $t('components.identity.title') }}
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#identity"
-            title="Evaluate the quality of the identity data provided by the validator"
+            :title="$t('components.identity.help')"
           >
             <font-awesome-icon
               icon="question-circle"
@@ -23,19 +23,18 @@
     </div>
     <div class="description">
       <p v-if="rating === 3">
-        Validator has a verified identity and provide all possible information
+        {{ $t('components.identity.description_1') }}
       </p>
       <p v-else-if="rating === 2">
-        Validator has a verified identity but doesn't provide all possible
-        information
+        {{ $t('components.identity.description_2') }}
       </p>
       <p v-else-if="rating === 1">
-        Validator did set an identity but didn't verify
+        {{ $t('components.identity.description_3') }}
       </p>
-      <p v-else>Validator has no identity set</p>
+      <p v-else>{{ $t('components.identity.description_4') }}</p>
     </div>
     <div v-if="identity.legal" class="row">
-      <div class="col-md-3">Legal name:</div>
+      <div class="col-md-3">Legal:</div>
       <div class="col-md-9">
         {{ identity.legal }}
       </div>

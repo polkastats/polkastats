@@ -33,7 +33,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'Average performance',
+          text: this.$t('components.dashboard_performance.title'),
           fontSize: 18,
           fontColor: config.themeVersion === 'dark' ? '#fff' : '#000',
           fontStyle: 'lighter',
@@ -73,7 +73,9 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'avg. performance',
+                labelString: this.$t(
+                  'components.dashboard_performance.avg_performance'
+                ),
               },
             },
           ],

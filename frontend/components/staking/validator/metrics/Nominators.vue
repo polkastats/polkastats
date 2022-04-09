@@ -3,11 +3,11 @@
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
-          Nominators
+          {{ $t('components.nominators.title') }}
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#nominators"
-            title="Evaluate nominators and if the validator is oversubscribed"
+            :title="$t('components.nominators.help')"
           >
             <font-awesome-icon
               icon="question-circle"
@@ -23,13 +23,14 @@
     </div>
     <div class="description">
       <p v-if="rating > 0">
-        Detected {{ nominators }} nominator<span v-if="nominators > 1">s</span>,
-        validator is not oversubscribed
+        {{ $t('components.nominators.description_1', { nominators })
+        }}<span v-if="nominators > 1">s</span>,
+        {{ $t('components.nominators.description_2') }}
       </p>
       <p v-else-if="rating === 0 && nominators > 0">
-        Validator is oversubscribed ({{ nominators }} nominators)
+        {{ $t('components.nominators.description_3', { nominators }) }}
       </p>
-      <p v-else>Validator doesn't have any nominators</p>
+      <p v-else>{{ $t('components.nominators.description_4') }}</p>
     </div>
   </div>
 </template>

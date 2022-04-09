@@ -23,7 +23,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'commission',
+          text: this.$t('components.commission_chart.title'),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -49,7 +49,6 @@ export default {
               ticks: {
                 beginAtZero: true,
                 suggestedMin: 0,
-                // suggestedMax: 100,
               },
               gridLines: {
                 display: true,
@@ -67,7 +66,7 @@ export default {
         labels: this.commissionHistory.map(({ era }) => era),
         datasets: [
           {
-            labels: 'commission',
+            labels: this.$t('components.commission_chart.commission'),
             data: this.commissionHistory.map(({ commission }) => commission),
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             borderColor: 'rgba(230, 0, 122, 0.8)',

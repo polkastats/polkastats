@@ -3,7 +3,7 @@
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
-          Slashes
+          {{ $t('components.slashes.title') }}
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#slashes"

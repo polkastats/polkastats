@@ -33,7 +33,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'VRC score',
+          text: this.$t('components.dashboard_vrc_score.title'),
           fontSize: 18,
           fontColor: config.themeVersion === 'dark' ? '#fff' : '#000',
           fontStyle: 'lighter',
@@ -72,7 +72,9 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'avg. VRC score',
+                labelString: this.$t(
+                  'components.dashboard_vrc_score.vrc_score'
+                ),
               },
             },
           ],

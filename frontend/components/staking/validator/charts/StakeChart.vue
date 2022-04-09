@@ -25,7 +25,9 @@ export default {
         },
         title: {
           display: true,
-          text: `elected self stake (${config.tokenSymbol})`,
+          text: this.$t('components.stake_chart.title', {
+            tokenSymbol: config.tokenSymbol,
+          }),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -68,7 +70,7 @@ export default {
         labels: this.stakeHistory.map(({ era }) => era),
         datasets: [
           {
-            labels: 'elected own stake',
+            labels: this.$t('components.stake_chart.elected_own_stake'),
             data: this.stakeHistory.map(({ self }) =>
               new BigNumber(self)
                 .div(new BigNumber(10).pow(config.tokenDecimals))

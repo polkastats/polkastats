@@ -274,6 +274,38 @@
     "dashboard_era_points": {
       "title": "Media de puntos de era",
       "avg_era_points": "Media de puntos de era"
+    },
+    "dashboard_performance": {
+      "title": "Rendimiento medio",
+      "avg_performance": "rendimiento medio"
+    },
+    "dashboard_self_stake": {
+      "title": "Stake propio medio",
+      "avg_self_stake": "stake propio electo medio"
+    },
+    "dashboard_vrc_score": {
+      "title": "Puntuación validador",
+      "vrc_score": "puntuación"
+    },
+    "commission_chart": {
+      "title": "comisión",
+      "commission": "comisión"
+    },
+    "era_points_chart": {
+      "title": "puntos de era",
+      "era_points": "puntos de era"
+    },
+    "payouts_chart": {
+      "title": "pagos de recompensas",
+      "payments": "pagos"
+    },
+    "relative_performance_chart": {
+      "title": "rendimiento relativo",
+      "relative_performance": "rendimiento relativo"
+    },
+    "stake_chart": {
+      "title": "stake electo propio ({tokenSymbol})",
+      "elected_own_stake": "stake electo propio"
     }
   },
   "layout": {

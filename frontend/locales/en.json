@@ -274,6 +274,97 @@
     "dashboard_era_points": {
       "title": "Average era points",
       "avg_era_points": "avg. era points"
+    },
+    "dashboard_performance": {
+      "title": "Average performance",
+      "avg_performance": "avg. performance"
+    },
+    "dashboard_self_stake": {
+      "title": "Average elected self stake",
+      "avg_self_stake": "avg. elected self stake"
+    },
+    "dashboard_vrc_score": {
+      "title": "Validator score",
+      "vrc_score": "score"
+    },
+    "commission_chart": {
+      "title": "commission",
+      "commission": "commission"
+    },
+    "era_points_chart": {
+      "title": "era points",
+      "era_points": "era points"
+    },
+    "payouts_chart": {
+      "title": "payouts",
+      "payments": "payments"
+    },
+    "relative_performance_chart": {
+      "title": "relative performance",
+      "relative_performance": "relative performance"
+    },
+    "stake_chart": {
+      "title": "elected own stake ({tokenSymbol})",
+      "elected_own_stake": "elected own stake"
+    },
+
+    "address": {
+      "title": "Address creation",
+      "help": "Evaluate how old is the validator address",
+      "description_1": "Stash address was created at block",
+      "description_2": "and parent identity address was created at block"
+    },
+    "commission": {
+      "title": "Commission",
+      "help": "Evaluate validator commission over time",
+      "description_1": "Current commission is"
+    },
+
+    "era_points": {
+      "title": "Era points",
+      "help": "Evaluate if the era points earned by the validator in the history are below or above average",
+      "description_1": "Above average! Validator got {percent}% of the total era points in the last 21 days while average was {average}%",
+      "description_2": "Below average! Validator got {percent}% of the total era points in the last 21 days while average was {average}%"
+    },
+    "governance": {
+      "governance": "Governance",
+      "help": "Evaluate if the validator is backing a council member and if is participating in a current proposal or referendum (as proposer or voter)",
+      "description_1": "The validator is backing a council member and is participating in a active democracy proposal or refererendum",
+      "description_2": "The validator is backing a council member",
+      "description_3": "The validator is participating in a active democracy proposal or refererendum",
+      "description_4": "The validator is not participating in governance"
+    },
+    "identity": {
+      "title": "Identity",
+      "help": "Evaluate the quality of the identity data provided by the validator",
+      "description_1": "Validator has a verified identity and provide all possible information",
+      "description_2": "Validator has a verified identity but doesn't provide all possible information",
+      "description_3": "Validator did set an identity but didn't verify",
+      "description_4": "Validator has no identity set"
+    },
+    "nominators": {
+      "title": "Nominators",
+      "help": "Evaluate nominators and if the validator is oversubscribed",
+      "description_1": "Detected {nominators} nominator",
+      "description_2": "validator is not oversubscribed",
+      "description_3": "Validator is oversubscribed ({nominators} nominators)",
+      "description_4": "Validator doesn't have any nominators"
+    },
+    "payouts": {
+      "title": "Frequency of payouts",
+      "elected_own_stake": "elected own stake"
+    },
+    "slashes": {
+      "title": "Slashes",
+      "elected_own_stake": "elected own stake"
+    },
+    "subaccounts": {
+      "title": "Subaccounts",
+      "elected_own_stake": "elected own stake"
+    },
+    "thousand": {
+      "title": "Thousand Validator Program",
+      "elected_own_stake": "elected own stake"
     }
   },
   "layout": {

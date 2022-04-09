@@ -23,7 +23,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'era points',
+          text: this.$t('components.era_points_chart.title'),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -67,7 +67,7 @@ export default {
         labels: this.eraPointsHistory.map(({ era }) => era),
         datasets: [
           {
-            labels: 'commission',
+            labels: this.$t('components.era_points_chart.era_points'),
             data: this.eraPointsHistory.map(({ points }) => points),
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             borderColor: 'rgba(230, 0, 122, 0.8)',

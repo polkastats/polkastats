@@ -34,7 +34,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'Average self stake',
+          text: this.$t('components.dashboard_self_stake.title'),
           fontSize: 18,
           fontColor: config.themeVersion === 'dark' ? '#fff' : '#000',
           fontStyle: 'lighter',
@@ -73,7 +73,9 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'avg. elected self stake',
+                labelString: this.$t(
+                  'components.dashboard_self_stake.avg_self_stake'
+                ),
               },
             },
           ],

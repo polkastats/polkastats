@@ -3,11 +3,11 @@
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
-          Commission
+          {{ $t('components.commission.title') }}
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#commission"
-            title="Evaluate validator commission over time"
+            :title="$t('components.commission.help')"
           >
             <font-awesome-icon
               icon="question-circle"
@@ -23,7 +23,8 @@
     </div>
     <div class="description">
       <p v-if="!isNaN(commission)">
-        Current commission is {{ commission.toFixed(2) }}%
+        {{ $t('components.commission.description_1') }}
+        {{ commission.toFixed(2) }}%
       </p>
     </div>
   </div>

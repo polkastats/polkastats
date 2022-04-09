@@ -23,7 +23,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'relative performance',
+          text: this.$t('components.relative_performance_chart.title'),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -66,7 +66,9 @@ export default {
         labels: this.relativePerformanceHistory.map(({ era }) => era),
         datasets: [
           {
-            labels: 'relative performance',
+            labels: this.$t(
+              'components.relative_performance_chart.relative_performance'
+            ),
             data: this.relativePerformanceHistory.map(
               ({ relativePerformance }) => relativePerformance
             ),

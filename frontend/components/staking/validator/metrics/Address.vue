@@ -3,11 +3,11 @@
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
-          Address creation
+          {{ $t('components.address.title') }}
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#address"
-            title="Evaluate how old is the validator address"
+            :title="$t('components.address.help')"
           >
             <font-awesome-icon
               icon="question-circle"
@@ -22,9 +22,11 @@
       </div>
     </div>
     <div class="description">
-      Stash address was created at block #{{ formatNumber(createdAtBlock) }}
+      {{ $t('components.address.description_1') }} #{{
+        formatNumber(createdAtBlock)
+      }}
       <span v-if="identity.parent">
-        and parent identity address was created at block #{{
+        {{ $t('components.address.description_2') }} #{{
           formatNumber(parentCreatedAtBlock)
         }}
       </span>
