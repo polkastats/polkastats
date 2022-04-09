@@ -12,7 +12,7 @@
               <nuxt-link
                 v-b-tooltip.hover
                 to="/help#exclude-filter"
-                title="You can exclude groups of validators based on your preferences"
+                :title="$t('components.ranking.exclude_description')"
               >
                 <font-awesome-icon
                   icon="question-circle"

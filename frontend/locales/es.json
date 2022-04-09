@@ -201,7 +201,8 @@
       "loading": "Cargando"
     },
     "ranking": {
-      "exclude_from_search": "EExcluir de la búsqueda",
+      "exclude_from_search": "Excluir de la búsqueda",
+      "exclude_description": "Puedes excluir grupos de validadores en base a tus preferencias",
       "allow_only_one_cluster_member": "Permitir solo un miembro de cada cluster",
       "search_results": "Resultados de la búsqueda",
       "elected_validator": "Validator electo",
@@ -250,6 +251,17 @@
       "current_era": "Era actual",
       "nominators": "Nominadores",
       "minimum_stake": "Stake mínimo"
+    },
+    "suggestions": {
+      "increased_commission": "El validador {validatorName}, incluido en tu set de validadores activos, incrementó su comisión de {firstCommission}% a {lastCommission}%",
+      "pending_payouts": "El validador  {validatorName}, incluido en tu set de validadores activos, tiene {pendingPayouts} pagos pendientes de recompensas y algunas están próximas a expirar",
+      "slashed": "El validador {validatorName}, incluido en tu set de validadores activos, fue penalizado en las últimas 84 eras",
+      "performance": "El validador {validatorName}, incluido en tu set de validadores activos, está riendiendo por debajo de la media"
+    },
+    "featured": {
+      "title": "Validator inactivo destacado",
+      "description": "Incluir algunos validadores inactivos en tu set incentiva la descentralización de la red, también los validadores inactivos pueden producir mayores recompensas cuando se activan",
+      "add": "Añadir al set"
     }
   },
   "layout": {

@@ -73,7 +73,11 @@ export default {
                 parseFloat(firstCommission.commission)
               ) {
                 localSuggestions.push(
-                  `Validator ${validatorAddress}, which is included in your current on-chain set, increased its commission from ${firstCommission.commission}% to ${lastCommission.commission}%`
+                  this.$t('components.suggestions.increased_commission', {
+                    validatorName: `${validator.name} ${validatorAddress}`,
+                    firstCommission: firstCommission.commission,
+                    lastCommission: lastCommission.commission,
+                  })
                 )
               }
 
@@ -94,27 +98,28 @@ export default {
                   .filter((payout) => payout.status === 'pending').length > 0
               if (payoutAlert) {
                 localSuggestions.push(
-                  `Validator ${
-                    validator.name + ' '
-                  }${validatorAddress}, which is included in your current on-chain set, has ${pendingPayouts} pending rewards and some of them are next to expire in the next 24h`
+                  this.$t('components.suggestions.pending_payouts', {
+                    validatorName: `${validator.name} ${validatorAddress}`,
+                    pendingPayouts,
+                  })
                 )
               }
 
               // slashes
               if (validator.slashed) {
                 localSuggestions.push(
-                  `Validator ${
-                    validator.name + ' '
-                  }${validatorAddress}, which is included in your current on-chain set, was slashed in the last 84 eras`
+                  this.$t('components.suggestions.slashed', {
+                    validatorName: `${validator.name} ${validatorAddress}`,
+                  })
                 )
               }
 
               // performance
               if (validator.relative_performance < 0.5) {
                 localSuggestions.push(
-                  `Validator ${
-                    validator.name + ' '
-                  }${validatorAddress}, which is included in your current on-chain set, performs below network average`
+                  this.$t('components.suggestions.performance', {
+                    validatorName: `${validator.name} ${validatorAddress}`,
+                  })
                 )
               }
             })

@@ -1,11 +1,9 @@
 <template>
   <div>
     <b-alert v-if="featured" class="text-center" show dismissible>
-      <h4>Featured waiting validator</h4>
+      <h4>{{ $t('components.featured.title') }}</h4>
       <p>
-        Including some waiting validators in your set incentivize the
-        decentralization of the network, also waiting validators can produce
-        increased rewards when they become active.
+        {{ $t('components.featured.description') }}
       </p>
       <Identicon :address="featured.stash_address" :size="24" />
       <nuxt-link :to="localePath(`/validator/${featured.stash_address}`)">
@@ -16,7 +14,7 @@
         :disabled="disabled"
         variant="outline-primary"
         @click="toggleSelected(featured.stash_address)"
-        >Add to your set</b-button
+        >{{ $t('components.featured.add') }}</b-button
       >
     </b-alert>
   </div>

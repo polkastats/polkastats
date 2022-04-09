@@ -202,6 +202,7 @@
     },
     "ranking": {
       "exclude_from_search": "Exclude from search",
+      "exclude_description": "You can exclude groups of validators based on your preferences",
       "allow_only_one_cluster_member": "Allow only one cluster member",
       "search_results": "Search results",
       "elected_validator": "Elected validator",
@@ -250,6 +251,17 @@
       "current_era": "Current era",
       "nominators": "Nominators",
       "minimum_stake": "Minimum stake"
+    },
+    "suggestions": {
+      "increased_commission": "Validator {validatorName}, which is included in your current on-chain set, increased its commission from {firstCommission}% to {lastCommission}%",
+      "pending_payouts": "Validator {validatorName}, which is included in your current on-chain set, has {pendingPayouts} pending rewards and some of them are next to expire in the next 24h",
+      "slashed": "Validator {validatorName}, which is included in your current on-chain set, was slashed in the last 84 eras",
+      "performance": "Validator {validatorName}, which is included in your current on-chain set, performs below network average"
+    },
+    "featured": {
+      "title": "Featured waiting validator",
+      "description": "Including some waiting validators in your set incentivize the decentralization of the network, also waiting validators can produce increased rewards when they become active.",
+      "add": "Add to your set"
     }
   },
   "layout": {
