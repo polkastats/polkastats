@@ -262,6 +262,18 @@
       "title": "Validator inactivo destacado",
       "description": "Incluir algunos validadores inactivos en tu set incentiva la descentralización de la red, también los validadores inactivos pueden producir mayores recompensas cuando se activan",
       "add": "Añadir al set"
+    },
+    "fiat_conversion": {
+      "historic_value": "Valor estimado en el día de la transacción",
+      "current_value": "Valor actual"
+    },
+    "dashboard_commission": {
+      "title": "Comisión media",
+      "avg_commission": "comisión media (%)"
+    },
+    "dashboard_era_points": {
+      "title": "Media de puntos de era",
+      "avg_era_points": "Media de puntos de era"
     }
   },
   "layout": {

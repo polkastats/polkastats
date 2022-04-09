@@ -262,6 +262,18 @@
       "title": "Featured waiting validator",
       "description": "Including some waiting validators in your set incentivize the decentralization of the network, also waiting validators can produce increased rewards when they become active.",
       "add": "Add to your set"
+    },
+    "fiat_conversion": {
+      "historic_value": "Estimated value at the day of transaction",
+      "current_value": "Current value"
+    },
+    "dashboard_commission": {
+      "title": "Average commission",
+      "avg_commission": "avg. commission (%)"
+    },
+    "dashboard_era_points": {
+      "title": "Average era points",
+      "avg_era_points": "avg. era points"
     }
   },
   "layout": {

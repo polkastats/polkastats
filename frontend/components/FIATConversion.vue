@@ -4,7 +4,7 @@
       v-if="historical"
       v-b-tooltip.hover
       class="fiat-conversion d-inline-block"
-      :title="`Estimated value at the day of transaction`"
+      :title="$t('components.fiat_conversion.historic_value')"
     >
       (${{ formatNumber(historicalFIATValue.toFixed(2)) }})
     </div>
@@ -12,7 +12,7 @@
       v-else
       v-b-tooltip.hover
       class="fiat-conversion d-inline-block"
-      :title="`Current value`"
+      :title="$t('components.fiat_conversion.current_value')"
     >
       (${{ formatNumber(FIATValue.toFixed(2)) }})
     </div>

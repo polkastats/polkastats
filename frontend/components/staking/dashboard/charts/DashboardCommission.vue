@@ -33,7 +33,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'Average commission',
+          text: this.$t('components.dashboard_commission.title'),
           fontSize: 18,
           fontColor: config.themeVersion === 'dark' ? '#fff' : '#000',
           fontStyle: 'lighter',
@@ -73,7 +73,9 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'avg. commission (%)',
+                labelString: this.$t(
+                  'components.dashboard_commission.avg_commission'
+                ),
               },
             },
           ],

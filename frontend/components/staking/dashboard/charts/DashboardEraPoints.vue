@@ -33,7 +33,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'Average era points',
+          text: this.$t('components.dashboard_era_points.title'),
           fontSize: 18,
           fontColor: config.themeVersion === 'dark' ? '#fff' : '#000',
           fontStyle: 'lighter',
@@ -73,7 +73,9 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'avg. era points',
+                labelString: this.$t(
+                  'components.dashboard_era_points.avg_era_points'
+                ),
               },
             },
           ],
