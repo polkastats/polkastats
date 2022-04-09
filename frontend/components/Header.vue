@@ -134,10 +134,17 @@
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
 import { config } from '@/frontend.config.js'
+import Identicon from '@/components/Identicon.vue'
+import SelectedValidators from '@/components/staking/SelectedValidators.vue'
 import Languages from '@/components/Languages.vue'
+import WalletSelector from '@/components/WalletSelector.vue'
+
 export default {
   components: {
+    Identicon,
+    SelectedValidators,
     Languages,
+    WalletSelector,
   },
   mixins: [commonMixin],
   data() {

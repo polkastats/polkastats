@@ -16,7 +16,14 @@
 </template>
 
 <script>
+import Identicon from '@/components/Identicon.vue'
+import VerifiedIcon from '@/components/VerifiedIcon.vue'
+
 export default {
+  components: {
+    Identicon,
+    VerifiedIcon,
+  },
   props: {
     address: {
       type: String,

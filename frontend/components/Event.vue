@@ -91,6 +91,7 @@
 
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
+
 export default {
   mixins: [commonMixin],
   props: {

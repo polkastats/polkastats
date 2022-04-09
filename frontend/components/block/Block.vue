@@ -166,6 +166,7 @@ import BlockEvents from '@/components/block/BlockEvents.vue'
 import BlockLogs from '@/components/block/BlockLogs.vue'
 import Hash from '@/components/Hash.vue'
 import commonMixin from '@/mixins/commonMixin.js'
+
 export default {
   components: {
     BlockExtrinsics,

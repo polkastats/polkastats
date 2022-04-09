@@ -115,6 +115,7 @@
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import { paginationOptions } from '@/frontend.config.js'
+
 export default {
   mixins: [commonMixin],
   props: {

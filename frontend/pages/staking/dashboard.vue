@@ -26,12 +26,12 @@
 <script>
 import { config } from '@/frontend.config.js'
 import commonMixin from '@/mixins/commonMixin.js'
-import Stats from '@/components/dashboard/Stats.vue'
-import Suggestions from '@/components/dashboard/Suggestions.vue'
-import DashboardCommission from '@/components/dashboard/charts/DashboardCommission.vue'
-import DashboardSelfStake from '@/components/dashboard/charts/DashboardSelfStake.vue'
-import DashboardPerformance from '@/components/dashboard/charts/DashboardPerformance.vue'
-import DashboardEraPoints from '@/components/dashboard/charts/DashboardEraPoints.vue'
+import Stats from '@/components/staking/dashboard/Stats.vue'
+import Suggestions from '@/components/staking/dashboard/Suggestions.vue'
+import DashboardCommission from '@/components/staking/dashboard/charts/DashboardCommission.vue'
+import DashboardSelfStake from '@/components/staking/dashboard/charts/DashboardSelfStake.vue'
+import DashboardPerformance from '@/components/staking/dashboard/charts/DashboardPerformance.vue'
+import DashboardEraPoints from '@/components/staking/dashboard/charts/DashboardEraPoints.vue'
 export default {
   components: {
     Stats,

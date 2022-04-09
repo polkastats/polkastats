@@ -287,26 +287,28 @@
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
-import Identity from '@/components/validator/metrics/Identity.vue'
-import Address from '@/components/validator/metrics/Address.vue'
-import Slashes from '@/components/validator/metrics/Slashes.vue'
-import Subaccounts from '@/components/validator/metrics/Subaccounts.vue'
-import Nominators from '@/components/validator/metrics/Nominators.vue'
-import EraPoints from '@/components/validator/metrics/EraPoints.vue'
-import Commission from '@/components/validator/metrics/Commission.vue'
-import Payouts from '@/components/validator/metrics/Payouts.vue'
-import Governance from '@/components/validator/metrics/Governance.vue'
-import Thousand from '@/components/validator/metrics/Thousand.vue'
-import RelativePerformanceChart from '@/components/validator/charts/RelativePerformanceChart.vue'
-import EraPointsChart from '@/components/validator/charts/EraPointsChart.vue'
-import PayoutsChart from '@/components/validator/charts/PayoutsChart.vue'
-import StakeChart from '@/components/validator/charts/StakeChart.vue'
-import CommissionChart from '@/components/validator/charts/CommissionChart.vue'
-import Nominations from '@/components/validator/Nominations.vue'
+import SelectedValidators from '@/components/staking/SelectedValidators.vue'
+import Identity from '@/components/staking/validator/metrics/Identity.vue'
+import Address from '@/components/staking/validator/metrics/Address.vue'
+import Slashes from '@/components/staking/validator/metrics/Slashes.vue'
+import Subaccounts from '@/components/staking/validator/metrics/Subaccounts.vue'
+import Nominators from '@/components/staking/validator/metrics/Nominators.vue'
+import EraPoints from '@/components/staking/validator/metrics/EraPoints.vue'
+import Commission from '@/components/staking/validator/metrics/Commission.vue'
+import Payouts from '@/components/staking/validator/metrics/Payouts.vue'
+import Governance from '@/components/staking/validator/metrics/Governance.vue'
+import Thousand from '@/components/staking/validator/metrics/Thousand.vue'
+import RelativePerformanceChart from '@/components/staking/validator/charts/RelativePerformanceChart.vue'
+import EraPointsChart from '@/components/staking/validator/charts/EraPointsChart.vue'
+import PayoutsChart from '@/components/staking/validator/charts/PayoutsChart.vue'
+import StakeChart from '@/components/staking/validator/charts/StakeChart.vue'
+import CommissionChart from '@/components/staking/validator/charts/CommissionChart.vue'
+import Nominations from '@/components/staking/validator/Nominations.vue'
 import { config } from '@/frontend.config.js'
 
 export default {
   components: {
+    SelectedValidators,
     Identity,
     Address,
     Slashes,

@@ -27,13 +27,13 @@
   </div>
 </template>
 <script>
-import LastBlocks from '@/components/LastBlocks.vue'
-import LastTransfers from '@/components/LastTransfers.vue'
-import LastExtrinsics from '@/components/LastExtrinsics.vue'
-import LastEvents from '@/components/LastEvents.vue'
-import TransfersChart from '@/components/TransfersChart.vue'
-import Chain from '@/components/Chain.vue'
-import Search from '@/components/Search.vue'
+import LastBlocks from '@/components/home/LastBlocks.vue'
+import LastTransfers from '@/components/home/LastTransfers.vue'
+import LastExtrinsics from '@/components/home/LastExtrinsics.vue'
+import LastEvents from '@/components/home/LastEvents.vue'
+import TransfersChart from '@/components/home/TransfersChart.vue'
+import Chain from '@/components/home/Chain.vue'
+import Search from '@/components/home/Search.vue'
 import { config } from '@/frontend.config.js'
 
 export default {

@@ -23,6 +23,7 @@ import axios from 'axios'
 import { BigNumber } from 'bignumber.js'
 import commonMixin from '@/mixins/commonMixin.js'
 import { config } from '@/frontend.config.js'
+
 export default {
   mixins: [commonMixin],
   props: {

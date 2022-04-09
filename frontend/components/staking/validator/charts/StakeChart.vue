@@ -1,25 +1,19 @@
 <template>
-  <ReactiveLineChart
-    :chart-data="chartData"
-    :options="chartOptions"
-    :height="100"
-    class="mb-4"
-  />
+  <LineChart :data="chartData" :options="chartOptions" :height="200" />
 </template>
 <script>
-import { gql } from 'graphql-tag'
 import { BigNumber } from 'bignumber.js'
-import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
+import LineChart from '@/components/charts/LineChart.js'
 import { config } from '@/frontend.config.js'
 
 export default {
   components: {
-    ReactiveLineChart,
+    LineChart,
   },
   props: {
-    accountId: {
-      type: String,
-      default: () => '',
+    stakeHistory: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -31,7 +25,7 @@ export default {
         },
         title: {
           display: true,
-          text: this.$t('components.staking_slashes_chart.title'),
+          text: `elected self stake (${config.tokenSymbol})`,
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -62,26 +56,21 @@ export default {
                 display: true,
                 color: 'rgba(200, 200, 200, 0.4)',
               },
-              scaleLabel: {
-                display: true,
-                labelString: this.$t('components.staking_slashes_chart.slash'),
-              },
             },
           ],
         },
       },
-      slashes: [],
     }
   },
   computed: {
     chartData() {
       return {
-        labels: this.slashes.map(({ era }) => era),
+        labels: this.stakeHistory.map(({ era }) => era),
         datasets: [
           {
-            labels: 'slashes',
-            data: this.slashes.map(({ amount }) =>
-              new BigNumber(amount)
+            labels: 'elected own stake',
+            data: this.stakeHistory.map(({ self }) =>
+              new BigNumber(self)
                 .div(new BigNumber(10).pow(config.tokenDecimals))
                 .toNumber()
             ),
@@ -93,41 +82,6 @@ export default {
           },
         ],
       }
-    },
-  },
-  apollo: {
-    $subscribe: {
-      slashes: {
-        query: gql`
-          subscription staking_slash($accountId: String!) {
-            staking_slash(
-              order_by: { era: asc }
-              where: { account_id: { _eq: $accountId } }
-            ) {
-              era
-              amount
-              timestamp
-            }
-          }
-        `,
-        variables() {
-          return {
-            accountId: this.accountId,
-          }
-        },
-        skip() {
-          return !this.accountId
-        },
-        result({ data }) {
-          this.slashes = data.staking_slash.map((slash) => {
-            return {
-              era: slash.era,
-              timestamp: slash.timestamp,
-              amount: slash.amount,
-            }
-          })
-        },
-      },
     },
   },
 }

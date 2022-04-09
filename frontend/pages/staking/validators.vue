@@ -7,8 +7,12 @@
 </template>
 
 <script>
+import Ranking from '@/components/staking/Ranking.vue'
 import { config } from '@/frontend.config.js'
 export default {
+  components: {
+    Ranking,
+  },
   head() {
     return {
       title: this.$t('pages.validators.head_title', {

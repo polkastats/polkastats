@@ -1,19 +1,25 @@
 <template>
-  <ReactiveLineChart
-    :chart-data="chartData"
-    :options="chartOptions"
-    :height="100"
-    class="mb-4"
-  />
+  <div v-if="loading" class="text-center py-4">
+    <Loading />
+  </div>
+  <div v-else>
+    <ReactiveLineChart
+      :chart-data="chartData"
+      :options="chartOptions"
+      :height="100"
+      class="mb-4"
+    />
+  </div>
 </template>
 <script>
-import { gql } from 'graphql-tag'
-import { BigNumber } from 'bignumber.js'
+import axios from 'axios'
+import Loading from '@/components/Loading.vue'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
 import { config } from '@/frontend.config.js'
 
 export default {
   components: {
+    Loading,
     ReactiveLineChart,
   },
   props: {
@@ -31,7 +37,7 @@ export default {
         },
         title: {
           display: true,
-          text: this.$t('components.staking_slashes_chart.title'),
+          text: this.$t('components.transfers_chart.title'),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -48,7 +54,7 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'era',
+                labelString: this.$t('components.transfers_chart.date'),
               },
             },
           ],
@@ -57,6 +63,7 @@ export default {
               ticks: {
                 beginAtZero: true,
                 suggestedMin: 0,
+                // suggestedMax: 100,
               },
               gridLines: {
                 display: true,
@@ -64,27 +71,26 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: this.$t('components.staking_slashes_chart.slash'),
+                labelString: this.$t(
+                  'components.transfers_chart.balance_transfers'
+                ),
               },
             },
           ],
         },
       },
-      slashes: [],
+      loading: true,
+      apiData: [],
     }
   },
   computed: {
     chartData() {
       return {
-        labels: this.slashes.map(({ era }) => era),
+        labels: this.apiData.map(({ date }) => date),
         datasets: [
           {
-            labels: 'slashes',
-            data: this.slashes.map(({ amount }) =>
-              new BigNumber(amount)
-                .div(new BigNumber(10).pow(config.tokenDecimals))
-                .toNumber()
-            ),
+            labels: 'total',
+            data: this.apiData.map(({ transfers }) => transfers),
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             borderColor: 'rgba(230, 0, 122, 0.8)',
             hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
@@ -95,40 +101,17 @@ export default {
       }
     },
   },
-  apollo: {
-    $subscribe: {
-      slashes: {
-        query: gql`
-          subscription staking_slash($accountId: String!) {
-            staking_slash(
-              order_by: { era: asc }
-              where: { account_id: { _eq: $accountId } }
-            ) {
-              era
-              amount
-              timestamp
-            }
-          }
-        `,
-        variables() {
-          return {
-            accountId: this.accountId,
-          }
-        },
-        skip() {
-          return !this.accountId
-        },
-        result({ data }) {
-          this.slashes = data.staking_slash.map((slash) => {
-            return {
-              era: slash.era,
-              timestamp: slash.timestamp,
-              amount: slash.amount,
-            }
-          })
-        },
-      },
-    },
+  async created() {
+    try {
+      const response = await axios.get(
+        `${config.backendAPI}/api/v1/charts/transfers`
+      )
+      this.apiData = response.data.data
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('Error fetching tx chart data: ', error)
+    }
+    this.loading = false
   },
 }
 </script>

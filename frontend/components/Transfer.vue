@@ -123,14 +123,17 @@
 
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
-import Status from '@/components/Status.vue'
-import FIATConversion from '@/components/FIATConversion.vue'
 import Hash from '@/components/Hash.vue'
+import Status from '@/components/Status.vue'
+import Identicon from '@/components/Identicon.vue'
+import FIATConversion from '@/components/FIATConversion.vue'
+
 export default {
   components: {
-    Status,
-    FIATConversion,
     Hash,
+    Status,
+    Identicon,
+    FIATConversion,
   },
   mixins: [commonMixin],
   props: {

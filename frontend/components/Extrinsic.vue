@@ -141,6 +141,7 @@ import commonMixin from '@/mixins/commonMixin.js'
 import Status from '@/components/Status.vue'
 import FIATConversion from '@/components/FIATConversion.vue'
 import Hash from '@/components/Hash.vue'
+
 export default {
   components: {
     Status,

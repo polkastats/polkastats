@@ -11,6 +11,7 @@ import { gql } from 'graphql-tag'
 import { BigNumber } from 'bignumber.js'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
 import { config } from '@/frontend.config.js'
+
 export default {
   components: {
     ReactiveLineChart,
