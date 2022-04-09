@@ -306,6 +306,68 @@
     "stake_chart": {
       "title": "stake electo propio ({tokenSymbol})",
       "elected_own_stake": "stake electo propio"
+    },
+    "address": {
+      "title": "Address creation",
+      "help": "Evaluate how old is the validator address",
+      "description_1": "Stash address was created at block",
+      "description_2": "and parent identity address was created at block"
+    },
+    "commission": {
+      "title": "Commission",
+      "help": "Evaluate validator commission over time",
+      "description_1": "Current commission is"
+    },
+    "era_points": {
+      "title": "Era points",
+      "help": "Evaluate if the era points earned by the validator in the history are below or above average",
+      "description_1": "Above average! Validator got {percent}% of the total era points in the last 21 days while average was {average}%",
+      "description_2": "Below average! Validator got {percent}% of the total era points in the last 21 days while average was {average}%"
+    },
+    "governance": {
+      "governance": "Governance",
+      "help": "Evaluate if the validator is backing a council member and if is participating in a current proposal or referendum (as proposer or voter)",
+      "description_1": "The validator is backing a council member and is participating in a active democracy proposal or refererendum",
+      "description_2": "The validator is backing a council member",
+      "description_3": "The validator is participating in a active democracy proposal or refererendum",
+      "description_4": "The validator is not participating in governance"
+    },
+    "identity": {
+      "title": "Identity",
+      "help": "Evaluate the quality of the identity data provided by the validator",
+      "description_1": "Validator has a verified identity and provide all possible information",
+      "description_2": "Validator has a verified identity but doesn't provide all possible information",
+      "description_3": "Validator did set an identity but didn't verify",
+      "description_4": "Validator has no identity set"
+    },
+    "nominators": {
+      "title": "Nominators",
+      "help": "Evaluate nominators and if the validator is oversubscribed",
+      "description_1": "Detected {nominators} nominator",
+      "description_2": "validator is not oversubscribed",
+      "description_3": "Validator is oversubscribed ({nominators} nominators)",
+      "description_4": "Validator doesn't have any nominators"
+    },
+    "payouts": {
+      "title": "Frequency of payouts",
+      "help": "Evaluate frequency of rewards distribution",
+      "description_1": "Very good, validator has {pending} unclaimed era rewards",
+      "description_2": "Good, validator has {pending} unclaimed era rewards",
+      "description_3": "Neutral, validator has {pending} unclaimed era rewards",
+      "description_4": "No payouts detected in the last week"
+    },
+    "slashes": {
+      "title": "Slashes",
+      "help": "Evaluate if the validator was slashed in the last 28 eras (1 week)",
+      "description_1": "No slashes detected",
+      "description_2": "Validator was slashed"
+    },
+    "subaccounts": {
+      "title": "Subaccounts",
+      "help": "Evaluate if the validator uses sub-accounts"
+    },
+    "thousand": {
+      "title": "Thousand Validator Program"
     }
   },
   "layout": {

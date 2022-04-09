@@ -7,7 +7,7 @@
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#payouts"
-            title="Evaluate frequency of rewards distribution"
+            :title="$t('components.payouts.help')"
           >
             <font-awesome-icon
               icon="question-circle"
@@ -23,15 +23,15 @@
     </div>
     <div class="description">
       <p v-if="rating === 3">
-        Very good, validator has {{ pending }} unclaimed era rewards
+        {{ $t('components.payouts.description_1', { pending }) }}
       </p>
       <p v-else-if="rating === 2">
-        Good, validator has {{ pending }} unclaimed era rewards
+        {{ $t('components.payouts.description_2', { pending }) }}
       </p>
       <p v-else-if="rating === 1">
-        Neutral, validator has {{ pending }} unclaimed era rewards
+        {{ $t('components.payouts.description_3', { pending }) }}
       </p>
-      <p v-else>No payouts detected in the last week</p>
+      <p v-else>{{ $t('components.payouts.description_4') }}</p>
     </div>
   </div>
 </template>

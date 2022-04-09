@@ -7,7 +7,7 @@
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#slashes"
-            title="Evaluate if the validator was slashed in the last 28 eras (1 week)"
+            :title="$t('components.slashes.help')"
           >
             <font-awesome-icon
               icon="question-circle"
@@ -22,8 +22,8 @@
       </div>
     </div>
     <div class="description">
-      <p v-if="rating > 0">No slashes detected</p>
-      <p v-else>Validator was slashed</p>
+      <p v-if="rating > 0">{{ $t('components.slashes.description_1') }}</p>
+      <p v-else>{{ $t('components.slashes.description_2') }}</p>
     </div>
   </div>
 </template>

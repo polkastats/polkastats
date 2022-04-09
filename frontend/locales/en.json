@@ -307,7 +307,6 @@
       "title": "elected own stake ({tokenSymbol})",
       "elected_own_stake": "elected own stake"
     },
-
     "address": {
       "title": "Address creation",
       "help": "Evaluate how old is the validator address",
@@ -319,7 +318,6 @@
       "help": "Evaluate validator commission over time",
       "description_1": "Current commission is"
     },
-
     "era_points": {
       "title": "Era points",
       "help": "Evaluate if the era points earned by the validator in the history are below or above average",
@@ -352,19 +350,24 @@
     },
     "payouts": {
       "title": "Frequency of payouts",
-      "elected_own_stake": "elected own stake"
+      "help": "Evaluate frequency of rewards distribution",
+      "description_1": "Very good, validator has {pending} unclaimed era rewards",
+      "description_2": "Good, validator has {pending} unclaimed era rewards",
+      "description_3": "Neutral, validator has {pending} unclaimed era rewards",
+      "description_4": "No payouts detected in the last week"
     },
     "slashes": {
       "title": "Slashes",
-      "elected_own_stake": "elected own stake"
+      "help": "Evaluate if the validator was slashed in the last 28 eras (1 week)",
+      "description_1": "No slashes detected",
+      "description_2": "Validator was slashed"
     },
     "subaccounts": {
       "title": "Subaccounts",
-      "elected_own_stake": "elected own stake"
+      "help": "Evaluate if the validator uses sub-accounts"
     },
     "thousand": {
-      "title": "Thousand Validator Program",
-      "elected_own_stake": "elected own stake"
+      "title": "Thousand Validator Program"
     }
   },
   "layout": {

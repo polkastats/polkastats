@@ -7,7 +7,7 @@
           <nuxt-link
             v-b-tooltip.hover
             to="/help/metrics#subaccounts"
-            title="Evaluate if the validator uses sub-accounts"
+            :title="$t('components.subaccounts.help')"
           >
             <font-awesome-icon
               icon="question-circle"
