@@ -246,8 +246,10 @@
       "selected": "selected"
     },
     "stats": {
-      "connect": "Connect",
-      "selected": "selected"
+      "active_waiting_validators": "Active/waiting val",
+      "current_era": "Current era",
+      "nominators": "Nominators",
+      "minimum_stake": "Minimum stake"
     }
   },
   "layout": {

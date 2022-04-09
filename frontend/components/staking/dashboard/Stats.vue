@@ -2,7 +2,7 @@
   <div class="row text-center dashboard-global-stats">
     <div class="col-lg-6 col-xl-3 mb-4">
       <div class="box">
-        <h6>Active/waiting val</h6>
+        <h6>{{ $t('components.stats.active_waiting_validators') }}</h6>
         <span class="stat"
           >{{ activeValidatorCount }}/{{ waitingValidatorCount }}</span
         >
@@ -10,19 +10,19 @@
     </div>
     <div class="col-lg-6 col-xl-3 mb-4">
       <div class="box">
-        <h6>Current era</h6>
+        <h6>{{ $t('components.stats.current_era') }}</h6>
         <span class="stat">{{ formatNumber(currentEra) }}</span>
       </div>
     </div>
     <div class="col-lg-6 col-xl-3 mb-4">
       <div class="box">
-        <h6>Nominators</h6>
+        <h6>{{ $t('components.stats.nominators') }}</h6>
         <span class="stat">{{ formatNumber(nominatorCount) }}</span>
       </div>
     </div>
     <div class="col-lg-6 col-xl-3 mb-4">
       <div class="box">
-        <h6>Minimum stake</h6>
+        <h6>{{ $t('components.stats.minimum_stake') }}</h6>
         <span class="stat">{{ formatAmount(minimumStake, 3) }}</span>
       </div>
     </div>

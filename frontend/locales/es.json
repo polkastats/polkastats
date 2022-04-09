@@ -244,6 +244,12 @@
     "header": {
       "connect": "Conectar",
       "selected": "seleccionado"
+    },
+    "stats": {
+      "active_waiting_validators": "Val activos/inactivos",
+      "current_era": "Era actual",
+      "nominators": "Nominadores",
+      "minimum_stake": "Stake mínimo"
     }
   },
   "layout": {
