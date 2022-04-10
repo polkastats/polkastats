@@ -1,7 +1,7 @@
 <template>
   <div class="page container pt-3">
     <div>
-      <Stats />
+      <StakingStats />
       <Suggestions :validators="chainValidatorAddresses" />
       <div class="row">
         <div class="col-md-6">
@@ -26,7 +26,7 @@
 <script>
 import { config } from '@/frontend.config.js'
 import commonMixin from '@/mixins/commonMixin.js'
-import Stats from '@/components/staking/dashboard/Stats.vue'
+import StakingStats from '@/components/staking/dashboard/StakingStats.vue'
 import Suggestions from '@/components/staking/dashboard/Suggestions.vue'
 import DashboardCommission from '@/components/staking/dashboard/charts/DashboardCommission.vue'
 import DashboardSelfStake from '@/components/staking/dashboard/charts/DashboardSelfStake.vue'
@@ -34,7 +34,7 @@ import DashboardPerformance from '@/components/staking/dashboard/charts/Dashboar
 import DashboardEraPoints from '@/components/staking/dashboard/charts/DashboardEraPoints.vue'
 export default {
   components: {
-    Stats,
+    StakingStats,
     Suggestions,
     DashboardCommission,
     DashboardSelfStake,

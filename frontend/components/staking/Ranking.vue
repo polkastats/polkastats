@@ -167,12 +167,12 @@
                 >
                   <font-awesome-icon
                     v-if="data.item.selected"
-                    icon="hand-paper"
+                    icon="icon-check"
                     class="selected text-selected"
                   />
                   <font-awesome-icon
                     v-else
-                    icon="hand-paper"
+                    icon="icon-check-empty"
                     class="unselected text-secondary"
                   />
                 </a>
@@ -231,13 +231,13 @@
             >
               <font-awesome-icon
                 v-if="data.item.selected"
-                icon="hand-paper"
-                class="selected text-selected"
+                icon="check-square"
+                class="selected text-success"
               />
               <font-awesome-icon
                 v-else
-                icon="hand-paper"
-                class="unselected text-primary2"
+                icon="square"
+                class="unselected text-light"
               />
             </a>
           </p>

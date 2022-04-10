@@ -1,29 +1,59 @@
 <template>
-  <div class="row text-center dashboard-global-stats">
-    <div class="col-lg-6 col-xl-3 mb-4">
-      <div class="box">
-        <h6>{{ $t('components.stats.active_waiting_validators') }}</h6>
-        <span class="stat"
-          >{{ activeValidatorCount }}/{{ waitingValidatorCount }}</span
-        >
+  <div class="chain-info mb-4">
+    <div class="row">
+      <div class="col-6 col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="mb-3">
+              {{ $t('components.staking_stats.active_waiting_validators') }}
+            </h5>
+            <nuxt-link
+              v-b-tooltip.hover
+              :to="localePath(`/staking/validators`)"
+              :title="$t('components.staking_stats.goto_validators')"
+            >
+              <h6 class="d-inline-block">
+                {{ activeValidatorCount }}/{{ waitingValidatorCount }}
+              </h6>
+            </nuxt-link>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="col-lg-6 col-xl-3 mb-4">
-      <div class="box">
-        <h6>{{ $t('components.stats.current_era') }}</h6>
-        <span class="stat">{{ formatNumber(currentEra) }}</span>
+      <div class="col-6 col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="mb-3">
+              {{ $t('components.staking_stats.current_era') }}
+            </h5>
+            <h6 class="d-inline-block">
+              {{ formatNumber(currentEra) }}
+            </h6>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="col-lg-6 col-xl-3 mb-4">
-      <div class="box">
-        <h6>{{ $t('components.stats.nominators') }}</h6>
-        <span class="stat">{{ formatNumber(nominatorCount) }}</span>
+      <div class="col-6 col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="mb-3">
+              {{ $t('components.staking_stats.nominators') }}
+            </h5>
+            <h6 class="d-inline-block">
+              {{ formatNumber(nominatorCount) }}
+            </h6>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="col-lg-6 col-xl-3 mb-4">
-      <div class="box">
-        <h6>{{ $t('components.stats.minimum_stake') }}</h6>
-        <span class="stat">{{ formatAmount(minimumStake, 3) }}</span>
+      <div class="col-6 col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="mb-3">
+              {{ $t('components.staking_stats.minimum_stake') }}
+            </h5>
+            <h6 class="d-inline-block">
+              {{ formatAmount(minimumStake, 3) }}
+            </h6>
+          </div>
+        </div>
       </div>
     </div>
   </div>

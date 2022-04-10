@@ -60,13 +60,13 @@
           >
             <font-awesome-icon
               v-if="isSelected(validator.stashAddress)"
-              icon="hand-paper"
-              class="selected fa-2x text-selected"
+              icon="check-square"
+              class="selected fa-2x text-success"
             />
             <font-awesome-icon
               v-else
-              icon="hand-paper"
-              class="unselected fa-2x text-secondary"
+              icon="square"
+              class="unselected fa-2x text-light"
             />
           </a>
         </div>

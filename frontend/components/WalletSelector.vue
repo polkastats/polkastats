@@ -30,6 +30,7 @@
           <p class="text-right mb-0">
             <b-button
               variant="info"
+              size="sm"
               @click="selectAddress(data.item.address)"
               >{{ $t('components.wallet_selector.connect') }}</b-button
             >

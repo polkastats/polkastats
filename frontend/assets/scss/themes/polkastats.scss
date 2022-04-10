@@ -724,3 +724,8 @@ section .section-title {
 .reload {
   cursor: pointer;
 }
+
+.staking-info h4 {
+  color: $body-color;
+  font-weight: 100;
+}

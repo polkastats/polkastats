@@ -30,7 +30,6 @@
             }}
             {{ $t('components.header.selected') }}
           </span>
-          <font-awesome-icon icon="hand-paper" />
         </template>
         <SelectedValidators />
       </b-dropdown>

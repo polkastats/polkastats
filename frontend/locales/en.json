@@ -246,11 +246,12 @@
       "connect": "Connect",
       "selected": "selected"
     },
-    "stats": {
+    "staking_stats": {
       "active_waiting_validators": "Active/waiting val",
       "current_era": "Current era",
       "nominators": "Nominators",
-      "minimum_stake": "Minimum stake"
+      "minimum_stake": "Minimum stake",
+      "goto_validators": "Check validators information"
     },
     "suggestions": {
       "increased_commission": "Validator {validatorName}, which is included in your current on-chain set, increased its commission from {firstCommission}% to {lastCommission}%",

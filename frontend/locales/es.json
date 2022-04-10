@@ -246,11 +246,12 @@
       "connect": "Conectar",
       "selected": "seleccionado"
     },
-    "stats": {
+    "staking_stats": {
       "active_waiting_validators": "Val activos/inactivos",
       "current_era": "Era actual",
       "nominators": "Nominadores",
-      "minimum_stake": "Stake mínimo"
+      "minimum_stake": "Stake mínimo",
+      "goto_validators": "Ver información de los validadores"
     },
     "suggestions": {
       "increased_commission": "El validador {validatorName}, incluido en tu set de validadores activos, incrementó su comisión de {firstCommission}% a {lastCommission}%",
