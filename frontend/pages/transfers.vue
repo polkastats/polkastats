@@ -20,12 +20,17 @@
             <!-- Filter -->
             <b-row style="margin-bottom: 1rem">
               <b-col cols="12">
-                <b-form-input
-                  id="filterInput"
-                  v-model="filter"
-                  type="search"
-                  :placeholder="$t('pages.transfers.search_placeholder')"
-                />
+                <b-input-group size="xl" class="mb-2">
+                  <b-input-group-prepend is-text>
+                    <font-awesome-icon icon="search" />
+                  </b-input-group-prepend>
+                  <b-form-input
+                    id="filterInput"
+                    v-model="filter"
+                    type="search"
+                    :placeholder="$t('pages.transfers.search_placeholder')"
+                  />
+                </b-input-group>
               </b-col>
             </b-row>
             <div class="table-responsive">
@@ -129,7 +134,7 @@
                     <b-dropdown-item
                       v-for="(option, index) in paginationOptions"
                       :key="index"
-                      @click="setPageSize(10)"
+                      @click="setPageSize(option)"
                     >
                       {{ option }}
                     </b-dropdown-item>

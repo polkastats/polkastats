@@ -64,7 +64,42 @@
             </p>
           </template>
         </b-table>
-        <div class="mt-4 d-flex">
+      </div>
+      <!-- pagination -->
+      <div class="row">
+        <div class="col-6">
+          <!-- desktop -->
+          <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
+            <b-button-group>
+              <b-button
+                v-for="(option, index) in paginationOptions"
+                :key="index"
+                variant="outline-primary2"
+                :class="{ 'selected-per-page': perPage === option }"
+                @click="setPageSize(option)"
+              >
+                {{ option }}
+              </b-button>
+            </b-button-group>
+          </div>
+          <!-- mobile -->
+          <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
+            <b-dropdown
+              class="m-md-2"
+              text="Page size"
+              variant="outline-primary2"
+            >
+              <b-dropdown-item
+                v-for="(option, index) in paginationOptions"
+                :key="index"
+                @click="setPageSize(option)"
+              >
+                {{ option }}
+              </b-dropdown-item>
+            </b-dropdown>
+          </div>
+        </div>
+        <div class="col-6">
           <b-pagination
             v-model="currentPage"
             :total-rows="totalRows"
@@ -73,16 +108,6 @@
             variant="dark"
             align="right"
           ></b-pagination>
-          <b-button-group class="ml-2">
-            <b-button
-              v-for="(item, index) in tableOptions"
-              :key="index"
-              variant="primary2"
-              @click="setPageSize(item)"
-            >
-              {{ item }}
-            </b-button>
-          </b-button-group>
         </div>
       </div>
     </div>
@@ -112,7 +137,7 @@ export default {
     return {
       loading: true,
       extrinsics: [],
-      tableOptions: paginationOptions,
+      paginationOptions,
       perPage: localStorage.paginationOptions
         ? parseInt(localStorage.paginationOptions)
         : 10,

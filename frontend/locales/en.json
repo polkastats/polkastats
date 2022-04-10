@@ -225,7 +225,8 @@
       "below_average_era_points": "Below average era points",
       "no_participate_governance": "No participation in governance",
       "part_of_cluster": "Cluster member excess",
-      "select_unselect": "Select / Unselect validator"
+      "select_unselect": "Select / Unselect validator",
+      "search_placeholder": "Search validator by address or name"
     },
     "metric_weights": {
       "help": "You can customize the weights of the VRC score and thereby deviate from the default option (equal weight of each metric)",
@@ -552,7 +553,7 @@
       "title": "Transfers",
       "head_title": "PolkaStats - {networkName} transfers",
       "head_content": "{networkName} transfers",
-      "search_placeholder": "Search transfer by block number, hash, source or destination address",
+      "search_placeholder": "Search transfer by block number, hash or address",
       "transfer_details": "Check transfer information",
       "block_details": "Check block information",
       "hash": "Hash",

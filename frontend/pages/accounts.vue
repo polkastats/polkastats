@@ -19,12 +19,17 @@
           <!-- Filter -->
           <b-row>
             <b-col lg="12" class="mb-3">
-              <b-form-input
-                id="filterInput"
-                v-model="filter"
-                type="search"
-                :placeholder="$t('pages.accounts.search_placeholder')"
-              />
+              <b-input-group size="xl" class="mb-2">
+                <b-input-group-prepend is-text>
+                  <font-awesome-icon icon="search" />
+                </b-input-group-prepend>
+                <b-form-input
+                  id="filterInput"
+                  v-model="filter"
+                  type="search"
+                  :placeholder="$t('pages.accounts.search_placeholder')"
+                />
+              </b-input-group>
             </b-col>
           </b-row>
           <!-- Table with pagination-->
@@ -122,32 +127,32 @@
                 </div>
               </template>
               <template #cell(free_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.free_balance) }}
                 </p>
               </template>
               <template #cell(locked_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.locked_balance) }}
                 </p>
               </template>
               <template #cell(available_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.available_balance) }}
                 </p>
               </template>
               <template #cell(reserved_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.reserved_balance) }}
                 </p>
               </template>
               <template #cell(total_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.total_balance) }}
                 </p>
               </template>
               <template #cell(nonce)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ data.item.nonce }}
                 </p>
               </template>
@@ -180,7 +185,7 @@
                   <b-dropdown-item
                     v-for="(option, index) in paginationOptions"
                     :key="index"
-                    @click="setPageSize(10)"
+                    @click="setPageSize(option)"
                   >
                     {{ option }}
                   </b-dropdown-item>

@@ -222,10 +222,11 @@
       "no_identity": "Sin identidad",
       "no_verified_identity": "Sin identidad verificada",
       "no_auto_payout": "Sin auto-pago",
-      "below_average_era_points": "Por debajo de la media de puntos de era",
+      "below_average_era_points": "Pocos puntos de era",
       "no_participate_governance": "No participa en la gobernanza",
       "part_of_cluster": "Exceso miembros cluster",
-      "select_unselect": "Seleccionar / Deseleccionar validador"
+      "select_unselect": "Seleccionar / Deseleccionar validador",
+      "search_placeholder": "Buscar validador por dirección o nombre de identidad"
     },
     "metric_weights": {
       "help": "Es posible ajustar los pesos de cada métrica del ranking de validadores",
@@ -552,7 +553,7 @@
       "title": "Transferencias",
       "head_title": "PolkaStats - Transferencias en {networkName}",
       "head_content": "Transferencias en {networkName}",
-      "search_placeholder": "Buscar transferencia por número de bloque, hash o dirección de procedencia",
+      "search_placeholder": "Buscar transferencia por número de bloque, hash o dirección",
       "transfer_details": "Ver info de la transferencia",
       "block_details": "Ver info del bloque",
       "hash": "Hash",
@@ -656,8 +657,8 @@
     },
     "validators": {
       "title": "Validadores",
-      "head_title": "PolkaStats - Validatores proof of stake de {networkName}",
-      "head_content": "Validatores proof of stake de {networkName}"
+      "head_title": "PolkaStats - Validadores proof of stake de {networkName}",
+      "head_content": "Validadores proof of stake de {networkName}"
     },
     "validator": {
       "title": "Validador",

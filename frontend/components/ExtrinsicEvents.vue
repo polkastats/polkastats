@@ -70,7 +70,7 @@
             <b-dropdown-item
               v-for="(option, index) in paginationOptions"
               :key="index"
-              @click="setPageSize(10)"
+              @click="setPageSize(option)"
             >
               {{ option }}
             </b-dropdown-item>
