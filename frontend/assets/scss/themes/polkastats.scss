@@ -726,3 +726,9 @@ section .section-title {
   color: $body-color;
   font-weight: 100;
 }
+
+.remove,
+.remove:hover,
+.remove:active {
+  color: rgba(255, 0, 0, 0.5);
+}

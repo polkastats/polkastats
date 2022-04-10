@@ -215,17 +215,17 @@
       "active_eras": "Eras activo",
       "score": "Puntuación",
       "selected": "Seleccionado",
-      "inactive": "No electo",
+      "inactive": "No electos",
       "greedy": "100% comisión",
       "slashed": "Slashed",
-      "oversubscribed": "Sobresuscrito",
+      "oversubscribed": "Sobresuscritos",
       "no_identity": "Sin identidad",
       "no_verified_identity": "Sin identidad verificada",
       "no_auto_payout": "Sin auto-pago",
       "below_average_era_points": "Pocos puntos de era",
-      "no_participate_governance": "No participa en la gobernanza",
+      "no_participate_governance": "No participan en la gobernanza",
       "part_of_cluster": "Exceso miembros cluster",
-      "select_unselect": "Seleccionar / Deseleccionar validador",
+      "select_unselect": "Seleccionar / deseleccionar validador",
       "search_placeholder": "Buscar validador por dirección o nombre de identidad"
     },
     "metric_weights": {
@@ -662,8 +662,8 @@
     },
     "validator": {
       "title": "Validador",
-      "head_title": "PolkaStats - {networkName} validador",
-      "head_content": "{networkName} validador {address}",
+      "head_title": "PolkaStats - Validador de {networkName} {address}",
+      "head_content": "Validador de {networkName} {address}",
       "selected": "seleccionado",
       "metrics_description": "Esta información está verificada a partir de los datos históricos de la red {networkName}",
       "metrics": "Métricas",
@@ -678,7 +678,8 @@
     "nominate": {
       "title": "Nominar validadores",
       "head_title": "PolkaStats - Nominar validadores",
-      "head_content": "Nominar validadores"
+      "head_content": "Nominar validadores",
+      "extension_agent": "Explorador de bloques PolkaStats para {networkName}"
     },
     "staking_dashboard": {
       "title": "Staking dashboard",

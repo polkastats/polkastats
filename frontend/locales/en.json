@@ -225,7 +225,7 @@
       "below_average_era_points": "Below average era points",
       "no_participate_governance": "No participation in governance",
       "part_of_cluster": "Cluster member excess",
-      "select_unselect": "Select / Unselect validator",
+      "select_unselect": "Select / unselect validator",
       "search_placeholder": "Search validator by address or name"
     },
     "metric_weights": {
@@ -662,7 +662,7 @@
     },
     "validator": {
       "title": "Validator",
-      "head_title": "PolkaStats - {networkName} validator",
+      "head_title": "PolkaStats - {networkName} validator {address}",
       "head_content": "{networkName} validator {address}",
       "selected": "selected",
       "metrics_description": "This information is verified and provided by historical data on the {networkName} blockchain",
@@ -678,7 +678,8 @@
     "nominate": {
       "title": "Nominate validators",
       "head_title": "PolkaStats - Nominate validators",
-      "head_content": "Nominate validators"
+      "head_content": "Nominate validators",
+      "extension_agent": "PolkaStats block explorer for {networkName}"
     },
     "staking_dashboard": {
       "title": "Staking dashboard",

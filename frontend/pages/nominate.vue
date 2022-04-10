@@ -8,10 +8,10 @@
           offset-sm-1
           col-md-10
           offset-md-1
-          col-lg-8
-          offset-lg-2
-          col-xl-6
-          offset-xl-3
+          col-lg-6
+          offset-lg-3
+          col-xl-4
+          offset-xl-4
         "
       >
         <div v-if="loading">
@@ -215,7 +215,7 @@ export default {
   },
   async created() {
     this.allInjected = await web3Enable(
-      `${config.title} for ${this.capitalize(config.name)}`
+      this.$t('pages.nominate.extension_agent', { networkName: config.name })
     )
     this.isWeb3Injected = isWeb3Injected
     const wsProvider = new WsProvider(config.nodeWs)
