@@ -20,7 +20,7 @@
                   `/event/${data.item.block_number}/${data.item.event_index}`
                 )
               "
-              :title="$t('components_block_events.event_details')"
+              :title="$t('components.block_events.event_details')"
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.event_index
