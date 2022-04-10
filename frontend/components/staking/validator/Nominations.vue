@@ -82,11 +82,11 @@ export default {
       fields: [
         {
           key: 'who',
-          label: 'Who',
+          label: this.$t('components.nominations.who'),
         },
         {
           key: 'value',
-          label: 'Value',
+          label: this.$t('components.nominations.value'),
         },
       ],
     }

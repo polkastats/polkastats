@@ -7,14 +7,19 @@
       <div class="col-4 text-right text-success"></div>
     </div>
     <div class="description">
-      Validator is ranked #{{ thousand.rank }} in the
-      <a href="https://thousand-validators.kusama.network/#/" target="_blank"
-        >Kusama Thousand Validator Program</a
-      >, check its
+      {{
+        $t('components.thousand.description_1', { thousandRank: thousand.rank })
+      }}
+      <a href="https://thousand-validators.kusama.network/#/" target="_blank">{{
+        $t('components.thousand.description_2', {
+          networkName: config.networkName,
+        })
+      }}</a
+      >{{ $t('components.thousand.description_3') }}
       <a
         :href="`https://thousand-validators.kusama.network/#/leaderboard/${accountId}`"
         target="_blank"
-        >thousand validator profile page</a
+        >{{ $t('components.thousand.description_4') }}</a
       >.
       <!-- <pre>{{ JSON.stringify(thousand, null, 2) }}</pre> -->
     </div>
@@ -23,6 +28,7 @@
 
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
+import { config } from '@/frontend.config.js'
 
 export default {
   mixins: [commonMixin],
@@ -35,6 +41,11 @@ export default {
       type: Object,
       default: () => {},
     },
+  },
+  data() {
+    return {
+      config,
+    }
   },
 }
 </script>

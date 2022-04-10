@@ -325,7 +325,7 @@
       "description_2": "Below average! Validator got {percent}% of the total era points in the last 21 days while average was {average}%"
     },
     "governance": {
-      "governance": "Governance",
+      "title": "Governance",
       "help": "Evaluate if the validator is backing a council member and if is participating in a current proposal or referendum (as proposer or voter)",
       "description_1": "The validator is backing a council member and is participating in a active democracy proposal or refererendum",
       "description_2": "The validator is backing a council member",
@@ -364,10 +364,21 @@
     },
     "subaccounts": {
       "title": "Subaccounts",
-      "help": "Evaluate if the validator uses sub-accounts"
+      "help": "Evaluate if the validator uses sub-accounts",
+      "description_1": "Detected sub-identity",
+      "description_2": ", the validator is part of a cluster of {clusterMembers} validators",
+      "description_3": "No sub-identity detected"
     },
     "thousand": {
-      "title": "Thousand Validator Program"
+      "title": "Thousand Validator Program",
+      "description_1": "Validator is ranked #{thousandRank} in the",
+      "description_2": "{networkName} 1KV Program",
+      "description_3": ", check its",
+      "description_4": "1KV program profile page"
+    },
+    "nominations": {
+      "who": "Nominator",
+      "value": "Amount"
     }
   },
   "layout": {
@@ -652,7 +663,10 @@
       "head_title": "PolkaStats - {networkName} validator",
       "head_content": "{networkName} validator {address}",
       "selected": "selected",
-      "metrics": "This information is verified and provided by historical data on the {networkName} blockchain"
+      "metrics_description": "This information is verified and provided by historical data on the {networkName} blockchain",
+      "metrics": "Metrics",
+      "charts": "Charts",
+      "nominations": "Nominations"
     },
     "team": {
       "title": "Team",

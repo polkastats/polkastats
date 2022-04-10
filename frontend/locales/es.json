@@ -308,66 +308,77 @@
       "elected_own_stake": "stake electo propio"
     },
     "address": {
-      "title": "Address creation",
-      "help": "Evaluate how old is the validator address",
-      "description_1": "Stash address was created at block",
-      "description_2": "and parent identity address was created at block"
+      "title": "Creación de la cuenta",
+      "help": "Evalua la edad de la dirección de Stash del validador",
+      "description_1": "La dirección Stash del validador fue creada en el bloque",
+      "description_2": "y la dirección padre del validador fue creada en el bloque"
     },
     "commission": {
-      "title": "Commission",
-      "help": "Evaluate validator commission over time",
-      "description_1": "Current commission is"
+      "title": "Comisión",
+      "help": "Evalua la evolución de la comisión a lo largo del tiempo",
+      "description_1": "La comisión actual es del"
     },
     "era_points": {
-      "title": "Era points",
-      "help": "Evaluate if the era points earned by the validator in the history are below or above average",
-      "description_1": "Above average! Validator got {percent}% of the total era points in the last 21 days while average was {average}%",
-      "description_2": "Below average! Validator got {percent}% of the total era points in the last 21 days while average was {average}%"
+      "title": "Puntos de era",
+      "help": "Evalua si los puntos de era ganados por el validador están por encima o debajo de la media de la red",
+      "description_1": "¡Por encima de la media! El validador obtuvo el {percent}% del total de puntos en los últimos 21 días, la media fue del {average}%",
+      "description_2": "¡Por debajo de la media! El validador obtuvo el {percent}% del total de puntos en los últimos 21 días, la media fue del {average}%"
     },
     "governance": {
-      "governance": "Governance",
-      "help": "Evaluate if the validator is backing a council member and if is participating in a current proposal or referendum (as proposer or voter)",
-      "description_1": "The validator is backing a council member and is participating in a active democracy proposal or refererendum",
-      "description_2": "The validator is backing a council member",
-      "description_3": "The validator is participating in a active democracy proposal or refererendum",
-      "description_4": "The validator is not participating in governance"
+      "title": "Gobernanza",
+      "help": "Evalua si el validador está votando a un miembro del Consejo, votando en una propuesta activa o en un referendum",
+      "description_1": "El validador está votando a un miembro del Consejo y votando en una propuesta activa o en un referendum",
+      "description_2": "El validador está votando a un miembro del Consejo",
+      "description_3": "El validador ha votado en una propuesta o en un referendum activo",
+      "description_4": "¡El validador no está participando en la gobernanza!"
     },
     "identity": {
-      "title": "Identity",
-      "help": "Evaluate the quality of the identity data provided by the validator",
-      "description_1": "Validator has a verified identity and provide all possible information",
-      "description_2": "Validator has a verified identity but doesn't provide all possible information",
-      "description_3": "Validator did set an identity but didn't verify",
-      "description_4": "Validator has no identity set"
+      "title": "Identidad",
+      "help": "Evalua la calidad de los datos de identidad del validador",
+      "description_1": "El validador tiene una identidad verificada y proporciona toda la información posible",
+      "description_2": "El validador tiene una identidad verificada pero no proporciona toda la información posible",
+      "description_3": "El validador tiene una identidad sin verificar",
+      "description_4": "El validador no tiene una identidad"
     },
     "nominators": {
-      "title": "Nominators",
-      "help": "Evaluate nominators and if the validator is oversubscribed",
-      "description_1": "Detected {nominators} nominator",
-      "description_2": "validator is not oversubscribed",
-      "description_3": "Validator is oversubscribed ({nominators} nominators)",
-      "description_4": "Validator doesn't have any nominators"
+      "title": "Nominadores",
+      "help": "Evalua el número de nominadores del validador y si está sobresuscrito",
+      "description_1": "Detectados {nominators} nominadores",
+      "description_2": "validador no está sobresuscrito",
+      "description_3": "validador está sobresuscrito ({nominators} nominadores)",
+      "description_4": "El validador no tiene nominadores"
     },
     "payouts": {
-      "title": "Frequency of payouts",
-      "help": "Evaluate frequency of rewards distribution",
-      "description_1": "Very good, validator has {pending} unclaimed era rewards",
-      "description_2": "Good, validator has {pending} unclaimed era rewards",
-      "description_3": "Neutral, validator has {pending} unclaimed era rewards",
-      "description_4": "No payouts detected in the last week"
+      "title": "Frecuencia de pagos",
+      "help": "Evalua frecuencia de la distribución de recompensas del validador",
+      "description_1": "Muy bueno, el validador tiene {pending} recompensas por reclamar",
+      "description_2": "Bueno, el validador tiene {pending} recompensas por reclamar",
+      "description_3": "Neutral, el validador tiene {pending} recompensas por reclamar",
+      "description_4": "No se han detectado pagos en la última semana"
     },
     "slashes": {
-      "title": "Slashes",
-      "help": "Evaluate if the validator was slashed in the last 28 eras (1 week)",
-      "description_1": "No slashes detected",
-      "description_2": "Validator was slashed"
+      "title": "Penalizaciones",
+      "help": "Evaluate si el validador fue penalizado en las últimas 28 eras (1 semana)",
+      "description_1": "No se detectaron penalizaciones",
+      "description_2": "El validador fue penzalizado"
     },
     "subaccounts": {
-      "title": "Subaccounts",
-      "help": "Evaluate if the validator uses sub-accounts"
+      "title": "Subidentidades",
+      "help": "Evalua si el validador usa subcuentas",
+      "description_1": "Detectado sub-identidad",
+      "description_2": ", el validador es parte de un cluster de {clusterMembers} validadores",
+      "description_3": "No se ha detectado sub-identidad"
     },
     "thousand": {
-      "title": "Thousand Validator Program"
+      "title": "Thousand Validator Program",
+      "description_1": "El validador ocupa el puesto #{thousandRank} en el",
+      "description_2": "programa de validadores 1KV de {networkName}",
+      "description_3": ", accede",
+      "description_4": "a su página de perfil del programa 1KV"
+    },
+    "nominations": {
+      "who": "Nominador",
+      "value": "Cantidad"
     }
   },
   "layout": {
@@ -652,7 +663,10 @@
       "head_title": "PolkaStats - {networkName} validador",
       "head_content": "{networkName} validador {address}",
       "selected": "seleccionado",
-      "metrics": "Esta información está verificada a partir de los datos históricos de la red {networkName}"
+      "metrics_description": "Esta información está verificada a partir de los datos históricos de la red {networkName}",
+      "metrics": "Métricas",
+      "charts": "Gráficas",
+      "nominations": "Nominaciones"
     },
     "team": {
       "title": "Equipo",

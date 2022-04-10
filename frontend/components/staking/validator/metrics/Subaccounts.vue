@@ -23,12 +23,12 @@
     </div>
     <div class="description">
       <p v-if="rating > 0">
-        Detected sub-identity<span v-if="clusterMembers > 1"
-          >, the validator is part of a cluster of
-          {{ clusterMembers }} validators</span
-        >
+        {{ $t('components.subaccounts.description_1')
+        }}<span v-if="clusterMembers > 1">{{
+          $t('components.subaccounts.description_1', { clusterMembers })
+        }}</span>
       </p>
-      <p v-else>No sub-identity detected</p>
+      <p v-else>{{ $t('components.subaccounts.description_3') }}</p>
     </div>
   </div>
 </template>

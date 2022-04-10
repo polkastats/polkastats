@@ -154,14 +154,18 @@
         <!-- identity end -->
       </b-card>
       <b-tabs content-class="py-4">
-        <b-tab title="Metrics" active>
+        <b-tab :title="$t('pages.validator.metrics')" active>
           <b-alert
             show
             dismissible
             variant="info"
             class="text-center py-3 glitch"
           >
-            {{ $t('pages.validator.metrics', { networkName: config.name }) }}
+            {{
+              $t('pages.validator.metrics_description', {
+                networkName: config.name,
+              })
+            }}
           </b-alert>
           <div class="row pt-4">
             <div class="col-md-6 mb-5">
@@ -244,7 +248,7 @@
             </div>
           </div>
         </b-tab>
-        <b-tab title="Charts">
+        <b-tab :title="$t('pages.validator.charts')">
           <div class="row">
             <div class="col-xl-6 pb-4">
               <RelativePerformanceChart
@@ -276,7 +280,7 @@
             <div class="col-xl-6 pb-4"></div>
           </div>
         </b-tab>
-        <b-tab title="Nominations">
+        <b-tab :title="$t('pages.validator.nominations')">
           <Nominations :nominations="validator.nominations" />
         </b-tab>
       </b-tabs>
