@@ -6,6 +6,15 @@
     "processing": "Processing",
     "finalized": "Finalized"
   },
+  "store":  {
+    "ranking": {
+      "cluster_title": "Cluster already included!",
+      "cluster_not_recommended": "Selecting more than one member of a cluster is not recommended",
+      "cluster_not_allowed": "Selecting more than one member of a cluster is not allowed",
+      "limit_title": "Select up to {validatorSetSize} validators",
+      "limit_message": "Please remove before selecting a new one"
+    }
+  },
   "components": {
     "identicon": {
       "copy_address": "Copy address ",

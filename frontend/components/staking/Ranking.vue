@@ -171,12 +171,12 @@
                 >
                   <font-awesome-icon
                     v-if="data.item.selected"
-                    icon="icon-check"
+                    icon="check-square"
                     class="selected text-selected"
                   />
                   <font-awesome-icon
                     v-else
-                    icon="icon-check-empty"
+                    icon="square"
                     class="unselected text-secondary"
                   />
                 </a>

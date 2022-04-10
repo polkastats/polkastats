@@ -74,9 +74,9 @@ export const mutations = {
         const bootStrapToaster = new BToast()
         if (!state.onlyOneClusterMember) {
           bootStrapToaster.$bvToast.toast(
-            'Selecting more than one member of a cluster is not recommended',
+            this.$i18n.t('store.ranking.cluster_not_recommended'),
             {
-              title: 'Cluster already included!',
+              title: this.$i18n.t('store.ranking.cluster_title'),
               variant: 'warning',
               autoHideDelay: 5000,
               appendToast: false,
@@ -86,9 +86,9 @@ export const mutations = {
           validator.selected = true
         } else {
           bootStrapToaster.$bvToast.toast(
-            'Selecting more than one member of a cluster is not allowed',
+            this.$i18n.t('store.ranking.cluster_not_allowed'),
             {
-              title: 'Cluster already included!',
+              title: this.$i18n.t('store.ranking.cluster_title'),
               variant: 'danger',
               autoHideDelay: 5000,
               appendToast: false,
@@ -102,9 +102,11 @@ export const mutations = {
     } else {
       const bootStrapToaster = new BToast()
       bootStrapToaster.$bvToast.toast(
-        'Please remove before selecting a new one',
+        this.$i18n.t('store.ranking.limit_message'),
         {
-          title: `Select up to ${config.validatorSetSize} validators`,
+          title: this.$i18n.t('store.ranking.limit_title', {
+            validatorSetSize: config.validatorSetSize,
+          }),
           variant: 'danger',
           autoHideDelay: 5000,
           appendToast: false,
