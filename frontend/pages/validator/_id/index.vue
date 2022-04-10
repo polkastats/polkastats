@@ -14,12 +14,14 @@
             right
           >
             <template #button-content>
-              <span v-if="loading">Selected</span>
+              <span v-if="loading">{{
+                capitalize($t('pages.validator.selected'))
+              }}</span>
               <span v-else>
                 {{ selectedValidatorAddresses.length }}/{{
                   config.validatorSetSize
                 }}
-                selected
+                {{ $t('pages.validator.selected') }}
               </span>
               <font-awesome-icon icon="hand-paper" />
             </template>
@@ -44,7 +46,7 @@
               :href="`https://thousand-validators.kusama.network/#/leaderboard/${accountId}`"
               target="_blank"
               class="badge badge-pill badge-info"
-              >Thousand Validators Program</a
+              >1KV Program</a
             >
           </h4>
           <span class="py-2">&nbsp;</span>
@@ -76,7 +78,7 @@
           </div>
           <div class="col-md-9 mb-1 fee">
             <Identicon :address="validator.stashAddress" :size="20" />
-            <nuxt-link :to="`/account/${validator.stashAddress}`">
+            <nuxt-link :to="localePath(`/account/${validator.stashAddress}`)">
               {{ shortAddress(validator.stashAddress) }}
             </nuxt-link>
           </div>
@@ -87,7 +89,9 @@
           </div>
           <div class="col-md-9 mb-1 fee">
             <Identicon :address="validator.controllerAddress" :size="20" />
-            <nuxt-link :to="`/account/${validator.controllerAddress}`">
+            <nuxt-link
+              :to="localePath(`/account/${validator.controllerAddress}`)"
+            >
               {{ shortAddress(validator.controllerAddress) }}
             </nuxt-link>
           </div>
@@ -150,15 +154,18 @@
         <!-- identity end -->
       </b-card>
       <b-tabs content-class="py-4">
-        <b-tab title="Metrics" active>
+        <b-tab :title="$t('pages.validator.metrics')" active>
           <b-alert
             show
             dismissible
             variant="info"
             class="text-center py-3 glitch"
           >
-            This information is verified and provided by historical data on the
-            Kusama blockchain
+            {{
+              $t('pages.validator.metrics_description', {
+                networkName: config.name,
+              })
+            }}
           </b-alert>
           <div class="row pt-4">
             <div class="col-md-6 mb-5">
@@ -241,7 +248,7 @@
             </div>
           </div>
         </b-tab>
-        <b-tab title="Charts">
+        <b-tab :title="$t('pages.validator.charts')">
           <div class="row">
             <div class="col-xl-6 pb-4">
               <RelativePerformanceChart
@@ -273,7 +280,7 @@
             <div class="col-xl-6 pb-4"></div>
           </div>
         </b-tab>
-        <b-tab title="Nominations">
+        <b-tab :title="$t('pages.validator.nominations')">
           <Nominations :nominations="validator.nominations" />
         </b-tab>
       </b-tabs>
@@ -284,26 +291,28 @@
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
-import Identity from '@/components/validator/metrics/Identity.vue'
-import Address from '@/components/validator/metrics/Address.vue'
-import Slashes from '@/components/validator/metrics/Slashes.vue'
-import Subaccounts from '@/components/validator/metrics/Subaccounts.vue'
-import Nominators from '@/components/validator/metrics/Nominators.vue'
-import EraPoints from '@/components/validator/metrics/EraPoints.vue'
-import Commission from '@/components/validator/metrics/Commission.vue'
-import Payouts from '@/components/validator/metrics/Payouts.vue'
-import Governance from '@/components/validator/metrics/Governance.vue'
-import Thousand from '@/components/validator/metrics/Thousand.vue'
-import RelativePerformanceChart from '@/components/validator/charts/RelativePerformanceChart.vue'
-import EraPointsChart from '@/components/validator/charts/EraPointsChart.vue'
-import PayoutsChart from '@/components/validator/charts/PayoutsChart.vue'
-import StakeChart from '@/components/validator/charts/StakeChart.vue'
-import CommissionChart from '@/components/validator/charts/CommissionChart.vue'
-import Nominations from '@/components/validator/Nominations.vue'
+import SelectedValidators from '@/components/staking/SelectedValidators.vue'
+import Identity from '@/components/staking/validator/metrics/Identity.vue'
+import Address from '@/components/staking/validator/metrics/Address.vue'
+import Slashes from '@/components/staking/validator/metrics/Slashes.vue'
+import Subaccounts from '@/components/staking/validator/metrics/Subaccounts.vue'
+import Nominators from '@/components/staking/validator/metrics/Nominators.vue'
+import EraPoints from '@/components/staking/validator/metrics/EraPoints.vue'
+import Commission from '@/components/staking/validator/metrics/Commission.vue'
+import Payouts from '@/components/staking/validator/metrics/Payouts.vue'
+import Governance from '@/components/staking/validator/metrics/Governance.vue'
+import Thousand from '@/components/staking/validator/metrics/Thousand.vue'
+import RelativePerformanceChart from '@/components/staking/validator/charts/RelativePerformanceChart.vue'
+import EraPointsChart from '@/components/staking/validator/charts/EraPointsChart.vue'
+import PayoutsChart from '@/components/staking/validator/charts/PayoutsChart.vue'
+import StakeChart from '@/components/staking/validator/charts/StakeChart.vue'
+import CommissionChart from '@/components/staking/validator/charts/CommissionChart.vue'
+import Nominations from '@/components/staking/validator/Nominations.vue'
 import { config } from '@/frontend.config.js'
 
 export default {
   components: {
+    SelectedValidators,
     Identity,
     Address,
     Slashes,
@@ -333,14 +342,18 @@ export default {
   },
   head() {
     return {
-      title: `Validator ${this.accountId} metrics | ${
-        config.title
-      } for ${this.capitalize(config.name)}`,
+      title: this.$t('pages.validator.head_title', {
+        networkName: config.name,
+        address: this.accountId,
+      }),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: `Validator ${this.accountId} metrics`,
+          content: this.$t('pages.validator.head_content', {
+            networkName: config.name,
+            address: this.accountId,
+          }),
         },
       ],
     }

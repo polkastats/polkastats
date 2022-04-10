@@ -8,53 +8,17 @@
         <!-- <TotalIssuanceChart /> -->
         <div class="row">
           <div class="col-md-6 mb-4">
-            <h3>
-              <nuxt-link
-                v-b-tooltip.hover
-                :to="`/blocks`"
-                title="Click to see last blocks"
-              >
-                Last blocks
-              </nuxt-link>
-            </h3>
             <LastBlocks />
           </div>
           <div class="col-md-6 mb-4">
-            <h3>
-              <nuxt-link
-                v-b-tooltip.hover
-                :to="`/transfers`"
-                title="Click to see last transfers"
-              >
-                Last transfers
-              </nuxt-link>
-            </h3>
             <LastTransfers />
           </div>
         </div>
         <div class="row">
           <div class="col-md-6 mb-4">
-            <h3>
-              <nuxt-link
-                v-b-tooltip.hover
-                :to="`/extrinsics`"
-                title="Click to see last extrinsics"
-              >
-                Last extrinsics
-              </nuxt-link>
-            </h3>
             <LastExtrinsics />
           </div>
           <div class="col-md-6 mb-4">
-            <h3>
-              <nuxt-link
-                v-b-tooltip.hover
-                :to="`/events`"
-                title="Click to see last events"
-              >
-                Last events
-              </nuxt-link>
-            </h3>
             <LastEvents />
           </div>
         </div>
@@ -63,15 +27,13 @@
   </div>
 </template>
 <script>
-import LastBlocks from '@/components/LastBlocks.vue'
-import LastTransfers from '@/components/LastTransfers.vue'
-import LastExtrinsics from '@/components/LastExtrinsics.vue'
-import LastEvents from '@/components/LastEvents.vue'
-// import TotalIssuanceChart from '@/components/TotalIssuanceChart.vue'
-import TransfersChart from '@/components/TransfersChart.vue'
-import Chain from '@/components/Chain.vue'
-import Search from '@/components/Search.vue'
-// import Top10Rich from '@/components/Top10Rich.vue'
+import LastBlocks from '@/components/home/LastBlocks.vue'
+import LastTransfers from '@/components/home/LastTransfers.vue'
+import LastExtrinsics from '@/components/home/LastExtrinsics.vue'
+import LastEvents from '@/components/home/LastEvents.vue'
+import TransfersChart from '@/components/home/TransfersChart.vue'
+import Chain from '@/components/home/Chain.vue'
+import Search from '@/components/home/Search.vue'
 import { config } from '@/frontend.config.js'
 
 export default {
@@ -80,11 +42,9 @@ export default {
     LastTransfers,
     LastExtrinsics,
     LastEvents,
-    // TotalIssuanceChart,
     TransfersChart,
     Chain,
     Search,
-    // Top10Rich,
   },
   data: () => {
     return {
@@ -93,7 +53,7 @@ export default {
   },
   head() {
     return {
-      title: 'PolkaStats NG block explorer',
+      title: 'PolkaStats block explorer',
       meta: [
         {
           hid: 'description',

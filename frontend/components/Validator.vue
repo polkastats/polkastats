@@ -7,7 +7,7 @@
       >#{{ validator.rank }}</span
     >
     <Identicon :address="validator.stashAddress" :size="22" />
-    <nuxt-link :to="`/validator/${validator.stashAddress}`">
+    <nuxt-link :to="localePath(`/validator/${validator.stashAddress}`)">
       <span v-if="validator.name">{{ validator.name }}</span>
       <span v-else>{{ shortAddress(validator.stashAddress) }}</span>
     </nuxt-link>
@@ -16,7 +16,14 @@
 </template>
 
 <script>
+import Identicon from '@/components/Identicon.vue'
+import VerifiedIcon from '@/components/VerifiedIcon.vue'
+
 export default {
+  components: {
+    Identicon,
+    VerifiedIcon,
+  },
   props: {
     address: {
       type: String,

@@ -45,7 +45,7 @@
                 >
                   <Identicon :address="data.item.account_id" :size="40" />
                   <nuxt-link
-                    :to="`/account/${data.item.account_id}`"
+                    :to="localePath(`/account/${data.item.account_id}`)"
                     :title="$t('pages.accounts.account_details')"
                   >
                     <h4>
@@ -104,7 +104,7 @@
                   <Identicon :address="data.item.account_id" :size="20" />
                   <nuxt-link
                     v-b-tooltip.hover
-                    :to="`/account/${data.item.account_id}`"
+                    :to="localePath(`/account/${data.item.account_id}`)"
                     :title="$t('pages.accounts.account_details')"
                   >
                     <span v-if="data.item.identity_display_parent" class="mb-0">
@@ -231,7 +231,11 @@ export default {
       totalRows: 1,
       agggregateRows: 1,
       fields: [
-        { key: 'account_id', label: 'Account', sortable: false },
+        {
+          key: 'account_id',
+          label: this.$t('pages.accounts.account'),
+          sortable: false,
+        },
         {
           key: 'free_balance',
           label: this.$t('pages.accounts.free_balance'),

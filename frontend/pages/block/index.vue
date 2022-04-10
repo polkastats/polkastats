@@ -9,6 +9,7 @@
 </template>
 <script>
 import Block from '@/components/block/Block.vue'
+import { config } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -21,12 +22,16 @@ export default {
   },
   head() {
     return {
-      title: 'PolkaStats NG block explorer',
+      title: this.$t('pages.block.head_title', {
+        networkName: config.name,
+      }),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: 'PolkaStats block explorer',
+          content: this.$t('pages.block.head_content', {
+            networkName: config.name,
+          }),
         },
       ],
     }

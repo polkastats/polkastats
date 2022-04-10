@@ -6,7 +6,7 @@
           <b-col cols="12">
             <h1>
               {{ $t('pages.blocks.title') }}
-              <small v-if="totalRows !== 1" class="ml-1" style="font-size: 1rem"
+              <small class="ml-1" style="font-size: 1rem"
                 >[{{ formatNumber(totalRows) }}]</small
               >
             </h1>
@@ -34,8 +34,12 @@
                   <p class="mb-0">
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/block?blockNumber=${data.item.block_number}`"
-                      title="Check block information"
+                      :to="
+                        localePath(
+                          `/block?blockNumber=${data.item.block_number}`
+                        )
+                      "
+                      :title="$t('common.block_details')"
                     >
                       #{{ formatNumber(data.item.block_number) }}
                     </nuxt-link>
@@ -49,7 +53,9 @@
                 <template #cell(block_author)="data">
                   <p class="mb-0">
                     <Identicon :address="data.item.block_author" :size="22" />
-                    <nuxt-link :to="`/validator/${data.item.block_author}`">
+                    <nuxt-link
+                      :to="localePath(`/validator/${data.item.block_author}`)"
+                    >
                       <span v-if="data.item.block_author_name">{{
                         data.item.block_author_name
                       }}</span>
@@ -62,11 +68,11 @@
                 <template #cell(finalized)="data">
                   <p v-if="data.item.finalized" class="mb-0">
                     <font-awesome-icon icon="check" class="text-success" />
-                    Finalized
+                    {{ $t('common.finalized') }}
                   </p>
                   <p v-else class="mb-0">
                     <font-awesome-icon icon="spinner" class="text-light" spin />
-                    Processing
+                    {{ $t('common.processing') }}
                   </p>
                 </template>
                 <template #cell(block_hash)="data">
@@ -153,37 +159,37 @@ export default {
       fields: [
         {
           key: 'block_number',
-          label: 'Block',
+          label: this.$t('pages.blocks.block_number'),
           sortable: false,
         },
         {
           key: 'finalized',
-          label: 'Status',
+          label: this.$t('pages.blocks.finalized'),
           sortable: false,
         },
         {
           key: 'timestamp',
-          label: 'Age',
+          label: this.$t('pages.blocks.timestamp'),
           sortable: false,
         },
         {
           key: 'block_hash',
-          label: 'Hash',
+          label: this.$t('pages.blocks.block_hash'),
           sortable: false,
         },
         {
           key: 'total_extrinsics',
-          label: 'Extrinsics',
+          label: this.$t('pages.blocks.total_extrinsics'),
           sortable: false,
         },
         {
           key: 'total_events',
-          label: 'Events',
+          label: this.$t('pages.blocks.total_events'),
           sortable: false,
         },
         {
           key: 'block_author',
-          label: 'Author',
+          label: this.$t('pages.blocks.block_author'),
           sortable: false,
         },
       ],

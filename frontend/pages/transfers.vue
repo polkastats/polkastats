@@ -34,8 +34,12 @@
                   <p class="mb-0">
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/block?blockNumber=${data.item.block_number}`"
-                      title="Check block information"
+                      :to="
+                        localePath(
+                          `/block?blockNumber=${data.item.block_number}`
+                        )
+                      "
+                      :title="$t('common.block_details')"
                     >
                       #{{ formatNumber(data.item.block_number) }}
                     </nuxt-link>
@@ -43,7 +47,7 @@
                 </template>
                 <template #cell(hash)="data">
                   <p class="mb-0">
-                    <nuxt-link :to="`/transfer/${data.item.hash}`">
+                    <nuxt-link :to="localePath(`/transfer/${data.item.hash}`)">
                       {{ shortHash(data.item.hash) }}
                     </nuxt-link>
                   </p>
@@ -58,7 +62,7 @@
                     <Identicon :address="data.item.source" :size="20" />
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/account/${data.item.source}`"
+                      :to="localePath(`/account/${data.item.source}`)"
                       :title="$t('pages.accounts.account_details')"
                     >
                       {{ shortAddress(data.item.source) }}
@@ -70,7 +74,7 @@
                     <Identicon :address="data.item.destination" :size="20" />
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/account/${data.item.destination}`"
+                      :to="localePath(`/account/${data.item.destination}`)"
                       :title="$t('pages.accounts.account_details')"
                     >
                       {{ shortAddress(data.item.destination) }}
@@ -177,37 +181,37 @@ export default {
       fields: [
         {
           key: 'hash',
-          label: 'Hash',
+          label: this.$t('pages.transfers.hash'),
           sortable: false,
         },
         {
           key: 'block_number',
-          label: 'Block',
+          label: this.$t('pages.transfers.block_number'),
           sortable: false,
         },
         {
           key: 'timestamp',
-          label: 'Age',
+          label: this.$t('pages.transfers.timestamp'),
           sortable: false,
         },
         {
           key: 'source',
-          label: 'From',
+          label: this.$t('pages.transfers.source'),
           sortable: false,
         },
         {
           key: 'destination',
-          label: 'To',
+          label: this.$t('pages.transfers.destination'),
           sortable: false,
         },
         {
           key: 'amount',
-          label: 'Amount',
+          label: this.$t('pages.transfers.amount'),
           sortable: false,
         },
         {
           key: 'success',
-          label: 'Success',
+          label: this.$t('pages.transfers.success'),
           sortable: false,
         },
       ],

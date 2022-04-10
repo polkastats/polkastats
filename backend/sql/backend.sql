@@ -339,6 +339,7 @@ CREATE INDEX IF NOT EXISTS transfer_hash_idx ON transfer (hash);
 CREATE INDEX IF NOT EXISTS transfer_timestamp_idx ON transfer (timestamp);
 
 CREATE INDEX IF NOT EXISTS event_block_number_idx ON event (block_number);
+CREATE INDEX IF NOT EXISTS event_event_index_idx ON event (event_index);
 CREATE INDEX IF NOT EXISTS event_section_idx ON event (section);
 CREATE INDEX IF NOT EXISTS event_method_idx ON event (method);
 

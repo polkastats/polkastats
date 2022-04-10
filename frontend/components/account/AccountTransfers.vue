@@ -1,5 +1,5 @@
 <template>
-  <div class="received-transfers">
+  <div class="transfers">
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
@@ -10,8 +10,8 @@
             <p class="mb-0">
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/transfer/${data.item.hash}`"
-                title="Check transfer information"
+                :to="localePath(`/transfer/${data.item.hash}`)"
+                :title="$t('components.account_transfers.transfer_details')"
               >
                 {{ shortHash(data.item.hash) }}
               </nuxt-link>
@@ -21,8 +21,8 @@
             <p class="mb-0">
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/block?blockNumber=${data.item.block_number}`"
-                title="Check block information"
+                :to="localePath(`/block?blockNumber=${data.item.block_number}`)"
+                :title="$t('components.account_transfers.block_details')"
               >
                 #{{ formatNumber(data.item.block_number) }}
               </nuxt-link>
@@ -31,7 +31,7 @@
           <template #cell(source)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/account/${data.item.source}`"
+                :to="localePath(`/account/${data.item.source}`)"
                 :title="$t('pages.accounts.account_details')"
               >
                 <Identicon :address="data.item.source" :size="20" />
@@ -47,7 +47,7 @@
           <template #cell(destination)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/account/${data.item.destination}`"
+                :to="localePath(`/account/${data.item.destination}`)"
                 :title="$t('pages.accounts.account_details')"
               >
                 <Identicon :address="data.item.destination" :size="20" />
@@ -128,39 +128,39 @@ export default {
       fields: [
         {
           key: 'hash',
-          label: 'Hash',
+          label: this.$t('components.account_transfers.hash'),
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: false,
         },
         {
           key: 'block_number',
-          label: 'Block',
+          label: this.$t('components.account_transfers.block_number'),
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: false,
         },
         {
           key: 'timestamp',
-          label: 'Date',
+          label: this.$t('components.account_transfers.timestamp'),
           sortable: false,
         },
         {
           key: 'source',
-          label: 'From',
+          label: this.$t('components.account_transfers.source'),
           sortable: false,
         },
         {
           key: 'destination',
-          label: 'To',
+          label: this.$t('components.account_transfers.destination'),
           sortable: false,
         },
         {
           key: 'amount',
-          label: 'Amount',
+          label: this.$t('components.account_transfers.amount'),
           sortable: false,
         },
         {
           key: 'success',
-          label: 'Success',
+          label: this.$t('components.account_transfers.success'),
           sortable: false,
         },
       ],

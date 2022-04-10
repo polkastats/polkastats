@@ -6,9 +6,14 @@
           <b-col cols="12">
             <h1>
               {{ $t('pages.events.title') }}
-              <small v-if="totalRows !== 1" class="ml-1" style="font-size: 1rem"
-                >[{{ formatNumber(totalRows) }}]</small
-              >
+              <small class="ml-1" style="font-size: 1rem">
+                [{{ formatNumber(totalRows) }}]
+                <font-awesome-icon
+                  icon="sync"
+                  class="reload text-primary2"
+                  @click="reloadQueries()"
+                />
+              </small>
             </h1>
           </b-col>
         </b-row>
@@ -21,7 +26,6 @@
                 v-model="filter"
                 type="search"
                 :placeholder="$t('pages.events.search_placeholder')"
-                @change="loading = true"
               />
             </b-col>
           </b-row>
@@ -33,10 +37,7 @@
               <b-form-select
                 v-model="selectedRuntimeVersion"
                 :options="runtimeSpecVersionOptions"
-                @change="
-                  selectedPalletName = null
-                  loading = true
-                "
+                @change="selectedPalletName = null"
               ></b-form-select>
             </b-col>
             <b-col cols="4">
@@ -46,10 +47,7 @@
               <b-form-select
                 v-model="selectedPalletName"
                 :options="palletNameOptions"
-                @change="
-                  selectedPalletEvent = null
-                  loading = true
-                "
+                @change="selectedPalletEvent = null"
               ></b-form-select>
             </b-col>
             <b-col cols="4">
@@ -59,7 +57,6 @@
               <b-form-select
                 v-model="selectedPalletEvent"
                 :options="palletEventOptions"
-                @change="loading = true"
               ></b-form-select>
             </b-col>
           </b-row>
@@ -67,7 +64,7 @@
             runtime: {{ selectedRuntimeVersion }} / module:
             {{ selectedPalletName }} / event: {{ selectedPalletEvent }}
           </p> -->
-          <div v-if="loading" class="text-center py-4">
+          <div v-if="$apollo.loading" class="text-center py-4">
             <Loading />
           </div>
           <template v-else>
@@ -77,8 +74,12 @@
                   <p class="mb-0">
                     <nuxt-link
                       v-b-tooltip.hover
-                      :to="`/event/${data.item.block_number}/${data.item.event_index}`"
-                      title="Check event information"
+                      :to="
+                        localePath(
+                          `/event/${data.item.block_number}/${data.item.event_index}`
+                        )
+                      "
+                      :title="$t('common.event_details')"
                     >
                       #{{ formatNumber(data.item.block_number) }}-{{
                         data.item.event_index
@@ -171,7 +172,6 @@ export default {
   data() {
     return {
       config,
-      loading: true,
       filter: '',
       events: [],
       paginationOptions,
@@ -273,146 +273,201 @@ export default {
       localStorage.paginationOptions = num
       this.perPage = parseInt(num)
     },
+    reloadQueries() {
+      this.$apollo.queries.event.refetch()
+      this.$apollo.queries.total.refetch()
+      this.$apollo.queries.event_aggregate.refetch()
+      this.$apollo.queries.spec_version.refetch()
+      this.$apollo.queries.runtime.refetch()
+    },
   },
   apollo: {
-    $subscribe: {
-      events: {
-        query: gql`
-          subscription events(
-            $blockNumber: bigint
-            $section: String
-            $method: String
-            $perPage: Int!
-            $offset: Int!
-          ) {
-            event(
-              limit: $perPage
-              offset: $offset
-              where: {
-                block_number: { _eq: $blockNumber }
-                section: { _eq: $section }
-                method: { _eq: $method }
-              }
-              order_by: { block_number: desc, event_index: desc }
-            ) {
-              block_number
-              event_index
-              data
-              method
-              phase
-              section
-              timestamp
+    event: {
+      query: gql`
+        query events(
+          $blockNumber: bigint
+          $section: String
+          $method: String
+          $perPage: Int!
+          $offset: Int!
+        ) {
+          event(
+            limit: $perPage
+            offset: $offset
+            where: {
+              block_number: { _eq: $blockNumber }
+              section: { _eq: $section }
+              method: { _eq: $method }
             }
+            order_by: { block_number: desc, event_index: desc }
+          ) {
+            block_number
+            event_index
+            data
+            method
+            phase
+            section
+            timestamp
           }
-        `,
-        variables() {
-          return {
-            blockNumber: this.filter ? parseInt(this.filter) : undefined,
-            section: this.selectedPalletName
-              ? this.selectedPalletName
-              : undefined,
-            method: this.selectedPalletEvent
-              ? this.selectedPalletEvent
-              : undefined,
-            perPage: this.perPage,
-            offset: (this.currentPage - 1) * this.perPage,
-          }
-        },
-        result({ data }) {
-          this.events = data.event
-          if (this.filter) {
-            this.totalRows = this.events.length
-          }
-          this.loading = false
-        },
+        }
+      `,
+      variables() {
+        return {
+          blockNumber: this.filter ? parseInt(this.filter) : undefined,
+          section: this.selectedPalletName
+            ? this.selectedPalletName
+            : undefined,
+          method: this.selectedPalletEvent
+            ? this.selectedPalletEvent
+            : undefined,
+          perPage: this.perPage,
+          offset: (this.currentPage - 1) * this.perPage,
+        }
       },
-      totalEvents: {
-        query: gql`
-          subscription total {
-            total(where: { name: { _eq: "events" } }, limit: 1) {
+      result({ data }) {
+        this.events = data.event
+      },
+    },
+    total: {
+      query: gql`
+        query total {
+          total(where: { name: { _eq: "events" } }, limit: 1) {
+            count
+          }
+        }
+      `,
+      variables() {
+        // not needed in query, but we want the query to be
+        // realoded if some variable change its value
+        return {
+          blockNumber: this.filter ? parseInt(this.filter) : undefined,
+          section: this.selectedPalletName
+            ? this.selectedPalletName
+            : undefined,
+          method: this.selectedPalletEvent
+            ? this.selectedPalletEvent
+            : undefined,
+        }
+      },
+      result({ data }) {
+        if (
+          this.filter === '' &&
+          this.selectedPalletName === null &&
+          this.selectedPalletEvent === null
+        ) {
+          this.totalRows = data.total[0].count
+        }
+      },
+    },
+    event_aggregate: {
+      query: gql`
+        query events($blockNumber: bigint, $section: String, $method: String) {
+          event_aggregate(
+            where: {
+              block_number: { _eq: $blockNumber }
+              section: { _eq: $section }
+              method: { _eq: $method }
+            }
+          ) {
+            aggregate {
               count
             }
           }
-        `,
-        result({ data }) {
-          if (!this.filter) {
-            this.totalRows = data.total[0].count
-          }
-        },
+        }
+      `,
+      variables() {
+        return {
+          blockNumber: this.filter ? parseInt(this.filter) : undefined,
+          section: this.selectedPalletName
+            ? this.selectedPalletName
+            : undefined,
+          method: this.selectedPalletEvent
+            ? this.selectedPalletEvent
+            : undefined,
+        }
       },
-      runtimeVersions: {
-        query: gql`
-          subscription runtime {
-            runtime(order_by: { block_number: desc }) {
-              spec_version
-            }
-          }
-        `,
-        result({ data }) {
-          this.runtimeVersions = data.runtime
-          this.selectedRuntimeVersion = data.runtime[0].spec_version
-          // console.log('runtime specs:', this.runtimeVersions)
-        },
+      result({ data }) {
+        if (
+          this.filter !== '' ||
+          this.selectedPalletName !== null ||
+          this.selectedPalletEvent !== null
+        ) {
+          this.totalRows = data.event_aggregate.aggregate.count
+        }
       },
-      metadata: {
-        query: gql`
-          subscription runtime($specVersion: Int!) {
-            runtime(where: { spec_version: { _eq: $specVersion } }, limit: 1) {
-              metadata_version
-              metadata
+    },
+    spec_version: {
+      query: gql`
+        query runtime {
+          spec_version: runtime(order_by: { block_number: desc }) {
+            spec_version
+          }
+        }
+      `,
+      result({ data }) {
+        this.runtimeVersions = data.spec_version
+        this.selectedRuntimeVersion = data.spec_version[0].spec_version
+        // console.log('runtime specs:', this.runtimeVersions)
+      },
+    },
+    runtime: {
+      query: gql`
+        query runtime($specVersion: Int!) {
+          runtime(where: { spec_version: { _eq: $specVersion } }, limit: 1) {
+            metadata_version
+            metadata
+          }
+        }
+      `,
+      skip() {
+        return this.runtimeVersions.length === 0
+      },
+      variables() {
+        return {
+          specVersion: this.selectedRuntimeVersion,
+        }
+      },
+      result({ data }) {
+        // get pallets and events from runtime metadata
+        const metadataVersion = data.runtime[0].metadata_version
+        this.metadata = data.runtime[0].metadata[metadataVersion]
+        const palletsAndEvents = []
+        if (metadataVersion !== 'v14') {
+          this.metadata.modules.forEach((module) => {
+            const palletAndEvents = {
+              name: module.name,
+              events:
+                module.events !== null
+                  ? module.events.map((event) => event.name)
+                  : [],
             }
-          }
-        `,
-        skip() {
-          return this.runtimeVersions.length === 0
-        },
-        variables() {
-          return {
-            specVersion: this.selectedRuntimeVersion,
-          }
-        },
-        result({ data }) {
-          // get pallets and events from runtime metadata
-          const metadataVersion = data.runtime[0].metadata_version
-          this.metadata = data.runtime[0].metadata[metadataVersion]
-          const palletsAndEvents = []
-          if (metadataVersion !== 'v14') {
-            this.metadata.modules.forEach((module) => {
-              const palletAndEvents = {
-                name: module.name,
-                events:
-                  module.events !== null
-                    ? module.events.map((event) => event.name)
-                    : [],
-              }
-              palletsAndEvents.push(palletAndEvents)
-            })
-          } else {
-            this.metadata.pallets.forEach((pallet) => {
-              const eventsId = pallet.events?.type || null
-              const events = []
-              const palletAndEvents = {
-                name: pallet.name,
-                eventsId,
-                events,
-              }
-              if (eventsId) {
-                this.metadata.lookup.types
-                  .filter(
-                    ({ id, type }) =>
-                      type.path.includes('Event') && id === eventsId
-                  )
-                  .forEach(({ type }) => {
-                    type.def.variant.variants.forEach((variant) => {
-                      palletAndEvents.events.push(variant.name.toString())
-                    })
+            palletsAndEvents.push(palletAndEvents)
+          })
+        } else {
+          this.metadata.pallets.forEach((pallet) => {
+            const eventsId = pallet.events?.type || null
+            const events = []
+            const palletAndEvents = {
+              name: pallet.name,
+              eventsId,
+              events,
+            }
+            if (eventsId) {
+              this.metadata.lookup.types
+                .filter(
+                  ({ id, type }) =>
+                    type.path.includes('Event') && id === eventsId
+                )
+                .forEach(({ type }) => {
+                  type.def.variant.variants.forEach((variant) => {
+                    palletAndEvents.events.push(variant.name.toString())
                   })
-              }
-              palletsAndEvents.push(palletAndEvents)
-            })
-          }
-          this.palletsAndEvents = palletsAndEvents
-        },
+                })
+            }
+            palletsAndEvents.push(palletAndEvents)
+          })
+        }
+        this.palletsAndEvents = palletsAndEvents
       },
     },
   },
