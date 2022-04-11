@@ -7,7 +7,7 @@ services:
   postgres:
     image: postgres:13
     restart: always
-    shm_size: 512mb
+    shm_size: 1GB
     volumes:
       - 'db-data:/var/lib/postgresql/data'
       - './sql/backend.sql:/docker-entrypoint-initdb.d/backend.sql'
@@ -20,8 +20,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    # ports:
-    #   - '5432:5432'  
     #
     # https://pgtune.leopard.in.ua/#/
     #
@@ -44,7 +42,7 @@ services:
       - "-c"
       - "effective_cache_size=128MB"
       - "-c"
-      - "maintenance_work_mem=128MB"
+      - "maintenance_work_mem=2GB"
       - "-c"
       - "checkpoint_completion_target=0.9"
       - "-c"
@@ -58,7 +56,7 @@ services:
       - "-c"
       - "work_mem=41943kB"
       - "-c"
-      - "min_wal_size=80MB"
+      - "min_wal_size=2MB"
       - "-c"
       - "max_wal_size=1GB"
       - "-c"
