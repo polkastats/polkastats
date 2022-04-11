@@ -60,6 +60,13 @@ Cere Network:
 yarn workspace backend docker:cere:mainnet
 ```
 
+If you experiencing a database error then clean docker volumes:
+
+```bash
+docker volume prune
+```
+
+
 
 That will build and start all the required dockers:
 
