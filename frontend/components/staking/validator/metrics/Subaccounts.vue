@@ -25,7 +25,7 @@
       <p v-if="rating > 0">
         {{ $t('components.subaccounts.description_1')
         }}<span v-if="clusterMembers > 1">{{
-          $t('components.subaccounts.description_1', { clusterMembers })
+          $t('components.subaccounts.description_2', { clusterMembers })
         }}</span>
       </p>
       <p v-else>{{ $t('components.subaccounts.description_3') }}</p>
