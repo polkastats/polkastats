@@ -11,6 +11,7 @@ In Ubuntu 20.04 server you can do:
 ```bash
 apt update
 apt upgrade
+apt install libpq5=12.9-0ubuntu0.20.04.1
 apt install git build-essential apt-transport-https ca-certificates curl software-properties-common libpq-dev
 ```
 

@@ -7,11 +7,12 @@ services:
   postgres:
     image: postgres
     restart: always
-    shm_size: 1gb
+    shm_size: 512mb
     volumes:
       - 'db-data:/var/lib/postgresql/data'
       - './sql/backend.sql:/docker-entrypoint-initdb.d/backend.sql'
     environment:
+      POSTGRES_DB: 'polkastats'
       POSTGRES_USER: 'polkastats'
       POSTGRES_PASSWORD: 'polkastats'
     healthcheck:
@@ -19,6 +20,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    # ports:
+    #   - '5432:5432'  
     #
     # https://pgtune.leopard.in.ua/#/
     #
@@ -37,11 +40,11 @@ services:
       - "-c"
       - "max_connections=200"
       - "-c"
-      - "shared_buffers=32GB"
+      - "shared_buffers=128MB"
       - "-c"
-      - "effective_cache_size=96GB"
+      - "effective_cache_size=128MB"
       - "-c"
-      - "maintenance_work_mem=2GB"
+      - "maintenance_work_mem=128MB"
       - "-c"
       - "checkpoint_completion_target=0.9"
       - "-c"
@@ -55,9 +58,9 @@ services:
       - "-c"
       - "work_mem=41943kB"
       - "-c"
-      - "min_wal_size=1GB"
+      - "min_wal_size=80MB"
       - "-c"
-      - "max_wal_size=4GB"
+      - "max_wal_size=1GB"
       - "-c"
       - "max_worker_processes=12"
       - "-c"
