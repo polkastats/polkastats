@@ -5,7 +5,7 @@ services:
   # SQL data base
   #
   postgres:
-    image: postgres
+    image: postgres:13
     restart: always
     shm_size: 512mb
     volumes:
