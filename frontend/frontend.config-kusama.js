@@ -16,4 +16,38 @@ export const config = {
   erasPerDay: 4,
   validatorSetSize: 24,
 }
+
+export const links = [
+  {
+    name: 'Dotscanner',
+    path: 'https://dotscanner.com/kusama/account/',
+    icon: 'dotscanner.png',
+  },
+  {
+    name: 'Kodadot',
+    path: 'https://kodadot.xyz/rmrk/u/',
+    icon: 'kodadot.png',
+  },
+  {
+    name: 'Polkascan',
+    path: 'https://polkascan.io/kusama/account/',
+    icon: 'polkascan.png',
+  },
+  {
+    name: 'Singular (NFTs)',
+    path: 'https://singular.rmrk.app/space/',
+    icon: 'singular.svg',
+  },
+  {
+    name: 'SubID',
+    path: 'https://sub.id/',
+    icon: 'subid.svg',
+  },
+  {
+    name: 'Subscan',
+    path: 'https://kusama.subscan.io/account/',
+    icon: 'subscan.svg',
+  },
+]
+
 export const paginationOptions = [10, 20, 50, 100]

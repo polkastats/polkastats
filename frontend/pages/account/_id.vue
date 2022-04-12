@@ -34,6 +34,7 @@
               <h4 class="text-center mb-4 amount">
                 {{ formatAmount(parsedAccount.totalBalance) }}
               </h4>
+              <AccountLinks :account-id="accountId" />
               <BalanceChart :account-id="accountId" />
               <div class="table-responsive pb-4">
                 <table class="table table-striped">
@@ -244,6 +245,7 @@ import AccountTransfers from '@/components/account/AccountTransfers.vue'
 import StakingRewards from '@/components/account/StakingRewards.vue'
 import StakingSlashes from '@/components/account/StakingSlashes.vue'
 import BalanceChart from '@/components/account/BalanceChart.vue'
+import AccountLinks from '@/components/account/AccountLinks.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { config } from '@/frontend.config.js'
 
@@ -256,6 +258,7 @@ export default {
     StakingRewards,
     StakingSlashes,
     BalanceChart,
+    AccountLinks,
   },
   mixins: [commonMixin],
   data() {

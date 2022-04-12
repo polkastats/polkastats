@@ -390,6 +390,9 @@
     "nominations": {
       "who": "Nominador",
       "value": "Cantidad"
+    },
+    "account_links": {
+      "check_account": "Ver cuenta en"
     }
   },
   "layout": {
