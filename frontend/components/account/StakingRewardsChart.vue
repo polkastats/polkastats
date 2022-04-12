@@ -11,6 +11,7 @@ import { gql } from 'graphql-tag'
 import { BigNumber } from 'bignumber.js'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
 import { config } from '@/frontend.config.js'
+
 export default {
   components: {
     ReactiveLineChart,
@@ -30,7 +31,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'staking rewards over the last 7 days',
+          text: this.$t('components.staking_rewards_chart.title'),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -56,7 +57,6 @@ export default {
               ticks: {
                 beginAtZero: true,
                 suggestedMin: 0,
-                // suggestedMax: 100,
               },
               gridLines: {
                 display: true,

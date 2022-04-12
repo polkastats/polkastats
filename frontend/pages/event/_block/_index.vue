@@ -6,13 +6,13 @@
           <Loading />
         </div>
         <template v-else-if="!parsedEvent">
-          <h1 class="text-center">Event not found!</h1>
+          <h1 class="text-center">{{ $t('pages.event.event_not_found') }}</h1>
         </template>
         <template v-else>
           <div class="card mt-4 mb-3">
             <div class="card-body">
               <h4 class="text-center mb-4">
-                Event {{ blockNumber }}-{{ eventIndex }}
+                {{ $t('pages.event.event') }} {{ blockNumber }}-{{ eventIndex }}
               </h4>
               <Event :event="parsedEvent" />
             </div>
@@ -27,6 +27,7 @@ import { gql } from 'graphql-tag'
 import Event from '../../../components/Event.vue'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
+import { config } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -44,12 +45,16 @@ export default {
   },
   head() {
     return {
-      title: 'PolkaStats NG block explorer',
+      title: this.$t('pages.event.head_title', {
+        networkName: config.name,
+      }),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: 'PolkaStats block explorer',
+          content: this.$t('pages.event.head_content', {
+            networkName: config.name,
+          }),
         },
       ],
     }

@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import TransfersChart from '@/components/TransfersChart.vue'
+import TransfersChart from '@/components/home/TransfersChart.vue'
 
 export default {
 	components: { TransfersChart },
@@ -18,7 +18,7 @@ export default {
 	{
 		return {
 			title: 'Balance Transfers',
-			subtitle: 'Balance transfers in the last 30 days',
+			subtitle: this.$t('components.transfers_chart.title'),
 		}
 	}
 }

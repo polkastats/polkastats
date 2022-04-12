@@ -1,6 +1,8 @@
 <template>
   <div class="extrinsic-events">
-    <h4 class="my-4 text-center">Events</h4>
+    <h4 class="my-4 text-center">
+      {{ $t('components.extrinsic_events.title') }}
+    </h4>
     <div class="table-responsive">
       <b-table
         striped
@@ -15,7 +17,11 @@
         <template #cell(block_number)="data">
           <p class="mb-0">
             <nuxt-link
-              :to="`/event/${data.item.block_number}/${data.item.event_index}`"
+              :to="
+                localePath(
+                  `/event/${data.item.block_number}/${data.item.event_index}`
+                )
+              "
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.event_index
@@ -64,7 +70,7 @@
             <b-dropdown-item
               v-for="(option, index) in paginationOptions"
               :key="index"
-              @click="setPageSize(10)"
+              @click="setPageSize(option)"
             >
               {{ option }}
             </b-dropdown-item>
@@ -102,7 +108,7 @@ export default {
       default: () => 0,
     },
   },
-  data: () => {
+  data() {
     return {
       events: [],
       paginationOptions,
@@ -116,22 +122,17 @@ export default {
       fields: [
         {
           key: 'block_number',
-          label: 'Id',
+          label: this.$t('components.extrinsic_events.id'),
           sortable: true,
         },
         {
           key: 'section',
-          label: 'Event',
-          sortable: true,
-        },
-        {
-          key: 'section',
-          label: 'Event',
+          label: this.$t('components.extrinsic_events.section'),
           sortable: true,
         },
         {
           key: 'data',
-          label: 'Data',
+          label: this.$t('components.extrinsic_events.data'),
           sortable: true,
         },
       ],

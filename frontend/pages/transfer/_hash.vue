@@ -6,12 +6,14 @@
           <Loading />
         </div>
         <template v-else-if="!transfer">
-          <h1 class="text-center">Transfer not found!</h1>
+          <h1 class="text-center">{{ $t('pages.transfer.not_found') }}</h1>
         </template>
         <template v-else>
           <div class="card mt-4 mb-3">
             <div class="card-body">
-              <h4 class="text-center mb-4">Transfer {{ shortHash(hash) }}</h4>
+              <h4 class="text-center mb-4">
+                {{ $t('pages.transfer.title') }} {{ shortHash(hash) }}
+              </h4>
               <Transfer :transfer="transfer" />
               <ExtrinsicEvents
                 :block-number="parseInt(transfer.block_number)"
@@ -29,6 +31,7 @@ import { gql } from 'graphql-tag'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import ExtrinsicEvents from '@/components/ExtrinsicEvents.vue'
+import { config } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -41,6 +44,24 @@ export default {
       loading: true,
       hash: this.$route.params.hash,
       transfer: undefined,
+    }
+  },
+  head() {
+    return {
+      title: this.$t('pages.transfer.head_title', {
+        networkName: config.name,
+        hash: this.hash,
+      }),
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('pages.transfer.head_content', {
+            networkName: config.name,
+            hash: this.hash,
+          }),
+        },
+      ],
     }
   },
   watch: {

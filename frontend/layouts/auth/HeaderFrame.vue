@@ -35,7 +35,7 @@
 
 
 <script>
-import DropdownMenu from '../../components/more/DropdownMenu.vue';
+import DropdownMenu from '@/components/more/DropdownMenu.vue';
 import { config } from '@/frontend.config.js';
 
 export default {

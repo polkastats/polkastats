@@ -105,7 +105,7 @@ export default {
   },
   head() {
     return {
-      title: 'PolkaStats NG block explorer',
+      title: 'PolkaStats block explorer',
       meta: [
         {
           hid: 'description',

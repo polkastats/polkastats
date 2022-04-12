@@ -10,6 +10,7 @@
 <script>
 import { gql } from 'graphql-tag'
 import Block from '@/components/block/Block.vue'
+import { config } from '@/frontend.config.js'
 export default {
   components: {
     Block,
@@ -22,12 +23,16 @@ export default {
   },
   head() {
     return {
-      title: 'PolkaStats block explorer',
+      title: this.$t('pages.block.head_title', {
+        networkName: config.name,
+      }),
       meta: [
         {
           hid: 'description',
           name: 'description',
-          content: 'PolkaStats block explorer',
+          content: this.$t('pages.block.head_content', {
+            networkName: config.name,
+          }),
         },
       ],
     }

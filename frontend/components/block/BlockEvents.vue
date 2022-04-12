@@ -15,8 +15,12 @@
           <p class="mb-0">
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/event/${data.item.block_number}/${data.item.event_index}`"
-              title="Check event information"
+              :to="
+                localePath(
+                  `/event/${data.item.block_number}/${data.item.event_index}`
+                )
+              "
+              :title="$t('components.block_events.event_details')"
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.event_index
@@ -34,7 +38,7 @@
             <Identicon :address="JSON.parse(data.item.data)[0]" :size="20" />
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/account/${JSON.parse(data.item.data)[0]}`"
+              :to="localePath(`/account/${JSON.parse(data.item.data)[0]}`)"
               :title="$t('details.block.account_details')"
             >
               {{ shortAddress(JSON.parse(data.item.data)[0]) }}
@@ -43,7 +47,7 @@
             <Identicon :address="JSON.parse(data.item.data)[1]" :size="20" />
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/account/${JSON.parse(data.item.data)[1]}`"
+              :to="localePath(`/account/${JSON.parse(data.item.data)[1]}`)"
               :title="$t('details.block.account_details')"
             >
               {{ shortAddress(JSON.parse(data.item.data)[1]) }}
@@ -87,7 +91,7 @@
             <b-dropdown-item
               v-for="(option, index) in paginationOptions"
               :key="index"
-              @click="setPageSize(10)"
+              @click="setPageSize(option)"
             >
               {{ option }}
             </b-dropdown-item>
@@ -111,6 +115,7 @@
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import { paginationOptions } from '@/frontend.config.js'
+
 export default {
   mixins: [commonMixin],
   props: {
