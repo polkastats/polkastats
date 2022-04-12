@@ -1,20 +1,42 @@
 <template>
-  <div v-if="units" class="d-inline-block" @click="historical = !historical">
-    <div
-      v-if="historical"
-      v-b-tooltip.hover
-      class="fiat-conversion d-inline-block"
-      :title="$t('components.fiat_conversion.historic_value')"
-    >
-      (${{ formatNumber(historicalFIATValue.toFixed(2)) }})
+  <div class="d-inline-block">
+    <div v-if="!timestamp || sameDay">
+      <span
+        v-if="short"
+        v-b-tooltip.hover
+        :title="`$${formatNumber(FIATValue.toFixed(2))}`"
+      >
+        <font-awesome-layers class="fa-lg align-middle fiat-conversion-short">
+          <font-awesome-icon icon="circle" />
+          <font-awesome-icon icon="dollar-sign" transform="shrink-6" />
+        </font-awesome-layers>
+      </span>
+      <div
+        v-else
+        v-b-tooltip.hover
+        class="fiat-conversion"
+        :title="$t('components.fiat_conversion.current_value')"
+      >
+        (${{ formatNumber(FIATValue.toFixed(2)) }})
+      </div>
     </div>
-    <div
-      v-else
-      v-b-tooltip.hover
-      class="fiat-conversion d-inline-block"
-      :title="$t('components.fiat_conversion.current_value')"
-    >
-      (${{ formatNumber(FIATValue.toFixed(2)) }})
+    <div v-else @click="historical = !historical">
+      <div
+        v-if="historical"
+        v-b-tooltip.hover
+        class="fiat-conversion"
+        :title="$t('components.fiat_conversion.historic_value')"
+      >
+        (${{ formatNumber(historicalFIATValue.toFixed(2)) }})
+      </div>
+      <div
+        v-else
+        v-b-tooltip.hover
+        class="fiat-conversion"
+        :title="$t('components.fiat_conversion.current_value')"
+      >
+        (${{ formatNumber(FIATValue.toFixed(2)) }})
+      </div>
     </div>
   </div>
 </template>
@@ -29,12 +51,16 @@ export default {
   props: {
     units: {
       type: Number,
-      default: () => 0,
+      default: 0,
       required: true,
     },
-    date: {
-      type: String,
-      default: '',
+    timestamp: {
+      type: Number,
+      default: 0,
+    },
+    short: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -45,6 +71,9 @@ export default {
     }
   },
   computed: {
+    date() {
+      return this.getDateFromTimestampDDMMYYYY(this.timestamp)
+    },
     USDConversion() {
       return parseFloat(this.$store.state.fiat.usd)
     },
@@ -56,9 +85,14 @@ export default {
         )
       )
     },
+    sameDay() {
+      return this.date === this.getDateFromTimestampDDMMYYYY(Date.now())
+    },
   },
   async mounted() {
-    this.historicalFIATValue = await this.getHistoricalFIATValue()
+    this.historicalFIATValue = this.timestamp
+      ? await this.getHistoricalFIATValue()
+      : 0
   },
   methods: {
     async getHistoricalFIATValue() {
@@ -85,29 +119,3 @@ export default {
   },
 }
 </script>
-<style>
-.fiat-conversion {
-  font-size: 0.8rem;
-  margin-left: 0.4rem;
-  padding: 0.2rem 0.4rem;
-  background-color: rgb(192, 229, 243);
-  border-radius: 0.2rem;
-  cursor: pointer;
-  animation-duration: 0.6s;
-  color: rgb(11, 129, 168);
-}
-.fiat-conversion:hover {
-  background-color: rgb(11, 129, 168);
-  color: white;
-  animation-name: onHoverAnimation;
-}
-
-@keyframes onHoverAnimation {
-  0% {
-    background-color: rgb(192, 229, 243);
-  }
-  100% {
-    background-color: rgb(11, 129, 168);
-  }
-}
-</style>

@@ -119,7 +119,8 @@
               {{ $t('components.chain.total_issuance') }}
             </h4>
             <h6 class="d-inline-block">
-              {{ formatAmount(totalIssuance, 2, true) }}
+              {{ formatAmount(totalIssuance, 0, true) }}
+              <FIATConversion :units="totalIssuance" :short="true" />
             </h6>
           </div>
         </div>
@@ -132,7 +133,8 @@
           <div class="card-body">
             <h4 class="mb-3">{{ $t('components.chain.total_staked') }}</h4>
             <h6 class="d-inline-block">
-              {{ formatAmount(totalStaked, 2, true) }}
+              {{ formatAmount(totalStaked, 0, true) }}
+              <FIATConversion :units="totalStaked" :short="true" />
               ({{ formatNumber(totalStakedPercentage) }}%)
             </h6>
           </div>
