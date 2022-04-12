@@ -75,6 +75,18 @@ export default {
       ],
     }
   },
+  head() {
+    return {
+      title: this.$t('pages.team.head_title'),
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('pages.team.head_content'),
+        },
+      ],
+    }
+  },
 }
 </script>
 

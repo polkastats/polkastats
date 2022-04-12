@@ -4,7 +4,7 @@
       <Loading />
     </div>
     <template v-else-if="!parsedBlock">
-      <h1 class="text-center">Block not found!</h1>
+      <h1 class="text-center">{{ $t('components.block.not_found') }}</h1>
     </template>
     <template v-else>
       <div class="card mt-4 mb-3">
@@ -35,7 +35,7 @@
                   </span>
                   <span v-else>
                     <nuxt-link
-                      :to="`/validator/${parsedBlock.block_author}`"
+                      :to="localePath(`/validator/${parsedBlock.block_author}`)"
                       class="d-block"
                     >
                       <Identicon
@@ -60,11 +60,11 @@
                 <td class="text-right">
                   <p v-if="parsedBlock.finalized" class="mb-0">
                     <font-awesome-icon icon="check" class="text-success" />
-                    Finalized
+                    {{ $t('common.finalized') }}
                   </p>
                   <p v-else class="mb-0">
                     <font-awesome-icon icon="spinner" class="text-light" spin />
-                    Processing
+                    {{ $t('common.processing') }}
                   </p>
                 </td>
               </tr>
@@ -86,7 +86,11 @@
                   <span v-if="parsedBlock.block_number === 0"> -- </span>
                   <span v-else>
                     <nuxt-link
-                      :to="`/block?blockNumber=${parsedBlock.block_number - 1}`"
+                      :to="
+                        localePath(
+                          `/block?blockNumber=${parsedBlock.block_number - 1}`
+                        )
+                      "
                     >
                       {{ parsedBlock.parent_hash }}
                     </nuxt-link>
@@ -162,6 +166,7 @@ import BlockEvents from '@/components/block/BlockEvents.vue'
 import BlockLogs from '@/components/block/BlockLogs.vue'
 import Hash from '@/components/Hash.vue'
 import commonMixin from '@/mixins/commonMixin.js'
+
 export default {
   components: {
     BlockExtrinsics,

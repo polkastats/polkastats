@@ -17,6 +17,7 @@ import { BigNumber } from 'bignumber.js'
 import Loading from '@/components/Loading.vue'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
 import { config } from '@/frontend.config.js'
+
 export default {
   components: {
     Loading,
@@ -37,7 +38,7 @@ export default {
         },
         title: {
           display: true,
-          text: 'balance over the last 7 days',
+          text: this.$t('components.balance_chart.title'),
           fontSize: 18,
           fontColor: '#000',
           fontStyle: 'lighter',
@@ -54,7 +55,7 @@ export default {
               },
               scaleLabel: {
                 display: true,
-                labelString: 'block',
+                labelString: this.$t('components.balance_chart.block'),
               },
             },
           ],

@@ -15,7 +15,7 @@
 			@extend %SUBMENU_BASE_ACTIVE;
 		}
 
-		> span
+		[icon]
 		{
 			&::before
 			{

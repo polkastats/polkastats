@@ -1,5 +1,5 @@
 <template>
-  <div class="received-transfers">
+  <div class="transfers">
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
@@ -10,8 +10,8 @@
             <p class="mb-0">
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/transfer/${data.item.hash}`"
-                title="Check transfer information"
+                :to="localePath(`/transfer/${data.item.hash}`)"
+                :title="$t('components.account_transfers.transfer_details')"
               >
                 {{ shortHash(data.item.hash) }}
               </nuxt-link>
@@ -21,8 +21,8 @@
             <p class="mb-0">
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/block?blockNumber=${data.item.block_number}`"
-                title="Check block information"
+                :to="localePath(`/block?blockNumber=${data.item.block_number}`)"
+                :title="$t('components.account_transfers.block_details')"
               >
                 #{{ formatNumber(data.item.block_number) }}
               </nuxt-link>
@@ -31,7 +31,7 @@
           <template #cell(source)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/account/${data.item.source}`"
+                :to="localePath(`/account/${data.item.source}`)"
                 :title="$t('pages.accounts.account_details')"
               >
                 <Identicon :address="data.item.source" :size="20" />
@@ -47,7 +47,7 @@
           <template #cell(destination)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/account/${data.item.destination}`"
+                :to="localePath(`/account/${data.item.destination}`)"
                 :title="$t('pages.accounts.account_details')"
               >
                 <Identicon :address="data.item.destination" :size="20" />
@@ -71,7 +71,42 @@
             </p>
           </template>
         </b-table>
-        <div class="mt-4 d-flex">
+      </div>
+      <!-- pagination -->
+      <div class="row">
+        <div class="col-6">
+          <!-- desktop -->
+          <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
+            <b-button-group>
+              <b-button
+                v-for="(option, index) in paginationOptions"
+                :key="index"
+                variant="outline-primary2"
+                :class="{ 'selected-per-page': perPage === option }"
+                @click="setPageSize(option)"
+              >
+                {{ option }}
+              </b-button>
+            </b-button-group>
+          </div>
+          <!-- mobile -->
+          <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
+            <b-dropdown
+              class="m-md-2"
+              text="Page size"
+              variant="outline-primary2"
+            >
+              <b-dropdown-item
+                v-for="(option, index) in paginationOptions"
+                :key="index"
+                @click="setPageSize(option)"
+              >
+                {{ option }}
+              </b-dropdown-item>
+            </b-dropdown>
+          </div>
+        </div>
+        <div class="col-6">
           <b-pagination
             v-model="currentPage"
             :total-rows="totalRows"
@@ -80,16 +115,6 @@
             variant="dark"
             align="right"
           ></b-pagination>
-          <b-button-group class="ml-2">
-            <b-button
-              v-for="(item, index) in tableOptions"
-              :key="index"
-              variant="primary2"
-              @click="setPageSize(item)"
-            >
-              {{ item }}
-            </b-button>
-          </b-button-group>
         </div>
       </div>
     </div>
@@ -119,7 +144,7 @@ export default {
     return {
       loading: true,
       transfers: [],
-      tableOptions: paginationOptions,
+      paginationOptions,
       perPage: localStorage.paginationOptions
         ? parseInt(localStorage.paginationOptions)
         : 10,
@@ -128,39 +153,39 @@ export default {
       fields: [
         {
           key: 'hash',
-          label: 'Hash',
+          label: this.$t('components.account_transfers.hash'),
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: false,
         },
         {
           key: 'block_number',
-          label: 'Block',
+          label: this.$t('components.account_transfers.block_number'),
           class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: false,
         },
         {
           key: 'timestamp',
-          label: 'Date',
+          label: this.$t('components.account_transfers.timestamp'),
           sortable: false,
         },
         {
           key: 'source',
-          label: 'From',
+          label: this.$t('components.account_transfers.source'),
           sortable: false,
         },
         {
           key: 'destination',
-          label: 'To',
+          label: this.$t('components.account_transfers.destination'),
           sortable: false,
         },
         {
           key: 'amount',
-          label: 'Amount',
+          label: this.$t('components.account_transfers.amount'),
           sortable: false,
         },
         {
           key: 'success',
-          label: 'Success',
+          label: this.$t('components.account_transfers.success'),
           sortable: false,
         },
       ],

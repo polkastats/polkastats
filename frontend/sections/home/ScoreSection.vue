@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import Chain from '@/components/Chain.vue';
-import Search from '@/components/Search.vue';
+import Chain from '@/components/home/Chain.vue';
+import Search from '@/components/home/Search.vue';
 
 export default {
 	components: { Search, Chain },

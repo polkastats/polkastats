@@ -15,8 +15,12 @@
           <p class="mb-0">
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`"
-              title="Check extrinsic information"
+              :to="
+                localePath(
+                  `/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`
+                )
+              "
+              :title="$t('components.block_extrinsics.extrinsic_details')"
             >
               #{{ formatNumber(data.item.block_number) }}-{{
                 data.item.extrinsic_index
@@ -32,7 +36,7 @@
             <Identicon :address="data.item.signer" :size="20" />
             <nuxt-link
               v-b-tooltip.hover
-              :to="`/account/${data.item.signer}`"
+              :to="localePath(`/account/${data.item.signer}`)"
               :title="$t('details.block.account_details')"
             >
               {{ shortAddress(data.item.signer) }}
@@ -76,7 +80,7 @@
             <b-dropdown-item
               v-for="(option, index) in paginationOptions"
               :key="index"
-              @click="setPageSize(10)"
+              @click="setPageSize(option)"
             >
               {{ option }}
             </b-dropdown-item>
@@ -100,6 +104,7 @@
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import { paginationOptions } from '@/frontend.config.js'
+
 export default {
   mixins: [commonMixin],
   props: {

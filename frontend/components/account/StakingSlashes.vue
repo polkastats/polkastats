@@ -42,8 +42,8 @@
             <p class="mb-0">
               <nuxt-link
                 v-b-tooltip.hover
-                :to="`/block?blockNumber=${data.item.block_number}`"
-                title="Check block information"
+                :to="localePath(`/block?blockNumber=${data.item.block_number}`)"
+                :title="$t('common.block_details')"
               >
                 #{{ formatNumber(data.item.block_number) }}
               </nuxt-link>
@@ -52,7 +52,9 @@
           <template #cell(validator_stash_address)="data">
             <p class="mb-0">
               <nuxt-link
-                :to="`/validator/${data.item.validator_stash_address}`"
+                :to="
+                  localePath(`/validator/${data.item.validator_stash_address}`)
+                "
                 :title="$t('pages.accounts.account_details')"
               >
                 <Identicon

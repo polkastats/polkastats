@@ -19,12 +19,17 @@
           <!-- Filter -->
           <b-row>
             <b-col lg="12" class="mb-3">
-              <b-form-input
-                id="filterInput"
-                v-model="filter"
-                type="search"
-                :placeholder="$t('pages.accounts.search_placeholder')"
-              />
+              <b-input-group size="xl" class="mb-2">
+                <b-input-group-prepend is-text>
+                  <font-awesome-icon icon="search" />
+                </b-input-group-prepend>
+                <b-form-input
+                  id="filterInput"
+                  v-model="filter"
+                  type="search"
+                  :placeholder="$t('pages.accounts.search_placeholder')"
+                />
+              </b-input-group>
             </b-col>
           </b-row>
           <!-- Table with pagination-->
@@ -45,7 +50,7 @@
                 >
                   <Identicon :address="data.item.account_id" :size="40" />
                   <nuxt-link
-                    :to="`/account/${data.item.account_id}`"
+                    :to="localePath(`/account/${data.item.account_id}`)"
                     :title="$t('pages.accounts.account_details')"
                   >
                     <h4>
@@ -104,7 +109,7 @@
                   <Identicon :address="data.item.account_id" :size="20" />
                   <nuxt-link
                     v-b-tooltip.hover
-                    :to="`/account/${data.item.account_id}`"
+                    :to="localePath(`/account/${data.item.account_id}`)"
                     :title="$t('pages.accounts.account_details')"
                   >
                     <span v-if="data.item.identity_display_parent" class="mb-0">
@@ -122,32 +127,32 @@
                 </div>
               </template>
               <template #cell(free_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.free_balance) }}
                 </p>
               </template>
               <template #cell(locked_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.locked_balance) }}
                 </p>
               </template>
               <template #cell(available_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.available_balance) }}
                 </p>
               </template>
               <template #cell(reserved_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.reserved_balance) }}
                 </p>
               </template>
               <template #cell(total_balance)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ formatAmount(data.item.total_balance) }}
                 </p>
               </template>
               <template #cell(nonce)="data">
-                <p class="text-right mb-0">
+                <p class="mb-0">
                   {{ data.item.nonce }}
                 </p>
               </template>
@@ -180,7 +185,7 @@
                   <b-dropdown-item
                     v-for="(option, index) in paginationOptions"
                     :key="index"
-                    @click="setPageSize(10)"
+                    @click="setPageSize(option)"
                   >
                     {{ option }}
                   </b-dropdown-item>
@@ -231,7 +236,11 @@ export default {
       totalRows: 1,
       agggregateRows: 1,
       fields: [
-        { key: 'account_id', label: 'Account', sortable: false },
+        {
+          key: 'account_id',
+          label: this.$t('pages.accounts.account'),
+          sortable: false,
+        },
         {
           key: 'free_balance',
           label: this.$t('pages.accounts.free_balance'),

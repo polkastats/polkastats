@@ -32,8 +32,9 @@
                 </span>
               </h4>
               <h4 class="text-center mb-4 amount">
-                {{ formatAmount(parsedAccount.totalBalance) }}
+                {{ formatAmount(parsedAccount.totalBalance, 3, true) }}
               </h4>
+              <AccountLinks :account-id="accountId" />
               <BalanceChart :account-id="accountId" />
               <div class="table-responsive pb-4">
                 <table class="table table-striped">
@@ -127,36 +128,67 @@
                     </tr>
                     <tr>
                       <td>{{ $t('details.account.total_balance') }}</td>
-                      <td class="text-right amount">
-                        {{ formatAmount(parsedAccount.totalBalance) }}
+                      <td class="text-right">
+                        <span class="amount">{{
+                          formatAmount(parsedAccount.totalBalance, 3, true)
+                        }}</span>
+                        <FIATConversion :units="parsedAccount.totalBalance" />
                       </td>
                     </tr>
                     <tr>
                       <td>{{ $t('details.account.free_balance') }}</td>
-                      <td class="text-right amount">
-                        {{ formatAmount(parsedAccount.balances.freeBalance) }}
+                      <td class="text-right">
+                        <span class="amount">{{
+                          formatAmount(
+                            parsedAccount.balances.freeBalance,
+                            3,
+                            true
+                          )
+                        }}</span>
+                        <FIATConversion :units="parsedAccount.freeBalance" />
                       </td>
                     </tr>
                     <tr>
                       <td>{{ $t('details.account.available_balance') }}</td>
-                      <td class="text-right amount">
-                        {{
-                          formatAmount(parsedAccount.balances.availableBalance)
-                        }}
+                      <td class="text-right">
+                        <span class="amount">{{
+                          formatAmount(
+                            parsedAccount.balances.availableBalance,
+                            3,
+                            true
+                          )
+                        }}</span>
+                        <FIATConversion
+                          :units="parsedAccount.availableBalance"
+                        />
                       </td>
                     </tr>
                     <tr>
                       <td>{{ $t('details.account.locked_balance') }}</td>
-                      <td class="text-right amount">
-                        {{ formatAmount(parsedAccount.balances.lockedBalance) }}
+                      <td class="text-right">
+                        <span class="amount">{{
+                          formatAmount(
+                            parsedAccount.balances.lockedBalance,
+                            3,
+                            true
+                          )
+                        }}</span>
+                        <FIATConversion :units="parsedAccount.lockedBalance" />
                       </td>
                     </tr>
                     <tr>
                       <td>{{ $t('details.account.reserved_balance') }}</td>
-                      <td class="text-right amount">
-                        {{
-                          formatAmount(parsedAccount.balances.reservedBalance)
-                        }}
+                      <td class="text-right">
+                        <span class="amount">{{
+                          formatAmount(
+                            parsedAccount.balances.reservedBalance,
+                            3,
+                            true
+                          )
+                        }}</span>
+                        <FIATConversion
+                          :units="parsedAccount.reservedBalance"
+                        />
                       </td>
                     </tr>
                     <tr>
@@ -168,19 +200,46 @@
                     <tr>
                       <td>{{ $t('details.account.vested_balance') }}</td>
                       <td class="text-right amount">
-                        {{ formatAmount(parsedAccount.balances.vestedBalance) }}
+                        <span class="amount">{{
+                          formatAmount(
+                            parsedAccount.balances.vestedBalance,
+                            3,
+                            true
+                          )
+                        }}</span>
+                        <FIATConversion
+                          :units="parsedAccount.balances.vestedBalance"
+                        />
                       </td>
                     </tr>
                     <tr>
                       <td>{{ $t('details.account.vesting_total') }}</td>
-                      <td class="text-right amount">
-                        {{ formatAmount(parsedAccount.balances.vestingTotal) }}
+                      <td class="text-right">
+                        <span class="amount">{{
+                          formatAmount(
+                            parsedAccount.balances.vestingTotal,
+                            3,
+                            true
+                          )
+                        }}</span>
+                        <FIATConversion
+                          :units="parsedAccount.balances.vestingTotal"
+                        />
                       </td>
                     </tr>
                     <tr>
                       <td>{{ $t('details.account.voting_balance') }}</td>
-                      <td class="text-right amount">
-                        {{ formatAmount(parsedAccount.balances.votingBalance) }}
+                      <td class="text-right">
+                        <span class="amount">{{
+                          formatAmount(
+                            parsedAccount.balances.votingBalance,
+                            3,
+                            true
+                          )
+                        }}</span>
+                        <FIATConversion
+                          :units="parsedAccount.balances.votingBalance"
+                        />
                       </td>
                     </tr>
                   </tbody>
@@ -244,6 +303,7 @@ import AccountTransfers from '@/components/account/AccountTransfers.vue'
 import StakingRewards from '@/components/account/StakingRewards.vue'
 import StakingSlashes from '@/components/account/StakingSlashes.vue'
 import BalanceChart from '@/components/account/BalanceChart.vue'
+import AccountLinks from '@/components/account/AccountLinks.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { config } from '@/frontend.config.js'
 
@@ -256,6 +316,7 @@ export default {
     StakingRewards,
     StakingSlashes,
     BalanceChart,
+    AccountLinks,
   },
   mixins: [commonMixin],
   data() {
@@ -292,6 +353,24 @@ export default {
       totalTransfers: undefined,
       totalRewards: undefined,
       totalSlashes: undefined,
+    }
+  },
+  head() {
+    return {
+      title: this.$t('pages.account.head_title', {
+        networkName: config.name,
+        address: this.accountId,
+      }),
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('pages.account.head_content', {
+            networkName: config.name,
+            address: this.accountId,
+          }),
+        },
+      ],
     }
   },
   watch: {
