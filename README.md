@@ -11,6 +11,7 @@ In Ubuntu 20.04 server you can do:
 ```bash
 apt update
 apt upgrade
+apt install libpq5=12.9-0ubuntu0.20.04.1
 apt install git build-essential apt-transport-https ca-certificates curl software-properties-common libpq-dev
 ```
 
@@ -58,6 +59,13 @@ Cere Network:
 ```bash
 yarn workspace backend docker:cere:mainnet
 ```
+
+If you experiencing a database error then clean docker volumes:
+
+```bash
+docker volume prune
+```
+
 
 
 That will build and start all the required dockers:
