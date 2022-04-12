@@ -1,21 +1,16 @@
 <template>
   <!-- Filter -->
-  <b-row class="mb-4">
-    <b-col cols="12">
-      <b-input-group size="xl" class="mb-2">
-        <b-input-group-prepend is-text>
-          <font-awesome-icon icon="search" />
-        </b-input-group-prepend>
-        <b-form-input
+  <form @submit="doSearch">
+      <p>
+		<i icon="search"></i>
+        <input
           id="searchInput"
           v-model="searchInput"
-          type="search"
+          type="text"
           placeholder="Search by block number, block hash, extrinsic hash or account address"
-          @keydown.native="doSearch"
         />
-      </b-input-group>
-    </b-col>
-  </b-row>
+      </p>
+  </form>
 </template>
 
 <script>
@@ -29,7 +24,7 @@ export default {
   },
   methods: {
     async doSearch(event) {
-      if (event.keyCode === 13) {
+		event.preventDefault();
         if (await this.isExtrinsicHash(this.searchInput)) {
           this.$router.push({
             path: `/extrinsic/${this.searchInput}`,
@@ -47,7 +42,6 @@ export default {
             path: `/block?blockNumber=${this.searchInput}`,
           })
         }
-      }
     },
   },
 }

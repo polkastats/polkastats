@@ -1,0 +1,26 @@
+@use '../form/button.scss';
+@use '../menu/submenu.scss';
+@use '../images/icons.scss' as *;
+
+@mixin DROPDOWN
+{
+	i-dropdown
+	{
+		@extend %BUTTON_BASE;
+		@extend %SUBMENU_BASE;
+
+		&:hover
+		// &:focus
+		{
+			@extend %SUBMENU_BASE_ACTIVE;
+		}
+
+		> span
+		{
+			&::before
+			{
+				margin-right: 0.5em;
+			}
+		}
+	}
+}

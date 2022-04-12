@@ -1,174 +1,77 @@
 <template>
-  <div v-if="lastBlock" class="chain-info mb-4">
-    <div class="row">
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.last_block') }}</h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              :to="`/block?blockNumber=${lastBlock}`"
-              title="Click to see block info!"
-            >
-              <h6 class="d-inline-block">#{{ formatNumber(lastBlock) }}</h6>
-            </nuxt-link>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">
-              {{ $t('components.network.last_block_finalized') }}
-            </h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              :to="`/block?blockNumber=${lastFinalizedBlock}`"
-              title="Click to see block info!"
-            >
-              <h6 class="d-inline-block">
-                #{{ formatNumber(lastFinalizedBlock) }}
-              </h6>
-            </nuxt-link>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">Total Extrinsics</h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              to="/extrinsics"
-              title="Click to see extrinsics!"
-            >
-              <h6 class="d-inline-block">
-                {{ formatNumber(totalExtrinsics) }}
-              </h6>
-            </nuxt-link>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">Total Events</h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              to="/events"
-              title="Click to see events!"
-            >
-              <h6 class="d-inline-block">{{ formatNumber(totalEvents) }}</h6>
-            </nuxt-link>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- new row -->
-    <div class="row">
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.accounts') }}</h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              to="/accounts"
-              title="Click to see accounts!"
-            >
-              <h6 class="d-inline-block">
-                {{ formatNumber(totalAccounts) }}
-              </h6>
-            </nuxt-link>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">
-              {{ $t('components.network.transfers') }}
-            </h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              to="/transfers"
-              title="Click to see tranfers!"
-            >
-              <h6 class="d-inline-block">{{ formatNumber(totalTransfers) }}</h6>
-            </nuxt-link>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">
-              {{ $t('components.network.active_era') }}
-            </h4>
-            <h6 class="d-inline-block">
-              {{ formatNumber(activeEra) }}
-            </h6>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">
-              {{ $t('components.network.total_issuance') }}
-            </h4>
-            <h6 class="d-inline-block">
-              {{ formatAmount(totalIssuance, 2, true) }}
-            </h6>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- new row -->
-    <div class="row">
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.total_staked') }}</h4>
-            <h6 class="d-inline-block">
-              {{ formatAmount(totalStaked, 2, true) }}
-              ({{ formatNumber(totalStakedPercentage) }}%)
-            </h6>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.current_index') }}</h4>
-            <h6 class="d-inline-block">
-              {{ formatNumber(currentIndex) }}
-            </h6>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.validators') }}</h4>
-            <h6 class="d-inline-block">
-              {{ formatNumber(totalValidators) }} /
-              {{ formatNumber(totalWaiting) }}
-            </h6>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-6 col-lg-3 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="mb-3">{{ $t('components.network.nominators') }}</h4>
-            <h6 class="d-inline-block">
-              {{ formatNumber(totalNominators) }}
-            </h6>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div v-if="lastBlock">
+      <p>
+		<em>{{ $t('components.network.last_block') }}</em>
+		<strong title="Click to see block info!">
+			<a :href="`/block?blockNumber=${lastBlock}`">#{{ formatNumber(lastBlock) }}</a>
+		</strong>
+      </p>
+      <p >
+		<em>{{ $t('components.network.last_block_finalized') }}</em>
+		<strong title="Click to see block info!">
+			<a :href="`/block?blockNumber=${lastFinalizedBlock}`">#{{ formatNumber(lastFinalizedBlock) }}</a>
+		</strong>
+      </p>
+      <p>
+		<em>Total Extrinsics</em>
+		<strong title="Click to see extrinsics!">
+			<a href="/extrinsics">{{ formatNumber(totalExtrinsics) }}</a>
+		</strong>
+      </p>
+      <p>
+		<em>Total Events</em>
+		<strong title="Click to see events!">
+			<a href="/events">{{ formatNumber(totalEvents) }}</a>
+		</strong>
+      </p>
+
+      <p>
+		<em>{{ $t('components.network.accounts') }}</em>
+		<strong title="Click to see accounts!">
+			<a href="/accounts">{{ formatNumber(totalAccounts) }}</a>
+		</strong>
+      </p>
+      <p>
+		<em>{{ $t('components.network.transfers') }}</em>
+		<strong title="Click to see tranfers!">
+			<a href="/transfers">{{ formatNumber(totalTransfers) }}</a>
+		</strong>
+      </p>
+      <p>
+		<em>{{ $t('components.network.active_era') }}</em>
+		<strong>{{ formatNumber(activeEra) }}</strong>
+      </p>
+      <p>
+		<em>{{ $t('components.network.total_issuance') }}</em>
+		<strong class="d-inline-block">{{ formatAmount(totalIssuance, 2, true) }}</strong>
+      </p>
+
+      <p>
+		<em>{{ $t('components.network.total_staked') }}</em>
+		<strong>
+			{{ formatAmount(totalStaked, 2, true) }}
+			({{ formatNumber(totalStakedPercentage) }}%)
+		</strong>
+      </p>
+      <p>
+		<em>{{ $t('components.network.current_index') }}</em>
+		<strong>{{ formatNumber(currentIndex) }}</strong>
+      </p>
+      <p>
+		<em>{{ $t('components.network.validators') }}</em>
+		<strong>
+			{{ formatNumber(totalValidators) }} /
+			{{ formatNumber(totalWaiting) }}
+		</strong>
+      </p>
+      <p>
+		<em>{{ $t('components.network.nominators') }}</em>
+		<strong>{{ formatNumber(totalNominators) }}</strong>
+      </p>
   </div>
+	<footer v-else>
+		<Loading />
+	</footer>
 </template>
 
 <script>
@@ -176,8 +79,10 @@ import { gql } from 'graphql-tag'
 import BN from 'bn.js'
 import commonMixin from '../mixins/commonMixin.js'
 import { config } from '../frontend.config.js'
+import Loading from '@/components/Loading.vue'
 
 export default {
+	components: [Loading],
   mixins: [commonMixin],
   data() {
     return {
@@ -308,8 +213,51 @@ export default {
 }
 </script>
 
-<style>
-.chain-info .card {
-  box-shadow: 0 8px 20px 0 rgb(40 133 208 / 15%);
-}
+<style lang="scss" scoped>
+
+	@use '/assets/scss/polkadot/variables/colors/colors.scss' as COLOR;
+	@use '/assets/scss/polkadot/variables/fonts/families.scss' as FONT;
+
+	p
+	{
+		margin: 0;
+		
+		em
+		{
+			font-weight: 500;
+			text-transform: uppercase;
+			white-space: nowrap;
+			margin: 0;
+			display: block;
+			font-style: normal;
+			color: COLOR.$fourthB;
+	
+			&::before
+			{
+				content: "";
+				display: inline-block;
+				width: 0.8em;
+				height: 0.8em;
+				margin-right: 0.8em;
+				border: 0.2em solid COLOR.$fifth;
+				transform: rotate(25deg);
+			}
+		}
+	
+		strong
+		{
+			color: COLOR.$fifth;
+			font-size: 1.4em;
+			margin-left: 1.2em;
+			font-weight: normal;
+			font-family: FONT.$secondary;
+			white-space: nowrap;
+
+			> a:hover
+			{
+				color: inherit;
+			}
+		}
+	}
+
 </style>

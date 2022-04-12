@@ -1,0 +1,47 @@
+@use '../variables/fonts/families.scss' as FONT;
+@use '../variables/colors/colors.scss' as COLOR;
+
+@mixin ROOT_THEME
+{
+	font-family: FONT.$primary;
+	color: COLOR.$fourth;
+
+	a
+	{
+		text-decoration: none;
+		color: inherit;
+		transition: 0.3s linear;
+
+		&:hover
+		{
+			color: COLOR.$primary;
+		}
+	}
+	
+	ul
+	{
+		padding: 0;
+		margin: 0;
+	}
+	
+	li
+	{
+		display: inline-block;
+	}
+	
+	h1, h2
+	{
+		margin: 0;
+		text-transform: none;
+	}
+	
+	th
+	{
+		font-weight: inherit;
+	}
+
+	table
+	{
+		color: inherit;
+	}
+}

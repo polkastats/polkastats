@@ -1,0 +1,18 @@
+@import './root/base.scss';
+@import './root/theme.scss';
+
+@import './modules/image.scss';
+@import './modules/menu.scss';
+@import './modules/form.scss';
+@import './modules/responsive.scss';
+
+.pkd
+{
+	@include ROOT_THEME;
+
+	@include IMAGE;
+	@include MENU;
+    @include FORM;
+
+	@include RESPONSIVE;
+}

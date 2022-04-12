@@ -1,9 +1,6 @@
 <template>
-  <div class="last-extrinsics">
-    <div class="table-responsive">
-      <b-table striped hover :fields="fields" :items="extrinsics">
-        <template #cell(block_number)="data">
-          <p class="mb-0">
+	<table-component :items="extrinsics" :fields="fields" :options="options">
+		<template #cell(block_number)="data">
             <nuxt-link
               v-b-tooltip.hover
               :to="`/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`"
@@ -13,32 +10,32 @@
                 data.item.extrinsic_index
               }}
             </nuxt-link>
-          </p>
         </template>
         <template #cell(hash)="data">
-          <p class="mb-0">
             {{ shortHash(data.item.hash) }}
-          </p>
         </template>
         <template #cell(section)="data">
-          <p class="mb-0">
-            {{ data.item.section }} ➡
-            {{ data.item.method }}
-          </p>
+		  <span>{{ data.item.section }}</span>
+		  <span>{{ data.item.method }}</span>
         </template>
-      </b-table>
-    </div>
-  </div>
+	</table-component>
 </template>
 
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
+import TableComponent from './more/TableComponent.vue'
 
 export default {
+	components: { TableComponent },
   mixins: [commonMixin],
   data() {
     return {
+		options:
+		{
+			title: 'Last extrinsics',
+			link: '/extrinsics'
+		},
       extrinsics: [],
       fields: [
         {

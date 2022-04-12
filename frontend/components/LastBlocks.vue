@@ -1,46 +1,48 @@
 <template>
-  <div class="last-blocks">
-    <div class="table-responsive">
-      <b-table striped hover :fields="fields" :items="blocks">
-        <template #cell(block_number)="data">
-          <p class="mb-0">
-            <nuxt-link
-              v-b-tooltip.hover
-              :to="`/block?blockNumber=${data.item.block_number}`"
-              title="Check block information"
-            >
-              #{{ formatNumber(data.item.block_number) }}
-            </nuxt-link>
-          </p>
+	<table-component :items="blocks" :fields="fields" :options="options">
+		<template #cell(block_number)="data">
+			<nuxt-link
+				v-b-tooltip.hover
+				:to="`/block?blockNumber=${data.item.block_number}`"
+				title="Check block information"
+				class="tag"
+				>
+				#{{ formatNumber(data.item.block_number) }}
+				</nuxt-link>
         </template>
         <template #cell(finalized)="data">
-          <p v-if="data.item.finalized" class="mb-0">
+          <p v-if="data.item.finalized">
             <font-awesome-icon icon="check" class="text-success" />
             Finalized
           </p>
-          <p v-else class="mb-0">
+          <p v-else>
             <font-awesome-icon icon="spinner" class="text-light" spin />
             Processing
           </p>
         </template>
         <template #cell(block_hash)="data">
-          <p class="mb-0">
             {{ shortHash(data.item.block_hash) }}
-          </p>
         </template>
-      </b-table>
-    </div>
-  </div>
+	</table-component>
+
 </template>
 
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
+import TableComponent from './more/TableComponent.vue'
 
 export default {
+	components: { TableComponent },
   mixins: [commonMixin],
   data: () => {
     return {
+		options:
+		{
+			title: 'Last Blocks',
+			color: 'primary',
+			link: '/blocks'
+		},
       blocks: [],
       fields: [
         {

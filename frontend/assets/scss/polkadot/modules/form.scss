@@ -1,0 +1,15 @@
+@import '../components/form/button.scss';
+@import '../components/form/text.scss';
+@import '../components/form/select.scss';
+@import '../components/form/layouts.scss';
+
+@mixin FORM
+{ 
+	@include DROPDOWN;
+
+    form
+    {
+        @include INPUT_TEXT;
+		@include FORM_LAYOUTS;
+    }
+}

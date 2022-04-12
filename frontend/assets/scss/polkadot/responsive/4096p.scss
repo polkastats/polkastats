@@ -1,0 +1,8 @@
+@mixin RES_4096p
+{
+	@media only screen and (max-width: 4096px)
+	{
+		font-size: 2em;
+	}
+}
+

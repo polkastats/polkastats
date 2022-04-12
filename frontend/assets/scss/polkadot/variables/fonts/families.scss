@@ -1,0 +1,12 @@
+$primary: 'Segoe UI';
+$secondary: 'Roboto';
+$secondaryMono: 'Roboto Mono', monospace;
+$Icon: 'Font Awesome 5 Free', 'Font Awesome 5 Brands';
+
+:export
+{
+	primary: $primary;
+	secondary: $secondary;
+	secondaryMono: $secondaryMono;
+	Icon: $Icon;
+}

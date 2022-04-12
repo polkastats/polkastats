@@ -1,0 +1,127 @@
+@use '../../variables/colors/colors.scss' as COLOR;
+
+%SUBMENU_BASE
+{
+	position: relative;
+
+	> [icon]
+	{
+		cursor: pointer;
+
+		&::after
+		{
+			content: '\f078';
+			vertical-align: top;
+	
+			display: inline-block;
+			margin-left: 0.4em;
+		}
+	}
+
+	&[color]
+	{
+		padding: 0;
+
+		> [icon]
+		{
+			padding: 0.75em 1.25em;
+		}
+
+		> ul
+		{
+			background-color: inherit;
+			border-color: inherit;
+			color: inherit;
+		}
+	}
+
+	ul
+	{
+		background-color: COLOR.$fourth;
+		border-color: COLOR.$fourth;
+
+		position: absolute;
+		top: 100%;
+		left: 0;
+		z-index: 1;
+
+		margin-top: 1.6em;
+		text-transform: none;
+		text-align: left;
+		visibility: hidden;
+		opacity: 0;
+		transition: 0.3s linear;
+	
+		&::before
+		{
+			content: "";
+			position: absolute;
+			bottom: 100%;
+			left: 1.2em;
+
+			border: 0.8em solid transparent;
+			border-width: 1em 0.6em;
+			border-bottom-color: inherit;
+		}
+		
+		> li
+		{
+			display: block;
+			margin: 0;
+			padding: 1.2em 2em;
+
+			> a
+			{
+				opacity: 0.5;
+				color: COLOR.$fifth;
+			}
+
+			&[active] > a,
+			> a:hover
+			{
+				opacity: 1;
+				color: inherit;
+			}
+
+			&[active]
+			{
+				pointer-events: none;
+			}
+		}
+	}
+}
+
+%SUBMENU_BASE_ACTIVE
+{
+	> ul
+	{
+		opacity: 1;
+		visibility: visible;
+	}
+
+	> [icon]
+	{
+		&::after
+		{
+			transform: rotate(180deg);
+		}
+	}
+}
+
+@mixin SUBMENU
+{
+	width: 100%;
+
+	> ul
+	{
+		text-align: center;
+		text-transform: uppercase;
+		display: flex;
+		gap: 6em;
+
+		> li
+		{
+			color: COLOR.$fifth;
+		}
+	}
+}

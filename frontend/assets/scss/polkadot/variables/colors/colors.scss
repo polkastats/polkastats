@@ -1,0 +1,18 @@
+@use './palette.scss' as PALLETE;
+
+$primary: PALLETE.$pink;
+$secondary: PALLETE.$sky-blue;
+$third: PALLETE.$blue;
+$fourth: PALLETE.$dark;
+$fourthB: PALLETE.$black;
+$fifth: PALLETE.$white;
+
+:export
+{
+	primary: $primary;
+	secondary: $secondary;
+	third: $third;
+	fourth: $fourth;
+	fourthB: $fourthB;
+	fifth: $fifth;
+}

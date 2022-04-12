@@ -1,19 +1,16 @@
 <template>
-  <div class="last-transfers">
-    <div class="table-responsive">
-      <b-table striped hover :fields="fields" :items="transfers">
-        <template #cell(hash)="data">
-          <p class="mb-0">
-            <nuxt-link :to="`/transfer/${data.item.hash}`">
+	<table-component :items="transfers" :fields="fields" :options="options">
+
+		<template #cell(hash)="data">
+            <nuxt-link :to="`/transfer/${data.item.hash}`" class="tag">
               {{ shortHash(data.item.hash) }}
             </nuxt-link>
-          </p>
         </template>
         <template #cell(source)="data">
-          <p class="mb-0">
             <nuxt-link
               :to="`/account/${data.item.source}`"
               :title="$t('pages.accounts.account_details')"
+			  icon="avatar"
             >
               <Identicon
                 :key="data.item.source"
@@ -22,11 +19,9 @@
               />
               {{ shortAddress(data.item.source) }}
             </nuxt-link>
-          </p>
         </template>
         <template #cell(destination)="data">
-          <div v-if="isValidAddressPolkadotAddress(data.item.destination)">
-            <p class="mb-0">
+          <div v-if="isValidAddressPolkadotAddress(data.item.destination)" icon="avatar">
               <nuxt-link
                 :to="`/account/${data.item.destination}`"
                 :title="$t('pages.accounts.account_details')"
@@ -38,36 +33,36 @@
                 />
                 {{ shortAddress(data.item.destination) }}
               </nuxt-link>
-            </p>
           </div>
           <div v-else>
-            <p class="mb-0">
               {{ shortAddress(data.item.destination || '') }}
-            </p>
           </div>
         </template>
         <template #cell(amount)="data">
-          <p class="mb-0">
             {{ formatAmount(data.item.amount) }}
-          </p>
         </template>
-      </b-table>
-    </div>
-  </div>
+	</table-component>
 </template>
 
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
+import TableComponent from './more/TableComponent.vue'
 
 export default {
   components: {
-    Identicon,
+    Identicon, TableComponent
   },
   mixins: [commonMixin],
   data() {
     return {
+		options:
+		{
+			title: 'Last transfers',
+			link: '/transfers',
+			color: 'fourth'
+		},
       transfers: [],
       fields: [
         {

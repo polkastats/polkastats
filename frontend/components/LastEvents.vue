@@ -1,9 +1,6 @@
 <template>
-  <div class="last-events">
-    <div class="table-responsive">
-      <b-table striped hover :fields="fields" :items="events">
-        <template #cell(block_number)="data">
-          <p class="mb-0">
+	<table-component :items="events" :fields="fields" :options="options">
+		<template #cell(block_number)="data">
             <nuxt-link
               :to="`/event/${data.item.block_number}/${data.item.event_index}`"
             >
@@ -11,27 +8,29 @@
                 data.item.event_index
               }}
             </nuxt-link>
-          </p>
         </template>
         <template #cell(section)="data">
-          <p class="mb-0">
-            {{ data.item.section }} ➡
-            {{ data.item.method }}
-          </p>
+		  <span>{{ data.item.section }}</span>
+		  <span>{{ data.item.method }}</span>
         </template>
-      </b-table>
-    </div>
-  </div>
+	</table-component>
 </template>
 
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
+import TableComponent from './more/TableComponent.vue'
 
 export default {
+	components: { TableComponent },
   mixins: [commonMixin],
   data: () => {
     return {
+		options:
+		{
+			title: 'Last events',
+			link: '/events'
+		},
       events: [],
       fields: [
         {

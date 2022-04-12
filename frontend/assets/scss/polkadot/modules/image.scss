@@ -1,0 +1,9 @@
+@use '../components/images/icons.scss' as ICON;
+@import '../components/images/brand.scss';
+
+@mixin IMAGE
+{
+	@include ICON.INTERNAL;
+	@include ICON.EXTERNAL;
+	@include BRAND;
+}

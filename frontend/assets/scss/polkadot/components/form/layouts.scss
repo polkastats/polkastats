@@ -1,0 +1,17 @@
+@mixin FORM_LAYOUTS
+{
+	p
+	{
+		position: relative;
+
+		> [icon]
+		{
+			position: absolute;
+			top: 50%;
+			font-size: 1.2em;
+			right: 0.8em;
+			margin-top: -0.8em;
+			font-style: normal;
+		}
+	}
+}

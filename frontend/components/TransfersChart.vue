@@ -5,9 +5,7 @@
   <div v-else>
     <ReactiveLineChart
       :chart-data="chartData"
-      :options="chartOptions"
-      :height="100"
-      class="mb-4"
+      :options="chart.options"
     />
   </div>
 </template>
@@ -16,6 +14,8 @@ import axios from 'axios'
 import Loading from '@/components/Loading.vue'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
 import { config } from '@/frontend.config.js'
+import { ChartLineOptions } from './charts/settings/chartline';
+
 export default {
   components: {
     Loading,
@@ -29,73 +29,17 @@ export default {
   },
   data() {
     return {
-      chartOptions: {
-        responsive: true,
-        legend: {
-          display: false,
-        },
-        title: {
-          display: true,
-          text: 'balance transfers in the last 30 days',
-          fontSize: 18,
-          fontColor: '#000',
-          fontStyle: 'lighter',
-        },
-        tooltips: {
-          backgroundColor: '#000000',
-        },
-        scales: {
-          xAxes: [
-            {
-              gridLines: {
-                display: true,
-                color: 'rgba(200, 200, 200, 0.4)',
-              },
-              scaleLabel: {
-                display: true,
-                labelString: 'date',
-              },
-            },
-          ],
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-                suggestedMin: 0,
-                // suggestedMax: 100,
-              },
-              gridLines: {
-                display: true,
-                color: 'rgba(200, 200, 200, 0.4)',
-              },
-              scaleLabel: {
-                display: true,
-                labelString: 'balance transfers',
-              },
-            },
-          ],
-        },
-      },
+		chart: new ChartLineOptions('DATE', 'BALANCE TRANSFERS'),
       loading: true,
       apiData: [],
     }
   },
   computed: {
     chartData() {
-      return {
-        labels: this.apiData.map(({ date }) => date),
-        datasets: [
-          {
-            labels: 'total',
-            data: this.apiData.map(({ transfers }) => transfers),
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            borderColor: 'rgba(230, 0, 122, 0.8)',
-            hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-            fill: false,
-            showLine: true,
-          },
-        ],
-      }
+		this.chart.setData(this.apiData.map(({ transfers }) => transfers));
+		this.chart.setLabels(this.apiData.map(({ date }) => date));
+
+	return this.chart.data;
     },
   },
   async created() {
@@ -112,3 +56,12 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+
+	div
+	{
+		max-height: 100%;
+	}
+
+</style>

@@ -1,0 +1,162 @@
+@use '../../variables/fonts/families.scss' as FONT;
+@use '../../variables/colors/colors.scss' as COLOR;
+
+@mixin INTERNAL
+{
+	[icon]
+	{
+		font-style: normal;
+		font-size: 1em;
+		position: relative;
+	    display: inline-block;
+
+		&::before,
+		&::after
+		{
+			font-family: FONT.$Icon;
+			font-weight: bold;
+			display: inline;
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+	}
+	
+	[icon="kusama"]::before,
+	[icon="polkadot"]::before
+	{
+		content: '';
+		display: inline-block;
+		background-size: 1.6em;
+		width: 1.3em;
+		height: 0.8em;
+	}
+	
+	[icon="polkadot"]::before
+	{
+		content: '';
+		height: 1em;
+	}
+
+	// [icon="avatar"]::before
+	// {
+	// 	font-size: 1.6em;
+	// 	display: inline-block;
+	// 	background-size: 1em;
+	// 	width: 1em;
+	// 	height: 1em;
+	// 	vertical-align: top;
+	// 	background-image: url(assets/images/icons/avatar.png);
+	// }
+
+	[icon="avatar"]
+	{
+		display: inline-block;
+		height: 1em;
+		vertical-align: top;
+
+		svg
+		{
+			width: 1.8em;
+			height: 1.8em;
+			margin: -0.9em 0;
+		}
+	}
+	
+	[icon="kusama"]:not([color])::before
+	{
+		content: '';
+		background-image: url(assets/images/icons/kusama-ksm-logo.svg);
+	}
+	
+	[icon="kusama"][color="secondary"]::before
+	{
+		content: '';
+		background-image: url(assets/images/icons/kusama-ksm-logo-secondary.svg);
+	}
+
+	[icon="polkadot"]:not([color])::before
+	{
+		content: '';
+		background-image: url(assets/images/icons/polkadot.svg);
+	}
+
+	[icon="menu"]
+	{
+		line-height: 0;
+		padding: 0.2em 0.25em;
+		background-color: COLOR.$fourth;
+
+		&::before
+		{
+			content: '';
+			display: inline-block;
+			width: 1em;
+			height: 1em;
+			background-image: url(assets/images/icons/menu.svg);
+		}
+	}
+}
+
+@mixin EXTERNAL
+{
+	[icon="search"]::before
+	{
+		content: '\f002';
+	}
+
+	[icon="check"]
+	{
+		&::before
+		{
+			content: '\f00c';
+		}
+
+		&[color="completed"]
+		{
+			color: green;
+		}
+	}
+
+	[icon="name"]::before
+	{
+		content: '\f099';
+	}
+	
+	[icon="email"]::before
+	{
+		content: '\f0e0';
+	}
+	
+	[icon="key"]::before
+	{
+		content: '\f084';
+	}
+	
+	[icon="facebook"]::before
+	{
+		content: '\f39e';
+	}
+	
+	[icon="instagram"]::before
+	{
+		content: '\f16d';
+	}
+	
+	[icon="twitter"]::before
+	{
+		content: '\f099';
+	}
+	
+	[icon="github"]::before
+	{
+		content: '\f09b';
+		font-size: 2.8em;
+	}
+
+	[icon="more"]::after
+	{
+		content: '\f061';
+		margin-left: 0.5em;
+	}
+}

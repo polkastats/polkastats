@@ -1,0 +1,16 @@
+@mixin RES_960p
+{
+	@media only screen and (max-width: 960px)
+	{
+		font-size: 1em;
+
+		header.layout
+		{
+			> ul
+			{
+				display: none;
+			}
+		}
+	}
+}
+

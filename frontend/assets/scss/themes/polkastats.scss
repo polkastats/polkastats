@@ -1,3 +1,5 @@
+
+
 // base grayscale colors definitions
 $white: #fff !default;
 $gray-100: #f8f9fa !default;
@@ -112,7 +114,7 @@ body {
   text-shadow: aliceblue;
 }
 .navbar-dark {
-  border-bottom: 1px solid#fdf5f5cc;
+  border-bottom: 1px solid #fdf5f5cc;
 }
 .custom-switch .custom-control-label {
   cursor: pointer;
@@ -713,3 +715,5 @@ section .section-title {
   color: $primary2;
   font-weight: 700;
 }
+
+@import '../Polkadot.scss';

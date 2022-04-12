@@ -1,0 +1,38 @@
+@use '../../variables/colors/colors.scss' as COLOR;
+
+@mixin TOOLTIP
+{
+	[tooltip]
+	{
+		position: relative;
+	
+		&::after
+		{
+			content: attr(tooltip);
+			background-color: COLOR.$fourthB;
+			color: COLOR.$fifth;
+			padding: 0.8em 1em;
+			margin-bottom: 0.5em;
+			white-space: nowrap;
+			font-family: inherit;
+			font-size: 0.8em;
+			opacity: 0;
+			visibility: hidden;
+			transition: 0.3s linear;
+	
+			position: absolute;
+			bottom: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+	
+		&:hover
+		{
+			&::after
+			{
+				opacity: 1;
+				visibility: visible;
+			}
+		}
+	}
+}

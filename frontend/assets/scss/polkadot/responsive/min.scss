@@ -1,0 +1,15 @@
+@mixin RES_MIN
+{
+	@media only screen and (max-width: 360px)
+	{
+		font-size: 0.6em;
+
+		> header
+		{
+			> strong
+			{
+				display: none;
+			}
+		}
+	}
+}
