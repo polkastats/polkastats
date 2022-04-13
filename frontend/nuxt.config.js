@@ -8,6 +8,12 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
+    script: [
+      {
+        src: 'https://coinzillatag.com/lib/display.js',
+        async: true,
+      },
+    ],
     title: 'PolkaStats | Polkadot block explorer',
     htmlAttrs: {
       lang: 'en',

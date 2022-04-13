@@ -127,6 +127,7 @@
         </template>
       </b-modal>
     </b-navbar>
+    <CoinZillaBanner />
   </div>
 </template>
 
@@ -137,6 +138,7 @@ import Identicon from '@/components/Identicon.vue'
 import SelectedValidators from '@/components/staking/SelectedValidators.vue'
 import Languages from '@/components/Languages.vue'
 import WalletSelector from '@/components/WalletSelector.vue'
+import CoinZillaBanner from '@/components/CoinZillaBanner.vue'
 
 export default {
   components: {
@@ -144,6 +146,7 @@ export default {
     SelectedValidators,
     Languages,
     WalletSelector,
+    CoinZillaBanner,
   },
   mixins: [commonMixin],
   data() {
