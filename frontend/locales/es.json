@@ -125,6 +125,18 @@
       "amount": "Cantidad",
       "transfers_details": "Ver todas las transferencias"
     },
+    "whale_alert": {
+      "title": "Alerta ballena",
+      "description": "Top 10 de transferencias en las últimas 24 horas",
+      "hash": "Hash",
+      "block_number": "Bloque",
+      "timestamp": "Fecha",
+      "source": "Origen",
+      "destination": "Destino",
+      "amount": "Cantidad",
+      "transfers_details": "Ver todas las transferencias",
+      "block_details": "Ver información del bloque"
+    },
     "search": {
       "caption": "Buscar por bloque, hash de bloque, hash de extrinsic o dirección"
     },

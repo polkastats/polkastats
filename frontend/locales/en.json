@@ -125,6 +125,18 @@
       "amount": "Amount",
       "transfers_details": "View all transfers"
     },
+    "whale_alert": {
+      "title": "Whale Alert",
+      "description": "Top 10 transfers in the last 24 hours",
+      "hash": "Hash",
+      "block_number": "Block",
+      "timestamp": "Date",
+      "source": "Source",
+      "destination": "To",
+      "amount": "Amount",
+      "transfers_details": "View all transfers",
+      "block_details": "Check block information"
+    },
     "search": {
       "caption": "Search by block number, block hash, extrinsic hash or account address"
     },
