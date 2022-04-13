@@ -1,5 +1,5 @@
 // ToDo: https://cerenetwork.atlassian.net/browse/CBI-1533
-const { decimal } = require("../constants/config");
+const { decimals, blockchainNames } = require("../constants/blockchains");
 require("dotenv").config();
 const getClient = require("../../db/db");
 const {
@@ -33,8 +33,8 @@ module.exports = {
       }
 
       const balance = await cereNetworkService.getBalance(network, address);
-      const value = NUMBER_OF_TOKENS_TO_SEND * 10 ** decimal;
-      const maxBalance = MAX_BALANCE * 10 ** decimal;
+      const value = NUMBER_OF_TOKENS_TO_SEND * 10 ** decimals[blockchainNames.CERE];
+      const maxBalance = MAX_BALANCE * 10 ** decimals[blockchainNames.CERE];
 
       // Fetch client IP address
       const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;

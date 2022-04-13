@@ -1,15 +1,26 @@
 const { ApiPromise, WsProvider, Keyring } = require("@polkadot/api");
-const { config, CERE_MAINNET, CERE_MAINNET_WS_PROVIDER_URL_DEFAULT, MNEMONIC_EMPTY } = require("../constants/config");
-const {
-  NETWORKS,
-  CERE_WS_PROVIDER_URL
-} = process.env;
+const { cereTypes, blockchains } = require("../constants/config");
+const { NETWORKS } = process.env;
 
 const networkParams = new Map();
 
 async function init() {
-  networkParams.set(CERE_MAINNET, await initNetwork(CERE_WS_PROVIDER_URL || CERE_MAINNET_WS_PROVIDER_URL_DEFAULT, MNEMONIC_EMPTY));
+  const promises = [];
+  const cere = blockchains[0];
+  cere.networks.forEach(network => {
+    const promise = async() => ({
+      name: network.name,
+      rpc: await initNetwork(network.rpcUrl, network.mnemonic)
+    });
+    promises.push(promise());
+  });
+  const res = await Promise.all(promises);
+  res.forEach(network => {
+    networkParams.set(network.name, network.rpc);
+  });
 
+  // Deprecated: init networks from NETWORKS config
+  // ToDo: remove it in the future
   if (NETWORKS === undefined) {
     return true
   }
@@ -36,7 +47,7 @@ async function initProvider(url) {
   const provider = new WsProvider(url);
   const api = await ApiPromise.create({
     provider,
-    types: config,
+    types: cereTypes,
   });
   await api.isReady;
   const chain = await api.rpc.system.chain();
@@ -59,7 +70,7 @@ module.exports = {
   getBalance: async (network, address) => {
     const { api, _ } = networkParams.get(network.toUpperCase());
     const { nonce, data: balance } = await api.query.system.account(address);
-    return balance.free;
+    return balance.free.toString();
   },
   transferFromFaucet: async (network, address, value) => {
     const { api, faucet } = networkParams.get(network.toUpperCase());

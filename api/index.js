@@ -7,6 +7,7 @@ const moment = require('moment');
 const rateLimit = require('express-rate-limit');
 const faucet = require('./src/services/faucet');
 const tokensService = require('./src/services/cereTokensService');
+const metricsService = require('./src/services/metricsService');
 require('dotenv').config();
 const { REQUESTS_PER_IP_PER_DAY } = process.env;
 const apicache = require('apicache');
@@ -291,6 +292,7 @@ app.use("/api/v1/faucet", limiter, faucet.faucet);
 
 app.get("/api/v1/tokens/total-supply", cache('10 minutes'), tokensService.getTotalSupply);
 app.get("/api/v1/tokens/circulating-supply", cache('10 minutes'), tokensService.getCirculatingSupply);
+app.get("/api/v1/metrics", cache('10 minutes'), metricsService.getAll);
 
 app.use('/', (req, res) => {
   res.status(404).json({
