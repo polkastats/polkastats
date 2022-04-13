@@ -293,56 +293,56 @@
   - role: public
     permission:
       columns:
-      - block_height
-      - rank
       - active
+      - active_eras
+      - active_in_governance
       - active_rating
-      - name
-      - identity
-      - has_sub_identity
-      - sub_accounts_rating
-      - verified_identity
-      - identity_rating
-      - stash_address
-      - stash_address_creation_block
-      - stash_parent_address_creation_block
       - address_creation_rating
-      - controller_address
-      - included_thousand_validators
-      - thousand_validator
-      - part_of_cluster
-      - cluster_name
+      - block_height
       - cluster_members
-      - show_cluster_member
-      - nominators
-      - nominators_rating
-      - nominations
+      - cluster_name
       - commission
       - commission_history
       - commission_rating
-      - active_eras
+      - controller_address
+      - council_backing
+      - dominated
       - era_points_history
       - era_points_percent
       - era_points_rating
-      - performance
-      - performance_history
-      - relative_performance
-      - relative_performance_history
-      - slashed
-      - slash_rating
-      - slashes
-      - council_backing
-      - active_in_governance
       - governance_rating
+      - has_sub_identity
+      - identity
+      - identity_rating
+      - included_thousand_validators
+      - name
+      - nominations
+      - nominators
+      - nominators_rating
+      - other_stake
+      - part_of_cluster
       - payout_history
       - payout_rating
+      - performance
+      - performance_history
+      - rank
+      - relative_performance
+      - relative_performance_history
       - self_stake
-      - other_stake
-      - total_stake
+      - show_cluster_member
+      - slash_rating
+      - slashed
+      - slashes
       - stake_history
-      - total_rating
-      - dominated
+      - stash_address
+      - stash_address_creation_block
+      - stash_parent_address_creation_block
+      - sub_accounts_rating
+      - thousand_validator
       - timestamp
+      - total_rating
+      - total_stake
+      - verified_identity
       filter: {}
       allow_aggregations: true
 - table:
