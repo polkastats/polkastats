@@ -125,6 +125,14 @@
       "amount": "Amount",
       "transfers_details": "View all transfers"
     },
+    "whale_alert": {
+      "title": "Whale Alert",
+      "hash": "Hash",
+      "source": "Source",
+      "destination": "To",
+      "amount": "Amount",
+      "transfers_details": "View all transfers"
+    },
     "search": {
       "caption": "Search by block number, block hash, extrinsic hash or account address"
     },

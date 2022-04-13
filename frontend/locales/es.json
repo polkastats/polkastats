@@ -125,6 +125,14 @@
       "amount": "Cantidad",
       "transfers_details": "Ver todas las transferencias"
     },
+    "whale_alert": {
+      "title": "Alerta ballena",
+      "hash": "Hash",
+      "source": "Origen",
+      "destination": "Destino",
+      "amount": "Cantidad",
+      "transfers_details": "Ver todas las transferencias"
+    },
     "search": {
       "caption": "Buscar por bloque, hash de bloque, hash de extrinsic o dirección"
     },
