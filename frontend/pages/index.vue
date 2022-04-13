@@ -23,10 +23,9 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-6 mb-4">
+          <div class="col-md-12 mb-4">
             <WhaleAlert />
           </div>
-          <div class="col-md-6 mb-4">&nbsp;</div>
         </div>
       </b-container>
     </section>

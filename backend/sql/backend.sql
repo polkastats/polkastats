@@ -535,3 +535,16 @@ CREATE TRIGGER log_count_trunc AFTER TRUNCATE ON log
 -- initialize the counter table
 UPDATE total SET count = (SELECT count(*) FROM log) WHERE name = 'logs';
 COMMIT;
+
+--- Top 10 transactions by amount in the last 24h
+CREATE FUNCTION whale_alert()
+RETURNS SETOF transfer AS $$
+SELECT *
+    FROM transfer
+    WHERE
+      source != destination AND
+      success = true AND
+      to_timestamp(timestamp / 1000) >= NOW() - INTERVAL '1 DAY'
+    ORDER BY amount DESC
+    LIMIT 10
+$$ LANGUAGE sql STABLE;

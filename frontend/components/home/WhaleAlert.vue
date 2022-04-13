@@ -1,14 +1,9 @@
 <template>
   <div class="whale-alert">
-    <h3>
-      <nuxt-link
-        v-b-tooltip.hover
-        :to="localePath(`/transfers`)"
-        :title="$t('components.whale_alert.transfers_details')"
-      >
-        {{ $t('components.whale_alert.title') }}
-      </nuxt-link>
+    <h3 class="text-primary2">
+      {{ $t('components.whale_alert.title') }}
     </h3>
+    <p>{{ $t('components.whale_alert.description') }}</p>
     <div class="table-responsive">
       <b-table striped hover :fields="fields" :items="transfers">
         <template #cell(hash)="data">
@@ -16,6 +11,22 @@
             <nuxt-link :to="localePath(`/transfer/${data.item.hash}`)">
               {{ shortHash(data.item.hash) }}
             </nuxt-link>
+          </p>
+        </template>
+        <template #cell(block_number)="data">
+          <p class="mb-0">
+            <nuxt-link
+              v-b-tooltip.hover
+              :to="localePath(`/block?blockNumber=${data.item.block_number}`)"
+              :title="$t('components.whale_alert.block_details')"
+            >
+              #{{ formatNumber(data.item.block_number) }}
+            </nuxt-link>
+          </p>
+        </template>
+        <template #cell(timestamp)="data">
+          <p class="mb-0">
+            {{ fromNow(data.item.timestamp) }}
           </p>
         </template>
         <template #cell(source)="data">
@@ -58,6 +69,10 @@
         <template #cell(amount)="data">
           <p class="mb-0">
             {{ formatAmount(data.item.amount) }}
+            <FIATConversion
+              :units="data.item.amount"
+              :timestamp="data.item.timestamp"
+            />
           </p>
         </template>
       </b-table>
@@ -69,10 +84,12 @@
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
+import FIATConversion from '@/components/FIATConversion.vue'
 
 export default {
   components: {
     Identicon,
+    FIATConversion,
   },
   mixins: [commonMixin],
   data() {
@@ -82,6 +99,16 @@ export default {
         {
           key: 'hash',
           label: this.$t('components.whale_alert.hash'),
+          sortable: false,
+        },
+        {
+          key: 'block_number',
+          label: this.$t('components.whale_alert.block_number'),
+          sortable: false,
+        },
+        {
+          key: 'timestamp',
+          label: this.$t('components.whale_alert.timestamp'),
           sortable: false,
         },
         {
@@ -106,21 +133,22 @@ export default {
     $subscribe: {
       transfers: {
         query: gql`
-          subscription transfers {
-            transfer(
+          subscription whale_alert {
+            whale_alert(
               order_by: { amount: desc, block_number: desc }
-              where: { success: { _eq: true } }
               limit: 10
             ) {
+              block_number
               hash
               source
               destination
               amount
+              timestamp
             }
           }
         `,
         result({ data }) {
-          this.transfers = data.transfer
+          this.transfers = data.whale_alert
         },
       },
     },
