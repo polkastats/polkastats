@@ -1,7 +1,12 @@
 # Cere Stats
 
 ## vNext
+
 - ...
+
+## v0.7.1
+
+- Added additional logs
 
 ## v0.7.0
 
