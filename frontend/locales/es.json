@@ -405,6 +405,9 @@
     },
     "account_links": {
       "check_account": "Ver cuenta en"
+    },
+    "validator_links": {
+      "check_validator": "Ver validador en"
     }
   },
   "layout": {

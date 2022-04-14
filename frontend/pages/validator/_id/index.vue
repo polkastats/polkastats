@@ -49,7 +49,7 @@
               >1KV Program</a
             >
           </h4>
-          <span class="py-2">&nbsp;</span>
+          <p><ValidatorLinks :account-id="accountId" /></p>
         </div>
         <div class="col-2 text-right mt-4">
           <a
@@ -308,6 +308,7 @@ import PayoutsChart from '@/components/staking/validator/charts/PayoutsChart.vue
 import StakeChart from '@/components/staking/validator/charts/StakeChart.vue'
 import CommissionChart from '@/components/staking/validator/charts/CommissionChart.vue'
 import Nominations from '@/components/staking/validator/Nominations.vue'
+import ValidatorLinks from '@/components/staking/validator/ValidatorLinks.vue'
 import { config } from '@/frontend.config.js'
 
 export default {
@@ -329,6 +330,7 @@ export default {
     StakeChart,
     CommissionChart,
     Nominations,
+    ValidatorLinks,
   },
   mixins: [commonMixin],
   data() {

@@ -1,13 +1,15 @@
 <template>
-  <div class="text-center mt-0 mb-4">
+  <div class="mt-0 mb-4">
     <a
-      v-for="link in links.account"
+      v-for="link in links.validator"
       :key="`${link.path}${accountId}`"
       v-b-tooltip.hover
       :href="`${link.path}${accountId}`"
       target="_blank"
-      class="account-link mx-1"
-      :title="`${$t('components.account_links.check_account')} ${link.name}`"
+      class="validator-link mx-1"
+      :title="`${$t('components.validator_links.check_validator')} ${
+        link.name
+      }`"
     >
       <img :src="`/img/icons/${link.icon}`" />
     </a>
@@ -34,16 +36,16 @@ export default {
 </script>
 
 <style>
-.account-link img {
-  height: 1.3rem;
-  width: 1.3rem;
-  border-radius: 1.3rem;
+.validator-link img {
+  height: 1.2rem;
+  width: 1.2rem;
+  border-radius: 1.2rem;
   opacity: 0.5;
 }
-.account-link img:hover {
-  height: 1.3rem;
-  width: 1.3rem;
-  border-radius: 1.3rem;
+.validator-link img:hover {
+  height: 1.2rem;
+  width: 1.2rem;
+  border-radius: 1.2rem;
   opacity: 1;
 }
 </style>
