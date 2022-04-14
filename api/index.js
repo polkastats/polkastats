@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -8,9 +9,11 @@ const rateLimit = require('express-rate-limit');
 const faucet = require('./src/services/faucet');
 const tokensService = require('./src/services/cereTokensService');
 const metricsService = require('./src/services/metricsService');
-require('dotenv').config();
 const { REQUESTS_PER_IP_PER_DAY } = process.env;
 const apicache = require('apicache');
+const ethNetworkService = require('./src/services/ethNetworkService');
+const cereNetworkService = require('./src/services/cereNetworkService');
+const cacheService = require('./src/services/cacheService');
 
 // Http port
 const port = process.env.PORT || 8000;
@@ -302,6 +305,9 @@ app.use('/', (req, res) => {
 });
 
 // Start app
-app.listen(port, () =>
-  console.log(`PolkaStats API is listening on port ${port}.`)
-);
+app.listen(port, async () => {
+  console.log(`PolkaStats API is listening on port ${port}.`);
+  await ethNetworkService.init();
+  await cereNetworkService.init();  
+  await cacheService.init();
+});

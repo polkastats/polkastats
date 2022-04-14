@@ -1,56 +1,24 @@
-const { blockchainNames, tokenTypes } = require("../constants/blockchains");
-const { blockchains } = require("../constants/config");
-const cereNetworkService = require('./cereNetworkService');
-const ethNetworkService = require('./ethNetworkService');
+const prom = require('prom-client');
+const { decimals } = require('../config/blockchains');
+const cacheService = require('./cacheService');
+const { convertSmallToBigCoins } = require('../lib/utils')
+
+const accountBalancesMetric = new prom.Gauge({
+  name: 'accounts_balances',
+  help: 'internal accounts balances amount',
+  labelNames: ['blockchain', 'network', 'name', 'address', 'tokenSymbol', 'group'],
+});
 
 module.exports = {
   getAll: async (req, res) => {
-    const promises  = [];
-    blockchains.forEach(blockchain => {
-      blockchain.networks.forEach(network => {
-        network.accounts && network.accounts.forEach(account => {
-          const promise = async () => {
-            let balance;
-            switch (blockchain.name) {
-              case blockchainNames.CERE:
-                switch(account.type) {
-                  case tokenTypes.NATIVE:
-                    balance = await cereNetworkService.getBalance(network.name, account.address);
-                    break;
-                }
-                break;
-              case blockchainNames.POLYGON:
-              case blockchainNames.ETHEREUM:
-                switch(account.type) {
-                  case tokenTypes.NATIVE:
-                    balance = await ethNetworkService.getBalance(blockchain.name, network.name, account.address);
-                    break;
-                  case tokenTypes.ERC20:
-                    balance = await ethNetworkService.getErc20Balance({
-                      blockchain: blockchain.name,
-                      network: network.name,
-                      erc20TokenAddress: account.erc20TokenAddress,
-                      address: account.address
-                    });
-                    break;
-                }
-                break;
-            }            
-
-            return {
-              blockchain: blockchain.name,
-              network: network.name,
-              address: account.address,
-              tokenSymbol: account.tokenSymbol,
-              group: account.group,
-              balance
-            };
-          }
-          promises.push(promise());
-        });
-      });
+    const accounts = cacheService.getAccounts();
+    accounts.forEach(account => {
+      const { blockchain , network, name, address, tokenSymbol, group, balance } = account;
+      accountBalancesMetric
+        .labels({ blockchain, network, name, address, tokenSymbol, group })
+        .set(+convertSmallToBigCoins(balance, decimals[blockchain]));
     });
-    
-    res.json(await Promise.all(promises));
+    res.set('Content-Type', prom.register.contentType);
+    res.end(await prom.register.metrics());
   },
 };

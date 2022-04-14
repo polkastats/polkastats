@@ -1,7 +1,41 @@
-const { blockchainNames, accountGroups, tokenSymbols, tokenTypes, networkNames } = require('./blockchains');
-const cereTypes = require('./cereTypes');
+const blockchainNames = {
+  CERE: 'CERE',
+  ETHEREUM: 'ETHEREUM',
+  POLYGON: 'POLYGON',
+}
 
-let blockchains = [
+const networkNames = {
+  DEVNET: 'DEVNET',
+  TESTNET: 'TESTNET',
+  QANET: 'QANET',
+  MAINNET: 'MAINNET'
+}
+
+const tokenTypes = {
+  ERC20: 'ERC20',
+  NATIVE: 'NATIVE'
+}
+
+const tokenSymbols = {
+  CERE: 'CERE',
+  ETH: 'ETH',
+  MATIC: 'MATIC'
+}
+
+const accountGroups = {
+  DDC: 'DDC',
+  BRIDGE: 'BRIDGE',
+  BRIDGE_RELAYERS: 'BRIDGE_RELAYERS',
+  DAVINCI: 'DAVINCI',
+  STATS: 'STATS'
+}
+
+const decimals = {}
+decimals[blockchainNames.CERE] = 10;
+decimals[blockchainNames.POLYGON] = 18;
+decimals[blockchainNames.ETHEREUM] = 18;
+
+let blockchains = (process.env.blockchains && JSON.parse(process.env.blockchains)) || [
   {
     "name": blockchainNames.CERE,
     "nativeTokenSymbol": tokenSymbols.CERE,
@@ -25,25 +59,25 @@ let blockchains = [
             "address": "5GjivYu4Sb9qNLWp6GYqm5VgPqbYCA2JsePBENAZTdsgqGmn",
             "name": "relayer-0",
             "minBalance": 5,
-            "group": accountGroups.BRIDGE,
+            "group": accountGroups.BRIDGE_RELAYERS,
           },
           {
             "address": "5GjivYu4Sb9qNLWp6GYqm5VgPqbYCA2JsePBENAZTdsgqGmn",
             "name": "relayer-0",
             "minBalance": 5,
-            "group": accountGroups.BRIDGE,
+            "group": accountGroups.BRIDGE_RELAYERS,
           },
           {
             "address": "5FRkUfyFFnmMGMyahCVPph11tLJhSsTgzk3dJz9PHQayjJnV",
             "name": "relayer-1",
             "minBalance": 5,
-            "group": accountGroups.BRIDGE,
+            "group": accountGroups.BRIDGE_RELAYERS,
           },
           {
             "address": "5DcK9wGDQfdjH75Wu9KWbax25sKp9gAHHABFMaTxzYUMbUax",
             "name": "relayer-2",
             "minBalance": 5,
-            "group": accountGroups.BRIDGE,
+            "group": accountGroups.BRIDGE_RELAYERS,
           },
           {
             "address": "5EYCAe5g7bGpFHagwe26HiRHdHdE3hobrwV6hq1UD2BPAiZb",
@@ -68,25 +102,25 @@ let blockchains = [
             "address": "5DDArkL7BzgQqRSKF4jeaDUi9ezr9UbYYjX6G3dyDM2eA3bi",
             "name": "relayer-0",
             "minBalance": 10,
-            "group": accountGroups.BRIDGE,
+            "group": accountGroups.BRIDGE_RELAYERS,
           },
           {
             "address": "5DMDToa27GZhHBCS6vr7evgnyz1XJdfb3CZejSPQuTEH1fMZ",
             "name": "relayer-1",
             "minBalance": 10,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "5FPAKxVmwCj4DMnHJmnnWffztwUyvVucbgaGDUaSjcFqKuHe",
             "name": "relayer-2",
             "minBalance": 10,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "5DRzvs36qMwHdHxw1iE4hJMbsrbfqz9DpDNd52wqyBQcRgwh",
             "name": "relayer-3",
             "minBalance": 10,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "5EYCAe5g7bGpFHagwe26HiRHdHdE3hobrwV6hq1UD2BPAiZb",
@@ -135,19 +169,19 @@ let blockchains = [
             "address": "0x78408C4240dC5Cf55202113572aba37150DFF89A",
             "name": "polygon-relayer-0",
             "minBalance": 1,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "0x5F569F9183BD44D2e46B872270Af9E620ED83d0D",
             "name": "polygon-relayer-1",
             "minBalance": 1,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "0x5311d410571961A9cc3F97eD98A4088AB96E4Dd1",
             "name": "polygon-relayer-2",
             "minBalance": 1,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "0x8Ee8876d13e79b846fb6c3e5Ffe226a2e111387a",
@@ -184,25 +218,25 @@ let blockchains = [
             "address": "0xD5E601af441E75E2c90dE56b884f93Cab991018C",
             "name": "polygon-relayer-0",
             "minBalance": 5,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "0x1FD36AfaAD703922b896DeBC64aC3A5c866d5e6F",
             "name": "polygon-relayer-1",
             "minBalance": 5,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "0xd1Dd4F25136BaF6C180616196bd994DA5E7102e8",
             "name": "polygon-relayer-2",
             "minBalance": 5,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "0xa4dD2305220351B999aeE038E615972708719306",
             "name": "polygon-relayer-3",
             "minBalance": 5,
-            "group": accountGroups.BRIDGE
+            "group": accountGroups.BRIDGE_RELAYERS
           },
           {
             "address": "0x8fe028Eb002bbc3ec45c5dF8acfFf67eC95B6f88",
@@ -228,7 +262,4 @@ blockchains.forEach(blockchain => {
   });
 });
 
-blockchains =  (process.env.blockchains && JSON.parse(process.env.blockchains)) || blockchains
-
-
-module.exports = { cereTypes, blockchains };
+module.exports = { blockchainNames, tokenSymbols, tokenTypes, accountGroups, networkNames, decimals, blockchains }

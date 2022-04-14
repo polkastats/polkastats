@@ -1,5 +1,5 @@
 const { ApiPromise, WsProvider, Keyring } = require("@polkadot/api");
-const { cereTypes, blockchains } = require("../constants/config");
+const { cereTypes, blockchains } = require("../config");
 const { NETWORKS } = process.env;
 
 const networkParams = new Map();
@@ -20,7 +20,7 @@ async function init() {
   });
 
   // Deprecated: init networks from NETWORKS config
-  // ToDo: remove it in the future
+  // ToDo: remove it in the future from code and devops configs
   if (NETWORKS === undefined) {
     return true
   }
@@ -61,9 +61,8 @@ function initFaucet(mnemonic) {
   return newPair;
 }
 
-init();
-
 module.exports = {
+  init,
   supportsNetwork: (network) => {
     return networkParams.has(network.toUpperCase());
   },

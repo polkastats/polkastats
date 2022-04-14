@@ -1,5 +1,5 @@
 // ToDo: https://cerenetwork.atlassian.net/browse/CBI-1533
-const { decimals, blockchainNames } = require("../constants/blockchains");
+const { decimals, blockchainNames } = require("../config/blockchains");
 require("dotenv").config();
 const getClient = require("../../db/db");
 const {

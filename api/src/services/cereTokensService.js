@@ -1,4 +1,4 @@
-const { blockchainNames, networkNames, decimals } = require("../constants/blockchains");
+const { blockchainNames, networkNames, decimals } = require("../config/blockchains");
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
 const { ETHEREUM_CERE_LOCKED_ADDRESSES } = process.env;

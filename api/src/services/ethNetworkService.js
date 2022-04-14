@@ -1,7 +1,7 @@
 const Web3 = require('web3');
-const { blockchains } = require("./../constants/config");
-const erc20TokenAbi = require("./../constants/contracts/erc20TokenAbi.json");
-const { decimals, blockchainNames } = require("./../constants/blockchains");
+const { blockchains } = require("../config");
+const erc20TokenAbi = require("../config/contracts/erc20TokenAbi.json");
+const { decimals, blockchainNames } = require("../config/blockchains");
 const networkParams = new Map();
 
 async function init() {
@@ -26,7 +26,7 @@ async function init() {
   });  
 }
 
-async function initNetwork(url, cereTokenContractAddress) {  
+async function initNetwork(url, cereTokenContractAddress) {
   return initProvider(url, cereTokenContractAddress);
 }
 
@@ -45,9 +45,8 @@ function getProviderId(blockchain, network) {
   return  `${blockchain}_${network}`;
 }
 
-init();
-
 module.exports = {
+  init,
   getCEREBalanceOf: async (blockchain, network, address) => {
     const providerId = getProviderId(blockchain, network);
     const { contract } = networkParams.get(providerId);
@@ -57,19 +56,16 @@ module.exports = {
   getBalance: (blockchain, network, address) => {
     const providerId = getProviderId(blockchain, network);
     const { web3 } = networkParams.get(providerId);
-    return web3.eth.getBalance(address)
+    return web3.eth.getBalance(address);
   },
   getErc20Balance: ({ blockchain, network, erc20TokenAddress, address }) => {
     const providerId = getProviderId(blockchain, network);
     const { web3 } = networkParams.get(providerId);
-    // console.log({ address });
     const contract = new web3.eth.Contract(
       erc20TokenAbi,
       erc20TokenAddress
     );
-    return contract.methods.balanceOf(address).call().catch(err=> {
-      console.error({address})
-      throw err;
-    });
+
+    return contract.methods.balanceOf(address).call();
   }
 };
