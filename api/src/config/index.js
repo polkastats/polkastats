@@ -4,5 +4,5 @@ const cereTypes = require('./cereTypes');
 module.exports = { 
   cereTypes, 
   blockchains,
-  cacheIntervalMs: 10 * 60 * 1000
+  cacheIntervalMs: process.env.CACHE_UPDATE_INTERVAL_MS || 10 * 60 * 1000
 };
