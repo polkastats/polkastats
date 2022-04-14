@@ -14,8 +14,8 @@ const runCrawler = async (crawler) => {
     logger.debug(`Crawler ${crawler} exit with code: ${exitCode}`);
     return -1;
   });
-  child.on('exit', (exitCode) => {
-    logger.warn(`Crawler ${crawler} exit with code: ${exitCode}`);
+  child.on('exit', (exitCode, signal) => {
+    logger.warn(`Crawler ${crawler} exit with code: ${exitCode} and signal: ${signal}`);
   });
   child.on('uncaughtException', (error) => {
     logger.warn(`Crawler ${crawler} exit with uncaughtException: ${error}`);
