@@ -3,6 +3,9 @@
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
+    <div v-else-if="transfers.length === 0" class="text-center py-4">
+      <h5>{{ $t('components.account_transfers.no_transfer_found') }}</h5>
+    </div>
     <div v-else>
       <div class="table-responsive">
         <b-table striped hover :fields="fields" :items="transfers">

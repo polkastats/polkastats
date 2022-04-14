@@ -71,6 +71,7 @@
       "loading_data": "Cargando datos, por favor sea paciente..."
     },
     "account_transfers": {
+      "no_transfer_found": "No se han encontrado transferencias",
       "transfer_details": "Ver información de la transferencia",
       "block_details": "Ver información del bloque",
       "hash": "Hash",

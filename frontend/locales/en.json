@@ -71,6 +71,7 @@
       "loading_data": "Loading data, please be patient..."
     },
     "account_transfers": {
+      "no_transfer_found": "No transfer found",
       "transfer_details": "Check transfer information",
       "block_details": "Check block information",
       "hash": "Hash",
