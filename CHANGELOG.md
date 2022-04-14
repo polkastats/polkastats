@@ -4,6 +4,10 @@
 
 - ...
 
+## v0.7.2
+
+- Extended exit log
+
 ## v0.7.1
 
 - Added additional logs
