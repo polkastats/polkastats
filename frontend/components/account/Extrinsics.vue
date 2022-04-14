@@ -4,7 +4,7 @@
       <Loading />
     </div>
     <div v-else-if="extrinsics.length === 0" class="text-center py-4">
-      <h5>{{ $t('components.transfers.no_transfer_found') }}</h5>
+      <h5>{{ $t('components.extrinsics.no_extrinsic_found') }}</h5>
     </div>
     <div v-else>
       <div class="table-responsive">

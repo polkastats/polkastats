@@ -16,7 +16,7 @@
             <nuxt-link
               v-b-tooltip.hover
               :to="localePath(`/block?blockNumber=${data.item.block_number}`)"
-              :title="$t('components.last_blocks.block_details')"
+              :title="$t('common.block_details')"
             >
               #{{ formatNumber(data.item.block_number) }}
             </nuxt-link>

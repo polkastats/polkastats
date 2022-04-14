@@ -3,6 +3,8 @@
     "block_details": "Check block information",
     "event_details": "Check event information",
     "extrinsic_details": "Check extrinsic information",
+    "account_details": "Check account information",
+    "transfer_details": "Check transfer information",
     "processing": "Processing",
     "finalized": "Finalized"
   },
@@ -26,7 +28,6 @@
     },
     "chain": {
       "last_block": "Last block",
-      "block_details":"Check block information",
       "last_block_finalized": "Finalized",
       "total_extrinsics": "Extrinsics",
       "extrinsics_details": "View all extrinsics",
@@ -73,7 +74,6 @@
     "account_transfers": {
       "no_transfer_found": "No transfer found",
       "transfer_details": "Check transfer information",
-      "block_details": "Check block information",
       "hash": "Hash",
       "block_number": "Block",
       "timestamp": "Date",
@@ -101,8 +101,7 @@
       "hash": "Hash",
       "total_extrinsics": "Extrinsics",
       "total_events": "Events",
-      "blocks_details": "View all blocks",
-      "block_details": "Check block information"
+      "blocks_details": "View all blocks"
     },
     "last_events": {
       "title": "Latest events",
@@ -135,8 +134,7 @@
       "source": "Source",
       "destination": "To",
       "amount": "Amount",
-      "transfers_details": "View all transfers",
-      "block_details": "Check block information"
+      "transfers_details": "View all transfers"
     },
     "search": {
       "caption": "Search by block number, block hash, extrinsic hash or account address"
@@ -153,6 +151,9 @@
       "documentation": "Documentation",
       "phase": "Phase",
       "data": "Data"
+    },
+    "extrinsics": {
+      "no_extrinsic_found": "No extrinsic found"
     },
     "extrinsic": {
       "hash": "Hash",
@@ -583,7 +584,6 @@
       "head_content": "{networkName} transfers",
       "search_placeholder": "Search transfer by block number, hash or address",
       "transfer_details": "Check transfer information",
-      "block_details": "Check block information",
       "hash": "Hash",
       "block_number": "Block",
       "timestamp": "Date",
