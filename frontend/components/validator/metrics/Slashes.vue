@@ -6,8 +6,9 @@
           Slashes
           <nuxt-link
             v-b-tooltip.hover
-            to="/help/metrics#slashes"
-            title="Evaluate if the validator was slashed in the last 28 eras (1 week)"
+            event=""
+            to="/"
+            title="Evaluate if the validator was slashed in the last 84 eras (12 weeks)"
           >
             <font-awesome-icon
               icon="question-circle"

@@ -6,7 +6,8 @@
           Governance
           <nuxt-link
             v-b-tooltip.hover
-            to="/help/metrics#governance"
+            event=""
+            to="/"
             title="Evaluate if the validator is backing a council member and if is participating in a current proposal or referendum (as proposer or voter)"
           >
             <font-awesome-icon

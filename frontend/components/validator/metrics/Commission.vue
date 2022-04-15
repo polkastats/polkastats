@@ -6,7 +6,8 @@
           Commission
           <nuxt-link
             v-b-tooltip.hover
-            to="/help/metrics#commission"
+            event=""
+            to="/"
             title="Evaluate validator commission over time"
           >
             <font-awesome-icon

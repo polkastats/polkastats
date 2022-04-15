@@ -2,7 +2,7 @@
 
 ## vNext
 
-- ...
+- Minor UI fixes
 
 ## v0.7.2
 

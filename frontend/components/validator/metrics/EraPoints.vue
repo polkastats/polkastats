@@ -6,7 +6,8 @@
           Era points
           <nuxt-link
             v-b-tooltip.hover
-            to="/help/metrics#erapoints"
+            event=""
+            to="/"
             title="Evaluate if the era points earned by the validator in the history are below or above average"
           >
             <font-awesome-icon

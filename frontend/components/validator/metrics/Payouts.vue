@@ -6,7 +6,8 @@
           Frequency of payouts
           <nuxt-link
             v-b-tooltip.hover
-            to="/help/metrics#payouts"
+            event=""
+            to="/"
             title="Evaluate frequency of rewards distribution"
           >
             <font-awesome-icon

@@ -6,7 +6,8 @@
           Address creation
           <nuxt-link
             v-b-tooltip.hover
-            to="/help/metrics#address"
+            event=""
+            to="/"
             title="Evaluate how old is the validator address"
           >
             <font-awesome-icon
