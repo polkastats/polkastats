@@ -5,7 +5,8 @@
         <h5 class="widget-title mb-2">
           <nuxt-link
             v-b-tooltip.hover
-            to="/help#custom-vrc-score"
+            event=""
+            to="/"
             title="You can customize the weights of the VRC score and thereby deviate from the default option (equal weight of each metric)"
           >
             <font-awesome-icon
@@ -34,7 +35,8 @@
                   ELECTED
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#elected"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon
@@ -65,7 +67,8 @@
                   COMMISSION CHANGES
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#commission"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon
@@ -100,7 +103,8 @@
                   ERA POINTS AVG
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#erapoints"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon
@@ -133,7 +137,8 @@
                   GOVERNANCE PARTICIPATION
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#governance"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon
@@ -168,7 +173,8 @@
                   IDENTITY
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#identity"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon
@@ -199,7 +205,8 @@
                   NUMBER OF NOMINATORS
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#nominators"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon
@@ -234,7 +241,8 @@
                   ADDRESS CREATION
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#address"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon
@@ -265,7 +273,8 @@
                   PAYOUT FREQUENCY
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#payouts"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon
@@ -298,7 +307,8 @@
                   SLASHES
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#slashes"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon
@@ -329,7 +339,8 @@
                   SUBACCOUNTS
                   <nuxt-link
                     v-b-tooltip.hover
-                    to="/help/metrics#subaccounts"
+                    event=""
+                    to="/"
                     title="Check metric definition"
                   >
                     <font-awesome-icon

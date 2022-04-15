@@ -6,7 +6,8 @@
           Subaccounts
           <nuxt-link
             v-b-tooltip.hover
-            to="/help/metrics#subaccounts"
+            event=""
+            to="/"
             title="Evaluate if the validator uses sub-accounts"
           >
             <font-awesome-icon

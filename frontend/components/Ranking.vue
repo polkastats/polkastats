@@ -11,7 +11,8 @@
             <h5 class="widget-title mb-2">
               <nuxt-link
                 v-b-tooltip.hover
-                to="/help#exclude-filter"
+                event=""
+                to="/"
                 title="You can exclude groups of validators based on your preferences"
               >
                 <font-awesome-icon
