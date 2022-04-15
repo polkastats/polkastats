@@ -1,5 +1,5 @@
 <template>
-  <BarChart :data="chartData" :options="chartOptions" :height="200" />
+  <BarChart :chart-data="chartData" :options="chartOptions" :height="200" />
 </template>
 <script>
 import BarChart from '@/components/charts/BarChart.js'
