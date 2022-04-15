@@ -16,19 +16,23 @@ export default {
     shortHash(hash) {
       return `${hash.substr(0, 6)}…${hash.substr(hash.length - 4, 4)}`
     },
+    formatWithCommas(numberAsString) {
+      return numberAsString.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    },
     formatNumber(number) {
       if (isHex(number)) {
-        return parseInt(number, 16)
-          .toString()
-          .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+        return this.formatWithCommas(parseInt(number, 16).toString())
       } else {
-        return number.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+        return this.formatWithCommas(number.toString())
       }
     },
     formatAmount(amount, precission = 2) {
-      return `${new BigNumber(amount)
+      const tokensAmount = new BigNumber(amount)
         .div(new BigNumber(10).pow(network.tokenDecimals))
-        .toFixed(precission)} ${network.tokenSymbol}`
+        .toFixed(precission)
+      return `${this.formatWithCommas(tokensAmount.toString())} ${
+        network.tokenSymbol
+      }`
     },
     capitalize(s) {
       if (typeof s !== 'string') return ''
