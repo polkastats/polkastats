@@ -1,3 +1,6 @@
+const web3 = require('web3');
+const { BN } = web3.utils;
+
 const blockchainNames = {
   CERE: 'CERE',
   ETHEREUM: 'ETHEREUM',
@@ -31,29 +34,35 @@ const accountGroups = {
 }
 
 const decimals = {}
-decimals[blockchainNames.CERE] = 10;
-decimals[blockchainNames.POLYGON] = 18;
-decimals[blockchainNames.ETHEREUM] = 18;
+decimals[tokenSymbols.CERE] = new BN(10);
+decimals[tokenSymbols.MATIC] = new BN(18);
+decimals[tokenSymbols.ETH] = new BN(18);
 
-let blockchains = (process.env.blockchains && JSON.parse(process.env.blockchains)) || [
+const networks = JSON.parse(`[${process.env.NETWORKS}]`);
+const cereDevnet = networks.find(network => network.NETWORK === networkNames.DEVNET);
+const cereQanet = networks.find(network => network.NETWORK === networkNames.QANET);
+const cereTestnet = networks.find(network => network.NETWORK === networkNames.TESTNET);
+const cereMainnet = networks.find(network => network.NETWORK === networkNames.MAINNET);
+
+let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS)) || [
   {
     "name": blockchainNames.CERE,
     "nativeTokenSymbol": tokenSymbols.CERE,
     "networks": [
       {
         "name": networkNames.DEVNET,
-        "rpcUrl": "wss://rpc.devnet.cere.network:9945",
-        "mnemonic": "",
+        "rpcUrl": cereDevnet.URL,
+        "faucetMnemonic": cereDevnet.MNEMONICS,
       },
       {
         "name": networkNames.QANET,
-        "rpcUrl": "wss://rpc.qanet.cere.network:9945",
-        "mnemonic": "",
+        "rpcUrl": cereQanet.URL,
+        "faucetMnemonic": cereQanet.MNEMONICS,
       },
       {
         "name": networkNames.TESTNET,
-        "rpcUrl": "wss://rpc.testnet.cere.network:9945",
-        "mnemonic": "",
+        "rpcUrl": cereTestnet.URL,
+        "faucetMnemonic": cereTestnet.MNEMONICS,
         "accounts": [
           {
             "address": "5GjivYu4Sb9qNLWp6GYqm5VgPqbYCA2JsePBENAZTdsgqGmn",
@@ -95,8 +104,8 @@ let blockchains = (process.env.blockchains && JSON.parse(process.env.blockchains
       },
       {
         "name": networkNames.MAINNET,
-        "rpcUrl": "wss://rpc.mainnet.cere.network:9945",
-        "mnemonic": "",
+        "rpcUrl": cereMainnet.URL,
+        "faucetMnemonic": cereMainnet.MNEMONICS,
         "accounts": [
           {
             "address": "5DDArkL7BzgQqRSKF4jeaDUi9ezr9UbYYjX6G3dyDM2eA3bi",
@@ -159,10 +168,8 @@ let blockchains = (process.env.blockchains && JSON.parse(process.env.blockchains
   {
     "name": blockchainNames.POLYGON,
     "nativeTokenSymbol": tokenSymbols.MATIC,
-    "networks": [
-      {
+    "networks": [{
         "name": networkNames.TESTNET,
-        "rpcUrl": "https://polygon-mumbai.infura.io/v3/ef1894c45068455680d1b08a35a6e83b",
         "cereTokenContractAddress": "0xd111d479e23A8342A81ad595Ea1CAF229B3528c3",
         "accounts": [
           {
@@ -188,7 +195,7 @@ let blockchains = (process.env.blockchains && JSON.parse(process.env.blockchains
             "name": "polygon-erc20-handler",
             "minBalance": 100,
             "type": tokenTypes.ERC20,
-            "tokenSymbol": 'CN', // why it's CN and not CEERE ?
+            "tokenSymbol": 'CERE', // by fact it has "CN" token symbol
             "erc20TokenAddress": "0xd111d479e23A8342A81ad595Ea1CAF229B3528c3",
             "group": accountGroups.BRIDGE
           }
@@ -196,7 +203,6 @@ let blockchains = (process.env.blockchains && JSON.parse(process.env.blockchains
       },
       {
         "name": networkNames.MAINNET,
-        "rpcUrl": "https://polygon-mainnet.infura.io/v3/b02e9d9902654c29b15508f943aab443",
         "cereTokenContractAddress": "0x2da719db753dfa10a62e140f436e1d67f2ddb0d6",
         "accounts": [
           {
@@ -248,6 +254,25 @@ let blockchains = (process.env.blockchains && JSON.parse(process.env.blockchains
             "group": accountGroups.BRIDGE
           }
         ]
+      }
+    ]
+  },
+  {
+    "name": blockchainNames.ETHEREUM,
+    "nativeTokenSymbol": tokenSymbols.ETH,
+    "networks": [
+      {
+        "name": networkNames.MAINNET,
+        "cereTokenContractAddress": "0x2da719db753dfa10a62e140f436e1d67f2ddb0d6",
+        "accounts": [{
+          "address": "0x8fe028Eb002bbc3ec45c5dF8acfFf67eC95B6f88",
+          "name": "ethereum-erc20-handler",
+          "minBalance": 10000000,
+          "type": "ERC20",
+          "erc20TokenAddress": "0x2da719db753dfa10a62e140f436e1d67f2ddb0d6",
+          "tokenSymbol": "CERE",
+          "group": "BRIDGE"
+        }]
       }
     ]
   }

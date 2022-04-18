@@ -1,5 +1,7 @@
 // ToDo: https://cerenetwork.atlassian.net/browse/CBI-1533
-const { decimals, blockchainNames } = require("../config/blockchains");
+const web3 = require('web3');
+const { BN } = web3.utils;
+const { decimals } = require("../config/blockchains");
 require("dotenv").config();
 const getClient = require("../../db/db");
 const {
@@ -33,14 +35,17 @@ module.exports = {
       }
 
       const balance = await cereNetworkService.getBalance(network, address);
-      const value = NUMBER_OF_TOKENS_TO_SEND * 10 ** decimals[blockchainNames.CERE];
-      const maxBalance = MAX_BALANCE * 10 ** decimals[blockchainNames.CERE];
+      const base = new BN(10);
+      const numberOfTokensToSend = new BN(NUMBER_OF_TOKENS_TO_SEND);
+      const value = numberOfTokensToSend.mul(base.pow(decimals.CERE));
+      const maxBalanceCoins = new BN(MAX_BALANCE)
+      const maxBalance =  maxBalanceCoins.mul(base.pow(decimals.CERE));
 
       // Fetch client IP address
       const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
       // Check for minimum balance
-      if (balance >= maxBalance) {
+      if (balance.gte(maxBalance)) {
         throw new Error(
           `Your balance is ${balance.toHuman()}, so we couldn't process your request.`
         );
