@@ -76,7 +76,6 @@ module.exports = {
     });
   },
   getTotalSupply: async (network) => {
-    
     const { api, _ } = networkParams.get(network.toUpperCase());
     return new BN((await api.query.balances.totalIssuance()).toString());
   }

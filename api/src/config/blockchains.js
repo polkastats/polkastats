@@ -51,16 +51,16 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
     "networks": [
       {
         "name": networkNames.DEVNET,
-        "rpcUrl": cereDevnet.URL,
+        "rpcUrl": cereDevnet.URL || "wss://rpc.devnet.cere.network:9945",
         "faucetMnemonic": cereDevnet.MNEMONICS,
       },
       {
         "name": networkNames.QANET,
-        "rpcUrl": cereQanet.URL,
+        "rpcUrl": cereQanet.URL || "wss://rpc.qanet.cere.network:9945",
         "faucetMnemonic": cereQanet.MNEMONICS,
       },
       {
-        "name": networkNames.TESTNET,
+        "name": networkNames.TESTNET || "wss://rpc.testnet.cere.network:9945",
         "rpcUrl": cereTestnet.URL,
         "faucetMnemonic": cereTestnet.MNEMONICS,
         "accounts": [
@@ -104,7 +104,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
       },
       {
         "name": networkNames.MAINNET,
-        "rpcUrl": cereMainnet.URL,
+        "rpcUrl": cereMainnet.URL || "wss://rpc.mainnet.cere.network:9945",
         "faucetMnemonic": cereMainnet.MNEMONICS,
         "accounts": [
           {
@@ -171,6 +171,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
     "networks": [{
         "name": networkNames.TESTNET,
         "cereTokenContractAddress": "0xd111d479e23A8342A81ad595Ea1CAF229B3528c3",
+        "rpcUrl": "https://rpc-mumbai.matic.today",
         "accounts": [
           {
             "address": "0x78408C4240dC5Cf55202113572aba37150DFF89A",
@@ -204,6 +205,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
       {
         "name": networkNames.MAINNET,
         "cereTokenContractAddress": "0x2da719db753dfa10a62e140f436e1d67f2ddb0d6",
+        "rpcUrl": "https://matic-mainnet.chainstacklabs.com",
         "accounts": [
           {
             "address": "0x4478e3B0B71531DAc9d0ECe9357eBB0043669804",
@@ -264,6 +266,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
       {
         "name": networkNames.MAINNET,
         "cereTokenContractAddress": "0x2da719db753dfa10a62e140f436e1d67f2ddb0d6",
+        "rpcUrl": "https://main-light.eth.linkpool.io",
         "accounts": [{
           "address": "0x8fe028Eb002bbc3ec45c5dF8acfFf67eC95B6f88",
           "name": "ethereum-erc20-handler",
