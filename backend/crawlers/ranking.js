@@ -824,6 +824,10 @@ const crawler = async (delayedStart) => {
         const stashAddress = validator.stashId.toString();
 
         // address creation
+        const BLOCKS_PER_DAY = 60 * 60 * 24 / 6;
+        const BLOCKS_FOR_3 = 80 * BLOCKS_PER_DAY;
+        const BLOCKS_FOR_2 = 60 * BLOCKS_PER_DAY;
+        const BLOCKS_FOR_1 = 30 * BLOCKS_PER_DAY;
         let addressCreationRating = 0;
         const stashCreatedAtBlock = parseInt(stashAddressesCreation[stashAddress], 10);
         let stashParentCreatedAtBlock = 0;
@@ -834,18 +838,18 @@ const crawler = async (delayedStart) => {
           const best = stashParentCreatedAtBlock > stashCreatedAtBlock
             ? stashCreatedAtBlock
             : stashParentCreatedAtBlock;
-          if (best <= blockHeight / 4) {
+          if (best <= blockHeight - BLOCKS_FOR_3) {
             addressCreationRating = 3;
-          } else if (best <= (blockHeight / 4) * 2) {
+          } else if (best <= blockHeight - BLOCKS_FOR_2) {
             addressCreationRating = 2;
-          } else if (best <= (blockHeight / 4) * 3) {
+          } else if (best <= blockHeight - BLOCKS_FOR_1) {
             addressCreationRating = 1;
           }
-        } else if (stashCreatedAtBlock <= blockHeight / 4) {
+        } else if (stashCreatedAtBlock <= blockHeight - BLOCKS_FOR_3) {
           addressCreationRating = 3;
-        } else if (stashCreatedAtBlock <= (blockHeight / 4) * 2) {
+        } else if (stashCreatedAtBlock <= blockHeight - BLOCKS_FOR_2) {
           addressCreationRating = 2;
-        } else if (stashCreatedAtBlock <= (blockHeight / 4) * 3) {
+        } else if (stashCreatedAtBlock <= blockHeight - BLOCKS_FOR_1) {
           addressCreationRating = 1;
         }
 
