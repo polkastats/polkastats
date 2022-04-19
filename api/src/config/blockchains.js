@@ -278,6 +278,20 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
           "tokenSymbol": "CERE",
           "group": "BRIDGE"
         }]
+      },
+      {
+        "name": networkNames.TESTNET,
+        "cereTokenContractAddress": "0x0b10e304088b2BA2B2acfD2f72573FAaD31a13A5",
+        "rpcUrl": " https://rpc.goerli.mudit.blog",
+        "accounts": [{
+          "address": "0x92c1576845703089CF6c0788379ED81f75F45dd5",
+          "name": "ethereum-erc20-handler",
+          "minBalance": 10000000,
+          "type": "ERC20",
+          "erc20TokenAddress": "0x0b10e304088b2BA2B2acfD2f72573FAaD31a13A5",
+          "tokenSymbol": "CERE",
+          "group": "BRIDGE"
+        }]
       }
     ]
   }
