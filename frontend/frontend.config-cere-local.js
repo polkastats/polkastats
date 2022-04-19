@@ -11,7 +11,7 @@ export const network = {
   googleAnalytics: '',
   theme: '@/assets/scss/themes/polkastats.scss',
   // ranking               Í
-  historySize: 84, // 84 days
+  historySize: 16, // 16 days
   erasPerDay: 1,
   validatorSetSize: 24,
 }

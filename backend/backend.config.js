@@ -41,7 +41,7 @@ module.exports = {
       pollingTime:
         parseInt(process.env.RANKING_POLLING_TIME_MS, 10)
         || 5 * 60 * 1000,
-      historySize: 84,
+      historySize: 16,
       erasPerDay: 1,
       tokenDecimals: 10,
       featuredTimespan: 60 * 60 * 24 * 7 * 2 * 1000, // 2 weeks
