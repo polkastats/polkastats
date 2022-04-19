@@ -233,28 +233,36 @@
             <div class="col-xl-6 pb-4">
               <RelativePerformanceChart
                 :relative-performance-history="
-                  validator.relativePerformanceHistory
+                  alignWithHistorySize(validator.relativePerformanceHistory)
                 "
               />
             </div>
             <div class="col-xl-6 pb-4">
               <EraPointsChart
-                :era-points-history="validator.eraPointsHistory"
+                :era-points-history="
+                  alignWithHistorySize(validator.eraPointsHistory)
+                "
               />
             </div>
           </div>
           <div class="row">
             <div class="col-xl-6 pb-4">
-              <PayoutsChart :payout-history="validator.payoutHistory" />
+              <PayoutsChart
+                :payout-history="alignWithHistorySize(validator.payoutHistory)"
+              />
             </div>
             <div class="col-xl-6 pb-4">
-              <StakeChart :stake-history="validator.stakeHistory" />
+              <StakeChart
+                :stake-history="alignWithHistorySize(validator.stakeHistory)"
+              />
             </div>
           </div>
           <div class="row">
             <div class="col-xl-6 pb-4">
               <CommissionChart
-                :commission-history="validator.commissionHistory"
+                :commission-history="
+                  alignWithHistorySize(validator.commissionHistory)
+                "
               />
             </div>
             <div class="col-xl-6 pb-4"></div>
@@ -336,6 +344,10 @@ export default {
     },
     toggleSelected(accountId) {
       this.$store.dispatch('ranking/toggleSelected', { accountId })
+    },
+    alignWithHistorySize(data) {
+      const start = Math.max(0, data.length - network.historySize)
+      return data.slice(start, data.length)
     },
   },
   apollo: {

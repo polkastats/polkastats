@@ -25,12 +25,12 @@
     <div class="description">
       <p v-if="rating === 2">
         Above average! Validator got {{ percent.toFixed(2) }}% of the total era
-        points in the last 21 days while average was
+        points in the last 16 days while average was
         {{ average.toFixed(2) }}%<br />
       </p>
       <p v-else>
         Below average! Validator got {{ percent.toFixed(2) }}% of the total era
-        points in the last 21 days while average was
+        points in the last 16 days while average was
         {{ average.toFixed(2) }}%<br />
       </p>
     </div>

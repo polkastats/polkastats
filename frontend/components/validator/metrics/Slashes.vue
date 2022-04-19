@@ -8,7 +8,7 @@
             v-b-tooltip.hover
             event=""
             to="/"
-            title="Evaluate if the validator was slashed in the last 84 eras (12 weeks)"
+            title="Evaluate if the validator was slashed in the last 16 eras (16 days)"
           >
             <font-awesome-icon
               icon="question-circle"
