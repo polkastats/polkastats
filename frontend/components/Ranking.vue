@@ -184,6 +184,19 @@
         <template #cell(otherStake)="data">
           {{ formatAmount(data.item.otherStake) }}
         </template>
+        <template #cell(relativePerformance)="data">
+          <b-progress
+            v-b-tooltip.hover
+            :max="100"
+            show-progress
+            :title="`${(data.item.relativePerformance * 100).toFixed(2)} %`"
+          >
+            <b-progress-bar
+              :value="data.item.relativePerformance * 100"
+              :label="`${(data.item.relativePerformance * 100).toFixed(2)} %`"
+            ></b-progress-bar>
+          </b-progress>
+        </template>
         <template #cell(totalRating)="data">
           <span
             v-b-tooltip.hover
@@ -305,6 +318,12 @@ export default {
             'text-center d-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         { key: 'name', sortable: true },
+        {
+          key: 'relativePerformance',
+          label: 'R. Performance',
+          sortable: true,
+          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
+        },
         {
           key: 'selfStake',
           sortable: true,
