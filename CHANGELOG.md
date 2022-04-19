@@ -2,7 +2,7 @@
 
 ## vNext
 
-- ...
+- Adjusted metrics
 
 ## v0.8.0
 
