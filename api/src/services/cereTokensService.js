@@ -7,7 +7,7 @@ const ethNetworkService = require('./ethNetworkService');
 const { ETHEREUM_CERE_LOCKED_ADDRESSES } = process.env;
 
 function getTotalSupplyInternal(network) {
-  return cereNetworkService.getTotalSupply(network);  
+  return cereNetworkService.getTotalSupply(network);
 }
 
 module.exports = {
