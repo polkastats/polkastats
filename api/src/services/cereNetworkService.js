@@ -1,5 +1,6 @@
 const { ApiPromise, WsProvider, Keyring } = require("@polkadot/api");
 const { cereTypes, blockchains } = require("../config");
+const { blockchainNames }  = require("../config/blockchains");
 const web3 = require('web3');
 const { BN } = web3.utils;
 
@@ -7,7 +8,7 @@ const networkParams = new Map();
 
 async function init() {
   const promises = [];
-  const cere = blockchains[0];
+  const cere = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
   cere.networks.forEach(network => {
     const promise = async() => ({
       name: network.name,

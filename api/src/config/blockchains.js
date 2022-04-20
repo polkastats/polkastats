@@ -38,7 +38,7 @@ const decimals = {}
 decimals[tokenSymbols.CERE] = new BN(10);
 decimals[tokenSymbols.MATIC] = new BN(18);
 decimals[tokenSymbols.ETH] = new BN(18);
-decimals[tokenSymbols.USDC] = new BN(18);
+decimals[tokenSymbols.USDC] = new BN(6);
 
 const networks = JSON.parse(`[${process.env.NETWORKS}]`);
 const cereDevnet = networks.find(network => network.NETWORK === networkNames.DEVNET);

@@ -16,6 +16,8 @@ async function  get() {
                 case tokenTypes.NATIVE:
                   balance = await cereNetworkService.getBalance(network.name, account.address);
                   break;
+                default:
+                  console.warn("Token type doesn't exist");
               }
               break;
             case blockchainNames.POLYGON:
@@ -32,6 +34,8 @@ async function  get() {
                     address: account.address
                   });
                   break;
+                default:
+                  console.warn("Tokeb type doesn't exist");
               }
               break;
             default:
