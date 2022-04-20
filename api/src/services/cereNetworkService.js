@@ -1,32 +1,31 @@
 const { ApiPromise, WsProvider, Keyring } = require("@polkadot/api");
-const { config, CERE_MAINNET, CERE_MAINNET_WS_PROVIDER_URL_DEFAULT, MNEMONIC_EMPTY } = require("../constants/config");
-const {
-  NETWORKS,
-  CERE_WS_PROVIDER_URL
-} = process.env;
+const { cereTypes, blockchains } = require("../config");
+const { blockchainNames }  = require("../config/blockchains");
+const web3 = require('web3');
+const { BN } = web3.utils;
 
 const networkParams = new Map();
 
 async function init() {
-  networkParams.set(CERE_MAINNET, await initNetwork(CERE_WS_PROVIDER_URL || CERE_MAINNET_WS_PROVIDER_URL_DEFAULT, MNEMONIC_EMPTY));
-
-  if (NETWORKS === undefined) {
-    return true
-  }
-  const networks = NETWORKS.split("},");
-  networks.forEach(async (network, index) => {
-    if (index !== networks.length - 1) {
-      network = network + '}'
-    }
-    const parsedNetwork = JSON.parse(network);
-    networkParams.set(parsedNetwork.NETWORK, await initNetwork(parsedNetwork.URL, parsedNetwork.MNEMONICS));
+  const promises = [];
+  const cere = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
+  cere.networks.forEach(network => {
+    const promise = async() => ({
+      name: network.name,
+      rpc: await initNetwork(network.rpcUrl, network.faucetMnemonic)
+    });
+    promises.push(promise());
+  });
+  const res = await Promise.all(promises);
+  res.forEach(network => {
+    networkParams.set(network.name, network.rpc);
   });
 }
 
-async function initNetwork(url, mnemonic) {
+async function initNetwork(url, faucetMnemonic) {
   const api = await initProvider(url);
-  if (mnemonic) {
-    const faucet = await initFaucet(mnemonic);
+  if (faucetMnemonic) {
+    const faucet = await initFaucet(faucetMnemonic);
     return {api, faucet};
   }
   return {api, faucet: {}};
@@ -36,7 +35,7 @@ async function initProvider(url) {
   const provider = new WsProvider(url);
   const api = await ApiPromise.create({
     provider,
-    types: config,
+    types: cereTypes,
   });
   await api.isReady;
   const chain = await api.rpc.system.chain();
@@ -44,22 +43,21 @@ async function initProvider(url) {
   return api;
 }
 
-function initFaucet(mnemonic) {
+function initFaucet(faucetMnemonic) {
   const keyring = new Keyring({ type: "sr25519" });
-  const newPair = keyring.addFromUri(mnemonic);
+  const newPair = keyring.addFromUri(faucetMnemonic);
   return newPair;
 }
 
-init();
-
 module.exports = {
+  init,
   supportsNetwork: (network) => {
     return networkParams.has(network.toUpperCase());
   },
   getBalance: async (network, address) => {
     const { api, _ } = networkParams.get(network.toUpperCase());
-    const { nonce, data: balance } = await api.query.system.account(address);
-    return balance.free;
+    const { data: balance } = await api.query.system.account(address);
+    return new BN(balance.free);
   },
   transferFromFaucet: async (network, address, value) => {
     const { api, faucet } = networkParams.get(network.toUpperCase());
@@ -78,8 +76,8 @@ module.exports = {
         .catch((err) => reject(err));
     });
   },
-  getTotalSupply: (network) => {
+  getTotalSupply: async (network) => {
     const { api, _ } = networkParams.get(network.toUpperCase());
-    return api.query.balances.totalIssuance();
+    return new BN((await api.query.balances.totalIssuance()).toString());
   }
 };

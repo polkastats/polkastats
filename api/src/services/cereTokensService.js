@@ -1,26 +1,37 @@
-const { decimal, CERE_MAINNET } = require("../constants/config");
+const { blockchains } = require("../config");
+const { decimals } = require("../config/blockchains");
+const { getTokenFloatAmount } = require("../lib/utils");
+const { blockchainNames, networkNames } = require("../config/blockchains");
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
 const { ETHEREUM_CERE_LOCKED_ADDRESSES } = process.env;
 
-async function getTotalSupplyInternal(network) {
-  const totalSupply = await cereNetworkService.getTotalSupply(network);
-  return +totalSupply / 10 ** decimal;
+function getTotalSupplyInternal(network) {
+  return cereNetworkService.getTotalSupply(network);
 }
 
 module.exports = {
   getTotalSupply: async (req, res) => {
-    const totalSupply = await getTotalSupplyInternal(CERE_MAINNET);
-    res.json(totalSupply);
+    const totalSupply = await getTotalSupplyInternal(networkNames.MAINNET);
+    res.json(getTokenFloatAmount(totalSupply, decimals.CERE));
   },
   getCirculatingSupply: async (req, res) => {
-    const totalSupply = await getTotalSupplyInternal(CERE_MAINNET);
+    const totalSupply = await getTotalSupplyInternal(networkNames.MAINNET);
     let circulatingSupply = totalSupply;
     const ethereumCERELockedAddresses = JSON.parse(ETHEREUM_CERE_LOCKED_ADDRESSES);
+    const { cereTokenContractAddress } = 
+      blockchains.find(blockchain => blockchain.name === blockchainNames.ETHEREUM)
+        .networks.find(network => network.name === networkNames.MAINNET);
+
     for (let i = 0; i < ethereumCERELockedAddresses.length; i++) {
-      const balance = await ethNetworkService.getCEREBalanceOf(ethereumCERELockedAddresses[i]);
-      circulatingSupply -= balance;
-    }
-    res.json(circulatingSupply);
+      const balance = await ethNetworkService.getErc20Balance({
+        blockchain: blockchainNames.ETHEREUM,
+        network: networkNames.MAINNET,
+        erc20TokenAddress: cereTokenContractAddress,
+        address: ethereumCERELockedAddresses[i]
+      });
+      circulatingSupply = circulatingSupply.sub(balance);
+    }    
+    res.json(getTokenFloatAmount(circulatingSupply, decimals.CERE));
   },
 };
