@@ -40,12 +40,6 @@ decimals[tokenSymbols.MATIC] = new BN(18);
 decimals[tokenSymbols.ETH] = new BN(18);
 decimals[tokenSymbols.USDC] = new BN(6);
 
-const networks = JSON.parse(`[${process.env.NETWORKS}]`);
-const cereDevnet = networks.find(network => network.NETWORK === networkNames.DEVNET);
-const cereQanet = networks.find(network => network.NETWORK === networkNames.QANET);
-const cereTestnet = networks.find(network => network.NETWORK === networkNames.TESTNET);
-const cereMainnet = networks.find(network => network.NETWORK === networkNames.MAINNET);
-
 let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS)) || [
   {
     "name": blockchainNames.CERE,
@@ -53,25 +47,16 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
     "networks": [
       {
         "name": networkNames.DEVNET,
-        "rpcUrl": cereDevnet.URL || "wss://rpc.devnet.cere.network:9945",
-        "faucetMnemonic": cereDevnet.MNEMONICS,
+        "rpcUrl": "wss://rpc.devnet.cere.network:9945",
       },
       {
         "name": networkNames.QANET,
-        "rpcUrl": cereQanet.URL || "wss://rpc.qanet.cere.network:9945",
-        "faucetMnemonic": cereQanet.MNEMONICS,
+        "rpcUrl": "wss://rpc.qanet.cere.network:9945",
       },
       {
-        "name": networkNames.TESTNET || "wss://rpc.testnet.cere.network:9945",
-        "rpcUrl": cereTestnet.URL,
-        "faucetMnemonic": cereTestnet.MNEMONICS,
+        "name": networkNames.TESTNET,
+        "rpcUrl": "wss://rpc.testnet.cere.network:9945",
         "accounts": [
-          {
-            "address": "5GjivYu4Sb9qNLWp6GYqm5VgPqbYCA2JsePBENAZTdsgqGmn",
-            "name": "relayer-0",
-            "minBalance": 5,
-            "group": accountGroups.BRIDGE_RELAYERS,
-          },
           {
             "address": "5GjivYu4Sb9qNLWp6GYqm5VgPqbYCA2JsePBENAZTdsgqGmn",
             "name": "relayer-0",
@@ -106,8 +91,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
       },
       {
         "name": networkNames.MAINNET,
-        "rpcUrl": cereMainnet.URL || "wss://rpc.mainnet.cere.network:9945",
-        "faucetMnemonic": cereMainnet.MNEMONICS,
+        "rpcUrl": "wss://rpc.mainnet.cere.network:9945",
         "accounts": [
           {
             "address": "5DDArkL7BzgQqRSKF4jeaDUi9ezr9UbYYjX6G3dyDM2eA3bi",
@@ -297,12 +281,41 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
   }
 ]
 
+const networks = JSON.parse(`[${process.env.NETWORKS}]`);
+const cereDevnet = networks.find(network => network.NETWORK === networkNames.DEVNET);
+const cereQanet = networks.find(network => network.NETWORK === networkNames.QANET);
+const cereTestnet = networks.find(network => network.NETWORK === networkNames.TESTNET);
+const cereMainnet = networks.find(network => network.NETWORK === networkNames.MAINNET);
+
 blockchains.forEach(blockchain => {
   blockchain.networks.forEach(network => {
-      network.accounts && network.accounts.forEach(account => {
-        if(!account.type) account.type = tokenTypes.NATIVE;
-        if(!account.tokenSymbol) account.tokenSymbol = blockchain.nativeTokenSymbol;
-      });
+    if(blockchain.name === blockchainNames.CERE) {
+      switch(network.name) {
+        case networkNames.DEVNET:
+          network.faucetMnemonic = cereDevnet.MNEMONICS;
+          network.rpcUrl = cereDevnet.URL;
+          break;
+        case networkNames.QANET:
+          network.faucetMnemonic = cereQanet.MNEMONICS;
+          network.rpcUrl = cereQanet.URL;
+          break;
+        case networkNames.TESTNET:
+          network.faucetMnemonic = cereTestnet.MNEMONICS;
+          network.rpcUrl = cereTestnet.URL;
+          break;
+        case networkNames.MAINNET:
+          network.faucetMnemonic = cereMainnet.MNEMONICS;
+          network.rpcUrl = cereMainnet.URL;
+          break;
+        default:
+          console.warn(`Network "${network.name}" is not supported`);
+      }
+    }
+      
+    network.accounts && network.accounts.forEach(account => {        
+      if(!account.type) account.type = tokenTypes.NATIVE;
+      if(!account.tokenSymbol) account.tokenSymbol = blockchain.nativeTokenSymbol;
+    });
   });
 });
 

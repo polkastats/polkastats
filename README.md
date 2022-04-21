@@ -60,7 +60,7 @@ Cere Network:
 yarn workspace backend docker:cere:mainnet
 ```
 
-If you experiencing a database error then clean docker volumes:
+If you are experiencing a database doesn't exist error then clean docker volumes:
 
 ```bash
 docker volume prune
