@@ -2,6 +2,10 @@
 
 ## vNext
 
+- ...
+
+## v0.10.0
+
 - Added API (Prometheus compatible) to get blockchains accounts balances 
 
 ## v0.9.0
