@@ -142,7 +142,7 @@ services:
       - NODE_ENV=production
       - NODE_PORT=8000
       - API_KEY=my_access_key
-      - NETWORKS={"URL":"wss://rpc.devnet.cere.network:9945","MNEMONICS":"","NETWORK":"DEVNET"},{"URL":"wss://rpc.testnet.cere.network:9945","MNEMONICS":"","NETWORK":"TESTNET"},{"URL":"wss://rpc.qanet.cere.network:9945","MNEMONICS":"","NETWORK":"QANET"},{"URL":"wss://rpc.mainnet.cere.network:9945","MNEMONICS":"","NETWORK":"MAINNET"}
+      - NETWORKS={"URL":"wss://rpc.devnet.cere.network:9945","MNEMONICS":"","NETWORK":"DEVNET"},{"URL":"wss://rpc.testnet.cere.network:9945","MNEMONICS":"","NETWORK":"TESTNET"},{"URL":"wss://rpc.qanet.cere.network:9945","MNEMONICS":"","NETWORK":"QANET"}
       - MAX_BALANCE=1
       - NUMBER_OF_TOKENS_TO_SEND=10
       - REQUESTS_PER_DAY=100
