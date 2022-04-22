@@ -281,11 +281,12 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
   }
 ]
 
+// Deprecated config from NETWORKS variable
+// ToDo remove it later
 const networks = JSON.parse(`[${process.env.NETWORKS}]`);
 const cereDevnet = networks.find(network => network.NETWORK === networkNames.DEVNET);
 const cereQanet = networks.find(network => network.NETWORK === networkNames.QANET);
 const cereTestnet = networks.find(network => network.NETWORK === networkNames.TESTNET);
-const cereMainnet = networks.find(network => network.NETWORK === networkNames.MAINNET);
 
 blockchains.forEach(blockchain => {
   blockchain.networks.forEach(network => {
@@ -302,11 +303,7 @@ blockchains.forEach(blockchain => {
         case networkNames.TESTNET:
           network.faucetMnemonic = cereTestnet.MNEMONICS;
           network.rpcUrl = cereTestnet.URL;
-          break;
-        case networkNames.MAINNET:
-          network.faucetMnemonic = cereMainnet.MNEMONICS;
-          network.rpcUrl = cereMainnet.URL;
-          break;
+          break;        
         default:
           console.warn(`Network "${network.name}" is not supported`);
       }
