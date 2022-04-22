@@ -290,7 +290,7 @@ const cereTestnet = networks.find(network => network.NETWORK === networkNames.TE
 
 blockchains.forEach(blockchain => {
   blockchain.networks.forEach(network => {
-    if(blockchain.name === blockchainNames.CERE) {
+    if (blockchain.name === blockchainNames.CERE) {
       switch(network.name) {
         case networkNames.DEVNET:
           network.faucetMnemonic = cereDevnet.MNEMONICS;
@@ -310,8 +310,8 @@ blockchains.forEach(blockchain => {
     }
       
     network.accounts && network.accounts.forEach(account => {        
-      if(!account.type) account.type = tokenTypes.NATIVE;
-      if(!account.tokenSymbol) account.tokenSymbol = blockchain.nativeTokenSymbol;
+      if (!account.type) account.type = tokenTypes.NATIVE;
+      if (!account.tokenSymbol) account.tokenSymbol = blockchain.nativeTokenSymbol;
     });
   });
 });
