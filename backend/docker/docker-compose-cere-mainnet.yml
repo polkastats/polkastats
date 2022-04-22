@@ -6,6 +6,8 @@ services:
   #
   postgres:
     image: postgres:13
+    ports:
+      - '5432:5432'
     restart: always
     shm_size: 1GB
     volumes:
@@ -56,7 +58,7 @@ services:
       - "-c"
       - "work_mem=41943kB"
       - "-c"
-      - "min_wal_size=2MB"
+      - "min_wal_size=80MB"
       - "-c"
       - "max_wal_size=1GB"
       - "-c"
@@ -140,7 +142,7 @@ services:
       - NODE_ENV=production
       - NODE_PORT=8000
       - API_KEY=my_access_key
-      - NETWORKS={"URL":"wss://archive.devnet.cere.network:9945","MNEMONICS":"","NETWORK":"DEVNET"},{"URL":"wss://archive.testnet.cere.network:9945","MNEMONICS":"","NETWORK":"TESTNET"},{"URL":"wss://archive.qanet.cere.network:9945","MNEMONICS":"","NETWORK":"QANET"}
+      - NETWORKS={"URL":"wss://rpc.devnet.cere.network:9945","MNEMONICS":"","NETWORK":"DEVNET"},{"URL":"wss://rpc.testnet.cere.network:9945","MNEMONICS":"","NETWORK":"TESTNET"},{"URL":"wss://rpc.qanet.cere.network:9945","MNEMONICS":"","NETWORK":"QANET"}
       - MAX_BALANCE=1
       - NUMBER_OF_TOKENS_TO_SEND=10
       - REQUESTS_PER_DAY=100

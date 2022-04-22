@@ -75,7 +75,7 @@ module.exports = {
       await client.query(insertQuery);
       res.status(200).json({ msg: `Your transaction hash is ${result.trxHash}` });
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
       res.status(400).json({
         msg: error.message,
       });
