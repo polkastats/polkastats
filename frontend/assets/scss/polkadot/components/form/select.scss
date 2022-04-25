@@ -1,6 +1,6 @@
-@use '../form/button.scss';
-@use '../menu/submenu.scss';
-@use '../images/icons.scss' as *;
+@import '../form/button.scss';
+@import '../menu/submenu.scss';
+@import '../images/icons.scss';
 
 @mixin DROPDOWN
 {
@@ -10,7 +10,6 @@
 		@extend %SUBMENU_BASE;
 
 		&:hover
-		// &:focus
 		{
 			@extend %SUBMENU_BASE_ACTIVE;
 		}

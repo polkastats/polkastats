@@ -56,12 +56,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-
-	div
-	{
-		max-height: 100%;
-	}
-
-</style>

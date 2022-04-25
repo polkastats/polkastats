@@ -1,5 +1,3 @@
-@use '../../variables/colors/colors.scss' as COLOR;
-
 %SUBMENU_BASE
 {
 	position: relative;
@@ -37,8 +35,8 @@
 
 	ul
 	{
-		background-color: COLOR.$fourth;
-		border-color: COLOR.$fourth;
+		background-color: $COLOR_fourth;
+		border-color: $COLOR_fourth;
 
 		position: absolute;
 		top: 100%;
@@ -73,7 +71,7 @@
 			> a
 			{
 				opacity: 0.5;
-				color: COLOR.$fifth;
+				color: $COLOR_fifth;
 			}
 
 			&[active] > a,
@@ -121,7 +119,7 @@
 
 		> li
 		{
-			color: COLOR.$fifth;
+			color: $COLOR_fifth;
 		}
 	}
 }

@@ -1,0 +1,218 @@
+header.frame
+{
+	position: fixed;
+	z-index: 10;
+	top: 0;
+	left: 50%;
+    transform: translateX(-50%);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: $COLOR_fifth;
+	padding: 1.6em;
+	transition: 0.2s ease-out;
+	white-space: nowrap;
+	gap: 2em;
+
+	&::before
+	{
+		background-color: $COLOR_fourth;
+		opacity: 0;
+	}
+
+	&[active],
+	&[menu]
+	{
+		&::before
+		{
+			opacity: 1;
+		}
+
+		> strong::before
+		{
+			opacity: 0;
+		}
+	}
+
+	&[active]
+	{
+		padding: 1em 1.6em;
+		transition: 0.2s ease-in;
+
+		&::before
+		{
+			opacity: 1;
+		}
+	}
+
+	&[menu]
+	{
+		flex-direction: column;
+		align-items: flex-start;
+		height: 100vh;
+
+		> h2,
+		> [brand],
+		> strong,
+		> nav,
+		> ul
+		{
+			display: block;
+			flex: unset;
+		}
+
+		> nav
+		{
+			flex: 1;
+		}
+
+		h1,
+		strong,
+		> ul
+		{
+			margin: auto;
+		}
+
+		> ul
+		{
+			i-dropdown
+			{
+				> ul
+				{
+					top: initial;
+					bottom: 100%;
+					margin-top: 0;
+					margin-bottom: 1.6em;
+					
+					&::before
+					{
+						bottom: initial;
+						top: 100%;
+						border-bottom-color: transparent;
+						border-top-color: inherit;
+					}
+				}
+			}
+		}
+
+		> nav
+		{
+			> ul
+			{
+				flex-direction: column;
+				text-align: left;
+				gap: 2em;
+
+				> li
+				{
+					opacity: 1;
+					
+					> i-dropdown
+					{
+						display: block;
+						padding: 0;
+						font-size: 1em;
+
+						&::after
+						{
+							position: absolute;
+							top: 0;
+							right: 0;
+						}
+
+						> ul
+						{
+							position: initial;
+							display: none;
+							opacity: 1;
+							visibility: visible;
+
+							> li > a
+							{
+								opacity: 1;
+							}
+						}
+						
+						&:focus
+						{
+							> ul
+							{
+								display: block;
+							}
+						}
+					}
+
+
+				}
+			}
+		}
+	}
+
+	a:hover
+	{
+		color: inherit;
+	}
+
+	> h2
+	{
+		display: none;
+		font-size: 3em;
+	}
+
+	[brand]
+	{
+		font-size: 2em;
+	}
+
+	> strong
+	{
+		position: relative;
+		font-family: $FONT_secondaryMono;
+		font-weight: 400;
+		font-size: 1.2em;
+
+		&::before
+		{
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: $COLOR_fifth;
+			opacity: 15%;
+			filter: blur(0.5em) saturate(200%);
+		}
+	}
+
+	> nav
+	{
+		flex: 1;
+
+		> ul > li
+		{
+			opacity: 0.75;
+			transition: 0.3s linear;
+
+			&:hover
+			{
+				opacity: 1;
+			}
+		}
+	}
+
+	> ul
+	{
+		> li
+		{
+			margin: 0.4em;
+			vertical-align: middle;
+
+			// TODO: Nuevos elementos
+			[icon="github"]
+			{
+				font-size: 0.8em;
+			}
+		}
+	}
+}

@@ -1,5 +1,5 @@
 <template>
-	<header class="layout" :active="active" :menu="menu">
+	<header class="frame section container" :active="active" :menu="menu">
 		<h2>
 			<a href="#" @click="toggleMenu()" icon="menu"></a>
 		</h2>
@@ -24,6 +24,12 @@
 		</nav>
 		<ul>
 			<li>
+				<a href="#" icon="github"></a>
+			</li>
+			<li>
+				<a href="#" icon="github"></a>
+			</li>
+			<li>
 				<dropdown-menu color="primary" :options="networks" />
 			</li>
 			<li>
@@ -32,7 +38,6 @@
 		</ul>
 	</header>
 </template>
-
 
 <script>
 import DropdownMenu from '@/components/more/DropdownMenu.vue';
@@ -153,109 +158,3 @@ export default {
 	}
 }
 </script>
-
-
-<style lang="scss" scoped>
-
-@use '/assets/scss/polkadot/variables/colors/colors.scss' as COLOR;
-@use '/assets/scss/polkadot/variables/fonts/families.scss' as FONT;
-
-header
-{
-	position: fixed;
-	z-index: 10;
-	top: 0;
-	left: 0;
-	display: flex;
-	width: 100%;
-	align-items: center;
-	color: COLOR.$fifth;
-	padding: 1.6em;
-	transition: 0.2s ease-out;
-	white-space: nowrap;
-	gap: 2em;
-
-	&[active]
-	{
-		padding: 1em 1.6em;
-		background-color: COLOR.$fourth;
-		transition: 0.2s ease-in;
-
-		& > h1
-		{
-			opacity: 1;
-			transition: none;
-			transition: 0.2s ease-in;
-		}
-	}
-
-	&[active],
-	&[menu]
-	{
-		> strong::before
-		{
-			opacity: 0;
-		}
-	}
-
-	a:hover
-	{
-		color: inherit;
-	}
-
-	> h2
-	{
-		display: none;
-	}
-
-	[brand]
-	{
-		font-size: 2em;
-	}
-
-	> strong
-	{
-		position: relative;
-		font-family: FONT.$secondaryMono;
-		font-weight: 400;
-
-		&::before
-		{
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background-color: COLOR.$fifth;
-			opacity: 15%;
-			filter: blur(0.5em) saturate(200%);
-		}
-	}
-
-	> nav
-	{
-		flex: 1;
-
-		> ul > li
-		{
-			opacity: 0.75;
-			transition: 0.3s linear;
-
-			&:hover
-			{
-				opacity: 1;
-			}
-		}
-	}
-
-	> ul
-	{
-		> li
-		{
-			margin: 0.4em;
-		}
-	}
-}
-
-</style>

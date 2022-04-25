@@ -1,0 +1,28 @@
+@mixin HEADER_BLOCK
+{
+	header[type="block"]
+	{
+		margin: 1.6em 0;
+	
+		> h1
+		{
+			font-size: 1.6em;
+			text-transform: uppercase;
+			font-weight: bold;
+	
+			&::before,
+			&::after
+			{
+				content: '';
+				background-color: $COLOR_fourth;
+				margin: 0 0.8em;
+				margin-top: -0.2em;
+				width: 1.8em;
+				height: 0.2em;
+				border-radius: 0.2em;
+				display: inline-block;
+				vertical-align: middle;
+			}
+		}
+	}
+}

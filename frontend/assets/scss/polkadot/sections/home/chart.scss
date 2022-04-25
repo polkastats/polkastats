@@ -1,0 +1,43 @@
+// Chart
+section.chart
+{
+	div
+	{
+		max-height: 100%;
+	}
+}
+
+section.chart
+{
+	text-align: center;
+
+	&::before
+	{
+		background-color: rgba($COLOR_third, 0.1);
+	}
+
+	> header
+	{
+		text-align: center;
+		margin: 1em;
+
+		> h1
+		{
+			font-size: 3.2em;
+			font-weight: 500;
+		}
+
+		> h2
+		{
+			font-size: 1.6em;
+			font-weight: 500;
+		}
+	}
+
+	> div
+	{
+		max-height: 25em;
+		margin: auto;
+	}
+
+}

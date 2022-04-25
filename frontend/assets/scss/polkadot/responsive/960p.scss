@@ -2,14 +2,9 @@
 {
 	@media only screen and (max-width: 960px)
 	{
-		font-size: 1em;
-
-		header.layout
+		.frame
 		{
-			> ul
-			{
-				display: none;
-			}
+			font-size: 1em;
 		}
 	}
 }

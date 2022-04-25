@@ -1,0 +1,19 @@
+// @import './polkadot/themes/dark.scss';
+
+@import './polkadot/variables/colors.scss';
+@import './polkadot/variables/fonts.scss';
+
+:export
+{
+	COLOR_primary: $COLOR_primary;
+	COLOR_secondary: $COLOR_secondary;
+	COLOR_third: $COLOR_third;
+	COLOR_fourth: $COLOR_fourth;
+	COLOR_fourthB: $COLOR_fourthB;
+	COLOR_fifth: $COLOR_fifth;
+
+	FONT_primary: $FONT_primary;
+	FONT_secondary: $FONT_secondary;
+	FONT_secondaryMono: $FONT_secondaryMono;
+	FONT_Icon: $FONT_Icon;
+}

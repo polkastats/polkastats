@@ -1,6 +1,6 @@
 
 <template>
-  <section class="tables">
+  <section class="section tables">
 	  <section>
 		<LastBlocks />
 		<LastTransfers />
@@ -23,28 +23,3 @@ export default {
 	props: ['blocks', 'transfers', 'extrinsics', 'events'],
 }
 </script>
-
-<style lang="scss" scoped>
-
-	section
-	{
-		display: flex;
-		flex-direction: column;
-		gap: 3.2em 6.4em;
-		gap: 3.2em;
-
-		> section
-		{
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-
-			> article
-			{
-				flex: 1 1 0;
-			}
-		}
-	}
-
-</style>
-

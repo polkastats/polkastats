@@ -1,0 +1,10 @@
+$COLOR_primary: gray;
+$COLOR_secondary: blue;
+$COLOR_third: yellow;
+$COLOR_fourth: orange;
+$COLOR_fourthB: green;
+$COLOR_fifth: pink;
+
+$GRADIENT_primary: linear-gradient(to right, $COLOR_primary, $COLOR_secondary);
+$GRADIENT_secondary: linear-gradient(to right, $COLOR_primary, $COLOR_third);
+$GRADIENT_third: linear-gradient(to bottom, $COLOR_third, $COLOR_secondary);

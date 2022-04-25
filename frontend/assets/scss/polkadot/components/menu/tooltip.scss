@@ -1,5 +1,3 @@
-@use '../../variables/colors/colors.scss' as COLOR;
-
 @mixin TOOLTIP
 {
 	[tooltip]
@@ -9,8 +7,8 @@
 		&::after
 		{
 			content: attr(tooltip);
-			background-color: COLOR.$fourthB;
-			color: COLOR.$fifth;
+			background-color: $COLOR_fourthB;
+			color: $COLOR_fifth;
 			padding: 0.8em 1em;
 			margin-bottom: 0.5em;
 			white-space: nowrap;
@@ -33,6 +31,60 @@
 				opacity: 1;
 				visibility: visible;
 			}
+		}
+	}
+
+	[modal]
+	{
+		cursor: pointer;
+
+		> [modal-content]
+		{
+			background-color: $COLOR_fourthB;
+			color: $COLOR_fifth;
+			padding: 0.8em 1em;
+			margin-bottom: 0.5em;
+			white-space: nowrap;
+			font-family: inherit;
+
+			opacity: 0;
+			visibility: hidden;
+			transition: 0.3s linear;
+	
+			position: absolute;
+		}
+
+		> [modal-content="top-center"]
+		{
+			bottom: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		> [modal-content="top-left"]
+		{
+			bottom: 100%;
+		}
+	}
+
+	[modal="tooltip"]
+	{
+		position: relative;
+
+		> [modal-content]::before
+		{
+			content: '';
+			border: 0.5em solid transparent;
+			border-top-color: $COLOR_fourthB;
+			position: absolute;
+			top: 100%;
+			left: 1em;
+		}
+
+		&:hover > [modal-content]
+		{
+			opacity: 1;
+			visibility: visible;
 		}
 	}
 }

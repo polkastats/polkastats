@@ -1,12 +1,4 @@
-@use '../variables/fonts/families.scss' as FONT;
-
-html
-{
-	font-family: FONT.$primary;
-	font-size: 10px;
-}
-
 body
 {
-	font-size: 1rem;
+	overflow-x: hidden;	// FIX: Move to theme
 }

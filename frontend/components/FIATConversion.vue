@@ -1,5 +1,36 @@
 <template>
-  <div class="d-inline-block">
+  <div>
+    <template v-if="!timestamp || sameDay">
+      <span
+        v-b-tooltip.hover
+        :title="$t('components.fiat_conversion.current_value')"
+      >
+		<b icon="dollar" comic-tag></b>
+        {{ formatNumber(FIATValue.toFixed(2)) }}
+      </span>
+    </template>
+    <template v-else @click="historical = !historical">
+      <span
+        v-if="historical"
+        v-b-tooltip.hover
+        :title="$t('components.fiat_conversion.historic_value')"
+      >
+	  	<b icon="dollar" comic-tag></b>
+        {{ formatNumber(historicalFIATValue.toFixed(2)) }}
+      </span>
+      <span
+        v-else
+        v-b-tooltip.hover
+        :title="$t('components.fiat_conversion.current_value')"
+      >
+	  	<b icon="dollar" comic-tag></b>
+        {{ formatNumber(FIATValue.toFixed(2)) }}
+      </span>
+    </template>
+  </div>
+
+  
+  <!-- <div class="d-inline-block">
     <div v-if="!timestamp || sameDay">
       <span
         v-if="short"
@@ -38,7 +69,7 @@
         (${{ formatNumber(FIATValue.toFixed(2)) }})
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 <script>
 import axios from 'axios'

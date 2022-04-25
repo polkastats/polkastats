@@ -1,33 +1,39 @@
-@use '../../variables/colors/colors.scss' as COLOR;
-
 %BUTTON_BASE
 {
 	text-transform: uppercase;
-	color: COLOR.$fifth;
+	color: $COLOR_fifth;
 	
 	&[color]
 	{
 		display: inline-block;
 		font-size: 0.8em;
-		padding: 0.75em 1.25em;
+		padding: 0.5em 1em;
 		border-radius: 0.75em;
 	}
 
 	&[color="primary"]
 	{
-		background-color: COLOR.$primary;
-		border-color: COLOR.$primary;
+		background-color: $COLOR_primary;
+		border-color: $COLOR_primary;
 	}
 
 	&[color="fourth"]
 	{
-		background-color: COLOR.$fourth;
-		border-color: COLOR.$fourth;
+		background-color: $COLOR_fourth;
+		border-color: $COLOR_fourth;
 	}
 
 	&[color="fourthB"]
 	{
-		background-color: COLOR.$fourthB;
-		border-color: COLOR.$fourthB;
+		background-color: $COLOR_fourthB;
+		border-color: $COLOR_fourthB;
 	}
+}
+
+@mixin BUTTON
+{
+	button
+	{
+		@extend %BUTTON_BASE;
+	}	
 }

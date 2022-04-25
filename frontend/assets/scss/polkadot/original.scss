@@ -1,6 +1,11 @@
+@import './variables/colors.scss';
+@import './variables/fonts.scss';
+
 @import './root/base.scss';
 @import './root/theme.scss';
 
+@import './modules/container.scss';
+@import './modules/headers.scss';
 @import './modules/image.scss';
 @import './modules/menu.scss';
 @import './modules/form.scss';
@@ -10,9 +15,18 @@
 {
 	@include ROOT_THEME;
 
+    @include CONTAINER;
+    @include HEADERS;
 	@include IMAGE;
 	@include MENU;
     @include FORM;
+
+	@import './modules/layouts.scss';
+
+	main.frame
+	{
+		@import './modules/sections.scss';
+	}
 
 	@include RESPONSIVE;
 }

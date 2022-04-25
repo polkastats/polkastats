@@ -1,53 +1,40 @@
-@use '../variables/colors/colors.scss' as COLOR;
-
 @mixin RES_720p
 {
 	@media only screen and (max-width: 720px)
 	{
-		font-size: 0.9em;
-
-		header.layout
+		header.frame
 		{
 			position: sticky;
-			background-color: COLOR.$fourth;
-
-			&[active]
-			{
-				padding: 1.6em;
-			}
-	
-			> [brand]
+			left: 0;
+			transform: none;
+			
+			&::before
 			{
 				opacity: 1;
-
-				img[text]
-				{
-					display: inline-block;
-				}
 			}
 
-			&:not([menu])
+			> [brand]
 			{
-				> [brand]
-				{
-					flex: 1;
-				}
-
-				> nav,
-				> ul
-				{
-					display: none;
-				}
+				flex: 1;
 			}
 
-			> strong::before
+			> strong
 			{
-				opacity: 0;
+				flex: unset;
 			}
+
+			> ul
+			{
+				display: none;
+			}
+
 		}
 	
-		main.layout
+		main.frame
 		{
+			max-width: 100%;
+			padding: 0;
+
 			> section
 			{
 				padding: 1.8em 2em;
@@ -57,11 +44,12 @@
 			{
 
 				padding: 0;
+				gap: 0;
 				
-				> header
-				{
-					display: none;
-				}
+				// > header
+				// {
+				// 	display: none;
+				// }
 				
 				> article::before,
 				> article::after
@@ -69,7 +57,6 @@
 					border-radius: 0;
 				}
 			}
-	
 	
 			> section.tables
 			{
@@ -89,25 +76,19 @@
 			}
 		}
 	
-		footer.layout
+		footer.frame
 		{
 			flex-wrap: wrap;
 	
 			> article
 			{
-				> div
-				{
-					> div
-					{
-						left: 0;
-						display: block;
-						margin: 4em 0;
-					}
-				}
+				position: unset;
+				transform: none;
 			}
 	
 			> address
 			{
+				float: none;
 				flex-direction: row;
 	
 				> [color="primary"]

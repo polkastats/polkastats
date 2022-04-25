@@ -1,26 +1,33 @@
-@import '../responsive/max.scss';
-@import '../responsive/4096p.scss';
-@import '../responsive/2048p.scss';
-@import '../responsive/1920p.scss';
-@import '../responsive/1280p.scss';
-@import '../responsive/960p.scss';
+// @import '../responsive/max.scss';
+// @import '../responsive/4096p.scss';
+// @import '../responsive/2048p.scss';
+// @import '../responsive/1920p.scss';
+// @import '../responsive/1280p.scss';
+@import '../responsive/1024p.scss';
+// @import '../responsive/960p.scss';
 @import '../responsive/820p.scss';
 @import '../responsive/720p.scss';
 @import '../responsive/540p.scss';
-@import '../responsive/480p.scss';
+// @import '../responsive/480p.scss';
 @import '../responsive/min.scss';
 
 @mixin RESPONSIVE
 {
-	@include RES_MAX;
-	@include RES_4096p;
-	@include RES_2048p;
-	@include RES_1920p;
-	@include RES_1280p;
-	@include RES_960p;
-	@include RES_820p;
-	@include RES_720p;
-	@include RES_540p;
-	@include RES_480p;
-	@include RES_MIN;
+	&[layout]
+	{
+		// @include RES_MAX;
+		// @include RES_4096p;
+		// @include RES_2048p;
+		// @include RES_1920p;
+		// @include RES_1280p;
+		@include RES_1024p;
+		// @include RES_960p;
+		@include RES_820p;
+		@include RES_720p;
+	
+		@include RES_540p;
+		// @include RES_480p;
+	
+		@include RES_MIN;
+	}
 }

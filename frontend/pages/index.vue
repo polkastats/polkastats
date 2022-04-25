@@ -1,5 +1,5 @@
 <template>
-	<main class="layout">
+	<main class="frame container">
 		<score-section />
 		<chart-section />
 		<table-section />

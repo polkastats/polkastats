@@ -1,6 +1,0 @@
-@use './colors.scss' as COLORS;
-
-$primary: linear-gradient(to right, COLORS.$primary, COLORS.$secondary);
-$secondary: linear-gradient(to right, COLORS.$primary, COLORS.$third);
-$third: linear-gradient(to bottom, COLORS.$third, COLORS.$secondary);
-$fourth: linear-gradient(to bottom, #007157, #D60000);

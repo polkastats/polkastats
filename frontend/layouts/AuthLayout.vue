@@ -1,6 +1,6 @@
 
 <template>
-  <div class="pkd">
+  <div class="pkd" layout="auth">
     <header-frame />
 	<content-frame />
     <footer-frame />
@@ -79,20 +79,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-
-div
-{
-	display: flex;
-	flex-direction: column;
-	justify-content: stretch;
-	min-height: 100vh;
-
-	> *
-	{
-		flex-grow: 1;
-	}
-}
-
-</style>

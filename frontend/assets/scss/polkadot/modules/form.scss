@@ -6,6 +6,7 @@
 @mixin FORM
 { 
 	@include DROPDOWN;
+	@include BUTTON;
 
     form
     {

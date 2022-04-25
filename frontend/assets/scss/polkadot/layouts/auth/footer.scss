@@ -1,0 +1,145 @@
+footer.frame
+{
+	overflow: hidden;
+	color: $COLOR_fifth;
+	text-align: center;
+
+	&::before
+	{
+		background-color: rgba($COLOR_fourth, 0.9);
+	}
+
+	> article
+	{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+		padding: 2em;
+		flex-grow: 5;
+		display: flex;
+		flex-direction: column;
+
+		> header
+		{
+			margin: 2em;
+
+			[brand]
+			{
+				font-size: 4em;
+			}
+	
+			[social]
+			{
+				font-size: 1.2em;
+				display: flex;
+				justify-content: center;
+				gap: 1em;
+				margin: 1em;
+	
+				> [icon]
+				{
+					background-color: $COLOR_primary;
+					background-color: $COLOR_fifth;
+					color: $COLOR_fourth;
+					border-radius: 50%;
+					position: relative;
+					width: 2.8em;
+					height: 2.8em;
+	
+					&::before
+					{
+						position: absolute;
+						top: 50%;
+						left: 50%;
+						transform: translate(-50%, -50%);
+					}
+					
+					&:hover
+					{
+						background-color: $COLOR_fifth;
+						background-color: $COLOR_primary;
+						color: $COLOR_fifth;
+					}
+				}
+	
+	
+				> [icon="github"]
+				{
+					background-color: transparent;
+					color: $COLOR_primary;
+					color: $COLOR_fifth;
+	
+					&:hover
+					{
+						background-color: transparent;
+						color: $COLOR_fifth;
+						color: $COLOR_primary;
+					}
+				}
+			}
+		}
+
+		> nav
+		{
+			margin: 2em;
+
+			> ul
+			{
+				text-transform: none;
+				font-weight: 500;
+
+				gap: 1em 3em;
+				display: inline-flex;
+				flex-wrap: wrap;
+			}
+		}
+	}
+
+	> address
+	{
+		margin: 0;
+		flex-grow: 1;
+		display: flex;
+    	flex-direction: column;
+		float: right;
+		text-align: left;
+		
+		> p
+		{
+			padding: 1.4em 2em;
+			margin: 0;
+
+			&[color="primary"]
+			{
+				background-color: $COLOR_primary;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			&[color="fourth"]
+			{
+				background-color: $COLOR_fourth;
+			}
+
+			[icon]
+			{
+				display: block;
+				padding: 0.6em 0;
+
+				&::before
+				{
+					display: block;
+					margin-bottom: 0.4em;
+				}
+			}
+
+			> img
+			{
+				height: 6.4em;
+			}
+		}
+	}
+}
