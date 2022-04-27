@@ -1,4 +1,5 @@
 // @ts-check
+const DBMigrate = require('db-migrate');
 const pino = require('pino');
 const { spawn } = require('child_process');
 const { wait } = require('./lib/utils');
@@ -29,6 +30,15 @@ const runCrawler = async (crawler) => {
 };
 
 const runCrawlers = async () => {
+  logger.debug('Running migrations');
+  await DBMigrate.getInstance(true, {
+    config: '../db/database.json',
+    cmdOptions: {
+      'migrations-dir': '../db/migrations',
+    },
+  }).up();
+  logger.debug('Migrations completed');
+
   logger.debug('Starting backend, waiting 10s...');
   await wait(10000);
 

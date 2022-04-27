@@ -1,0 +1,20 @@
+{
+  "defaultEnv": {"ENV": "NODE_ENV"},
+  "local": {
+    "driver": "pg",
+    "user": "polkastats",
+    "password": "polkastats",
+    "host": "localhost",
+    "database": "polkastats",
+    "port": 5432
+  },
+  "production": {
+    "driver": "pg",
+    "user": {"ENV": "POSTGRES_USER"},
+    "password": {"ENV": "POSTGRES_PASSWORD"},
+    "host": {"ENV": "POSTGRES_HOST"},
+    "database": {"ENV": "POSTGRES_DATABASE"},
+    "port": {"ENV": "POSTGRES_PORT"}
+  },
+  "sql-file" : true
+}

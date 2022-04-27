@@ -28,7 +28,6 @@ services:
     shm_size: 1gb
     volumes:
       - 'db-data:/var/lib/postgresql/data'
-      - './sql/backend.sql:/docker-entrypoint-initdb.d/backend.sql'
     environment:
       POSTGRES_USER: 'polkastats'
       POSTGRES_PASSWORD: 'polkastats'

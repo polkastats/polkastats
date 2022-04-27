@@ -14,6 +14,15 @@ const apicache = require('apicache');
 const ethNetworkService = require('./src/services/ethNetworkService');
 const cereNetworkService = require('./src/services/cereNetworkService');
 const cacheService = require('./src/services/cacheService');
+const DBMigrate = require("db-migrate");
+
+console.debug('Running migrations');
+DBMigrate.getInstance(true, {
+  config: '../db/database.json',
+  cmdOptions: {
+    'migrations-dir': '../db/migrations',
+  },
+}).up().then(() => console.debug('Migrations completed'));
 
 // Http port
 const port = process.env.PORT || 8000;

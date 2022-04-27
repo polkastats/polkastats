@@ -15,6 +15,12 @@ apt install libpq5=12.9-0ubuntu0.20.04.1
 apt install git build-essential apt-transport-https ca-certificates curl software-properties-common libpq-dev
 ```
 
+In macOS, you can do:
+```bash
+brew install postgresql libpq
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH" 
+```
+
 # docker
 ```bash
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
@@ -98,4 +104,18 @@ Generate a static build under `frontend/dist` directory:
 
 ```bash
 yarn workspace frontend generate
+```
+
+### Database migrations
+
+[db-migrate](https://github.com/db-migrate/node-db-migrate) tool used to apply data migrations. More details you can find here: https://db-migrate.readthedocs.io/en/latest/
+
+To install:
+```bash
+npm install -g db-migrate
+```
+
+To create a migration:
+```bash
+db-migrate create MIGRATION_NAME
 ```
