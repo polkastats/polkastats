@@ -110,12 +110,17 @@ yarn workspace frontend generate
 
 [db-migrate](https://github.com/db-migrate/node-db-migrate) tool used to apply data migrations. More details you can find here: https://db-migrate.readthedocs.io/en/latest/
 
-To install:
+Install
 ```bash
 npm install -g db-migrate
 ```
 
-To create a migration:
+Change directory
 ```bash
-db-migrate create MIGRATION_NAME
+cd db
+```
+
+Create migration
+```bash
+db-migrate create MIGRATION_NAME -e local
 ```
