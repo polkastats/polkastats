@@ -3,6 +3,8 @@
     "block_details": "Ver información del bloque",
     "event_details": "Ver información del evento",
     "extrinsic_details": "Ver información del extrinsic",
+    "account_details": "Ver información de la cuenta",
+    "transfer_details": "Ver información de la transferencia",
     "processing": "Procesando",
     "finalized": "Finalizado"
   },
@@ -26,7 +28,6 @@
     },
     "chain": {
       "last_block": "Último bloque",
-      "block_details": "Ver información del bloque",
       "last_block_finalized": "Finalizado",
       "total_extrinsics": "Extrinsics",
       "extrinsics_details": "Ver todas las extrinsics",
@@ -71,8 +72,8 @@
       "loading_data": "Cargando datos, por favor sea paciente..."
     },
     "account_transfers": {
+      "no_transfer_found": "No se han encontrado transferencias",
       "transfer_details": "Ver información de la transferencia",
-      "block_details": "Ver información del bloque",
       "hash": "Hash",
       "block_number": "Bloque",
       "timestamp": "Fecha",
@@ -100,8 +101,7 @@
       "hash": "Hash",
       "total_extrinsics": "Extrinsics",
       "total_events": "Eventos",
-      "blocks_details": "Ver todos los bloques",
-      "block_details": "Ver información del bloque"
+      "blocks_details": "Ver todos los bloques"
     },
     "last_events": {
       "title": "Últimos eventos",
@@ -134,8 +134,7 @@
       "source": "Origen",
       "destination": "Destino",
       "amount": "Cantidad",
-      "transfers_details": "Ver todas las transferencias",
-      "block_details": "Ver información del bloque"
+      "transfers_details": "Ver todas las transferencias"
     },
     "search": {
       "caption": "Buscar por bloque, hash de bloque, hash de extrinsic o dirección"
@@ -152,6 +151,9 @@
       "documentation": "Documentación",
       "phase": "Fase",
       "data": "Datos"
+    },
+    "extrinsics": {
+      "no_extrinsic_found": "No se han encontrado extrinsics"
     },
     "extrinsic": {
       "hash": "Hash",
@@ -405,6 +407,9 @@
     },
     "account_links": {
       "check_account": "Ver cuenta en"
+    },
+    "validator_links": {
+      "check_validator": "Ver validador en"
     }
   },
   "layout": {
@@ -579,7 +584,6 @@
       "head_content": "Transferencias en {networkName}",
       "search_placeholder": "Buscar transferencia por número de bloque, hash o dirección",
       "transfer_details": "Ver info de la transferencia",
-      "block_details": "Ver info del bloque",
       "hash": "Hash",
       "block_number": "Bloque",
       "timestamp": "Fecha",

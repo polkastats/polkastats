@@ -77,9 +77,9 @@ section.tables
 			transition: 0.3s linear;
 			border-radius: 0.4em;
 
-			a
+			a:hover
 			{
-				pointer-events: none;
+				color: inherit;
 			}
 		}
 

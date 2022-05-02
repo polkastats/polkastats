@@ -9,7 +9,7 @@
 	   />
 	   <score-item
 	  :title="$t('components.chain.last_block_finalized')"
-	  :link="localePath(`/block?blockNumber=${lastBlock}`)"
+	  :link="localePath(`/block?blockNumber=${lastFinalizedBlock}`)"
 	  :description="$t('components.chain.block_details')"
 	  :value="'#' + formatNumber(lastFinalizedBlock)"
 	  icon="lock"
