@@ -19,8 +19,10 @@
             {{ shortHash(data.item.hash) }}
         </template>
         <template #cell(section)="data">
-		  <span>{{ data.item.section }}</span>
-		  <span>{{ data.item.method }}</span>
+			<div class="timeline" variant="i-primary">
+				<span>{{ data.item.section }}</span>
+				<span>{{ data.item.method }}</span>
+			</div>
         </template>
 	</table-component>
 </template>
@@ -39,7 +41,8 @@ export default {
 		{
 			title: this.$t('components.last_extrinsics.title'),
 			tooltip: this.$t('components.last_extrinsics.extrinsics_details'),
-			link: '/extrinsics'
+			link: '/extrinsics',
+			variant: 'i-secondary',
 		},
       extrinsics: [],
       fields: [
@@ -47,6 +50,7 @@ export default {
           key: 'block_number',
           label: this.$t('components.last_extrinsics.id'),
           sortable: false,
+		  class: 'highlighted'
         },
         {
           key: 'hash',
@@ -57,6 +61,7 @@ export default {
           key: 'section',
           label: this.$t('components.last_extrinsics.extrinsic'),
           sortable: false,
+		  class:'expanded',
         },
       ],
     }

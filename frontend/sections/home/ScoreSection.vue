@@ -2,18 +2,8 @@
 <template>
 	<section class="section scores">
 		<header></header>
-		<!-- <header>
-			<h1>
-				<a href="#">
-					<span>
-						<img src="/brand/logo.svg" alt="Brand Logo" height="40">
-					</span>
-					<img src="/brand/text.svg" alt="Brand Text" height="40">
-				</a>
-			</h1>
-		</header> -->
-		<article>
-			<header>
+		<article class="blurred" variant="i-primary">
+			<header class="row">
 				<Search />
 			</header>
 

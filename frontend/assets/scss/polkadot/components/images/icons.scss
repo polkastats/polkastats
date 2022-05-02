@@ -1,155 +1,70 @@
-@mixin ICON_INTERNAL
+[icon]
 {
-	[icon]
-	{
-		font-style: normal;
-		font-size: 1em;
-		position: relative;
-	    display: inline-block;
+	font-style: normal;
+	font-size: 1em;
+	position: relative;
+	display: inline-block;
 
-		&::before,
-		&::after
-		{
-			font-family: $FONT_Icon;
-			font-weight: bold;
-			display: inline;
-			background-size: cover;
-			background-position: center;
-			background-repeat: no-repeat;
-		}
-	}
-	
-	[icon="kusama"]::before,
-	[icon="polkadot"]::before
+	&::after,
+	&::before
 	{
-		content: '';
-		display: inline-block;
-		background-size: 1.6em;
-		width: 1.3em;
-		height: 0.8em;
-	}
-	
-	[icon="polkadot"]::before
-	{
-		content: '';
-		height: 1em;
-	}
-
-	[icon="avatar"]
-	{
-		display: inline-block;
-		height: 1em;
-		vertical-align: top;
-
-		svg
-		{
-			width: 1.8em;
-			height: 1.8em;
-			margin: -0.9em 0;
-		}
-	}
-	
-	[icon="kusama"]:not([color])::before
-	{
-		content: '';
-		background-image: url(assets/images/icons/kusama-ksm-logo.svg);
-	}
-	
-	[icon="kusama"][color="secondary"]::before
-	{
-		content: '';
-		background-image: url(assets/images/icons/kusama-ksm-logo-secondary.svg);
-	}
-
-	[icon="polkadot"]:not([color])::before
-	{
-		content: '';
-		background-image: url(assets/images/icons/polkadot.svg);
-	}
-
-	[icon="menu"]
-	{
-		line-height: 0;
-		padding: 0.2em 0.25em;
-		background-color: $COLOR_fourth;
-
-		&::before
-		{
-			content: '';
-			display: inline-block;
-			width: 1em;
-			height: 1em;
-			background-image: url(assets/images/icons/menu.svg);
-		}
+		font-family: $i-font-icon;
+		font-weight: bold;
+		display: inline;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
 	}
 }
 
-@mixin ICON_EXTERNAL
+/* Apps */
+
+[icon="kusama"]::before,
+[icon="polkadot"]::before
 {
-	[icon="search"]::before
-	{
-		content: '\f002';
-	}
+	content: '';
+	display: inline-block;
+	background-size: 1.6em;
+	width: 1.3em;
+	height: 0.8em;
+}
 
-	[icon="check"]
-	{
-		&::before
-		{
-			content: '\f00c';
-		}
+[icon="polkadot"]::before
+{
+	content: '';
+	height: 1em;
+}
 
-		&[color="completed"]
-		{
-			color: green;
-		}
-	}
+[icon="polkadot"]:not([color])::before
+{
+	content: '';
+	background-image: url(assets/images/icons/polkadot.svg);
+}
 
-	[icon="name"]::before
-	{
-		content: '\f099';
-	}
-	
-	[icon="email"]::before
-	{
-		content: '\f0e0';
-	}
-	
-	[icon="key"]::before
-	{
-		content: '\f084';
-	}
-	
-	[icon="facebook"]::before
-	{
-		content: '\f39e';
-	}
-	
-	[icon="instagram"]::before
-	{
-		content: '\f16d';
-	}
-	
-	[icon="twitter"]::before
-	{
-		content: '\f099';
-	}
-	
-	[icon="github"]::before
-	{
-		content: '\f09b';
-		font-size: 2.8em;
-	}
+[icon="kusama"]:not([color])::before
+{
+	content: '';
+	background-image: url(assets/images/icons/kusama-ksm-logo.svg);
+}
 
-	[icon="dollar"]::before
-	{
-		content: "\f155";
-	}
+[icon="kusama"][color="secondary"]::before
+{
+	content: '';
+	background-image: url(assets/images/icons/kusama-ksm-logo-secondary.svg);
+}
 
+/* End Apps */
 
-	/** AFTER **/
-	[icon="more"]::after
+[icon="avatar"]
+{
+	display: inline-block;
+	height: 1em;
+	vertical-align: top;
+
+	svg
 	{
-		content: '\f061';
-		margin-left: 0.5em;
+		width: 1.8em;
+		height: 1.8em;
+		margin: -0.9em 0;
 	}
 }

@@ -14,8 +14,10 @@
             </nuxt-link>
         </template>
         <template #cell(section)="data">
-		  <span>{{ data.item.section }}</span>
-		  <span>{{ data.item.method }}</span>
+			<div class="timeline" variant="i-primary">
+				<span>{{ data.item.section }}</span>
+				<span>{{ data.item.method }}</span>
+			</div>
         </template>
 	</table-component>
 </template>
@@ -34,7 +36,8 @@ export default {
 		{
 			title: this.$t('components.last_events.title'),
 			tooltip: this.$t('components.last_events.events_details'),
-			link: '/events'
+			link: '/events',
+			variant: 'i-secondary',
 		},
       events: [],
       fields: [
@@ -42,11 +45,13 @@ export default {
           key: 'block_number',
           label: this.$t('components.last_events.id'),
           sortable: false,
+		  class: 'highlighted'
         },
         {
           key: 'section',
           label: this.$t('components.last_events.event'),
           sortable: false,
+		  class: 'expanded'
         },
       ],
     }

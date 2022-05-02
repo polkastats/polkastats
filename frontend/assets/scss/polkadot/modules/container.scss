@@ -1,8 +1,2 @@
 @import '../components/containers/layouts.scss';
-
-@mixin CONTAINER
-{
-	@include SECTION;
-	@include LAYOUT;
-	@include COMIC_TAG;
-}
+@import '../components/containers/badge.scss';

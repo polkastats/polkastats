@@ -1,15 +1,11 @@
 <template>
-  <!-- Filter -->
-  <form @submit="doSearch">
-      <p>
-		<i icon="search"></i>
-        <input
-          id="searchInput"
-          v-model="searchInput"
-          type="text"
-          :placeholder="$t('components.search.caption')"
-        />
-      </p>
+  <form class="col" @submit="doSearch">
+	  <b-input-group>
+		<b-form-input v-model="searchInput" :placeholder="$t('components.search.caption')" class="text-i-fifth rounded" control="text" variant="i-fourth" size="sm" />
+			<b-input-group-append class="mr-2" p-absolute="right">
+				<font-awesome-icon icon="search" class="text-i-fourth" />
+		</b-input-group-append>
+	  </b-input-group>
   </form>
 </template>
 

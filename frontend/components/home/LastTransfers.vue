@@ -20,7 +20,7 @@
             </nuxt-link>
         </template>
         <template #cell(destination)="data">
-          <div v-if="isValidAddressPolkadotAddress(data.item.destination)" icon="avatar">
+          <span v-if="isValidAddressPolkadotAddress(data.item.destination)" icon="avatar">
               <nuxt-link
                 :to="localePath(`/account/${data.item.destination}`)"
                 :title="$t('pages.accounts.account_details')"
@@ -31,10 +31,10 @@
 				/>
                 {{ shortAddress(data.item.destination) }}
               </nuxt-link>
-          </div>
-          <div v-else>
+          </span>
+          <span v-else>
               {{ shortAddress(data.item.destination || '') }}
-          </div>
+          </span>
         </template>
         <template #cell(amount)="data">
             {{ formatAmount(data.item.amount) }}
@@ -60,7 +60,7 @@ export default {
 			title: this.$t('components.last_transfers.title'),
 			tooltip: this.$t('components.last_transfers.transfers_details'),
 			link: '/transfers',
-			color: 'fourth'
+			variant: 'i-fourth',
 		},
       transfers: [],
       fields: [
@@ -68,6 +68,8 @@ export default {
           key: 'hash',
           label: this.$t('components.last_transfers.hash'),
           sortable: false,
+		  variant: 'i-fourth',
+		  class: 'important'
         },
         {
           key: 'source',

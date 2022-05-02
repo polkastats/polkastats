@@ -1,55 +1,28 @@
-%SUBMENU_BASE
+> ul
 {
-	position: relative;
+	text-align: center;
+	text-transform: uppercase;
+	display: flex;
+}
 
-	> [icon]
+.btn-sm
+{
+	border-radius: 0.75em;
+	font-size: 0.8em;
+	padding: 0.75em 1.25em;
+}
+
+.b-nav-dropdown,
+.b-dropdown
+{
+	.dropdown-menu
 	{
-		cursor: pointer;
-
-		&::after
-		{
-			content: '\f078';
-			vertical-align: top;
-	
-			display: inline-block;
-			margin-left: 0.4em;
-		}
-	}
-
-	&[color]
-	{
-		padding: 0;
-
-		> [icon]
-		{
-			padding: 0.75em 1.25em;
-		}
-
-		> ul
-		{
-			background-color: inherit;
-			border-color: inherit;
-			color: inherit;
-		}
-	}
-
-	ul
-	{
-		background-color: $COLOR_fourth;
-		border-color: $COLOR_fourth;
-
-		position: absolute;
-		top: 100%;
-		left: 0;
-		z-index: 1;
-
-		margin-top: 1.6em;
+		font-size: 1em;
+		color: $i-fifth;
+		border-radius: 0;
 		text-transform: none;
-		text-align: left;
-		visibility: hidden;
-		opacity: 0;
-		transition: 0.3s linear;
-	
+		margin-top: 1.2em;
+
 		&::before
 		{
 			content: "";
@@ -61,65 +34,49 @@
 			border-width: 1em 0.6em;
 			border-bottom-color: inherit;
 		}
-		
-		> li
+
+		.dropdown-item
 		{
-			display: block;
-			margin: 0;
+			background-color: transparent;
 			padding: 1.2em 2em;
+			opacity: 0.5;
+			color: inherit;
 
-			> a
-			{
-				opacity: 0.5;
-				color: $COLOR_fifth;
-			}
-
-			&[active] > a,
-			> a:hover
+			&:hover
 			{
 				opacity: 1;
-				color: inherit;
-			}
-
-			&[active]
-			{
-				pointer-events: none;
 			}
 		}
 	}
 }
 
-%SUBMENU_BASE_ACTIVE
+@each $color, $value in $theme-colors
 {
-	> ul
+	&[link=#{$color}]
 	{
-		opacity: 1;
-		visibility: visible;
-	}
-
-	> [icon]
-	{
-		&::after
+		a.nav-link
 		{
-			transform: rotate(180deg);
+			color: $value;
 		}
 	}
-}
 
-@mixin SUBMENU
-{
-	width: 100%;
-
-	> ul
+	&[link-hover=#{$color}]
 	{
-		text-align: center;
-		text-transform: uppercase;
-		display: flex;
-		gap: 6em;
-
-		> li
+		a.nav-link:hover,
+		a.nav-link:focus,
+		.show a.nav-link
 		{
-			color: $COLOR_fifth;
+			color: $value;
+		}
+	}
+
+	.b-nav-dropdown[variant=#{$color}],
+	.b-dropdown[variants=#{$color}]
+	{
+		.dropdown-menu
+		{
+			background-color: $value;
+			border-color: $value;
 		}
 	}
 }

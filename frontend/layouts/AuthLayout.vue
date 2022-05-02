@@ -1,7 +1,7 @@
 
 <template>
   <div class="pkd" layout="auth">
-    <header-frame />
+    <header-frame :options="options" />
 	<content-frame />
     <footer-frame />
   </div>
@@ -20,6 +20,12 @@ export default {
     return {
       toggled: false,
       polling: null,
+	  options:
+	  {
+		  variant: 'i-fourth',
+		  link: 'i-fifth',
+		  hover: 'i-fifth'
+	  }
     }
   },
   computed: {

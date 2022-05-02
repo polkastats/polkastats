@@ -1,10 +1,10 @@
-$COLOR_primary: #E6007A !default;
-$COLOR_secondary: #00bed6 !default;
-$COLOR_third: #001c71 !default;
-$COLOR_fourth: #161718 !default;
-$COLOR_fourthB: #000 !default;
-$COLOR_fifth: #FFF !default;
+$i-primary: #E6007A !default;
+$i-secondary: #00bed6 !default;
+$i-third: #001c71 !default;
+$i-fourth: #161718 !default;
+$i-fourthB: #000 !default;
+$i-fifth: #FFF !default;
 
-$GRADIENT_primary: linear-gradient(to right, $COLOR_primary, $COLOR_secondary) !default;
-$GRADIENT_secondary: linear-gradient(to right, $COLOR_primary, $COLOR_third) !default;
-$GRADIENT_third: linear-gradient(to bottom, $COLOR_third, $COLOR_secondary) !default;
+$i-gradient-primary: linear-gradient(to right, $i-primary, $i-secondary) !default;
+$i-gradient-secondary: linear-gradient(to right, $i-primary, $i-third) !default;
+$i-gradient-third: linear-gradient(to bottom, $i-third, $i-secondary) !default;

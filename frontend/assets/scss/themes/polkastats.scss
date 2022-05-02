@@ -1,5 +1,4 @@
 
-
 // base grayscale colors definitions
 $white: #fff !default;
 $gray-100: #f8f9fa !default;
@@ -54,6 +53,24 @@ $theme-colors: map-merge(
   ),
   $theme-colors
 );
+
+/* Theme Config */
+
+@import '../polkadot/variables/all.scss';
+
+$theme-colors: map-merge(
+(
+	'i-primary': $i-primary,
+	'i-secondary': $i-secondary,
+	'i-third': $i-third,
+	'i-fourth': $i-fourth,
+	'i-fourthB': $i-fourthB,
+	'i-fifth': $i-fifth,
+),
+$theme-colors);
+
+/* Theme Config */
+
 
 // bootstrap variable overrides
 $link-color: $primary2 !default;

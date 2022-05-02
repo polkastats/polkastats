@@ -5,20 +5,19 @@
 				v-b-tooltip.hover
 				:to="localePath(`/block?blockNumber=${data.item.block_number}`)"
 				:title="$t('components.last_blocks.block_details')"
-				class="tag"
 				>
 				#{{ formatNumber(data.item.block_number) }}
 				</nuxt-link>
         </template>
         <template #cell(finalized)="data">
-          <p v-if="data.item.finalized">
+          <span v-if="data.item.finalized">
             <font-awesome-icon icon="check" class="text-success" />
             {{ $t('common.finalized') }}
-          </p>
-          <p v-else>
+          </span>
+          <span v-else>
             <font-awesome-icon icon="spinner" class="text-light" spin />
             {{ $t('common.processing') }}
-          </p>
+          </span>
         </template>
         <template #cell(block_hash)="data">
             {{ shortHash(data.item.block_hash) }}
@@ -41,13 +40,15 @@ export default {
 		{
 			title: this.$t('components.last_blocks.title'),
 			tooltip: this.$t('components.last_blocks.blocks_details'),
-			color: 'primary',
+			variant: 'i-fourth',
 			// link: localePath(`/blocks`)
 			link: '/blocks'
 		},
       blocks: [],
       fields: [
         {
+		  variant: 'i-primary',
+		  class: 'important',
           key: 'block_number',
           label: this.$t('components.last_blocks.block_number'),
           sortable: false,

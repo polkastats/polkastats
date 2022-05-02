@@ -1,20 +1,17 @@
-@mixin BRAND
+[brand]
 {
-	[brand]
+	font-size: 1em;
+	line-height: 0;
+
+	img[logo],
+	img[text]
 	{
-		font-size: 1em;
-		line-height: 0;
+		display: inline-block;
+		height: 1em;
+	}
 
-		img[logo],
-		img[text]
-		{
-			display: inline-block;
-			height: 1em;
-		}
-
-		img[text]
-		{
-			margin-bottom: 0.2em;
-		}
+	img[text]
+	{
+		margin-bottom: 0.2em;
 	}
 }

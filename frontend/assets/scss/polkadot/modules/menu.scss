@@ -1,12 +1,6 @@
-@import '../components/menu/submenu.scss';
-@import '../components/menu/tooltip.scss';
-
-@mixin MENU
+nav
 {
-	nav
-	{
-		@include SUBMENU;
-	}
+	width: 100%;
 	
-	@include TOOLTIP;
+	@import '../components/menu/submenu.scss';
 }

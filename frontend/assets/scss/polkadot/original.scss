@@ -1,25 +1,21 @@
-@import './variables/colors.scss';
-@import './variables/fonts.scss';
+@import './variables/all.scss';
 
 @import './root/base.scss';
-@import './root/theme.scss';
-
-@import './modules/container.scss';
-@import './modules/headers.scss';
-@import './modules/image.scss';
-@import './modules/menu.scss';
-@import './modules/form.scss';
-@import './modules/responsive.scss';
 
 .pkd
 {
-	@include ROOT_THEME;
+	font-family: $i-font-primary;
+	color: $i-fourth;
+	font-size: 10px;
 
-    @include CONTAINER;
-    @include HEADERS;
-	@include IMAGE;
-	@include MENU;
-    @include FORM;
+	@import './root/theme.scss';
+
+	@import './modules/status.scss';
+	@import './modules/container.scss';
+	@import './modules/headers.scss';
+	@import './modules/image.scss';
+	@import './modules/menu.scss';
+	@import './modules/form.scss';
 
 	@import './modules/layouts.scss';
 
@@ -28,5 +24,5 @@
 		@import './modules/sections.scss';
 	}
 
-	@include RESPONSIVE;
+	@import './modules/responsive.scss';
 }

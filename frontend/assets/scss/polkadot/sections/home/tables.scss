@@ -43,13 +43,82 @@ section.tables
 			}
 		}
 
+		table
+		{
+			@each $color, $value in $theme-colors
+			{
+				&[variant="#{$color}"]
+				{
+					td
+					{
+						background-color: rgba($value, 0.1);
+					}
+				}
+
+				th.important.table-#{$color}
+				{
+					color: $value;
+					background-color: transparent;
+				}
+
+				td.important.table-#{$color}
+				{
+					background-color: $value;
+					color: $i-fifth;
+				}
+			}
+		}
+
+		th.important,
+		td.important
+		{
+			transform: translateX(-0.8em);
+			transform-origin: right;
+			transition: 0.3s linear;
+			border-radius: 0.4em;
+
+			a
+			{
+				pointer-events: none;
+			}
+		}
+
+		td.important
+		{
+			font-weight: normal;
+			
+			&:hover
+			{
+				cursor: pointer;
+				transform: scale(1.2);
+			}
+		}
+
+		th.expanded,
+		td.expanded
+		{
+			width: 100%;
+			text-align: left;
+		}
+
+		th.highlighted,
+		td.highlighted
+		{
+			font-weight: 900;
+		}
+
+		th.important,
+		th.highlighted
+		{
+			font-size: 1.2em;
+		}
+
 
 		table
 		{
 			border-collapse:separate; 
 			border-spacing: 0 1em;
 			white-space: nowrap;
-			text-align: center;
 			margin: 0;
 
 			thead
@@ -59,13 +128,6 @@ section.tables
 
 				> tr
 				{
-					> th.important,
-					> th:first-of-type
-					{
-						font-size: 1.2em;
-						font-weight: 900;
-					}
-
 					th
 					{
 						padding: 0.8em 1.2em;
@@ -81,10 +143,8 @@ section.tables
 				{
 					> td
 					{
-						background-color: rgba($COLOR_secondary, 0.1);
 						vertical-align: middle;
 						padding: 0.6em 1.2em;
-						width: min-content;
 
 						&:first-of-type
 						{
@@ -96,204 +156,54 @@ section.tables
 							border-radius: 0 0.4em 0.4em 0;
 						}
 
-						p
+						.timeline
 						{
-							margin: 0;
-						}
-
-						a
-						{
-							font-size: 1em;
-						}
-
-						.tag
-						{
-							font-size: 1em;
-							color: $COLOR_fifth;
-							border-radius: 0.4em;
-							background-color: $COLOR_fourth;
-							padding: 0 1.2em;
-							display: table;
-							margin-right: 0.8em;
-							width: calc(100% - 0.8em);
-							width: -webkit-fill-available;
-							position: relative;
-						}
-
-						a.tag
-						{
-							&:hover
+							> span
 							{
-								transform: scale(1.2);
-							}
-						}
-
-						[icon]::before
-						{
-							margin-right: 0.2em;
-						}
-
-						> span
-						{
-							display: block;
-							position: relative;
-							text-align: left;
-							line-height: 0.8em;
-							text-transform: capitalize;
-
-							&:not(:last-of-type)
-							{
-								margin-bottom: 0.6em;
-							}
-
-							&::before
-							{
-								content: '';
-								position: absolute;
-								top: 0;
-								right: 100%;
-								border-radius: 50%;
-								padding: 0.2em;
-								margin-right: 0.4em;
-								background-color: $COLOR_primary;
-								border: 0.2em solid $COLOR_primary;
-							}
-
-							&:not(:first-of-type)::before
-							{
-								background-color: transparent;
-							}
-
-							&:not(:last-of-type)::after
-							{
-								content: '';
-								position: absolute;
-								top: 0;
-								right: 100%;
-								margin-right: 0.7em;
-								margin-top: 0.8em;
-								width: 0.2em;
-								height: 100%;
-								background-color: $COLOR_primary;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		&:not([color])
-		{
-			table
-			{
-				thead
-				{
-					tr
-					{
-						th
-						{
-							// FIX: Agregar clase para elegir cual columna alargar
-							&:last-of-type
-							{
+								display: block;
+								position: relative;
 								text-align: left;
+								line-height: 0.8em;
+								text-transform: capitalize;
+	
+								&:not(:last-of-type)
+								{
+									margin-bottom: 0.6em;
+								}
+	
+								&::before
+								{
+									content: '';
+									position: absolute;
+									top: 0;
+									right: 100%;
+									border-radius: 50%;
+									padding: 0.2em;
+									margin-right: 0.4em;
+									background-color: $i-primary;
+									border: 0.2em solid $i-primary;
+								}
+	
+								&:not(:first-of-type)::before
+								{
+									background-color: transparent;
+								}
+	
+								&:not(:last-of-type)::after
+								{
+									content: '';
+									position: absolute;
+									top: 0;
+									right: 100%;
+									margin-right: 0.7em;
+									margin-top: 0.8em;
+									width: 0.2em;
+									height: 100%;
+									background-color: $i-primary;
+								}
 							}
 						}
 					}
-				}
-
-				tbody
-				{
-					> tr
-					{
-						> td.important,
-						> td:first-of-type
-						{
-							font-family: $FONT_secondary;
-							font-weight: 900;
-						}
-
-						// FIX: Agregar clase para elegir cual columna alargar
-						> td:last-of-type
-						{
-							width: 100%;
-						}
-					}
-				}
-			}
-		}
-
-		&[color]
-		{
-			table
-			{
-				thead
-				{
-					tr
-					{
-						th:first-of-type
-						{
-							padding-right: 1.8em;
-						}
-					}
-				}
-
-				tbody
-				{
-					> tr
-					{
-						td
-						{
-							background-color: rgba($COLOR_fourth, 0.1);
-
-							&:nth-child(2)
-							{
-								border-radius: 0.4em 0 0 0.4em;
-							}
-						}
-
-						> td.important,
-						> td:first-of-type
-						{
-							color: $COLOR_fifth;
-							border-radius: 0.4em;
-							background-color: transparent;
-							padding: 0;
-						}
-					}
-				}
-			}
-		}
-
-		&[color="primary"]
-		{
-			table
-			{
-				thead
-				{
-					> tr
-					{
-						> th.important,
-						> th:first-of-type
-						{
-							color: $COLOR_primary;
-						}
-					}
-				}
-
-				.tag
-				{
-					background-color: $COLOR_primary;
-				}
-			}
-		}
-
-		&[color="fourth"]
-		{
-			table
-			{
-				.tag
-				{
-					background-color: $COLOR_fourth;
 				}
 			}
 		}

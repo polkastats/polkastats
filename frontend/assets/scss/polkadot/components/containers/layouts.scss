@@ -1,58 +1,38 @@
-@mixin SECTION
+.section
 {
-	.section
+	position: relative;
+
+	&::before
 	{
-		position: relative;
-	
-		&::before
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 50%;
+		width: 100vw;
+		height: 100%;
+		transform: translate(-50%);
+		z-index: -1;
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[color="#{$color}"]::before
 		{
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 50%;
-			width: 100vw;
-			height: 100%;
-			transform: translate(-50%);
-			z-index: -1;
+			background-color: $value;
 		}
 	}
 }
 
-@mixin LAYOUT
+@each $color, $value in $theme-colors
 {
-	.layout
+	.section[color="#{$color}"]::before,
+	.sub-section[color="#{$color}"]
 	{
-		padding: 0;
-	}	
-}
-
-@mixin COMIC_TAG
-{
-	[comic-tag]
-	{
-		position: relative;
-		background-color: $COLOR_fourth;
-		color: $COLOR_fifth;
-		border-color: $COLOR_fourth;
-		vertical-align: middle;
-		padding: 0.5em;
-		// font-size: 0.8em;
-		line-height: 1;
-		// vertical-align: middle;
-
-		margin-right: 0.25em;
-		
-		&::after
-		{
-			content: "";
-			position: absolute;
-			border: 0.4em solid transparent;
-
-			left: 100%;
-			top: 50%;
-			margin-top: -0.4em;
-			border-left-color: inherit;
-		}
-
+		background-color: $value;
 	}
 }
+
+.layout
+{
+	padding: 0;
+}	

@@ -1,9 +1,2 @@
 @import '../components/images/icons.scss';
 @import '../components/images/brand.scss';
-
-@mixin IMAGE
-{
-	@include ICON_INTERNAL;
-	@include ICON_EXTERNAL;
-	@include BRAND;
-}

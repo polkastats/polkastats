@@ -1,11 +1,13 @@
 <template>
-  <div>
+  <div class="mt-1 small">
     <template v-if="!timestamp || sameDay">
       <span
         v-b-tooltip.hover
         :title="$t('components.fiat_conversion.current_value')"
       >
-		<b icon="dollar" comic-tag></b>
+		<b class="badge badge-i-fourthB mr-1 rounded-0" badge="comic">
+			<font-awesome-icon icon="dollar-sign" class="text-i-fifth" />
+		</b>
         {{ formatNumber(FIATValue.toFixed(2)) }}
       </span>
     </template>
@@ -15,7 +17,9 @@
         v-b-tooltip.hover
         :title="$t('components.fiat_conversion.historic_value')"
       >
-	  	<b icon="dollar" comic-tag></b>
+		<b class="badge badge-i-fourthB mr-1 rounded-0" badge="comic">
+			<font-awesome-icon icon="dollar-sign" class="text-i-fifth" />
+		</b>
         {{ formatNumber(historicalFIATValue.toFixed(2)) }}
       </span>
       <span
@@ -23,7 +27,9 @@
         v-b-tooltip.hover
         :title="$t('components.fiat_conversion.current_value')"
       >
-	  	<b icon="dollar" comic-tag></b>
+		<b class="badge badge-i-fourthB mr-1 rounded-0" badge="comic">
+			<font-awesome-icon icon="dollar-sign" class="text-i-fifth" />
+		</b>
         {{ formatNumber(FIATValue.toFixed(2)) }}
       </span>
     </template>

@@ -1,27 +1,21 @@
-@mixin INPUT_TEXT
+[control="text"]
 {
-	input[type="text"]
+	background-color: transparent;
+	font-size: 1em;
+	padding: 1.5em 1em;
+	
+	@each $color, $value in $theme-colors
 	{
-		font-size: 1em;
-		width: 100%;
-		padding: 0.8em;
-		color: $COLOR_fifth;
-		background-color: transparent;
-		border: 0.2em solid $COLOR_fourthB;
-		border-radius: 0.4em;
-		outline: 0;
-		transition: 0.3s linear;
-
-		&::placeholder
+		&[variant=#{$color}]
 		{
-			color: $COLOR_fifth;
-		}
+			color: inherit;
+			border: 0.2em solid $value;
 
-		&:focus,
-		&:active,
-		&:-webkit-autofill
-		{
-			border-color: $COLOR_fifth;
+			&::placeholder
+			{
+				color: inherit;
+				opacity: 0.8;
+			}
 		}
 	}
 }

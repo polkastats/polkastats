@@ -1,41 +1,44 @@
 <template>
-	<header class="frame section container" :active="active" :menu="menu">
-		<h2>
-			<a href="#" @click="toggleMenu()" icon="menu"></a>
-		</h2>
-		<h1 brand>
-			<a href="/">
-				<img src="/brand/logo.svg" alt="Brand Logo" height="24" logo>
-				<img src="/brand/text.svg" alt="Brand Text" height="24" text>
-			</a>
-		</h1>
-		<strong v-if="config.coinGeckoDenom && USDConversion && USD24hChange">
-			<a :href="`https://www.coingecko.com/en/coins/${config.coinGeckoDenom}`" icon="kusama" color="secondary">
-				{{ config.tokenSymbol }} ${{ USDConversion }} ({{ USD24hChange }}%)
-			</a>
-		</strong>
-		<nav aria-labelledby="Principal Menu">
-			<ul>
-				<li v-for="item of links" :key="item.name">
-					<dropdown-menu v-if="item.options" :options="item.options" :value="{ name: item.name }" />
-					<a v-else :href="item.link">{{ item.name }}</a>
-				</li>
-			</ul>
-		</nav>
-		<ul>
-			<li>
-				<a href="#" icon="github"></a>
-			</li>
-			<li>
-				<a href="#" icon="github"></a>
-			</li>
-			<li>
-				<dropdown-menu color="primary" :options="networks" />
-			</li>
-			<li>
-				<dropdown-menu color="fourthB" :options="langs" :value="langs[1]" />
-			</li>
-		</ul>
+	<header class="frame" :active="active" :menu="menu">
+
+		<b-navbar toggleable="xl" :color="options.variant" :link="options.link" :link-hover="options.hover" fixed="top" class="section container">
+			
+			<b-navbar-nav class="navbar-visible">
+				<b-navbar-toggle target="nav-collapse" :class="['text-' + options.link, 'bg-' + options.variant, 'mr-2']">
+					<template #default="{ expanded }">
+						<font-awesome-icon v-if="expanded" icon="times"></font-awesome-icon>
+						<font-awesome-icon v-else icon="bars"></font-awesome-icon>
+					</template>
+				</b-navbar-toggle>
+
+				<b-navbar-brand href="/" left brand>
+					<img src="/brand/logo.svg" alt="Brand Logo" height="24" logo>
+					<img src="/brand/text.svg" alt="Brand Text" height="24" text>
+				</b-navbar-brand>
+				<b-nav-item :href="`https://www.coingecko.com/en/coins/${config.coinGeckoDenom}`" :link-attrs="{ icon: 'kusama', color: 'secondary' }" class="ml-auto">
+					{{ config.tokenSymbol }} ${{ USDConversion }} ({{ USD24hChange }}%)
+				</b-nav-item>
+			</b-navbar-nav>
+
+		<b-collapse class="sub-section" id="nav-collapse" is-nav :color="options.variant">
+			<b-navbar-nav>
+				<template v-for="item of links">
+					<dropdown-menu :variant="item.variant" :key="item.name" :link="true" v-if="item.options" :options="item.options" :value="{ name: item.name }" />
+					<b-nav-item :key="item.name" v-else :href="item.link">{{ item.name }}</b-nav-item>
+				</template>
+			</b-navbar-nav>
+
+			<b-navbar-nav class="ml-auto tools">
+
+				<b-nav-text class="mx-1"><b-button size="sm">Connect</b-button></b-nav-text>
+				<b-nav-text class="mx-1"><b-button size="sm">0 / 24 Selected</b-button></b-nav-text>
+				<b-nav-text class="mx-1"><dropdown-menu variant="i-primary" :options="networks" /></b-nav-text>
+				<b-nav-text class="mx-1"><dropdown-menu variant="i-fourthB" :options="langs" :value="langs[1]" /></b-nav-text>
+
+			</b-navbar-nav>
+		</b-collapse>
+		</b-navbar>
+
 	</header>
 </template>
 
@@ -62,6 +65,7 @@ export default {
 		}, 60000)
 		}
 	},
+	props: ['options'],
 	data()
 	{
 		const lang = this.$t('layout.default');
@@ -78,6 +82,7 @@ export default {
 			},
 			{
 				name: 'Staking',
+				variant: this.options.variant,
 				options: 
 				[ 
 					{ 
@@ -92,6 +97,7 @@ export default {
 			},
 			{
 				name: 'Blockchain',
+				variant: this.options.variant,
 				options:
 				[
 					{

@@ -1,0 +1,68 @@
+// {
+// 	[icon="search"]::before
+// 	{
+// 		content: '\f002';
+// 	}
+
+// 	[icon="check"]
+// 	{
+// 		&::before
+// 		{
+// 			content: '\f00c';
+// 		}
+
+// 		&[color="completed"]
+// 		{
+// 			color: green;
+// 		}
+// 	}
+
+// 	[icon="name"]::before
+// 	{
+// 		content: '\f099';
+// 	}
+	
+// 	[icon="email"]::before
+// 	{
+// 		content: '\f0e0';
+// 	}
+	
+// 	[icon="key"]::before
+// 	{
+// 		content: '\f084';
+// 	}
+	
+// 	[icon="facebook"]::before
+// 	{
+// 		content: '\f39e';
+// 	}
+	
+// 	[icon="instagram"]::before
+// 	{
+// 		content: '\f16d';
+// 	}
+	
+// 	[icon="twitter"]::before
+// 	{
+// 		content: '\f099';
+// 	}
+	
+// 	[icon="github"]::before
+// 	{
+// 		content: '\f09b';
+// 		font-size: 2.8em;
+// 	}
+
+// 	[icon="dollar"]::before
+// 	{
+// 		content: "\f155";
+// 	}
+
+
+// 	/** AFTER **/
+// 	[icon="more"]::after
+// 	{
+// 		content: '\f061';
+// 		margin-left: 0.5em;
+// 	}
+// }

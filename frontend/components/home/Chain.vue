@@ -1,115 +1,91 @@
 <template>
-  <div v-if="lastBlock">
-      <p>
-		<em>{{ $t('components.chain.last_block') }}</em>
-		<strong>
-			<nuxt-link
-			  v-b-tooltip.hover
-			  :to="localePath(`/block?blockNumber=${lastBlock}`)"
-			  :title="$t('components.chain.block_details')"
-			>
-				#{{ formatNumber(lastBlock) }}
-			</nuxt-link>
-		</strong>
-      </p>
-      <p >
-		<em>{{ $t('components.chain.last_block_finalized') }}</em>
-		<strong>
-			<nuxt-link
-			  v-b-tooltip.hover
-			  :to="localePath(`/block?blockNumber=${lastBlock}`)"
-			  :title="$t('components.chain.block_details')"
-			>
-				#{{ formatNumber(lastFinalizedBlock) }}
-			</nuxt-link>
-		</strong>
-      </p>
-      <p>
-		<em>{{ $t('components.chain.total_extrinsics') }}</em>
-		<strong>
-			<nuxt-link
-			  v-b-tooltip.hover
-              :to="localePath('/extrinsics')"
-              :title="$t('components.chain.extrinsics_details')"
-			>
-				{{ formatNumber(totalExtrinsics) }}
-			</nuxt-link>
-		</strong>
-      </p>
-      <p>
-		<em>{{ $t('components.chain.total_events') }}</em>
-		<strong>
-			<nuxt-link
-			  v-b-tooltip.hover
-              :to="localePath('/events')"
-              :title="$t('components.chain.events_details')"
-			>
-				{{ formatNumber(totalEvents) }}
-			</nuxt-link>
-		</strong>
-      </p>
+  <div v-if="lastBlock" class="row">
+	  <score-item
+	  :title="$t('components.chain.last_block')"
+	  :link="localePath(`/block?blockNumber=${lastBlock}`)"
+	  :description="$t('components.chain.block_details')"
+	  :value="'#' + formatNumber(lastBlock)"
+	  icon="cube"
+	   />
+	   <score-item
+	  :title="$t('components.chain.last_block_finalized')"
+	  :link="localePath(`/block?blockNumber=${lastBlock}`)"
+	  :description="$t('components.chain.block_details')"
+	  :value="'#' + formatNumber(lastFinalizedBlock)"
+	  icon="lock"
+	   />
 
-      <p>
-		<em>{{ $t('components.chain.accounts') }}</em>
-		<strong>
-			<nuxt-link
-			  v-b-tooltip.hover
-              :to="localePath('/accounts')"
-              :title="$t('components.chain.accounts_details')"
-			>
-				{{ formatNumber(totalAccounts) }}
-			</nuxt-link>
-		</strong>
-      </p>
-      <p>
-		<em>{{ $t('components.chain.transfers') }}</em>
-		<strong>
-			<nuxt-link
-			  v-b-tooltip.hover
-              :to="localePath('/transfers')"
-              :title="$t('components.chain.transfers_details')"
-			>
-				{{ formatNumber(totalTransfers) }}
-			</nuxt-link>
-		</strong>
-      </p>
-      <p>
-		<em>{{ $t('components.chain.active_era') }}</em>
-		<strong>{{ formatNumber(activeEra) }}</strong>
-      </p>
-      <p modal="tooltip">
-		<em>
-			{{ $t('components.chain.total_issuance') }}
-		</em>
-		<strong>
-			{{ formatAmount(totalIssuance, 0, true) }}
-			<FIATConversion :units="totalIssuance" :short="true" />
-		</strong>
-      </p>
+	   <score-item
+	  :title="$t('components.chain.total_extrinsics')"
+	  :link="localePath('/extrinsics')"
+	  :description="$t('components.chain.extrinsics_details')"
+	  :value="formatNumber(totalExtrinsics)"
+	  icon="hand-holding-usd"
+	   />
 
-      <p modal="tooltip">
-		<em>{{ $t('components.chain.total_staked') }}</em>
-		<strong>
-			{{ formatAmount(totalStaked, 0, true) }}
-			({{ formatNumber(totalStakedPercentage) }}%)
-			<FIATConversion :units="totalStaked" :short="true" />
-		</strong>
-      </p>
-      <p>
-		<em>{{ $t('components.chain.current_index') }}</em>
-		<strong>{{ formatNumber(currentIndex) }}</strong>
-      </p>
-      <p>
-		<em>{{ $t('components.chain.validators') }}</em>
-		<strong>
-			{{ formatNumber(totalValidators) }} /
-			{{ formatNumber(totalWaiting) }}
-		</strong>
-      </p>
-      <p>
-		<em>{{ $t('components.chain.nominators') }}</em>
-		<strong>{{ formatNumber(totalNominators) }}</strong>
-      </p>
+	   <score-item
+	  :title="$t('components.chain.total_events')"
+	  :link="localePath('/events')"
+	  :description="$t('components.chain.events_details')"
+	  :value="formatNumber(totalEvents)"
+	  icon="history"
+	   />
+
+	   <score-item
+	  :title="$t('components.chain.accounts')"
+	  :link="localePath('/accounts')"
+	  :description="$t('components.chain.accounts_details')"
+	  :value="formatNumber(totalAccounts)"
+	  icon="user"
+	   />
+
+	   <score-item
+	  :title="$t('components.chain.transfers')"
+	  :link="localePath('/transfers')"
+	  :description="$t('components.chain.transfers_details')"
+	  :value="formatNumber(totalTransfers)"
+	  icon="exchange-alt"
+	   />
+
+	   <score-item
+	  :title="$t('components.chain.active_era')"
+	  :value="formatNumber(activeEra)"
+	  icon="signature"
+	   />
+
+	   <score-item
+	  :title="$t('components.chain.total_issuance')"
+	  :value="formatAmount(totalIssuance, 0, true)"
+	  icon="chart-line"
+	   >
+	   	<FIATConversion :units="totalIssuance" :short="true" />
+	   </score-item>
+
+	   <score-item
+	  :title="$t('components.chain.total_staked')"
+	  :value="formatAmount(totalStaked, 0, true) + ' ' + formatNumber(totalStakedPercentage) + '%'"
+	  icon="chart-area"
+	   >
+		<FIATConversion :units="totalStaked" :short="true" />
+	   </score-item>
+
+	   <score-item
+	  :title="$t('components.chain.current_index')"
+	  :value="formatNumber(currentIndex)"
+	  icon="clock"
+	   />
+
+	   <score-item
+	  :title="$t('components.chain.validators')"
+	  :value="formatNumber(totalValidators) + ' / ' + formatNumber(totalWaiting)"
+	  icon="users"
+	   />
+
+	   <score-item
+	  :title="$t('components.chain.nominators')"
+	  :value="formatNumber(totalNominators)"
+	  icon="user-friends"
+	   />
   </div>
 	<footer v-else>
 		<Loading />
@@ -120,11 +96,12 @@
 import { gql } from 'graphql-tag'
 import BN from 'bn.js'
 import Loading from '@/components/Loading.vue'
+import ScoreItem from '@/components/more/ScoreItem.vue'
 import commonMixin from '@//mixins/commonMixin.js'
 import { config } from '@//frontend.config.js'
 
 export default {
-	components: [Loading],
+  components: { Loading, ScoreItem },
   mixins: [commonMixin],
   data() {
     return {

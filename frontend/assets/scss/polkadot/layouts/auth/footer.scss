@@ -1,12 +1,12 @@
 footer.frame
 {
 	overflow: hidden;
-	color: $COLOR_fifth;
+	color: $i-fifth;
 	text-align: center;
 
 	&::before
 	{
-		background-color: rgba($COLOR_fourth, 0.9);
+		opacity: 0.9;
 	}
 
 	> article
@@ -20,11 +20,10 @@ footer.frame
 		flex-grow: 5;
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 
 		> header
 		{
-			margin: 2em;
-
 			[brand]
 			{
 				font-size: 4em;
@@ -37,62 +36,24 @@ footer.frame
 				justify-content: center;
 				gap: 1em;
 				margin: 1em;
-	
-				> [icon]
-				{
-					background-color: $COLOR_primary;
-					background-color: $COLOR_fifth;
-					color: $COLOR_fourth;
-					border-radius: 50%;
-					position: relative;
-					width: 2.8em;
-					height: 2.8em;
-	
-					&::before
-					{
-						position: absolute;
-						top: 50%;
-						left: 50%;
-						transform: translate(-50%, -50%);
-					}
-					
-					&:hover
-					{
-						background-color: $COLOR_fifth;
-						background-color: $COLOR_primary;
-						color: $COLOR_fifth;
-					}
-				}
-	
-	
-				> [icon="github"]
-				{
-					background-color: transparent;
-					color: $COLOR_primary;
-					color: $COLOR_fifth;
-	
-					&:hover
-					{
-						background-color: transparent;
-						color: $COLOR_fifth;
-						color: $COLOR_primary;
-					}
-				}
 			}
 		}
 
 		> nav
 		{
 			margin: 2em;
+			border: 0;
 
 			> ul
 			{
-				text-transform: none;
-				font-weight: 500;
-
-				gap: 1em 3em;
-				display: inline-flex;
 				flex-wrap: wrap;
+				margin: auto;
+
+				li
+				{
+					text-transform: none;
+					font-size: 1em;
+				}
 			}
 		}
 	}
@@ -100,40 +61,27 @@ footer.frame
 	> address
 	{
 		margin: 0;
-		flex-grow: 1;
-		display: flex;
-    	flex-direction: column;
 		float: right;
 		text-align: left;
+		flex-direction: column;
+		display: flex;
 		
 		> p
 		{
-			padding: 1.4em 2em;
-			margin: 0;
+			flex-direction: column;
 
-			&[color="primary"]
+			@each $color, $value in $theme-colors
 			{
-				background-color: $COLOR_primary;
-				display: flex;
-				justify-content: center;
-				align-items: center;
+				&[variant=#{$color}]
+				{
+					background-color: $value;
+				}
 			}
 
-			&[color="fourth"]
-			{
-				background-color: $COLOR_fourth;
-			}
-
-			[icon]
+			svg
 			{
 				display: block;
-				padding: 0.6em 0;
-
-				&::before
-				{
-					display: block;
-					margin-bottom: 0.4em;
-				}
+				margin-bottom: 0.4em;
 			}
 
 			> img

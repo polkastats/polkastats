@@ -1,19 +1,17 @@
 // @import './polkadot/themes/dark.scss';
-
-@import './polkadot/variables/colors.scss';
-@import './polkadot/variables/fonts.scss';
+@import './polkadot/variables/all.scss';
 
 :export
 {
-	COLOR_primary: $COLOR_primary;
-	COLOR_secondary: $COLOR_secondary;
-	COLOR_third: $COLOR_third;
-	COLOR_fourth: $COLOR_fourth;
-	COLOR_fourthB: $COLOR_fourthB;
-	COLOR_fifth: $COLOR_fifth;
+	colorPrimary: $i-primary;
+	colorSecondary: $i-secondary;
+	colorThird: $i-third;
+	colorFourth: $i-fourth;
+	colorFourthB: $i-fourthB;
+	colorFifth: $i-fifth;
 
-	FONT_primary: $FONT_primary;
-	FONT_secondary: $FONT_secondary;
-	FONT_secondaryMono: $FONT_secondaryMono;
-	FONT_Icon: $FONT_Icon;
+	fontPrimary: $i-font-primary;
+	fontSecondary: $i-font-secondary;
+	fontSecondaryMono: $i-font-secondary-mono;
+	fontIcon: $i-font-icon;
 }

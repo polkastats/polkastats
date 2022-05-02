@@ -1,100 +1,91 @@
-@mixin RES_720p
+@media only screen and (max-width: 720px)
 {
-	@media only screen and (max-width: 720px)
+	header.frame
 	{
-		header.frame
+		position: sticky;
+		z-index: 10;
+		top: 0;
+
+		.navbar 
 		{
-			position: sticky;
-			left: 0;
-			transform: none;
-			
-			&::before
-			{
-				opacity: 1;
-			}
-
-			> [brand]
-			{
-				flex: 1;
-			}
-
-			> strong
-			{
-				flex: unset;
-			}
-
-			> ul
-			{
-				display: none;
-			}
-
+			position: relative;
 		}
-	
-		main.frame
+		
+		[icon="kusama"]::after
+		{
+			opacity: 0;
+		}
+
+		.section,
+		.section:not([active])
 		{
 			max-width: 100%;
-			padding: 0;
 
-			> section
+			&::before
 			{
-				padding: 1.8em 2em;
-			}
-	
-			> section.scores
-			{
-
-				padding: 0;
-				gap: 0;
-				
-				// > header
-				// {
-				// 	display: none;
-				// }
-				
-				> article::before,
-				> article::after
-				{
-					border-radius: 0;
-				}
-			}
-	
-			> section.tables
-			{
-				article
-				{
-					min-width: 100%;
-					overflow: auto;
-				}
-			}
-	
-			> section.chart
-			{
-				> div
-				{
-					max-height: 20em;
-				}
+				opacity: 1 !important;
 			}
 		}
-	
-		footer.frame
+
+		.btn
 		{
-			flex-wrap: wrap;
-	
-			> article
+			font-size: 1em !important;
+		}
+
+	}
+
+	main.frame
+	{
+		max-width: 100%;
+		padding: 0;
+
+		> section
+		{
+			padding: 1.8em 2em;
+		}
+
+		> section.scores
+		{
+
+			padding: 0;
+			gap: 0;
+			
+			> article::before,
+			> article::after
 			{
-				position: unset;
-				transform: none;
+				border-radius: 0;
 			}
-	
-			> address
+		}
+
+		> section.tables
+		{
+			article
 			{
-				float: none;
-				flex-direction: row;
-	
-				> [color="primary"]
-				{
-					flex: 1;
-				}
+				min-width: 100%;
+				overflow: auto;
+			}
+		}
+
+	}
+
+	footer.frame
+	{
+		flex-wrap: wrap;
+
+		> article
+		{
+			position: unset;
+			transform: none;
+		}
+
+		> address
+		{
+			float: none;
+			flex-direction: row;
+
+			> [color="primary"]
+			{
+				flex: 1;
 			}
 		}
 	}

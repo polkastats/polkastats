@@ -1,177 +1,141 @@
 header.frame
 {
-	position: fixed;
-	z-index: 10;
-	top: 0;
-	left: 50%;
-    transform: translateX(-50%);
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	color: $COLOR_fifth;
-	padding: 1.6em;
-	transition: 0.2s ease-out;
-	white-space: nowrap;
-	gap: 2em;
-
-	&::before
+	.dropdown-toggle::after
 	{
-		background-color: $COLOR_fourth;
-		opacity: 0;
+		display: none;
+	}
+
+	.fixed-top
+	{
+		position: fixed;
 	}
 
 	&[active],
 	&[menu]
 	{
-		&::before
-		{
-			opacity: 1;
-		}
-
-		> strong::before
+		[icon="kusama"]::after
 		{
 			opacity: 0;
 		}
 	}
 
-	&[active]
+	&:not([active])
 	{
-		padding: 1em 1.6em;
-		transition: 0.2s ease-in;
+		.navbar.section::before
+		{
+			opacity: 0;
+		}
+	}
 
-		&::before
+	.section.navbar
+	{
+		.navbar-visible
+		{
+			flex-direction: row;
+			flex: 1;
+		}
+	}
+
+	.navbar-collapse:not(.show)
+	{
+		background-color: transparent;
+	}
+
+	.navbar-collapse.show
+	{
+		padding: 1em 2em;
+	}
+
+	.navbar-nav
+	{
+		align-items: center;
+	}
+
+	.navbar-nav:not(.tools)
+	{
+		gap: 2em;
+	}
+
+	.navbar-nav.tools
+	{
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.navbar-collapse.show
+	{
+		.navbar-nav
+		{
+			gap: 0;
+			align-items: flex-start;
+		}
+
+		.b-nav-dropdown .dropdown-menu
+		{
+			margin-top: 0;
+		}
+
+		.b-dropdown .dropdown-menu
+		{
+			position: absolute;
+			bottom: 100%;
+			top: unset;
+			margin-top: 0;
+			margin-bottom: 1.2em;
+
+			&::before
+			{
+				border-top-color: inherit;
+				border-bottom-color: transparent;
+				top: 100%;
+				bottom: inherit;
+			}
+		}
+
+		.navbar-nav.tools
+		{
+			margin-top: 4em
+		}
+	}
+	
+
+	.nav-item
+	{
+		font-size: 1em;
+	}
+
+	.nav-link
+	{
+		font-weight: normal;
+		opacity: 0.75;
+
+		&:hover
 		{
 			opacity: 1;
 		}
 	}
 
-	&[menu]
+	[brand]
 	{
-		flex-direction: column;
-		align-items: flex-start;
-		height: 100vh;
-
-		> h2,
-		> [brand],
-		> strong,
-		> nav,
-		> ul
-		{
-			display: block;
-			flex: unset;
-		}
-
-		> nav
-		{
-			flex: 1;
-		}
-
-		h1,
-		strong,
-		> ul
-		{
-			margin: auto;
-		}
-
-		> ul
-		{
-			i-dropdown
-			{
-				> ul
-				{
-					top: initial;
-					bottom: 100%;
-					margin-top: 0;
-					margin-bottom: 1.6em;
-					
-					&::before
-					{
-						bottom: initial;
-						top: 100%;
-						border-bottom-color: transparent;
-						border-top-color: inherit;
-					}
-				}
-			}
-		}
-
-		> nav
-		{
-			> ul
-			{
-				flex-direction: column;
-				text-align: left;
-				gap: 2em;
-
-				> li
-				{
-					opacity: 1;
-					
-					> i-dropdown
-					{
-						display: block;
-						padding: 0;
-						font-size: 1em;
-
-						&::after
-						{
-							position: absolute;
-							top: 0;
-							right: 0;
-						}
-
-						> ul
-						{
-							position: initial;
-							display: none;
-							opacity: 1;
-							visibility: visible;
-
-							> li > a
-							{
-								opacity: 1;
-							}
-						}
-						
-						&:focus
-						{
-							> ul
-							{
-								display: block;
-							}
-						}
-					}
-
-
-				}
-			}
-		}
-	}
-
-	a:hover
-	{
-		color: inherit;
-	}
-
-	> h2
-	{
-		display: none;
 		font-size: 3em;
 	}
 
-	[brand]
+	.navbar-toggler
 	{
-		font-size: 2em;
+		border-radius: 0;
+		border: 0;
+		align-self: stretch;
 	}
 
-	> strong
+	[icon="kusama"]
 	{
 		position: relative;
-		font-family: $FONT_secondaryMono;
+		font-family: $i-font-secondary-mono;
 		font-weight: 400;
-		font-size: 1.2em;
+		white-space: nowrap;
 
-		&::before
+		&::after
 		{
 			content: '';
 			position: absolute;
@@ -179,40 +143,15 @@ header.frame
 			left: 0;
 			width: 100%;
 			height: 100%;
-			background-color: $COLOR_fifth;
+			background-color: $i-fifth;
 			opacity: 15%;
 			filter: blur(0.5em) saturate(200%);
 		}
 	}
 
-	> nav
+	[icon]::before
 	{
-		flex: 1;
-
-		> ul > li
-		{
-			opacity: 0.75;
-			transition: 0.3s linear;
-
-			&:hover
-			{
-				opacity: 1;
-			}
-		}
+		margin-right: 0.5em;
 	}
 
-	> ul
-	{
-		> li
-		{
-			margin: 0.4em;
-			vertical-align: middle;
-
-			// TODO: Nuevos elementos
-			[icon="github"]
-			{
-				font-size: 0.8em;
-			}
-		}
-	}
 }

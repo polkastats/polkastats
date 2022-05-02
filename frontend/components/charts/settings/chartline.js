@@ -5,6 +5,7 @@ export class ChartLineOptions
 	constructor(x, y)
 	{
 		this.setAxes(x, y);
+		console.log("THEME", THEME);
 	}
 
 	setLabels(labels)
@@ -28,18 +29,18 @@ export class ChartLineOptions
 		datasets:
 		[
 			{
-				borderColor: THEME.COLOR_secondary + '80',
+				borderColor: THEME.colorSecondary + '80',
 				borderWidth: 1,
 				pointBackgroundColor: 'transparent',
 				pointBorderColor: 'transparent',
 				hoverBackgroundColor: 'transparent',
-				hoverBorderColor: THEME.COLOR_fourth,
+				hoverBorderColor: THEME.colorFourth,
 				pointRadius: 6,
 				pointStyle: 'rect',
 				hoverBorderWidth: 3,
 				hoverRadius: 6,
 				tension: 0,
-				backgroundColor: THEME.COLOR_secondary + '40',
+				backgroundColor: THEME.colorSecondary + '40',
 			},
 		],
 	}
@@ -54,16 +55,16 @@ export class ChartLineOptions
 		},
 		tooltips:
 		{
-			backgroundColor: THEME.COLOR_fourth,
+			backgroundColor: THEME.colorFourth,
 			displayColors: false,
-			titleFontColor: THEME.COLOR_primary,
+			titleFontColor: THEME.colorPrimary,
 			titleFontStyle: '700',
 			titleFontSize: 14,
-			titleFontFamily: THEME.FONT_secondary,
+			titleFontFamily: THEME.fontSecondary,
 			titleMarginBottom: 4,
 			titleSpacing: 0,
-			bodyFontColor: THEME.COLOR_fifth,
-			bodyFontFamily: THEME.FONT_secondary,
+			bodyFontColor: THEME.colorFifth,
+			bodyFontFamily: THEME.fontSecondary,
 			bodyFontSize: 12,
 			bodyFontStyle: 500,
 			bodySpacing: 0,
@@ -84,27 +85,27 @@ export class ChartLineOptions
 					{
 						beginAtZero: false,
 						fontSize: 10,
-						fontColor: THEME.COLOR_fourth,
-						fontFamily: THEME.FONT_secondary,
+						fontColor: THEME.colorFourth,
+						fontFamily: THEME.fontSecondary,
 						autoSkipPadding: 6,
 						padding: 6,
 					},
 					gridLines:
 					{
 						display: true,
-						color: THEME.COLOR_fourth + '80',
+						color: THEME.colorFourth + '80',
 						lineWidth: 0.2,
 						zeroLineWidth: 2,
 						zeroLineBorderDash: [5, 5],
-						zeroLineColor: THEME.COLOR_fourth,
+						zeroLineColor: THEME.colorFourth,
 					},
 					scaleLabel:
 					{
 						display: true,
 						fontSize: 16,
 						fontStyle: '500',
-						fontColor: THEME.COLOR_fourthB,
-						fontFamily: THEME.FONT_primary,
+						fontColor: THEME.colorFourthB,
+						fontFamily: THEME.fontPrimary,
 						padding: 16,
 					},
 				},
@@ -115,27 +116,27 @@ export class ChartLineOptions
 					ticks:
 					{
 						suggestedMin: 0,
-						fontColor: THEME.COLOR_fourth,
+						fontColor: THEME.colorFourth,
 						autoSkipPadding: 12,
 						padding: 6,
 						fontSize: 10,
-						fontFamily: THEME.FONT_secondary,
+						fontFamily: THEME.fontSecondary,
 					},
 					gridLines:
 					{
-						color: THEME.COLOR_fourth + '80',
+						color: THEME.colorFourth + '80',
 						lineWidth: 0.2,
 						zeroLineWidth: 2,
 						zeroLineBorderDash: [5, 5],
-						zeroLineColor: THEME.COLOR_fourth,
+						zeroLineColor: THEME.colorFourth,
 					},
 					scaleLabel:
 					{
 						display: true,
 						fontSize: 16,
 						fontStyle: '500',
-						fontColor: THEME.COLOR_fourthB,
-						fontFamily: THEME.FONT_primary,
+						fontColor: THEME.colorFourthB,
+						fontFamily: THEME.fontPrimary,
 						padding: 16,
 					}
 				}

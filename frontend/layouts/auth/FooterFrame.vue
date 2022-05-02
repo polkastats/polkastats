@@ -1,46 +1,37 @@
 <template>
-	<footer class="frame section">
+	<footer class="frame section" color="i-fourth">
 		<article>
-			<header>
+			<header class="m-3">
 				<h2 social>
-					<a href="https://github.com/Colm3na/polkastats-ng" icon="github" tooltip="View source code"></a>
+					<nuxt-link class="h2" v-b-tooltip.hover to="https://github.com/Colm3na/polkastats-ng" title="View source code">
+						<font-awesome-icon :icon="['fab', 'github']" />
+					</nuxt-link>
 				</h2>
 				<h1 brand>
-						<img src="/brand/logo.svg" alt="Brand Logo" height="40" logo>
-						<img src="/brand/text.svg" alt="Brand Text" height="40" text>
+					<img src="/brand/logo.svg" alt="Brand Logo" height="40" logo>
+					<img src="/brand/text.svg" alt="Brand Text" height="40" text>
 				</h1>
 			</header>
-			<nav aria-labelledby="Secondary Menu">
-				<ul>
-					<li v-for="item of menu" :key="item.name"><a :href="item.link">{{ item.name }}</a></li>
-					<li v-for="item of legend" :key="item.name"><a :href="item.link">{{ item.name }}</a></li>
-				</ul>
-			</nav>
+			
+			<b-navbar aria-labelledby="Secondary Menu" link="i-fifth" link-hover="i-primary">
+				<b-navbar-nav>
+					<b-nav-item v-for="item of menu" :key="item.name" :href="item.link">{{ item.name }}</b-nav-item>
+					<b-nav-item v-for="item of legend" :key="item.name" :href="item.link">{{ item.name }}</b-nav-item>
+				</b-navbar-nav>
+			</b-navbar>
 		</article>
-		<!-- <article class="container">
-			<div>
-				<div>
-					<h2>
-						<a href="https://github.com/Colm3na/polkastats-ng" icon="github" tooltip="View source code"></a>
-					</h2>
-					<h1 brand>
-							<img src="/brand/logo.svg" alt="Brand Logo" height="40" logo>
-							<img src="/brand/text.svg" alt="Brand Text" height="40" text>
-					</h1>
-				</div>
-			</div>
-			<nav aria-labelledby="Secondary Menu">
-				<ul>
-					<li v-for="item of menu" :key="item.name"><a :href="item.link">{{ item.name }}</a></li>
-					<li v-for="item of legend" :key="item.name"><a :href="item.link">{{ item.name }}</a></li>
-				</ul>
-			</nav>
-		</article> -->
 		<address>
-			<p color="fourth">
-				<span v-for="info of address" :key="info.name" :icon="info.icon">{{ info.name }}</span>
+			<p variant="i-fourth" class="row m-0 p-4">
+				<!-- <span v-for="info of address" :key="info.name" class="col-12 p-0 py-2"> -->
+				<!-- <span v-for="info of address" :key="info.name" class="row p-0 py-2"> -->
+				<!-- <span v-for="info of address" :key="info.name" class="col-12 p-0 py-2"> -->
+				<span v-for="info of address" :key="info.name" class="p-0 py-2">
+					<font-awesome-icon :icon="info.icon" />
+					{{ info.name }}
+				</span>
 			</p>
-			<p color="primary">
+			<p variant="i-primary" class="row m-0 p-4 align-items-center justify-content-center" style="flex: 1">
+				<!-- <img src="/brand/grant_badge.png" alt="Built with" height="64" class="col-sm-3 col-md-12 col-lg-12" /> -->
 				<img src="/brand/grant_badge.png" alt="Built with" height="64" />
 			</p>
 		</address>
@@ -64,14 +55,13 @@ export default {
 		[
 			{ name: lang.made_by, link: '/team' },
 			{ name: lang.built_with + ' Basic Atttention Token', link: 'https://basicattentiontoken.org/', icon: 'built' },
-			// { name: lang.view_source_code_on_github, link: 'https://github.com/Colm3na/polkastats-ng', icon: 'github' },
 		]
 
 		const address =
 		[
-			{ name: '@PolkaStats', icon: 'name', link: 'https://twitter.com/polkastats' },
+			{ name: '@PolkaStats', icon: ['fab', 'twitter'], link: 'https://twitter.com/polkastats' },
 			{ name: 'PGP: 14C5 91D0 8ABA 03B7', icon: 'key', link: 'mailto:polkastats@protonmail.com' },
-			{ name: 'polkastats@protonmail.com', icon: 'email', link: 'https://keybase.io/encrypt#polkastats' },
+			{ name: 'polkastats@protonmail.com', icon: 'envelope', link: 'https://keybase.io/encrypt#polkastats' },
 		]
 
 		return { menu: menu, legend: legend, address: address };
