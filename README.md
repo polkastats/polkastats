@@ -110,17 +110,21 @@ yarn workspace frontend generate
 
 [db-migrate](https://github.com/db-migrate/node-db-migrate) tool used to apply data migrations. More details you can find here: https://db-migrate.readthedocs.io/en/latest/
 
-Install
+#### Install
 ```bash
 npm install -g db-migrate
 ```
 
-Change directory
+#### Change directory
 ```bash
 cd db
 ```
 
-Create migration
+#### Create migration
 ```bash
 db-migrate create MIGRATION_NAME -e local
 ```
+
+`*-up.sql` files should contain database updates you want to apply (via `db-migrate up` command)
+
+`*-down.sql` files should contain updates rollback that can be executed in case migration failed (via `db-migrate down` command)
