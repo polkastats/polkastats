@@ -16,13 +16,14 @@ const cereNetworkService = require('./src/services/cereNetworkService');
 const cacheService = require('./src/services/cacheService');
 const DBMigrate = require("db-migrate");
 
-console.debug('Running migrations');
+console.log('Running migrations');
 DBMigrate.getInstance(true, {
+  env: process.env.NODE_ENV || 'local',
   config: '../db/database.json',
   cmdOptions: {
     'migrations-dir': '../db/migrations',
   },
-}).up().then(() => console.debug('Migrations completed'));
+}).up().then(() => console.log('Migrations completed'));
 
 // Http port
 const port = process.env.PORT || 8000;

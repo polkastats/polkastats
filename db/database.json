@@ -1,5 +1,4 @@
 {
-  "defaultEnv": {"ENV": "NODE_ENV"},
   "local": {
     "driver": "pg",
     "user": "polkastats",
