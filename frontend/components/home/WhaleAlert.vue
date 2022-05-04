@@ -1,83 +1,68 @@
 <template>
-  <div class="whale-alert">
-    <h3 class="text-primary2">
-      {{ $t('components.whale_alert.title') }}
-    </h3>
-    <p>{{ $t('components.whale_alert.description') }}</p>
-    <div class="table-responsive">
-      <b-table striped hover :fields="fields" :items="transfers">
-        <template #cell(hash)="data">
-          <p class="mb-0">
-            <nuxt-link :to="localePath(`/transfer/${data.item.hash}`)">
-              {{ shortHash(data.item.hash) }}
-            </nuxt-link>
-          </p>
-        </template>
-        <template #cell(block_number)="data">
-          <p class="mb-0">
-            <nuxt-link
-              v-b-tooltip.hover
-              :to="localePath(`/block?blockNumber=${data.item.block_number}`)"
-              :title="$t('common.block_details')"
-            >
-              #{{ formatNumber(data.item.block_number) }}
-            </nuxt-link>
-          </p>
-        </template>
-        <template #cell(timestamp)="data">
-          <p class="mb-0">
-            {{ fromNow(data.item.timestamp) }}
-          </p>
-        </template>
-        <template #cell(source)="data">
-          <p class="mb-0">
-            <Identicon
-              :key="data.item.source"
-              :address="data.item.source"
-              :size="20"
-            />
-            <nuxt-link
-              :to="localePath(`/account/${data.item.source}`)"
-              :title="$t('pages.accounts.account_details')"
-            >
-              {{ shortAddress(data.item.source) }}
-            </nuxt-link>
-          </p>
-        </template>
-        <template #cell(destination)="data">
-          <div v-if="isValidAddressPolkadotAddress(data.item.destination)">
-            <p class="mb-0">
-              <Identicon
-                :key="data.item.destination"
-                :address="data.item.destination"
-                :size="20"
-              />
-              <nuxt-link
-                :to="localePath(`/account/${data.item.destination}`)"
-                :title="$t('pages.accounts.account_details')"
-              >
-                {{ shortAddress(data.item.destination) }}
-              </nuxt-link>
-            </p>
-          </div>
-          <div v-else>
-            <p class="mb-0">
-              {{ shortAddress(data.item.destination || '') }}
-            </p>
-          </div>
-        </template>
-        <template #cell(amount)="data">
-          <p class="mb-0">
-            {{ formatAmount(data.item.amount) }}
-            <FIATConversion
-              :units="data.item.amount"
-              :timestamp="data.item.timestamp"
-            />
-          </p>
-        </template>
-      </b-table>
-    </div>
-  </div>
+	<table-component :items="transfers" :fields="fields" :options="options">
+		<template #cell(hash)="data">
+			<nuxt-link :to="localePath(`/transfer/${data.item.hash}`)">
+				{{ shortHash(data.item.hash) }}
+			</nuxt-link>
+		</template>
+		<template #cell(block_number)="data">
+			<nuxt-link
+			v-b-tooltip.hover
+			:to="localePath(`/block?blockNumber=${data.item.block_number}`)"
+			:title="$t('common.block_details')"
+			>
+				#{{ formatNumber(data.item.block_number) }}
+			</nuxt-link>
+		</template>
+		<template #cell(timestamp)="data">
+			{{ fromNow(data.item.timestamp) }}
+		</template>
+		<template #cell(source)="data">
+			<span icon="avatar">
+				<Identicon
+				:key="data.item.source"
+				:address="data.item.source"
+				:size="20"
+				/>
+				<nuxt-link
+				:to="localePath(`/account/${data.item.source}`)"
+				:title="$t('pages.accounts.account_details')"
+				>
+				{{ shortAddress(data.item.source) }}
+				</nuxt-link>
+			</span>
+		</template>
+		<template #cell(destination)="data">
+			<span v-if="isValidAddressPolkadotAddress(data.item.destination)" icon="avatar">
+				<Identicon
+					:key="data.item.destination"
+					:address="data.item.destination"
+					:size="20"
+				/>
+				<nuxt-link
+					:to="localePath(`/account/${data.item.destination}`)"
+					:title="$t('pages.accounts.account_details')"
+				>
+					{{ shortAddress(data.item.destination) }}
+				</nuxt-link>
+			</span>
+			<template v-else>
+				{{ shortAddress(data.item.destination || '') }}
+			</template>
+		</template>
+		<template #cell(amount)="data">
+			<b>
+				{{ formatAmount(data.item.amount) }}
+			</b>
+			<!-- </span> -->
+			<FIATConversion
+			:units="data.item.amount"
+			:timestamp="data.item.timestamp"
+			variant="i-third-25"
+			class="mt-1"
+			/>
+		</template>
+	</table-component>
 </template>
 
 <script>
@@ -85,46 +70,61 @@ import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
 import FIATConversion from '@/components/FIATConversion.vue'
+import TableComponent from '@/components/more/TableComponent.vue'
 
 export default {
   components: {
     Identicon,
     FIATConversion,
+	TableComponent
   },
   mixins: [commonMixin],
   data() {
+
+	const THAT = this;
+	
     return {
+		options:
+		{
+			get title(){ return THAT.$t('components.whale_alert.title') },
+			get subtitle(){ return THAT.$t('components.whale_alert.description') },
+			variant: 'i-secondary',
+		},
       transfers: [],
       fields: [
         {
           key: 'hash',
-          label: this.$t('components.whale_alert.hash'),
+          get label(){ return THAT.$t('components.whale_alert.hash') },
           sortable: false,
+		  variant: 'i-fourth',
+		  class: 'important'
         },
         {
           key: 'block_number',
-          label: this.$t('components.whale_alert.block_number'),
+          get label(){ return THAT.$t('components.whale_alert.block_number') },
           sortable: false,
+		  class: 'highlighted'
         },
         {
           key: 'timestamp',
-          label: this.$t('components.whale_alert.timestamp'),
+          get label(){ return THAT.$t('components.whale_alert.timestamp') },
           sortable: false,
         },
         {
           key: 'source',
-          label: this.$t('components.whale_alert.source'),
+          get label(){ return THAT.$t('components.whale_alert.source') },
           sortable: false,
         },
         {
           key: 'destination',
-          label: this.$t('components.whale_alert.destination'),
+          get label(){ return THAT.$t('components.whale_alert.destination') },
           sortable: false,
         },
         {
           key: 'amount',
-          label: this.$t('components.whale_alert.amount'),
+          get label(){ return THAT.$t('components.whale_alert.amount') },
           sortable: false,
+		  tdClass: 'text-left'
         },
       ],
     }

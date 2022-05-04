@@ -1,28 +1,15 @@
 .badge
 {
-	&[badge="comic"]
+	position: relative;
+	padding: 0.5em;
+	font-size: 1em;
+
+	@each $color, $value in $theme-colors
 	{
-		position: relative;
-		padding: 0.5em;
-		font-size: 0.8em;
-		
-		&::after
+		&.badge-#{$color}-25
 		{
-			content: "";
-			position: absolute;
-			border: 0.4em solid transparent;
-
-			left: 100%;
-			top: 50%;
-			margin-top: -0.4em;
-		}
-
-		@each $color, $value in $theme-colors
-		{
-			&.badge-#{$color}::after
-			{
-				border-left-color: $value;
-			}
+			background-color: rgba($value, 0.25);
+			color: $value;
 		}
 	}
 }

@@ -35,13 +35,15 @@ export default {
 	components: { TableComponent },
   mixins: [commonMixin],
   data() {
+
+  	const THAT = this;
+
     return {
 		options:
 		{
-			title: this.$t('components.last_blocks.title'),
-			tooltip: this.$t('components.last_blocks.blocks_details'),
+			get title() { return THAT.$t('components.last_blocks.title') },
+			get tooltip(){ THAT.$t('components.last_blocks.blocks_details') },
 			variant: 'i-fourth',
-			// link: localePath(`/blocks`)
 			link: this.localePath(`/blocks`)
 		},
       blocks: [],
@@ -50,27 +52,27 @@ export default {
 		  variant: 'i-primary',
 		  class: 'important',
           key: 'block_number',
-          label: this.$t('components.last_blocks.block_number'),
+          get label(){ return THAT.$t('components.last_blocks.block_number') },
           sortable: false,
         },
         {
           key: 'finalized',
-          label: this.$t('components.last_blocks.status'),
+          get label(){ return THAT.$t('components.last_blocks.status') },
           sortable: false,
         },
         {
           key: 'block_hash',
-          label: this.$t('components.last_blocks.hash'),
+          get label(){ return THAT.$t('components.last_blocks.hash') },
           sortable: false,
         },
         {
           key: 'total_extrinsics',
-          label: this.$t('components.last_blocks.total_extrinsics'),
+          get label(){ return THAT.$t('components.last_blocks.total_extrinsics') },
           sortable: false,
         },
         {
           key: 'total_events',
-          label: this.$t('components.last_blocks.total_events'),
+          get label(){ return THAT.$t('components.last_blocks.total_events') },
           sortable: false,
         },
       ],

@@ -1,5 +1,75 @@
 <template>
-  <div class="selected-validators">
+  <dropdown-menu v-if="variant" :variant="variant" :value="value">
+    
+	<b-dropdown-header class="mb-3">
+		<div v-if="loading" class="text-center">
+			{{ $t('components.selected_validators.loading') }}
+		</div>
+		<div v-else-if="list.length === 0" class="text-center">
+			{{ $t('components.selected_validators.no_validators_selected') }}
+		</div>
+		<div v-else class="row align-items-center text-i-fifth">
+			<div class="col-8">{{ list.length }}/{{ config.validatorSetSize }}</div>
+			<div class="col-4 text-right">
+				<a
+				href="#"
+				class="text-i-fifth"
+				v-b-tooltip.hover
+				v-clipboard:copy="selectedAddressesText"
+				title="Copy validator addresses to clipboard"
+				@click.stop.prevent="showToast"
+				>
+					<font-awesome-icon icon="paperclip" />
+				</a>
+			</div>
+		</div>
+    </b-dropdown-header>
+
+    <b-dropdown-item
+      v-for="validator in list"
+      :key="`selected-validator-${validator.stashAddress}`"
+	  class="text-nowrap"
+    >
+		<div class="row align-items-center">
+			<div class="col-9">
+				<Identicon class="mr-2" :address="validator.stashAddress" :size="15" />
+				<nuxt-link :to="localePath(`/validator/${validator.stashAddress}`)">
+				<span v-if="validator.name">
+					{{ validator.name }}
+					<VerifiedIcon class="ml-2" />
+				</span>
+				<span v-else>
+					{{ shortAddress(validator.stashAddress) }}
+				</span>
+				</nuxt-link>
+			</div>
+			<div class="col-3 text-right text-i-fifth">
+				<a
+				v-b-tooltip.hover
+				href="#"
+				title="Remove"
+				@click.stop.prevent="remove(validator.stashAddress)"
+				>
+				<font-awesome-icon icon="times" />
+				</a>
+			</div>
+		</div>
+    </b-dropdown-item>
+
+    <b-dropdown-text v-if="list.length > 0" class="mt-3">
+		<b-button variant="danger btn-sm btn-block" @click="clean()">
+		{{ $t('components.selected_validators.clear') }}
+		<font-awesome-icon icon="trash-alt" class="ml-1" />
+		</b-button>
+		<b-button variant="i-fourth btn-sm btn-block m-0" to="/nominate">
+			{{ $t('components.selected_validators.nominate') }}
+		</b-button>
+    </b-dropdown-text>
+
+  </dropdown-menu>
+
+
+  <div v-else class="selected-validators">
     <p v-if="loading" class="mb-0 text-center">
       {{ $t('components.selected_validators.loading') }}
     </p>
@@ -73,8 +143,12 @@
 <script>
 import { config } from '@/frontend.config.js'
 import commonMixin from '@/mixins/commonMixin.js'
+import DropdownMenu from '@/components/more/DropdownMenu.vue';
+
 export default {
   mixins: [commonMixin],
+  components: { DropdownMenu },
+  props: ['variant', 'value'],
   data() {
     return {
       config,

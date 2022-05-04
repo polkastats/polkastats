@@ -14,11 +14,44 @@
 		z-index: -1;
 	}
 
-	@each $color, $value in $theme-colors
+	&.section-header
 	{
-		&[color="#{$color}"]::before
+		display: flex;
+		flex-direction: column;
+		gap: 2em;
+		padding-top: 7em;
+		padding-bottom: 0;
+
+		&::before
 		{
-			background-color: $value;
+			opacity: 50%;
+		}
+
+		&[background]::after
+		{
+			content: '';
+			background-size: cover;
+			background-position: center;
+			position: absolute;
+			top: 0;
+			left: 50%;
+			width: 100vw;
+			height: 100%;
+			transform: translate(-50%);
+			z-index: -2;
+		}
+
+		&[background="cubes"]::after
+		{
+			background-image: url('assets/images/backgrounds/cubes.png');
+		}
+	}
+
+	@each $color, $value in $theme-gradients
+	{
+		&[color=#{$color}]::before
+		{
+			background: $value;
 		}
 	}
 }
@@ -35,4 +68,4 @@
 .layout
 {
 	padding: 0;
-}	
+}

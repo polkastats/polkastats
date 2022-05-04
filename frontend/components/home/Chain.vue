@@ -58,7 +58,7 @@
 	  :value="formatAmount(totalIssuance, 0, true)"
 	  icon="chart-line"
 	   >
-	   	<FIATConversion :units="totalIssuance" :short="true" />
+	   	<FIATConversion :units="totalIssuance" :short="true" variant="i-fourthB" class="mt-1 small" />
 	   </score-item>
 
 	   <score-item
@@ -66,7 +66,7 @@
 	  :value="formatAmount(totalStaked, 0, true) + ' ' + formatNumber(totalStakedPercentage) + '%'"
 	  icon="chart-area"
 	   >
-		<FIATConversion :units="totalStaked" :short="true" />
+		<FIATConversion :units="totalStaked" :short="true" variant="i-fourthB" class="mt-1 small" />
 	   </score-item>
 
 	   <score-item

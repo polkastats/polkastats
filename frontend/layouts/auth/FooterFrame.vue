@@ -3,7 +3,7 @@
 		<article>
 			<header class="m-3">
 				<h2 social>
-					<nuxt-link class="h2" v-b-tooltip.hover to="https://github.com/Colm3na/polkastats-ng" title="View source code">
+					<nuxt-link class="h2" v-b-tooltip.hover to="https://github.com/Colm3na/polkastats-ng" :title="$t('layout.default.view_source_code_on_github')">
 						<font-awesome-icon :icon="['fab', 'github']" />
 					</nuxt-link>
 				</h2>
@@ -22,16 +22,12 @@
 		</article>
 		<address>
 			<p variant="i-fourth" class="row m-0 p-4">
-				<!-- <span v-for="info of address" :key="info.name" class="col-12 p-0 py-2"> -->
-				<!-- <span v-for="info of address" :key="info.name" class="row p-0 py-2"> -->
-				<!-- <span v-for="info of address" :key="info.name" class="col-12 p-0 py-2"> -->
 				<span v-for="info of address" :key="info.name" class="p-0 py-2">
 					<font-awesome-icon :icon="info.icon" />
 					{{ info.name }}
 				</span>
 			</p>
 			<p variant="i-primary" class="row m-0 p-4 align-items-center justify-content-center" style="flex: 1">
-				<!-- <img src="/brand/grant_badge.png" alt="Built with" height="64" class="col-sm-3 col-md-12 col-lg-12" /> -->
 				<img src="/brand/grant_badge.png" alt="Built with" height="64" />
 			</p>
 		</address>
@@ -43,18 +39,18 @@
 export default {
 	data()
 	{
-		const lang = this.$t('layout.default');
+		const THAT = this;
 
 		const menu =
 		[
-			{ name: lang.about_us, link: '/team' },
-			{ name: lang.support_polkastats, link: '/support-us' },
+			{ get name(){ return THAT.$t('layout.default.about_us') }, link: '/team' },
+			{ get name(){ return THAT.$t('layout.default.support_polkastats') }, link: '/support-us' },
 		]
 
 		const legend =
 		[
-			{ name: lang.made_by, link: '/team' },
-			{ name: lang.built_with + ' Basic Atttention Token', link: 'https://basicattentiontoken.org/', icon: 'built' },
+			{ get name(){ return THAT.$t('layout.default.made_by') }, link: '/team' },
+			{ get name(){ return THAT.$t('layout.default.built_with') + ' Basic Atttention Token' }, link: 'https://basicattentiontoken.org/', icon: 'built' },
 		]
 
 		const address =

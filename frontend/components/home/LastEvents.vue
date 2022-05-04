@@ -31,11 +31,14 @@ export default {
 	components: { TableComponent },
   mixins: [commonMixin],
   data() {
+
+	const THAT = this;
+	
     return {
 		options:
 		{
-			title: this.$t('components.last_events.title'),
-			tooltip: this.$t('components.last_events.events_details'),
+			get title(){ return THAT.$t('components.last_events.title') },
+			get tooltip(){ return THAT.$t('components.last_events.events_details') },
 			link: '/events',
 			variant: 'i-secondary',
 		},
@@ -43,13 +46,13 @@ export default {
       fields: [
         {
           key: 'block_number',
-          label: this.$t('components.last_events.id'),
+          get label(){ return THAT.$t('components.last_events.id') },
           sortable: false,
 		  class: 'highlighted'
         },
         {
           key: 'section',
-          label: this.$t('components.last_events.event'),
+          get label(){ return THAT.$t('components.last_events.event') },
           sortable: false,
 		  class: 'expanded'
         },

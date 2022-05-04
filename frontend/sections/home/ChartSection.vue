@@ -16,9 +16,11 @@ export default {
 	components: { TransfersChart },
 	data()
 	{
+		const THAT = this;
+		
 		return {
 			title: 'Balance Transfers',
-			subtitle: this.$t('components.transfers_chart.title'),
+			get subtitle(){ return THAT.$t('components.transfers_chart.title') },
 		}
 	}
 }

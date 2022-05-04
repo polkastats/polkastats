@@ -1,19 +1,22 @@
 
 <template>
   <article>
-	  <header type="block" class="my-2">
-		  <h1 class="h5 text-uppercase font-weight-bold" variant="i-fourth">{{ options.title }}</h1>
+	  <header type="block" class="my-3" variant="i-fourth">
+		  <h1 class="h5 text-uppercase font-weight-bold">{{ options.title }}</h1>
+		  <h2 v-if="options.subtitle">{{ options.subtitle }}</h2>
 	  </header>
-	  <b-table :variant="options.variant" v-if="items && items.length > 0" borderless :items="items" :fields="fields">
-		<template v-for="(_, slotName) of $scopedSlots" v-slot:[slotName]="scope">
-			<slot :name="slotName" v-bind="scope"/>
-		</template>
-	  </b-table>
+	  <div>
+		<b-table class="pretty-table" :variant="options.variant" v-if="items && items.length > 0" borderless :items="items" :fields="fields">
+			<template v-for="(_, slotName) of $scopedSlots" v-slot:[slotName]="scope">
+				<slot :name="slotName" v-bind="scope"/>
+			</template>
+		</b-table>
+	  </div>
 	  <footer v-if="items && items.length > 0">
-		  <a :href="options.link">
+		  <nuxt-link v-if="options.link" :to="options.link" :title="options.tooltip">
 			  <b>more</b>
 			  <font-awesome-icon icon="arrow-right" class="ml-1" />
-		  </a>
+		  </nuxt-link>
 	  </footer>
 	  <Loading v-else />
   </article>

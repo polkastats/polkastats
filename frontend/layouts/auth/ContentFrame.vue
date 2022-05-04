@@ -1,11 +1,4 @@
 
 <template>
-	  <Nuxt />
+	  <Nuxt class="frame container" />
 </template>
-
-<script>
-
-export default {
-  components: { }
-}
-</script>

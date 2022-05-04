@@ -14,9 +14,12 @@
 			<span :icon="selected.icon">{{ selected.name }}</span>
 			<font-awesome-icon icon="angle-down" />
 		</template>
-		<b-dropdown-item v-for="option in options" :key="option.name" :href="option.link" :icon="option.icon">
-			{{ option.name }}
-		</b-dropdown-item>
+		<template v-if="options">
+			<b-dropdown-item v-for="option in options" :key="option.name" @click="option.click" :href="option.link" :icon="option.icon">
+				{{ option.name }}
+			</b-dropdown-item>
+		</template>
+		<slot v-else />
 	</b-dropdown>
 </template>
 

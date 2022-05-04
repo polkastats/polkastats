@@ -1,5 +1,5 @@
 <template>
-	<header class="frame" :active="active" :menu="menu">
+	<header class="frame" :active="active">
 
 		<b-navbar toggleable="xl" :color="options.variant" :link="options.link" :link-hover="options.hover" fixed="top" class="section container">
 			
@@ -11,7 +11,7 @@
 					</template>
 				</b-navbar-toggle>
 
-				<b-navbar-brand href="/" left brand>
+				<b-navbar-brand :href="localePath('/')" title="PolkaStats block explorer" left brand>
 					<img src="/brand/logo.svg" alt="Brand Logo" height="24" logo>
 					<img src="/brand/text.svg" alt="Brand Text" height="24" text>
 				</b-navbar-brand>
@@ -30,14 +30,36 @@
 
 			<b-navbar-nav class="ml-auto tools">
 
-				<b-nav-text class="mx-1"><b-button size="sm">Connect</b-button></b-nav-text>
-				<b-nav-text class="mx-1"><b-button size="sm">0 / 24 Selected</b-button></b-nav-text>
+				<b-nav-text class="mx-1">
+					<b-button variant="danger" size="sm" v-b-modal.wallet-modal>
+						<template v-if="selectedAddress">
+							<Identicon :address="selectedAddress" :size="15" />
+							{{ shortAddress(selectedAddress) }}
+						</template>
+						<template v-else>{{ $t('components.header.connect') }}</template>
+					</b-button>
+				</b-nav-text>
+				<b-nav-text class="mx-1">
+					<SelectedValidators variant="i-primary" :value="{ get name(){ return selected() } }" />
+				</b-nav-text>
 				<b-nav-text class="mx-1"><dropdown-menu variant="i-primary" :options="networks" /></b-nav-text>
-				<b-nav-text class="mx-1"><dropdown-menu variant="i-fourthB" :options="langs" :value="langs[1]" /></b-nav-text>
+				<b-nav-text class="mx-1">
+					<Languages variant="i-fourthB" />
+				</b-nav-text>
 
 			</b-navbar-nav>
+			
 		</b-collapse>
 		</b-navbar>
+
+		<b-modal id="wallet-modal" size="lg" hide-header hide-footer>
+			<template #default="{ hide }">
+			<WalletSelector @close="hide()" />
+			<p class="text-right mb-0">
+				<b-button class="btn-sm" @click="hide()">Close</b-button>
+			</p>
+			</template>
+		</b-modal>
 
 	</header>
 </template>
@@ -45,15 +67,28 @@
 <script>
 import DropdownMenu from '@/components/more/DropdownMenu.vue';
 import { config } from '@/frontend.config.js';
+import SelectedValidators from '@/components/staking/SelectedValidators.vue'
+import Languages from '@/components/Languages.vue'
+import WalletSelector from '@/components/WalletSelector.vue'
+import Identicon from '@/components/Identicon.vue'
 
 export default {
-	components: { DropdownMenu },
+	components: { DropdownMenu, SelectedValidators, Identicon, Languages, WalletSelector },
 	computed: {
+		loading() {
+			return this.$store.state.ranking.loading
+		},
 		USDConversion() {
-		return parseFloat(this.$store.state.fiat.usd).toFixed(3)
+			return parseFloat(this.$store.state.fiat.usd).toFixed(3)
 		},
 		USD24hChange() {
-		return parseFloat(this.$store.state.fiat.usd_24h_change).toFixed(2)
+			return parseFloat(this.$store.state.fiat.usd_24h_change).toFixed(2)
+		},
+		selectedValidatorAddresses() {
+			return this.$store.state.ranking.selectedAddresses
+		},
+		selectedAddress() {
+			return this.$store.state.ranking.selectedAddress
 		},
 	},
 	created() {
@@ -68,17 +103,17 @@ export default {
 	props: ['options'],
 	data()
 	{
-		const lang = this.$t('layout.default');
+		const THAT = this;
 
 		const links =
 		[
 			{
-				name: lang.validator,
-				link: '/polkastats-validator'
+				get name(){ return THAT.$t('layout.default.accounts') },
+				link: this.localePath('/accounts')
 			},
 			{
-				name: lang.how_to_stake,
-				link: '/how-to-stake'
+				get name(){ return THAT.$t('layout.default.transfers') },
+				link: this.localePath('/transfers')
 			},
 			{
 				name: 'Staking',
@@ -86,12 +121,20 @@ export default {
 				options: 
 				[ 
 					{ 
-						name: lang.staking_dashboard, 
-						link: '/staking-dashboard' 
+						get name(){ return THAT.$t('layout.default.staking_dashboard') }, 
+						link: this.localePath('/staking/dashboard') 
 					},
 					{
-						name: lang.validators, 
-						link: '/validators' 
+						get name(){ return THAT.$t('layout.default.validators') }, 
+						link: this.localePath('/staking/validators')
+					},
+					{
+						get name(){ return THAT.$t('layout.default.validator') }, 
+						link: this.localePath('/staking/polkastats-validator')
+					},
+					{
+						get name(){ return THAT.$t('layout.default.how_to_stake') },
+						link: this.localePath('/staking/how-to-stake')
 					}
 				],
 			},
@@ -101,28 +144,19 @@ export default {
 				options:
 				[
 					{
-						id: lang.blocks,
-						name: lang.blocks,
-						link: '/blocks',
+						get name(){ return THAT.$t('layout.default.blocks') },
+						link: this.localePath('/blocks'),
 					},
 					{
-						name: lang.transfers,
-						link: '/transfers',
+						get name(){ return THAT.$t('layout.default.extrinsics') },
+						link: this.localePath('/extrinsics'),
 					},
 					{
-						name: lang.extrinsics,
-						link: '/extrinsics',
-					},
-					{
-						name: lang.events,
-						link: '/events',
+						get name(){ return THAT.$t('layout.default.events') },
+						link: this.localePath('/events'),
 					},
 				],
 			},
-			{
-				name: lang.accounts,
-				link: '/accounts'
-			}
 		]
 
 		const networks =
@@ -139,13 +173,7 @@ export default {
 			},
 		]
 
-		const langs =
-		[
-			{ name: 'EN', link: '/' },
-			{ name: 'ES', link: '/es' },
-		]
-
-		return { config, active: false, menu: false, langs: langs, links: links, networks: networks };
+		return { config, active: false, links: links, networks: networks };
 	},
 	mounted()
 	{
@@ -157,9 +185,14 @@ export default {
 		{
 			this.active = window.scrollY > 60;
 		},
-		toggleMenu()
+		selected()
 		{
-			this.menu = !this.menu;
+			let selected = this.$t('components.header.selected');
+
+			if(!this.loading)
+				selected = this.selectedValidatorAddresses.length + '/' + this.config.validatorSetSize + ' ' + selected;
+
+			return selected;
 		}
 	}
 }

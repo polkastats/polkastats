@@ -1,6 +1,8 @@
 <template>
-	<main class="frame container">
-		<score-section />
+	<main>
+		<header-component>
+			<score-section />
+		</header-component>
 		<chart-section />
 		<table-section />
 	</main>
@@ -51,6 +53,7 @@ import { config } from '@/frontend.config.js'
 import ChartSection from '../sections/home/ChartSection.vue'
 import ScoreSection from '../sections/home/ScoreSection.vue'
 import TableSection from '../sections/home/TableSection.vue'
+import HeaderComponent from '@/components/more/HeaderComponent.vue'
 
 export default {
   components: {
@@ -64,7 +67,7 @@ export default {
     // Search,
     // Top10Rich,
 	// WhaleAlert, 
-	ScoreSection, ChartSection, TableSection
+	ScoreSection, ChartSection, TableSection, HeaderComponent
   },
   	layout: 'AuthLayout',
   data: () => {

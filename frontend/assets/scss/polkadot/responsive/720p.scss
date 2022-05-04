@@ -23,10 +23,11 @@
 
 			&::before
 			{
-				opacity: 1 !important;
+				opacity: 1 !important; // FIX: Remove important
 			}
 		}
 
+		// FIX: Remove
 		.btn
 		{
 			font-size: 1em !important;
@@ -39,54 +40,41 @@
 		max-width: 100%;
 		padding: 0;
 
-		> section
+		> .section
 		{
 			padding: 1.8em 2em;
 		}
 
-		> section.scores
+		.section-header
 		{
-
 			padding: 0;
 			gap: 0;
-			
-			> article::before,
-			> article::after
-			{
-				border-radius: 0;
-			}
 		}
 
-		> section.tables
+		.section.tables
 		{
 			article
 			{
-				min-width: 100%;
-				overflow: auto;
+				> div
+				{
+					overflow: auto;
+				}
 			}
 		}
-
 	}
 
 	footer.frame
 	{
-		flex-wrap: wrap;
-
 		> article
 		{
 			position: unset;
 			transform: none;
 		}
 
-		> address
+		address
 		{
 			float: none;
 			flex-direction: row;
-
-			> [color="primary"]
-			{
-				flex: 1;
-			}
 		}
 	}
 }

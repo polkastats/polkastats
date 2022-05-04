@@ -1,0 +1,98 @@
+table.pretty-table
+{
+	border-collapse:separate; 
+	border-spacing: 0 1em;
+	white-space: nowrap;
+	margin: 0;
+
+	thead
+	{
+		text-transform: uppercase;
+		font-weight: 700;
+	}
+
+	tbody
+	{
+		font-size: 1.2em;
+	}
+
+	td,
+	th
+	{
+		vertical-align: middle;
+		padding: 0.6em 1.2em;
+
+		&.important
+		{
+			transform: translateX(-0.8em);
+			transform-origin: right;
+		}
+
+		&.expanded
+		{
+			width: 100%;
+			text-align: left;
+		}
+
+		&.highlighted
+		{
+			font-weight: 900;
+		}
+	}
+
+	th
+	{
+		&.important
+		{
+			font-weight: 900;
+			font-size: 1.2em;
+		}
+
+		&.highlighted
+		{
+			font-size: 1.2em;
+		}
+	}
+
+	td
+	{
+		&.important
+		{
+			transition: 0.3s linear;
+
+			&:hover
+			{
+				cursor: pointer;
+				transform: scale(1.2);
+
+				a:hover
+				{
+					color: inherit;
+				}
+			}
+		}
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[variant="#{$color}"]
+		{
+			td
+			{
+				background-color: rgba($value, 0.1);
+			}
+		}
+
+		th.important.table-#{$color}
+		{
+			color: $value;
+			background-color: transparent;
+		}
+
+		td.important.table-#{$color}
+		{
+			background-color: $value;
+			color: $i-fifth;
+		}
+	}
+}

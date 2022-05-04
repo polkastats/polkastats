@@ -2,39 +2,42 @@
 	<table-component :items="transfers" :fields="fields" :options="options">
 
 		<template #cell(hash)="data">
-            <nuxt-link :to="`/transfer/${data.item.hash}`" v-b-tooltip.hover class="tag">
+            <nuxt-link :to="`/transfer/${data.item.hash}`" v-b-tooltip.hover class="fa-bounce tag">
               {{ shortHash(data.item.hash) }}
             </nuxt-link>
         </template>
         <template #cell(source)="data">
-            <nuxt-link
-              :to="localePath(`/account/${data.item.source}`)"
-              :title="$t('pages.accounts.account_details')"
-			  icon="avatar"
-            >
+			<span icon="avatar">
 				<Identicon
-				:key="data.item.source"
-				:address="data.item.source"
-				/>
-              	{{ shortAddress(data.item.source) }}
-            </nuxt-link>
+					:key="data.item.source"
+					:address="data.item.source"
+					/>
+				<nuxt-link
+				:to="localePath(`/account/${data.item.source}`)"
+				:title="$t('pages.accounts.account_details')"
+				>
+					{{ shortAddress(data.item.source) }}
+				</nuxt-link>
+			</span>
         </template>
         <template #cell(destination)="data">
-          <span v-if="isValidAddressPolkadotAddress(data.item.destination)" icon="avatar">
-              <nuxt-link
-                :to="localePath(`/account/${data.item.destination}`)"
-                :title="$t('pages.accounts.account_details')"
-              >
+          <template v-if="isValidAddressPolkadotAddress(data.item.destination)">
+			  <span icon="avatar">
 				<Identicon
 					:key="data.item.destination"
 					:address="data.item.destination"
 				/>
-                {{ shortAddress(data.item.destination) }}
-              </nuxt-link>
-          </span>
-          <span v-else>
+				<nuxt-link
+					:to="localePath(`/account/${data.item.destination}`)"
+					:title="$t('pages.accounts.account_details')"
+				>
+					{{ shortAddress(data.item.destination) }}
+				</nuxt-link>
+			  </span>
+          </template>
+          <template v-else>
               {{ shortAddress(data.item.destination || '') }}
-          </span>
+          </template>
         </template>
         <template #cell(amount)="data">
             {{ formatAmount(data.item.amount) }}
@@ -54,11 +57,14 @@ export default {
   },
   mixins: [commonMixin],
   data() {
+
+	const THAT = this;
+	
     return {
 		options:
 		{
-			title: this.$t('components.last_transfers.title'),
-			tooltip: this.$t('components.last_transfers.transfers_details'),
+			get title(){ return THAT.$t('components.last_transfers.title') },
+			get tooltip(){ return THAT.$t('components.last_transfers.transfers_details') },
 			link: '/transfers',
 			variant: 'i-fourth',
 		},
@@ -66,24 +72,24 @@ export default {
       fields: [
         {
           key: 'hash',
-          label: this.$t('components.last_transfers.hash'),
+          get label(){ return THAT.$t('components.last_transfers.hash') },
           sortable: false,
 		  variant: 'i-fourth',
 		  class: 'important'
         },
         {
           key: 'source',
-          label: this.$t('components.last_transfers.source'),
+          get label(){ return THAT.$t('components.last_transfers.source') },
           sortable: false,
         },
         {
           key: 'destination',
-          label: this.$t('components.last_transfers.destination'),
+          get label(){ return THAT.$t('components.last_transfers.destination') },
           sortable: false,
         },
         {
           key: 'amount',
-          label: this.$t('components.last_transfers.amount'),
+          get label(){ return THAT.$t('components.last_transfers.amount') },
           sortable: false,
         },
       ],

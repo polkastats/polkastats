@@ -3,6 +3,7 @@
 	background-color: transparent;
 	font-size: 1em;
 	padding: 1.5em 1em;
+	border-radius: 0;
 	
 	@each $color, $value in $theme-colors
 	{

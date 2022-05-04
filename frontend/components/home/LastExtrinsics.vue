@@ -36,11 +36,14 @@ export default {
 	components: { TableComponent },
   mixins: [commonMixin],
   data() {
+
+	const THAT = this;
+
     return {
 		options:
 		{
-			title: this.$t('components.last_extrinsics.title'),
-			tooltip: this.$t('components.last_extrinsics.extrinsics_details'),
+			get title(){ return THAT.$t('components.last_extrinsics.title') },
+			get tooltip(){ return THAT.$t('components.last_extrinsics.extrinsics_details') },
 			link: '/extrinsics',
 			variant: 'i-secondary',
 		},
@@ -48,18 +51,18 @@ export default {
       fields: [
         {
           key: 'block_number',
-          label: this.$t('components.last_extrinsics.id'),
+          get label(){ return THAT.$t('components.last_extrinsics.id') },
           sortable: false,
 		  class: 'highlighted'
         },
         {
           key: 'hash',
-          label: this.$t('components.last_extrinsics.hash'),
+          get label(){ return THAT.$t('components.last_extrinsics.hash') },
           sortable: false,
         },
         {
           key: 'section',
-          label: this.$t('components.last_extrinsics.extrinsic'),
+          get label(){ return THAT.$t('components.last_extrinsics.extrinsic') },
           sortable: false,
 		  class:'expanded',
         },

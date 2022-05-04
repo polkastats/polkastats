@@ -1,0 +1,36 @@
+.blurred
+{
+	position: relative;
+
+	&::before,
+	&::after
+	{
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: -1;
+		width: 100%;
+		height: 100%;
+		opacity: 25%;
+		backface-visibility: hidden;
+	}
+
+	&::before
+	{
+		filter: blur(2.5em);
+		opacity: 40%;
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[variant="#{$color}"]
+		{
+			&::before,
+			&::after
+			{
+				background-color: $value;
+			}
+		}
+	}
+}

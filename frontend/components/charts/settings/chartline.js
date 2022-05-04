@@ -5,7 +5,6 @@ export class ChartLineOptions
 	constructor(x, y)
 	{
 		this.setAxes(x, y);
-		console.log("THEME", THEME);
 	}
 
 	setLabels(labels)

@@ -63,6 +63,14 @@ header.frame
 		justify-content: center;
 	}
 
+	.b-dropdown
+	{
+		a
+		{
+			color: inherit;
+		}
+	}
+
 	.navbar-collapse.show
 	{
 		.navbar-nav
@@ -76,20 +84,13 @@ header.frame
 			margin-top: 0;
 		}
 
-		.b-dropdown .dropdown-menu
+		.b-dropdown
 		{
-			position: absolute;
-			bottom: 100%;
-			top: unset;
-			margin-top: 0;
-			margin-bottom: 1.2em;
+			flex-direction: column;
 
-			&::before
+			.dropdown-menu
 			{
-				border-top-color: inherit;
-				border-bottom-color: transparent;
-				top: 100%;
-				bottom: inherit;
+				position: relative;
 			}
 		}
 

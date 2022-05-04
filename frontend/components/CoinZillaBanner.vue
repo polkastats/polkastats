@@ -1,9 +1,11 @@
 <template>
-  <div
-    v-if="config.coinZillaZone"
-    class="coinzilla"
-    :data-zone="`C-${config.coinZillaZone}`"
-  ></div>
+	<section>
+		<div
+			v-if="config.coinZillaZone"
+			class="coinzilla"
+			:data-zone="`C-${config.coinZillaZone}`"
+		></div>
+	</section>
 </template>
 
 <script>

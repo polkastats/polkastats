@@ -1,13 +1,11 @@
 <template>
-  <div class="mt-1 small">
+  <div v-if="variant">
     <template v-if="!timestamp || sameDay">
       <span
         v-b-tooltip.hover
         :title="$t('components.fiat_conversion.current_value')"
       >
-		<b class="badge badge-i-fourthB mr-1 rounded-0" badge="comic">
-			<font-awesome-icon icon="dollar-sign" class="text-i-fifth" />
-		</b>
+		<b-badge class="rounded-0 mr-1" :variant="variant">FIAT</b-badge>
         {{ formatNumber(FIATValue.toFixed(2)) }}
       </span>
     </template>
@@ -17,9 +15,7 @@
         v-b-tooltip.hover
         :title="$t('components.fiat_conversion.historic_value')"
       >
-		<b class="badge badge-i-fourthB mr-1 rounded-0" badge="comic">
-			<font-awesome-icon icon="dollar-sign" class="text-i-fifth" />
-		</b>
+		<b-badge class="mr-1 rounded-0" :variant="variant">FIAT</b-badge>
         {{ formatNumber(historicalFIATValue.toFixed(2)) }}
       </span>
       <span
@@ -27,16 +23,14 @@
         v-b-tooltip.hover
         :title="$t('components.fiat_conversion.current_value')"
       >
-		<b class="badge badge-i-fourthB mr-1 rounded-0" badge="comic">
-			<font-awesome-icon icon="dollar-sign" class="text-i-fifth" />
-		</b>
+		<b-badge class="mr-1 rounded-0" :variant="variant">FIAT</b-badge>
         {{ formatNumber(FIATValue.toFixed(2)) }}
       </span>
     </template>
   </div>
 
   
-  <!-- <div class="d-inline-block">
+  <div v-else class="d-inline-block">
     <div v-if="!timestamp || sameDay">
       <span
         v-if="short"
@@ -75,7 +69,7 @@
         (${{ formatNumber(FIATValue.toFixed(2)) }})
       </div>
     </div>
-  </div> -->
+  </div>
 </template>
 <script>
 import axios from 'axios'
@@ -98,6 +92,9 @@ export default {
     short: {
       type: Boolean,
       default: false,
+    },
+    variant: {
+      type: String
     },
   },
   data() {
