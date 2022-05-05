@@ -1,0 +1,84 @@
+nav
+{
+	.btn
+	{
+		font-size: 0.8em;
+		padding: 0.75em 1.25em;
+	}
+	
+	.b-nav-dropdown,
+	.b-dropdown
+	{
+		.dropdown-toggle::after
+		{
+			display: none;
+		}
+		
+		.dropdown-menu
+		{
+			font-size: 1em;
+			color: $i-fifth;
+			border-radius: 0;
+			text-transform: none;
+			margin-top: 1.2em;
+	
+			// TODO: Move to inherit effect
+			&::before
+			{
+				content: "";
+				position: absolute;
+				bottom: 100%;
+				left: 1.2em;
+	
+				border: 0.8em solid transparent;
+				border-width: 1em 0.6em;
+				border-bottom-color: inherit;
+			}
+	
+			.dropdown-item
+			{
+				background-color: transparent;
+				padding: 1.2em 2em;
+				opacity: 0.6;
+				color: inherit;
+	
+				&:hover
+				{
+					opacity: 1;
+				}
+			}
+		}
+	}
+	
+	/* Variants */
+	@each $color, $value in $theme-colors
+	{
+		&[link=#{$color}]
+		{
+			a.nav-link
+			{
+				color: $value;
+			}
+		}
+	
+		&[link-hover=#{$color}]
+		{
+			a.nav-link:hover,
+			a.nav-link:focus,
+			.show a.nav-link
+			{
+				color: $value;
+			}
+		}
+	
+		.b-nav-dropdown[variant=#{$color}],
+		.b-dropdown[variants=#{$color}]
+		{
+			.dropdown-menu
+			{
+				background-color: $value;
+				border-color: $value;
+			}
+		}
+	}
+}

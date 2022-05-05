@@ -1,0 +1,66 @@
+[icon]
+{
+	font-style: normal;
+	font-size: 1em;
+	position: relative;
+	display: inline-block;
+
+	&::after,
+	&::before
+	{
+		font-family: $i-font-icon;
+		font-weight: bold;
+		display: inline;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+	}
+}
+
+/* Apps */
+
+[icon="kusama"]::before,
+[icon="polkadot"]::before
+{
+	content: '';
+	display: inline-block;
+	background-size: 1.6em;
+	width: 1.3em;
+	height: 0.8em;
+}
+
+[icon="polkadot"]::before
+{
+	content: '';
+	height: 1em;
+}
+
+[icon="polkadot"]:not([color])::before
+{
+	content: '';
+	background-image: url(assets/images/icons/polkadot.svg);
+}
+
+[icon="kusama"]:not([color])::before
+{
+	content: '';
+	background-image: url(assets/images/icons/kusama-ksm-logo.svg);
+}
+
+[icon="kusama"][color="secondary"]::before
+{
+	content: '';
+	background-image: url(assets/images/icons/kusama-ksm-logo-secondary.svg);
+}
+
+/* End Apps */
+
+[icon="avatar"]
+{
+	height: 1em;
+}
+
+[icon="grant"]
+{
+	height: 6.4em;
+}

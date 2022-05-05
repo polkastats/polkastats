@@ -1,0 +1,8 @@
+// TODO: Move to not load on export variables
+@import "/assets/fonts/font-awesome.scss";
+@import "/assets/fonts/roboto.scss";
+
+$i-font-primary: 'Segoe UI' !default;
+$i-font-secondary: 'Roboto' !default;
+$i-font-secondary-mono: 'Roboto Mono', monospace !default;
+$i-font-icon: 'Font Awesome 5 Free', 'Font Awesome 5 Brands' !default;

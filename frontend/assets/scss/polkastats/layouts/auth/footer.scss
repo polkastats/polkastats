@@ -1,0 +1,40 @@
+footer.frame
+{
+	.footer-menu 
+	{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+		[brand]
+		{
+			font-size: 4em;
+		}
+
+		[social]
+		{
+			font-size: 1.2em;
+		}
+
+		nav
+		{
+			li
+			{
+				text-transform: none;
+				font-size: 1em;
+			}
+		}
+	}
+
+	address
+	{
+		@each $color, $value in $theme-colors
+		{
+			.address-item[variant=#{$color}]
+			{
+				background-color: $value;
+			}
+		}
+	}
+}

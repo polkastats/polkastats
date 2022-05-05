@@ -1,0 +1,33 @@
+header[type="block"]
+{
+	h1
+	{
+		// FIX: Move to effects
+		&::before,
+		&::after
+		{
+			content: '';
+			margin: 0 0.8em;
+			margin-top: -0.2em;
+			width: 1.8em;
+			height: 0.2em;
+			border-radius: 0.2em;
+			display: inline-block;
+			vertical-align: middle;
+		}
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[variant="#{$color}"]
+		{
+			color: $value;
+
+			h1::before,
+			h1::after
+			{
+				background-color: $value;
+			}
+		}
+	}
+}

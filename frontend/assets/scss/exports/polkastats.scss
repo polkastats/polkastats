@@ -1,0 +1,17 @@
+// @import '../polkastats/themes/blue.scss';
+@import '../polkastats/themes/original.scss';
+
+:export
+{
+	colorPrimary: $i-primary;
+	colorSecondary: $i-secondary;
+	colorThird: $i-third;
+	colorFourth: $i-fourth;
+	colorFourthB: $i-fourthB;
+	colorFifth: $i-fifth;
+
+	fontPrimary: $i-font-primary;
+	fontSecondary: $i-font-secondary;
+	fontSecondaryMono: $i-font-secondary-mono;
+	fontIcon: $i-font-icon;
+}

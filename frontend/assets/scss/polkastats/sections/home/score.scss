@@ -1,0 +1,24 @@
+.section
+{
+	.scores
+	{
+		.score-wrap
+		{
+			gap: 3em 0;
+		}
+
+		.score-item
+		{
+			em
+			{
+				font-weight: normal;
+				font-style: normal;
+			}
+		
+			strong
+			{
+				font-weight: 500;
+			}
+		}
+	}
+}

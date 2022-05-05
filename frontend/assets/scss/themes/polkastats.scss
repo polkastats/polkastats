@@ -54,24 +54,6 @@ $theme-colors: map-merge(
   $theme-colors
 );
 
-/* Theme Config */
-
-@import '../polkadot/variables/all.scss';
-
-$theme-colors: map-merge(
-(
-	'i-primary': $i-primary,
-	'i-secondary': $i-secondary,
-	'i-third': $i-third,
-	'i-fourth': $i-fourth,
-	'i-fourthB': $i-fourthB,
-	'i-fifth': $i-fifth,
-),
-$theme-colors);
-
-/* Theme Config */
-
-
 // bootstrap variable overrides
 $link-color: $primary2 !default;
 $border-radius: 0.4rem !default;
@@ -101,9 +83,16 @@ $table-accent-bg: #c2d7ec2b !default;
 $custom-range-thumb-bg: $primary2;
 $custom-range-thumb-active-bg: $primary2;
 
+/* Thememing */
+// @import '../polkastats/themes/blue.scss';
+@import '../polkastats/themes/original.scss';
+
 // import bootstrap scss
 @import 'bootstrap/scss/bootstrap.scss';
 @import 'bootstrap-vue/src/index.scss';
+
+/* Design */
+@import '../polkastats/original.scss';
 
 // global styles
 @font-face {
@@ -794,5 +783,3 @@ section .section-title {
 .fiat-conversion-short:hover .fa-dollar-sign {
   color: white;
 }
-
-@import '../Polkadot.scss';

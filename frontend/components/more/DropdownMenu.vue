@@ -5,7 +5,7 @@
 			<span :icon="selected.icon">{{ selected.name }}</span>
 			<font-awesome-icon icon="angle-down" />
 		</template>
-		<b-dropdown-item v-for="option in options" :key="option.name" :href="option.link">
+		<b-dropdown-item v-for="option in options" :key="option.name" :to="option.link">
 			{{ option.name }}
 		</b-dropdown-item>
 	</b-nav-item-dropdown>
@@ -15,7 +15,7 @@
 			<font-awesome-icon icon="angle-down" />
 		</template>
 		<template v-if="options">
-			<b-dropdown-item v-for="option in options" :key="option.name" @click="option.click" :href="option.link" :icon="option.icon">
+			<b-dropdown-item v-for="option in options" :key="option.name" @click="option.click" :to="option.link" :icon="option.icon">
 				{{ option.name }}
 			</b-dropdown-item>
 		</template>

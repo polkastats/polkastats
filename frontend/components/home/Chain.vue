@@ -1,5 +1,5 @@
 <template>
-  <div v-if="lastBlock" class="row">
+  <div v-if="lastBlock" class="score-wrap row">
 	  <score-item
 	  :title="$t('components.chain.last_block')"
 	  :link="localePath(`/block?blockNumber=${lastBlock}`)"

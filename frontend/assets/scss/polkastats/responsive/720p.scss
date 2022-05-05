@@ -1,0 +1,68 @@
+@media only screen and (max-width: 720px)
+{
+	.container
+	{
+		max-width: 100%;
+	}
+
+	header.frame
+	{
+		position: sticky;
+		z-index: 10;
+		top: 0;
+
+		.navbar 
+		{
+			position: relative;
+
+			&::before
+			{
+				opacity: 1 !important; // FIX: Remove important
+			}
+		}
+		
+		.crypto-price::before
+		{
+			opacity: 0;
+		}
+	}
+
+	main.frame
+	{
+		padding: 0;
+
+		.section
+		{
+			padding: 1.8em 2em;
+		}
+
+		.section-header
+		{
+			padding: 0;
+			gap: 0;
+		}
+
+		/* Sections */
+		.section.tables
+		{
+			.table-wrap
+			{
+				overflow: auto;
+			}
+		}
+	}
+
+	footer.frame
+	{
+		.footer-menu
+		{
+			position: unset;
+			transform: none;
+		}
+
+		address
+		{
+			float: none !important;  // FIX: Remove Important
+		}
+	}
+}

@@ -15,8 +15,8 @@
         </template>
         <template #cell(section)="data">
 			<div class="timeline" variant="i-primary">
-				<span>{{ data.item.section }}</span>
-				<span>{{ data.item.method }}</span>
+				<span class="timeline-item">{{ data.item.section }}</span>
+				<span class="timeline-item">{{ data.item.method }}</span>
 			</div>
         </template>
 	</table-component>

@@ -1,4 +1,4 @@
-import THEME from 'assets/scss/PolkadotExporter.scss'; 
+import THEME from 'assets/scss/exports/polkastats.scss'; 
 
 export class ChartLineOptions
 {

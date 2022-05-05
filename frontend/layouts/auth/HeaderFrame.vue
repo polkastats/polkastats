@@ -1,34 +1,34 @@
 <template>
-	<header class="frame" :active="active">
+	<header class="frame" :active="status || active">
 
-		<b-navbar toggleable="xl" :color="options.variant" :link="options.link" :link-hover="options.hover" fixed="top" class="section container">
+		<b-navbar toggleable="xl" :color="variant" :link="link" :link-hover="hover" fixed="top" class="section container">
 			
 			<b-navbar-nav class="navbar-visible">
-				<b-navbar-toggle target="nav-collapse" :class="['text-' + options.link, 'bg-' + options.variant, 'mr-2']">
+				<b-navbar-toggle target="nav-collapse" :class="['text-' + link, 'bg-' + variant, 'mr-2', 'rounded-0', 'align-self-stretch']">
 					<template #default="{ expanded }">
 						<font-awesome-icon v-if="expanded" icon="times"></font-awesome-icon>
 						<font-awesome-icon v-else icon="bars"></font-awesome-icon>
 					</template>
 				</b-navbar-toggle>
 
-				<b-navbar-brand :href="localePath('/')" title="PolkaStats block explorer" left brand>
+				<b-navbar-brand :to="localePath('/')" title="PolkaStats block explorer" left brand>
 					<img src="/brand/logo.svg" alt="Brand Logo" height="24" logo>
 					<img src="/brand/text.svg" alt="Brand Text" height="24" text>
 				</b-navbar-brand>
-				<b-nav-item :href="`https://www.coingecko.com/en/coins/${config.coinGeckoDenom}`" :link-attrs="{ icon: 'kusama', color: 'secondary' }" class="ml-auto">
+				<b-nav-item :href="`https://www.coingecko.com/en/coins/${config.coinGeckoDenom}`" target="_blank" :link-attrs="{ icon: 'kusama', color: 'secondary' }" class="crypto-price ml-auto text-nowrap">
 					{{ config.tokenSymbol }} ${{ USDConversion }} ({{ USD24hChange }}%)
 				</b-nav-item>
 			</b-navbar-nav>
 
-		<b-collapse class="sub-section" id="nav-collapse" is-nav :color="options.variant">
+		<b-collapse class="sub-section" id="nav-collapse" is-nav :color="variant">
 			<b-navbar-nav>
 				<template v-for="item of links">
 					<dropdown-menu :variant="item.variant" :key="item.name" :link="true" v-if="item.options" :options="item.options" :value="{ name: item.name }" />
-					<b-nav-item :key="item.name" v-else :href="item.link">{{ item.name }}</b-nav-item>
+					<b-nav-item :key="item.name" v-else :to="item.link">{{ item.name }}</b-nav-item>
 				</template>
 			</b-navbar-nav>
 
-			<b-navbar-nav class="ml-auto tools">
+			<b-navbar-nav class="menu-tools ml-auto flex-wrap flex-row justify-content-center">
 
 				<b-nav-text class="mx-1">
 					<b-button variant="danger" size="sm" v-b-modal.wallet-modal>
@@ -100,7 +100,13 @@ export default {
 		}, 60000)
 		}
 	},
-	props: ['options'],
+	props:
+	{
+		status: { type: Boolean },
+		variant: { type: String, default: 'i-fourth' },
+		link: { type: String, default: 'i-fifth' },
+		hover: { type: String, default: 'i-fifth' },
+	},
 	data()
 	{
 		const THAT = this;
@@ -117,7 +123,7 @@ export default {
 			},
 			{
 				name: 'Staking',
-				variant: this.options.variant,
+				variant: this.variant,
 				options: 
 				[ 
 					{ 
@@ -140,7 +146,7 @@ export default {
 			},
 			{
 				name: 'Blockchain',
-				variant: this.options.variant,
+				variant: this.variant,
 				options:
 				[
 					{

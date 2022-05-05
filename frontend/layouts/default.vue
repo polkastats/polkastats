@@ -1,8 +1,15 @@
 <template>
   <div>
-    <Header />
+	<div class="pkd" layout="auth" temporal>
+		<header-frame :status="true" />
+		<CoinZillaBanner class="ad-banner" />
+	</div>
+    <!-- <Header /> -->
     <Nuxt />
     <Footer />
+	<!-- <div class="pkd" layout="auth" temporal>
+		<footer-frame :status="true" />
+	</div> -->
   </div>
 </template>
 
@@ -11,15 +18,22 @@ import { ApiPromise, WsProvider } from '@polkadot/api'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import { config } from '@/frontend.config.js'
+import HeaderFrame from './auth/HeaderFrame.vue'
+import FooterFrame from './auth/FooterFrame.vue'
+import CoinZillaBanner from '@/components/CoinZillaBanner.vue'
+
 export default {
   components: {
     Header,
     Footer,
+	HeaderFrame,
+	FooterFrame,
+	CoinZillaBanner
   },
   data() {
     return {
       toggled: false,
-      polling: null,
+      polling: null
     }
   },
   computed: {

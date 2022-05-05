@@ -1,0 +1,142 @@
+header.frame
+{
+	.navbar
+	{
+		position: fixed;
+
+		.navbar-visible
+		{
+			flex-direction: row;
+			flex: 1;
+		}
+
+		.navbar-nav
+		{
+			align-items: center;
+
+			&:not(.menu-tools)
+			{
+				gap: 2em;
+			}
+
+			.nav-item
+			{
+				font-size: 1em;
+
+				.nav-link
+				{
+					font-weight: normal;
+					opacity: 0.75;
+
+					&:hover
+					{
+						opacity: 1;
+					}
+				}
+			}
+		}
+	}
+
+	/* Inactive Menu */
+	&:not([active])
+	{
+		.navbar.section::before
+		{
+			opacity: 0;
+		}
+	}
+
+	/* Active Menu */
+	&[active]
+	{
+		.crypto-price::before
+		{
+			opacity: 0;
+		}
+	}
+
+	/* Colapsed Menu */
+	.navbar-collapse
+	{
+		&:not(.show)
+		{
+			background-color: transparent;
+		}
+
+		&.show
+		{
+			padding: 1em 2em;
+	
+			.navbar-nav
+			{
+				gap: 0;
+				align-items: flex-start;
+			}
+	
+			.b-nav-dropdown .dropdown-menu
+			{
+				margin-top: 0;
+			}
+	
+			.b-dropdown
+			{
+				flex-direction: column;
+	
+				.dropdown-menu
+				{
+					position: relative;
+				}
+			}
+	
+			.menu-tools
+			{
+				margin-top: 4em
+			}
+		}
+	}
+	
+	/* Elements */
+	[brand]
+	{
+		font-size: 3em;
+	}
+
+	.b-dropdown
+	{
+		a
+		{
+			color: inherit;
+		}
+	}
+
+	.crypto-price
+	{
+		position: relative;
+		font-family: $i-font-secondary-mono;
+		font-weight: 400;
+
+		&::before
+		{
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: $i-fifth;
+			opacity: 15%;
+			filter: blur(1em) saturate(200%);
+		}
+
+		a
+		{
+			opacity: 1;
+		}
+	}
+
+	[icon]::before
+	{
+		margin-right: 0.5em;
+	}
+
+}

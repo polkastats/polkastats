@@ -1,0 +1,27 @@
+&[layout="auth"]
+{
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: 100vh;
+
+	font-family: $i-font-primary;
+	color: $i-fourth;
+	font-size: 10px;
+
+	// FIX: Eliminar
+	&[temporal]
+	{
+		min-height: auto;
+
+		header.frame
+		{
+			min-height: 6em;
+		}
+	}
+
+	@import './auth/header.scss';
+	@import './auth/content.scss';
+	@import './auth/footer.scss';
+
+}

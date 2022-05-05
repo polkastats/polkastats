@@ -1,34 +1,34 @@
 <template>
-	<footer class="frame section" color="i-fourth">
-		<article>
+	<footer class="frame section text-center text-i-fifth" color="i-fourth">
+		<article class="footer-menu p-3">
 			<header class="m-3">
-				<h2 social>
-					<nuxt-link class="h2" v-b-tooltip.hover to="https://github.com/Colm3na/polkastats-ng" :title="$t('layout.default.view_source_code_on_github')">
+				<h2 social class="m-2">
+					<a class="h2 mx-1" v-b-tooltip.hover href="https://github.com/Colm3na/polkastats-ng" target="_blank" :title="$t('layout.default.view_source_code_on_github')">
 						<font-awesome-icon :icon="['fab', 'github']" />
-					</nuxt-link>
+					</a>
 				</h2>
-				<h1 brand>
+				<h1 brand class="display-1">
 					<img src="/brand/logo.svg" alt="Brand Logo" height="40" logo>
 					<img src="/brand/text.svg" alt="Brand Text" height="40" text>
 				</h1>
 			</header>
 			
-			<b-navbar aria-labelledby="Secondary Menu" link="i-fifth" link-hover="i-primary">
-				<b-navbar-nav>
-					<b-nav-item v-for="item of menu" :key="item.name" :href="item.link">{{ item.name }}</b-nav-item>
-					<b-nav-item v-for="item of legend" :key="item.name" :href="item.link">{{ item.name }}</b-nav-item>
+			<b-navbar class="my-4" aria-labelledby="Secondary Menu" link="i-fifth" link-hover="i-primary">
+				<b-navbar-nav class="row m-auto">
+					<b-nav-item v-for="item of menu" :key="item.name" :to="item.link">{{ item.name }}</b-nav-item>
+					<b-nav-item v-for="item of legend" :key="item.name" :href="item.link" target="_blank">{{ item.name }}</b-nav-item>
 				</b-navbar-nav>
 			</b-navbar>
 		</article>
-		<address>
-			<p variant="i-fourth" class="row m-0 p-4">
-				<span v-for="info of address" :key="info.name" class="p-0 py-2">
-					<font-awesome-icon :icon="info.icon" />
+		<address class="row flex-md-column flex-sm-row m-0 text-left float-right">
+			<p variant="i-fourthB" class="address-item row flex-column m-0 p-4">
+				<a v-for="info of address" :key="info.name" class="p-0 py-2" :href="info.link" target="_blank">
+					<font-awesome-icon :icon="info.icon" class="d-block mb-1" />
 					{{ info.name }}
-				</span>
+				</a>
 			</p>
-			<p variant="i-primary" class="row m-0 p-4 align-items-center justify-content-center" style="flex: 1">
-				<img src="/brand/grant_badge.png" alt="Built with" height="64" />
+			<p variant="i-primary" class="address-item row m-0 p-4 align-items-center justify-content-center" style="flex: 1">
+				<img icon="grant" src="/brand/grant_badge.png" alt="Built with" height="64" />
 			</p>
 		</address>
 	</footer>
@@ -45,11 +45,11 @@ export default {
 		[
 			{ get name(){ return THAT.$t('layout.default.about_us') }, link: '/team' },
 			{ get name(){ return THAT.$t('layout.default.support_polkastats') }, link: '/support-us' },
+			{ get name(){ return THAT.$t('layout.default.made_by') }, link: '/team' },
 		]
 
 		const legend =
 		[
-			{ get name(){ return THAT.$t('layout.default.made_by') }, link: '/team' },
 			{ get name(){ return THAT.$t('layout.default.built_with') + ' Basic Atttention Token' }, link: 'https://basicattentiontoken.org/', icon: 'built' },
 		]
 
