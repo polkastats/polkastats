@@ -3,6 +3,7 @@
 ## vNext
 
 - ...
+- Database migrations
 
 ## v0.10.0
 

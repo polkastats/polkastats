@@ -120,7 +120,9 @@ npm install -g db-migrate
 yarn workspace backend db:migrate:create MIGRATION_NAME
 ```
 
-In `*-up.sql` should be database updates you want to apply (via `db-migrate up` command) and in `*-down.sql` should be updates rollback that can be executed in case migration failed (via `db-migrate down` command)
+In `*-up.sql` should be database updates you want to apply (via `db-migrate up` command) and in `*-down.sql` should be updates rollback that can be executed in case migration is incorrect (via `db-migrate down` command)
+
+<strong>Note</strong>: *-down.sql is required.
 
 #### Apply migrations
 ```bash
