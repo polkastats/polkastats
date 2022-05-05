@@ -126,11 +126,11 @@ In `*-up.sql` should be database updates you want to apply (via `db-migrate up` 
 
 All migrations must be listed in changelog and include description about compatibility with previous version of the code. Example:
 ```
-Added migration #1 (compatible with the previous code version)`
+Added migration #1 (compatible with the previous code version)
 ```
 or
 ```
-`Added migration #1 (incompatible with the previous code version)
+Added migration #1 (incompatible with the previous code version)
 ```
 
 #### Apply migrations
