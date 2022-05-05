@@ -19,7 +19,9 @@
     "docker:stop": "docker stop backend_api_1 backend_crawler_1 backend_graphql-engine_1 backend_postgres_1",
     "docker:postgres:backup": "docker exec -t backend_postgres_1 pg_dump polkastats -c -U polkastats > polkastats_dump.sql",
     "docker:postgres:restore": "docker stop backend_crawler_1 && cat polkastats_dump.sql | docker exec -i backend_postgres_1 psql -U polkastats -d polkastats && docker restart backend_postgres_1 && docker start backend_crawler_1",
-    "db:migrate:create": "db-migrate create -e local -m ../db/migrations --config ../db/database.json"
+    "db:migrate:create": "db-migrate create -m ../db/migrations --config ../db/database.json",
+    "db:migrate:up": "db-migrate up -m ../db/migrations --config ../db/database.json",
+    "db:migrate:down": "db-migrate down -m ../db/migrations --config ../db/database.json"
   },
   "dependencies": {
     "@polkadot/api": "3.11.1",

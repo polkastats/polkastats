@@ -1,4 +1,5 @@
 {
+  "defaultEnv": "local",
   "local": {
     "driver": "pg",
     "user": "polkastats",

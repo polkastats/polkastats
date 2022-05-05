@@ -117,11 +117,17 @@ npm install -g db-migrate
 
 #### Create migration
 ```bash
-yarn workspace api db:migrate:create MIGRATION_NAME
-```
-or
-```bash
 yarn workspace backend db:migrate:create MIGRATION_NAME
 ```
 
 In `*-up.sql` should be database updates you want to apply (via `db-migrate up` command) and in `*-down.sql` should be updates rollback that can be executed in case migration failed (via `db-migrate down` command)
+
+#### Apply migrations
+```bash
+yarn workspace backend db:migrate:up -e ENV
+```
+
+#### Rollback migrations
+```bash
+yarn workspace backend db:migrate:down -e ENV
+```
