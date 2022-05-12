@@ -1,4 +1,5 @@
 // @ts-check
+const DBMigrate = require('db-migrate');
 const pino = require('pino');
 const { spawn } = require('child_process');
 const { wait } = require('./lib/utils');
@@ -11,7 +12,7 @@ const runCrawler = async (crawler) => {
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
   child.on('close', (exitCode) => {
-    logger.debug(`Crawler ${crawler} exit with code: ${exitCode}`);
+    logger.warn(`Crawler ${crawler} exit with code: ${exitCode}`);
     return -1;
   });
   child.on('exit', (exitCode, signal) => {
@@ -29,10 +30,20 @@ const runCrawler = async (crawler) => {
 };
 
 const runCrawlers = async () => {
-  logger.debug('Starting backend, waiting 10s...');
+  logger.info('Running migrations');
+  await DBMigrate.getInstance(true, {
+    env: process.env.NODE_ENV || 'local',
+    config: '../db/database.json',
+    cmdOptions: {
+      'migrations-dir': '../db/migrations',
+    },
+  }).up();
+  logger.info('Migrations completed');
+
+  logger.info('Starting backend, waiting 10s...');
   await wait(10000);
 
-  logger.debug('Running crawlers');
+  logger.info('Running crawlers');
   await Promise.all(
     config.crawlers
       .filter((crawler) => crawler.enabled)
