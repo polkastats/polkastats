@@ -51,11 +51,11 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
       },
       {
         "name": networkNames.QANET,
-        "rpcUrl": "wss://rpc.qanet.cere.network:9945",
+        "rpcUrl": "wss://rpc.v2.qanet.cere.network/ws",
       },
       {
         "name": networkNames.TESTNET,
-        "rpcUrl": "wss://rpc.testnet.cere.network:9945",
+        "rpcUrl": "wss://rpc.v2.testnet.cere.network/ws",
         "accounts": [
           {
             "address": "5GjivYu4Sb9qNLWp6GYqm5VgPqbYCA2JsePBENAZTdsgqGmn",
