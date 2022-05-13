@@ -8,20 +8,35 @@
 		content: '';
 		position: absolute;
 		top: 0;
-		left: 50%;
 		width: 100vw;
 		height: 100%;
-		transform: translate(-50%);
 		z-index: -1;
+	}
+
+	&:not([pos])::before
+	{
+		left: 50%;
+		transform: translate(-50%);
+	}
+
+	&[unfill]::before
+	{
+		width: 100%;
+	}
+
+	&[pos="right"]::before
+	{
+		right: 0;
+	}
+
+	&[pos="left"]::before
+	{
+		left: 0;
 	}
 
 	&.section-header
 	{
-		display: flex;
-		flex-direction: column;
-		gap: 2em;
-		padding-top: 7em;
-		padding-bottom: 0;
+		padding-top: 6em;
 
 		&::before
 		{
@@ -49,6 +64,14 @@
 			background-image: url('assets/images/backgrounds/cubes.png');
 		}
 	}
+	
+	@each $color, $value in $theme-colors
+	{
+		&[color="#{$color}"]::before
+		{
+			background-color: $value;
+		}
+	}
 
 	@each $color, $value in $theme-gradients
 	{
@@ -56,14 +79,5 @@
 		{
 			background: $value;
 		}
-	}
-}
-
-@each $color, $value in $theme-colors
-{
-	.section[color="#{$color}"]::before,
-	.sub-section[color="#{$color}"]
-	{
-		background-color: $value;
 	}
 }

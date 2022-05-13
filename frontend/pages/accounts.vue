@@ -1,5 +1,75 @@
 <template>
-  <div>
+	<main>
+
+		<header-component>
+			<!-- TODO: Add Subtitle and Label -->
+			<search-section 
+				class="text-i-fifth" 
+				:title="$t('layout.default.accounts')" 
+				:subtitle="$t('pages.accounts.active_accounts')"
+
+				:placeholder="$t('pages.accounts.search_placeholder')"
+				label="Search"
+				v-model="filter"
+			/>
+		</header-component>
+
+		<section class="section">
+
+			<header class="text-right">
+				<table-tag :title="$t('pages.accounts.active_accounts')" :value="formatNumber(totalRows)" />
+			</header>
+
+			<Loading v-if="loading" />
+			<table-component v-else :items="parsedAccounts" :fields="fields" :options="options" :pagination="pagination" class="text-center">
+
+				<template #cell(account_id)="data">
+					<div icon="avatar">
+						<Identicon :address="data.item.account_id" />
+						<nuxt-link
+							v-b-tooltip.hover
+							:to="localePath(`/account/${data.item.account_id}`)"
+							:title="$t('pages.accounts.account_details')"
+						>
+							<template v-if="data.item.identity_display_parent">
+								{{ data.item.identity_display_parent }}/{{
+									data.item.identity_display
+								}}
+							</template>
+							<template v-else-if="data.item.identity_display">
+								{{ data.item.identity_display }}
+							</template>
+							<template v-else>
+								{{ shortAddress(data.item.account_id) }}
+							</template>
+						</nuxt-link>
+					</div>
+				</template>
+				<template #cell(free_balance)="data">
+					{{ formatAmount(data.item.free_balance) }}
+				</template>
+				<template #cell(locked_balance)="data">
+					{{ formatAmount(data.item.locked_balance) }}
+				</template>
+				<template #cell(available_balance)="data">
+					{{ formatAmount(data.item.available_balance) }}
+				</template>
+				<template #cell(reserved_balance)="data">
+					{{ formatAmount(data.item.reserved_balance) }}
+				</template>
+				<template #cell(total_balance)="data">
+					{{ formatAmount(data.item.total_balance) }}
+				</template>
+				<template #cell(nonce)="data">
+					{{ data.item.nonce }}
+				</template>
+
+			</table-component>
+
+		</section>
+
+		
+  <!-- <div>
     <section>
       <b-container class="page-accounts main py-5">
         <b-row class="mb-2">
@@ -16,7 +86,7 @@
           <Loading />
         </div>
         <template v-else>
-          <!-- Filter -->
+          Filter
           <b-row>
             <b-col lg="12" class="mb-3">
               <b-input-group size="xl" class="mb-2">
@@ -32,7 +102,7 @@
               </b-input-group>
             </b-col>
           </b-row>
-          <!-- Table with pagination-->
+          Table with pagination
           <div>
             <b-table
               id="accounts-table"
@@ -158,10 +228,10 @@
               </template>
             </b-table>
           </div>
-          <!-- pagination -->
+          pagination
           <div class="row">
             <div class="col-6">
-              <!-- desktop -->
+              desktop
               <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
                 <b-button-group>
                   <b-button
@@ -175,7 +245,7 @@
                   </b-button>
                 </b-button-group>
               </div>
-              <!-- mobile -->
+              mobile
               <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
                 <b-dropdown
                   class="m-md-2"
@@ -206,7 +276,10 @@
         </template>
       </b-container>
     </section>
-  </div>
+  </div> -->
+
+	</main>
+	
 </template>
 <script>
 import { gql } from 'graphql-tag'
@@ -214,15 +287,48 @@ import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { config, paginationOptions } from '@/frontend.config.js'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import TableComponent from '@/components/more/TableComponent.vue'
+import SearchSection from '@/components/more/headers/SearchSection.vue'
+import TableTag from '@/components/more/TableTag.vue'
 
 export default {
+  	layout: 'AuthLayout',
   components: {
     Loading,
     Identicon,
+	HeaderComponent,
+	TableComponent,
+	SearchSection,
+	TableTag
   },
   mixins: [commonMixin],
   data() {
+
+	  const THAT = this;
+
     return {
+		options:
+		{
+			variant: 'i-secondary',
+		},
+		pagination:
+		{
+			variant: 'i-primary',
+			pages:
+			{
+				get current(){ return THAT.currentPage },
+				set current(current){ THAT.currentPage = current },
+				get rows(){ return THAT.totalRows },
+				get perPage(){ return THAT.perPage },
+			},
+			perPage:
+			{
+				get num(){ return THAT.perPage },
+				click: (option) => THAT.setPageSize(option),
+				options: [10, 20, 50, 100 ],
+			},
+		},
       loading: true,
       paginationOptions,
       perPage: localStorage.paginationOptions
@@ -238,44 +344,40 @@ export default {
       fields: [
         {
           key: 'account_id',
-          label: this.$t('pages.accounts.account'),
+          get label(){ return THAT.$t('pages.accounts.account') },
           sortable: false,
+		  variant: 'i-fourth',
+		  class: 'important py-3'
         },
         {
           key: 'free_balance',
-          label: this.$t('pages.accounts.free_balance'),
+          get label(){ return THAT.$t('pages.accounts.free_balance') },
           sortable: false,
-          class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
         {
           key: 'locked_balance',
-          label: this.$t('pages.accounts.locked_balance'),
+          get label(){ return THAT.$t('pages.accounts.locked_balance') },
           sortable: false,
-          class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
         {
           key: 'available_balance',
-          label: this.$t('pages.accounts.available_balance'),
+          get label(){ return THAT.$t('pages.accounts.available_balance') },
           sortable: false,
-          class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
         {
           key: 'reserved_balance',
-          label: this.$t('pages.accounts.reserved_balance'),
+          get label(){ return THAT.$t('pages.accounts.reserved_balance') },
           sortable: false,
-          class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
         {
           key: 'total_balance',
-          label: this.$t('pages.accounts.total_balance'),
+          get label(){ return THAT.$t('pages.accounts.total_balance') },
           sortable: false,
-          class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
         {
           key: 'nonce',
           label: 'Nonce',
           sortable: false,
-          class: `d-none d-sm-none d-md-table-cell d-lg-table-cell d-xl-table-cell`,
         },
       ],
       accounts: [],

@@ -60,7 +60,7 @@ header.frame
 	{
 		&:not(.show)
 		{
-			background-color: transparent;
+			background-color: transparent !important;
 		}
 
 		&.show
@@ -96,11 +96,6 @@ header.frame
 	}
 	
 	/* Elements */
-	[brand]
-	{
-		font-size: 3em;
-	}
-
 	.b-dropdown
 	{
 		a
@@ -115,6 +110,7 @@ header.frame
 		font-family: $i-font-secondary-mono;
 		font-weight: 400;
 
+		// FIX: Move to effects
 		&::before
 		{
 			content: '';

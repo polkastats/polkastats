@@ -54,7 +54,6 @@
 			<b>
 				{{ formatAmount(data.item.amount) }}
 			</b>
-			<!-- </span> -->
 			<FIATConversion
 			:units="data.item.amount"
 			:timestamp="data.item.timestamp"

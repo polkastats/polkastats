@@ -1,0 +1,57 @@
+.b-nav-dropdown,
+.b-dropdown
+{
+	.dropdown-toggle::after
+	{
+		display: none;
+	}
+	
+	.dropdown-menu
+	{
+		font-size: 1em;
+		color: $i-fifth;
+		border-radius: 0;
+		text-transform: none;
+		margin-top: 1.6em;
+		
+		// TODO: Move to inherit effect
+		&::before
+		{
+			content: "";
+			position: absolute;
+
+			border: 0.8em solid transparent;
+			border-width: 1em 0.6em;
+
+			border-bottom-color: inherit;
+			bottom: 100%;
+			left: 1em;
+		}
+
+		.dropdown-item
+		{
+			background-color: transparent;
+			padding: 1.2em 2em;
+			opacity: 0.6;
+			color: inherit;
+
+			&:hover
+			{
+				opacity: 1;
+			}
+		}
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[variant=#{$color}],
+		&[variants=#{$color}]
+		{
+			.dropdown-menu
+			{
+				background-color: $value;
+				border-color: $value;
+			}
+		}
+	}
+}

@@ -2,25 +2,27 @@
   <dropdown-menu v-if="variant" :variant="variant" :value="value">
     
 	<b-dropdown-header class="mb-3">
-		<div v-if="loading" class="text-center">
-			{{ $t('components.selected_validators.loading') }}
-		</div>
-		<div v-else-if="list.length === 0" class="text-center">
-			{{ $t('components.selected_validators.no_validators_selected') }}
-		</div>
-		<div v-else class="row align-items-center text-i-fifth">
-			<div class="col-8">{{ list.length }}/{{ config.validatorSetSize }}</div>
-			<div class="col-4 text-right">
-				<a
-				href="#"
-				class="text-i-fifth"
-				v-b-tooltip.hover
-				v-clipboard:copy="selectedAddressesText"
-				title="Copy validator addresses to clipboard"
-				@click.stop.prevent="showToast"
-				>
-					<font-awesome-icon icon="paperclip" />
-				</a>
+		<div class="text-center text-i-fifth">
+			<template v-if="loading">
+				{{ $t('components.selected_validators.loading') }}
+			</template>
+			<template v-else-if="list.length === 0">
+				{{ $t('components.selected_validators.no_validators_selected') }}
+			</template>
+			<div v-else class="row align-items-center">
+				<div class="col-8">{{ list.length }}/{{ config.validatorSetSize }}</div>
+				<div class="col-4 text-right">
+					<a
+					href="#"
+					class="text-i-fifth"
+					v-b-tooltip.hover
+					v-clipboard:copy="selectedAddressesText"
+					title="Copy validator addresses to clipboard"
+					@click.stop.prevent="showToast"
+					>
+						<font-awesome-icon icon="paperclip" />
+					</a>
+				</div>
 			</div>
 		</div>
     </b-dropdown-header>
@@ -56,7 +58,7 @@
 		</div>
     </b-dropdown-item>
 
-    <b-dropdown-text v-if="list.length > 0" class="mt-3">
+    <b-dropdown-text v-if="list.length > 0" class="mt-3 text-i-fifth">
 		<b-button variant="danger btn-sm btn-block" @click="clean()">
 		{{ $t('components.selected_validators.clear') }}
 		<font-awesome-icon icon="trash-alt" class="ml-1" />

@@ -7,9 +7,8 @@
 						<font-awesome-icon :icon="['fab', 'github']" />
 					</a>
 				</h2>
-				<h1 brand class="display-1">
-					<img src="/brand/logo.svg" alt="Brand Logo" height="40" logo>
-					<img src="/brand/text.svg" alt="Brand Text" height="40" text>
+				<h1>
+					<brand-component size="1.6"></brand-component>
 				</h1>
 			</header>
 			
@@ -27,8 +26,10 @@
 					{{ info.name }}
 				</a>
 			</p>
-			<p variant="i-primary" class="address-item row m-0 p-4 align-items-center justify-content-center" style="flex: 1">
-				<img icon="grant" src="/brand/grant_badge.png" alt="Built with" height="64" />
+			<p variant="i-primary" class="address-item row m-0 p-4 align-items-center justify-content-center flex-grow-1">
+				<a href="https://web3.foundation/grants/" target="_blank">
+					<img icon="grant" src="/brand/grant_badge.png" alt="Built with" height="64" />
+				</a>
 			</p>
 		</address>
 	</footer>
@@ -36,7 +37,10 @@
 
 
 <script>
+import BrandComponent from '@/components/more/BrandComponent.vue'
+
 export default {
+	components: { BrandComponent },
 	data()
 	{
 		const THAT = this;

@@ -10,17 +10,15 @@
 						<font-awesome-icon v-else icon="bars"></font-awesome-icon>
 					</template>
 				</b-navbar-toggle>
-
-				<b-navbar-brand :to="localePath('/')" title="PolkaStats block explorer" left brand>
-					<img src="/brand/logo.svg" alt="Brand Logo" height="24" logo>
-					<img src="/brand/text.svg" alt="Brand Text" height="24" text>
+				<b-navbar-brand>
+					<brand-component size="1.5"></brand-component>
 				</b-navbar-brand>
 				<b-nav-item :href="`https://www.coingecko.com/en/coins/${config.coinGeckoDenom}`" target="_blank" :link-attrs="{ icon: 'kusama', color: 'secondary' }" class="crypto-price ml-auto text-nowrap">
 					{{ config.tokenSymbol }} ${{ USDConversion }} ({{ USD24hChange }}%)
 				</b-nav-item>
 			</b-navbar-nav>
 
-		<b-collapse class="sub-section" id="nav-collapse" is-nav :color="variant">
+		<b-collapse class="bg-i-fourth" pos="left" unfill id="nav-collapse" is-nav :color="variant">
 			<b-navbar-nav>
 				<template v-for="item of links">
 					<dropdown-menu :variant="item.variant" :key="item.name" :link="true" v-if="item.options" :options="item.options" :value="{ name: item.name }" />
@@ -71,9 +69,10 @@ import SelectedValidators from '@/components/staking/SelectedValidators.vue'
 import Languages from '@/components/Languages.vue'
 import WalletSelector from '@/components/WalletSelector.vue'
 import Identicon from '@/components/Identicon.vue'
+import BrandComponent from '@/components/more/BrandComponent.vue'
 
 export default {
-	components: { DropdownMenu, SelectedValidators, Identicon, Languages, WalletSelector },
+	components: { DropdownMenu, SelectedValidators, Identicon, Languages, WalletSelector, BrandComponent },
 	computed: {
 		loading() {
 			return this.$store.state.ranking.loading

@@ -1,19 +1,22 @@
 <template>
   <form class="col" @submit="doSearch">
-	  <b-input-group>
-		<b-form-input v-model="searchInput" :placeholder="$t('components.search.caption')" class="text-i-fifth" control="text" variant="i-fourth" size="sm" />
-			<b-input-group-append class="mr-2" p-absolute="right">
-				<font-awesome-icon icon="search" class="text-i-fourth" />
-		</b-input-group-append>
-	  </b-input-group>
+	  <input-control
+			:placeholder="$t('components.search.caption')"
+			icon="search"
+			variant="i-fourth"
+			v-model="searchInput"
+			class="text-i-fifth"
+		/>
   </form>
 </template>
 
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
+import InputControl from '@/components/more/InputControl.vue'
 
 export default {
   mixins: [commonMixin],
+  components: { InputControl },
   data() {
     return {
       searchInput: '',

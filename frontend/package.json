@@ -21,7 +21,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged"
+	  "pre-commit": "lint-staged"
     }
   },
   "dependencies": {
@@ -51,6 +51,7 @@
     "sass": "^1.32.5",
     "sass-loader": "^10.1.1",
     "vue-chartjs": "^3.5.1",
+    "vue-fragment": "^1.5.2",
     "vue-json-csv": "^1.2.12",
     "vue-promised": "^2.2.0",
     "vuelidate": "^0.7.6",

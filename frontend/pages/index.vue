@@ -1,8 +1,11 @@
 <template>
 	<main>
 		<header-component>
-			<score-section />
+			<template #inside>
+				<score-section />
+			</template>
 		</header-component>
+
 		<chart-section />
 		<table-section />
 	</main>
@@ -53,7 +56,7 @@ import { config } from '@/frontend.config.js'
 import ChartSection from '../sections/home/ChartSection.vue'
 import ScoreSection from '../sections/home/ScoreSection.vue'
 import TableSection from '../sections/home/TableSection.vue'
-import HeaderComponent from '@/components/more/HeaderComponent.vue'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
 
 export default {
   components: {

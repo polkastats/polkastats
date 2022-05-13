@@ -1,0 +1,38 @@
+.pagination
+{
+	.page-link
+	{
+		border: 0;
+		border-radius: 0;
+		margin: 0;
+		color: $i-fourth;
+		transition: 0.3s linear;
+		box-shadow: none;
+	}
+
+	.page-item.active .page-link,
+	.page-link:hover
+	{
+		color: $i-fifth;
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[variant=#{$color}]
+		{
+			.page-link
+			{
+				background-color: rgba($value, 0.2);
+			}
+		}
+
+		&[hover=#{$color}]
+		{
+			.page-item.active .page-link,
+			.page-link:hover
+			{
+				background-color: $value;
+			}
+		}
+	}
+}

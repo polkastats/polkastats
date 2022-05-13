@@ -1,9 +1,15 @@
+.table-wrap
+{
+	overflow: auto;
+}
+
 table.pretty-table
 {
 	border-collapse:separate; 
 	border-spacing: 0 1em;
 	white-space: nowrap;
 	margin: 0;
+	background-color: transparent;
 
 	thead
 	{
@@ -22,11 +28,11 @@ table.pretty-table
 		vertical-align: middle;
 		padding: 0.6em 1.2em;
 
-		&.important
-		{
-			transform: translateX(-0.8em);
-			transform-origin: right;
-		}
+		// &.important
+		// {
+		// 	transform: translateX(-0.8em);
+		// 	transform-origin: right;
+		// }
 
 		&.expanded
 		{
@@ -46,6 +52,7 @@ table.pretty-table
 		{
 			font-weight: 900;
 			font-size: 1.2em;
+			background-color: transparent;
 		}
 
 		&.highlighted
@@ -58,7 +65,11 @@ table.pretty-table
 	{
 		&.important
 		{
+			position: relative;
+			background-color: transparent !important; // FIX: Remove important
+			padding-right: 2.4em;
 			transition: 0.3s linear;
+			color: $i-fifth;
 
 			&:hover
 			{
@@ -69,6 +80,17 @@ table.pretty-table
 				{
 					color: inherit;
 				}
+			}
+
+			&::before
+			{
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: -1;
+				width: 95%;
+				height: 100%;
 			}
 		}
 	}
@@ -86,13 +108,15 @@ table.pretty-table
 		th.important.table-#{$color}
 		{
 			color: $value;
-			background-color: transparent;
 		}
 
 		td.important.table-#{$color}
 		{
-			background-color: $value;
-			color: $i-fifth;
+			// background-color: $value;
+			&::before
+			{
+				background-color: $value;
+			}
 		}
 	}
 }
