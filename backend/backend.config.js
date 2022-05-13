@@ -57,5 +57,15 @@ module.exports = {
         parseInt(process.env.ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10)
         || 6 * 60 * 60 * 1000, // 6 hours
     },
+    {
+      name: 'ddc',
+      enabled: !process.env.DDC_DISABLE,
+      crawler: './crawlers/ddc.js',
+      contractName: process.env.CONTRACT_NAME || 'ddc_bucket',
+      rpc: process.env.RPC || 'wss://rpc.testnet.cere.network:9945',
+      pollingTime:
+          parseInt(process.env.DDC_POLLING_TIME_MS, 10)
+          || 2 * 60 * 1000, // 2 minutes
+    },
   ],
 };
