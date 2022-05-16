@@ -12,3 +12,8 @@ CREATE TABLE IF NOT EXISTS ddc_metric_value
     value     NUMERIC(40, 0) NOT NULL,
     timestamp BIGINT         NOT NULL
 );
+
+CREATE OR REPLACE VIEW ddc_metric_view AS
+SELECT name, nodeId, value, timestamp
+FROM ddc_metric_value
+         JOIN ddc_metric on ddc_metric_value.metricId = ddc_metric.id;

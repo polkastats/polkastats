@@ -218,7 +218,7 @@ export default {
       dataStoredBytes: {
         query: gql`
           subscription dataStoredBytes {
-            ddc_metrics_denormalized_view_aggregate(
+            ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
               where: { name: { _eq: "dataStoredBytes" } }
@@ -234,13 +234,13 @@ export default {
         // sum latest value of the node
         result({ data }) {
           this.dataStoredBytes =
-            data.ddc_metrics_denormalized_view_aggregate.aggregate.sum.value
+            data.ddc_metric_view_aggregate.aggregate.sum.value
         },
       },
       piecesStored: {
         query: gql`
           subscription piecesStored {
-            ddc_metrics_denormalized_view_aggregate(
+            ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
               where: { name: { _eq: "piecesStored" } }
@@ -254,14 +254,13 @@ export default {
           }
         `,
         result({ data }) {
-          this.piecesStored =
-            data.ddc_metrics_denormalized_view_aggregate.aggregate.sum.value
+          this.piecesStored = data.ddc_metric_view_aggregate.aggregate.sum.value
         },
       },
       piecesViewed: {
         query: gql`
           subscription piecesViewed {
-            ddc_metrics_denormalized_view_aggregate(
+            ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
               where: { name: { _eq: "piecesViewed" } }
@@ -275,14 +274,13 @@ export default {
           }
         `,
         result({ data }) {
-          this.piecesViewed =
-            data.ddc_metrics_denormalized_view_aggregate.aggregate.sum.value
+          this.piecesViewed = data.ddc_metric_view_aggregate.aggregate.sum.value
         },
       },
       uniqueAccounts: {
         query: gql`
           subscription providers {
-            ddc_metrics_denormalized_view(
+            ddc_metric_view(
               order_by: { timestamp: desc }
               limit: 1
               where: { name: { _eq: "uniqueAccounts" } }
@@ -292,13 +290,13 @@ export default {
           }
         `,
         result({ data }) {
-          this.uniqueAccounts = data.ddc_metrics_denormalized_view[0].value
+          this.uniqueAccounts = data.ddc_metric_view[0].value
         },
       },
       providers: {
         query: gql`
           subscription providers {
-            ddc_metrics_denormalized_view(
+            ddc_metric_view(
               order_by: { timestamp: desc }
               limit: 1
               where: { name: { _eq: "providers" } }
@@ -308,13 +306,13 @@ export default {
           }
         `,
         result({ data }) {
-          this.providers = data.ddc_metrics_denormalized_view[0].value
+          this.providers = data.ddc_metric_view[0].value
         },
       },
       storageCapacity: {
         query: gql`
           subscription providers {
-            ddc_metrics_denormalized_view(
+            ddc_metric_view(
               order_by: { timestamp: desc }
               limit: 1
               where: { name: { _eq: "storageCapacity" } }
@@ -324,13 +322,13 @@ export default {
           }
         `,
         result({ data }) {
-          this.storageCapacity = data.ddc_metrics_denormalized_view[0].value
+          this.storageCapacity = data.ddc_metric_view[0].value
         },
       },
       storageNodes: {
         query: gql`
           subscription providers {
-            ddc_metrics_denormalized_view(
+            ddc_metric_view(
               order_by: { timestamp: desc }
               limit: 1
               where: { name: { _eq: "storageNodes" } }
@@ -340,13 +338,13 @@ export default {
           }
         `,
         result({ data }) {
-          this.storageNodes = data.ddc_metrics_denormalized_view[0].value
+          this.storageNodes = data.ddc_metric_view[0].value
         },
       },
       gatewayNodes: {
         query: gql`
           subscription providers {
-            ddc_metrics_denormalized_view(
+            ddc_metric_view(
               order_by: { timestamp: desc }
               limit: 1
               where: { name: { _eq: "gatewayNodes" } }
@@ -356,13 +354,13 @@ export default {
           }
         `,
         result({ data }) {
-          this.gatewayNodes = data.ddc_metrics_denormalized_view[0].value
+          this.gatewayNodes = data.ddc_metric_view[0].value
         },
       },
       avgResponseTimeSec: {
         query: gql`
           subscription avgResponseTimeSec {
-            ddc_metrics_denormalized_view_aggregate(
+            ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
               where: { name: { _eq: "avgResponseTimeSec" } }
@@ -377,13 +375,13 @@ export default {
         `,
         result({ data }) {
           this.avgResponseTimeSec =
-            data.ddc_metrics_denormalized_view_aggregate.aggregate.avg.value
+            data.ddc_metric_view_aggregate.aggregate.avg.value
         },
       },
       avgDownloadSpeedBytesPerSec: {
         query: gql`
           subscription avgDownloadSpeedBytesPerSec {
-            ddc_metrics_denormalized_view_aggregate(
+            ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
               where: { name: { _eq: "avgDownloadSpeedBytesPerSec" } }
@@ -398,13 +396,13 @@ export default {
         `,
         result({ data }) {
           this.avgDownloadSpeedBytesPerSec =
-            data.ddc_metrics_denormalized_view_aggregate.aggregate.avg.value
+            data.ddc_metric_view_aggregate.aggregate.avg.value
         },
       },
       avgUploadSpeedBytesPerSec: {
         query: gql`
           subscription avgUploadSpeedBytesPerSec {
-            ddc_metrics_denormalized_view_aggregate(
+            ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
               where: { name: { _eq: "avgUploadSpeedBytesPerSec" } }
@@ -419,13 +417,13 @@ export default {
         `,
         result({ data }) {
           this.avgUploadSpeedBytesPerSec =
-            data.ddc_metrics_denormalized_view_aggregate.aggregate.avg.value
+            data.ddc_metric_view_aggregate.aggregate.avg.value
         },
       },
       avgPricePerStorage: {
         query: gql`
           subscription providers {
-            ddc_metrics_denormalized_view(
+            ddc_metric_view(
               order_by: { timestamp: desc }
               limit: 1
               where: { name: { _eq: "avgPricePerStorage" } }
@@ -435,7 +433,7 @@ export default {
           }
         `,
         result({ data }) {
-          this.avgPricePerStorage = data.ddc_metrics_denormalized_view[0].value
+          this.avgPricePerStorage = data.ddc_metric_view[0].value
         },
       },
     },
