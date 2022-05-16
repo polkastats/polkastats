@@ -61,8 +61,8 @@ module.exports = {
       name: 'ddc',
       enabled: !process.env.DDC_DISABLE,
       crawler: './crawlers/ddc.js',
-      contractName: process.env.CONTRACT_NAME || 'ddc_bucket',
-      rpc: process.env.RPC || 'wss://rpc.testnet.cere.network:9945',
+      contractName: process.env.DDC_CONTRACT_NAME || 'ddc_bucket',
+      rpc: process.env.DDC_RPC || 'wss://rpc.testnet.cere.network:9945',
       pollingTime:
           parseInt(process.env.DDC_POLLING_TIME_MS, 10)
           || 2 * 60 * 1000, // 2 minutes
