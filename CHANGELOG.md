@@ -3,6 +3,7 @@
 ## vNext
 
 - Updated QAnet/Testnet urls
+- DDC metrics
 
 ## v0.11.0
 
