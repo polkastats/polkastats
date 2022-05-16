@@ -31,6 +31,10 @@ async function insertMetricAndReturnId(dbClient, name, nodeId) {
 }
 
 async function insertMetricValue(dbClient, metricId, value) {
+  if (value === -1) {
+    return;
+  }
+
   const sql = `
         INSERT INTO ddc_metric_value (metricId,
                                       value,

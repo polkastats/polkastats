@@ -67,6 +67,7 @@
       "nominators": "Nominators",
       "accounts": "Accounts",
       "faucet": "Faucet",
+      "ddc": "DDC",
       "charts": "Charts",
       "get_in_contact": "Get in contact",
       "about_us": "About us",
@@ -294,6 +295,23 @@
       "title": "Charts",
       "head_title": "Cere Stats - Charts",
       "head_content": "Cere Stats - Charts"
+    },
+    "ddc": {
+      "title": "DDC",
+      "head_title": "Cere Stats - DDC",
+      "head_content": "Cere Stats - DDC",
+      "data_stored": "Data stored",
+      "pieces_stored": "Pieces stored",
+      "pieces_viewed": "Pieces viewed",
+      "unique_accounts": "Unique accounts",
+      "providers": "Providers",
+      "storage_capacity": "Storage capacity",
+      "storage_nodes": "Storage nodes",
+      "gateway_nodes": "Gateway nodes",
+      "avg_response_time": "Avg. Response time",
+      "avg_download_speed": "Avg. Download speed",
+      "avg_upload_speed": "Avg. Upload speed",
+      "avg_price_per_storage": "Avg. Price per storage"
     }
   },
   "details": {

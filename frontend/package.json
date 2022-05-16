@@ -45,6 +45,7 @@
     "nuxt": "^2.14.12",
     "nuxt-clipboard2": "^0.2.1",
     "nuxt-i18n": "^6.18.0",
+    "pretty-bytes": "^6.0.0",
     "sass": "^1.32.5",
     "sass-loader": "^10.1.1",
     "vue-chartjs": "^3.5.1",
