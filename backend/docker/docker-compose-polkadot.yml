@@ -32,7 +32,7 @@ services:
       POSTGRES_USER: 'polkastats'
       POSTGRES_PASSWORD: 'polkastats'
     healthcheck:
-      test: [ 'CMD-SHELL', 'pg_isready -U polkastats' ]
+      test: ['CMD-SHELL', 'pg_isready -U polkastats']
       interval: 5s
       timeout: 5s
       retries: 5

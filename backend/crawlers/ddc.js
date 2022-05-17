@@ -55,16 +55,29 @@ async function collectContractMetrics(dbClient, contract) {
   const providersMetricId = await insertMetricAndReturnId(dbClient, 'providers');
   await insertMetricValue(dbClient, providersMetricId, providerIds.size);
 
-  const storageNodes = nodes.filter((n) => !JSON.parse(n.params).type || JSON.parse(n.params).type === 'storage');
+  const storageNodes = [];
+  const gatewayNodes = [];
+  nodes.forEach((n) => {
+    const nodeType = JSON.parse(n.params).type;
+    if (!nodeType || nodeType === 'storage') {
+      storageNodes.push(n);
+    }
+    if (nodeType === 'gateway') {
+      gatewayNodes.push(n);
+    }
+  });
+
   const storageNodesMetricId = await insertMetricAndReturnId(dbClient, 'storageNodes');
   await insertMetricValue(dbClient, storageNodesMetricId, storageNodes.length);
 
-  const gatewayNodes = nodes.filter((n) => JSON.parse(n.params).type === 'gateway');
   const gatewayNodesMetricId = await insertMetricAndReturnId(dbClient, 'gatewayNodes');
   await insertMetricValue(dbClient, gatewayNodesMetricId, gatewayNodes.length);
 
   const clusters = await ddcBucketQuery.clusterList(contract);
-  const storageClusters = clusters.filter((c) => !JSON.parse(c.params).type || JSON.parse(c.params).type === 'storage');
+  const storageClusters = clusters.filter((c) => {
+    const clusterType = JSON.parse(c.params).type;
+    return !clusterType || clusterType === 'storage';
+  });
 
   const storageFreeResource = _.sum(storageNodes.map((n) => n.node.free_resource));
   const storageUsedResource = _.sum(storageClusters
@@ -91,7 +104,7 @@ async function collectContractMetrics(dbClient, contract) {
 async function collectStorageNodeMetrics(dbClient, node) {
   const { url } = JSON.parse(node.params);
   if (!url) {
-    logger.info(`Can't collect storage node ${node.node_id} metrics (url undefined)`);
+    logger.warn(`Can't collect storage node ${node.node_id} metrics (url undefined)`);
     return;
   }
 
@@ -117,7 +130,7 @@ async function collectStorageMetrics(dbClient, nodes) {
 async function collectGatewayNodeMetrics(dbClient, node) {
   const { url } = JSON.parse(node.params);
   if (!url) {
-    logger.info(`Can't collect gateway node ${node.node_id} metrics (url undefined)`);
+    logger.warn(`Can't collect gateway node ${node.node_id} metrics (url undefined)`);
     return;
   }
 
@@ -130,14 +143,11 @@ async function collectGatewayNodeMetrics(dbClient, node) {
     return;
   }
 
-  const piecesViewedMetricId = await insertMetricAndReturnId(dbClient, 'piecesViewed', node.node_id);
-  const avgResponseTimeMetricId = await insertMetricAndReturnId(dbClient, 'avgResponseTimeSec', node.node_id);
-  const avgDownloadSpeedMetricId = await insertMetricAndReturnId(dbClient, 'avgDownloadSpeedBytesPerSec', node.node_id);
-  const avgUploadSpeedMetricId = await insertMetricAndReturnId(dbClient, 'avgUploadSpeedBytesPerSec', node.node_id);
-  await insertMetricValue(dbClient, piecesViewedMetricId, metrics.piecesViewed);
-  await insertMetricValue(dbClient, avgResponseTimeMetricId, metrics.avgResponseTimeSec);
-  await insertMetricValue(dbClient, avgDownloadSpeedMetricId, metrics.avgDownloadSpeedBytesPerSec);
-  await insertMetricValue(dbClient, avgUploadSpeedMetricId, metrics.avgUploadSpeedBytesPerSec);
+  const metricNames = ['piecesViewed', 'avgResponseTimeSec', 'avgDownloadSpeedBytesPerSec', 'avgUploadSpeedBytesPerSec'];
+  await Promise.all(metricNames.map(async (metricName) => {
+    const metricId = await insertMetricAndReturnId(dbClient, metricName, node.node_id);
+    return insertMetricValue(dbClient, metricId, metrics[metricName]);
+  }));
 }
 
 async function collectGatewayMetrics(dbClient, nodes) {
@@ -158,6 +168,11 @@ const crawler = async () => {
   await collectGatewayMetrics(dbClient, gatewayNodes);
 
   logger.info(loggerOptions, 'DDC crawler completed');
+
+  setTimeout(
+    () => crawler(),
+    config.pollingTime,
+  );
 };
 
 crawler().catch((error) => {
