@@ -2,7 +2,11 @@
 
 ## vNext
 
-- Updated QAnet/Testnet/Mainnet urls
+- Updated Mainnet urls
+
+## v0.12.0
+
+- Updated QAnet/Testnet urls
 
 ## v0.11.0
 
