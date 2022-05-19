@@ -15,6 +15,12 @@ apt install libpq5=12.9-0ubuntu0.20.04.1
 apt install git build-essential apt-transport-https ca-certificates curl software-properties-common libpq-dev
 ```
 
+In macOS, you can do:
+```bash
+brew install postgresql libpq
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH" 
+```
+
 # docker
 ```bash
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
@@ -98,4 +104,41 @@ Generate a static build under `frontend/dist` directory:
 
 ```bash
 yarn workspace frontend generate
+```
+
+### Database migrations
+
+[db-migrate](https://github.com/db-migrate/node-db-migrate) tool used to apply data migrations. More details you can find here: https://db-migrate.readthedocs.io/en/latest/
+
+#### Install
+```bash
+npm install -g db-migrate
+```
+
+#### Create migration
+```bash
+yarn workspace backend db:migrate:create MIGRATION_NAME
+```
+
+In `*-up.sql` should be database updates you want to apply (via `db-migrate up` command) and in `*-down.sql` should be updates rollback that can be executed in case migration is incorrect (via `db-migrate down` command)
+
+<strong>Note</strong>: *-down.sql is required.
+
+All migrations must be listed in changelog and include description about compatibility with previous version of the code. Example:
+```
+Added migration #1 (compatible with the previous code version)
+```
+or
+```
+Added migration #1 (incompatible with the previous code version)
+```
+
+#### Apply migrations
+```bash
+yarn workspace backend db:migrate:up -e ENV
+```
+
+#### Rollback migrations
+```bash
+yarn workspace backend db:migrate:down -e ENV
 ```

@@ -4,6 +4,11 @@
 
 - ...
 
+## v0.11.0
+
+- Database migrations
+- Added `update-transactions-fees-cast-type` migration (compatible with the previous code version)
+
 ## v0.10.0
 
 - Added API (Prometheus compatible) to get blockchains accounts balances 
