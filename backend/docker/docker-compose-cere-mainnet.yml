@@ -101,7 +101,7 @@ services:
     environment:
       NODE_ENV: 'production'
       NODE_OPTIONS: '--max-old-space-size=8192'
-      WS_PROVIDER_URL: 'wss://archive.mainnet.cere.network:9945'
+      WS_PROVIDER_URL: 'wss://archive.v2.mainnet.cere.network/ws'
       SUBSTRATE_NETWORK: 'cere'
       API_CUSTOM_TYPES: 'cere_custom_types.json'
       # RANKING_DISABLE: 'true'

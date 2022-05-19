@@ -91,7 +91,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
       },
       {
         "name": networkNames.MAINNET,
-        "rpcUrl": "wss://rpc.mainnet.cere.network:9945",
+        "rpcUrl": "wss://rpc.v2.mainnet.cere.network/ws",
         "accounts": [
           {
             "address": "5DDArkL7BzgQqRSKF4jeaDUi9ezr9UbYYjX6G3dyDM2eA3bi",
