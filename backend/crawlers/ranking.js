@@ -208,15 +208,19 @@ const addNewFeaturedValidator = async (client, ranking) => {
       && !validator.active && !alreadyFeatured.includes(validator.stashAddress))
     .map(({ rank }) => rank);
   // get random featured validator of the week
-  const shuffled = [...featuredCandidates].sort(() => 0.5 - Math.random());
-  const randomRank = shuffled[0];
-  const featured = ranking.find((validator) => validator.rank === randomRank);
-  await dbQuery(
-    client,
-    `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`,
-    loggerOptions,
-  );
-  logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
+  if (featuredCandidates.length > 0) {
+    const shuffled = [...featuredCandidates].sort(() => 0.5 - Math.random());
+    const randomRank = shuffled[0];
+    const featured = ranking.find((validator) => validator.rank === randomRank);
+    await dbQuery(
+      client,
+      `INSERT INTO featured (stash_address, name, timestamp) VALUES ('${featured.stashAddress}', '${featured.name}', '${new Date().getTime()}')`,
+      loggerOptions,
+    );
+    logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
+  } else {
+    logger.debug(loggerOptions, `No candidates to be added`);
+  }
 };
 
 const insertRankingValidator = async (client, validator, blockHeight, startTime) => {
