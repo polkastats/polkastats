@@ -2,6 +2,10 @@
 
 ## vNext
 
+- ...
+
+## v0.13.0
+
 - Updated Mainnet urls
 
 ## v0.12.0
