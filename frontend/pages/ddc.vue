@@ -363,7 +363,10 @@ export default {
             ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
-              where: { name: { _eq: "avgResponseTimeSec" } }
+              where: {
+                name: { _eq: "avgResponseTimeSec" }
+                timestamp: { _gte: $timestamp }
+              }
             ) {
               aggregate {
                 avg {
@@ -373,6 +376,13 @@ export default {
             }
           }
         `,
+        variables() {
+          const timestamp = new Date()
+          timestamp.setMonth(timestamp.getMonth() - 1)
+          return {
+            timestamp,
+          }
+        },
         result({ data }) {
           this.avgResponseTimeSec =
             data.ddc_metric_view_aggregate.aggregate.avg.value
@@ -384,7 +394,10 @@ export default {
             ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
-              where: { name: { _eq: "avgDownloadSpeedBytesPerSec" } }
+              where: {
+                name: { _eq: "avgDownloadSpeedBytesPerSec" }
+                timestamp: { _gte: $timestamp }
+              }
             ) {
               aggregate {
                 avg {
@@ -394,6 +407,13 @@ export default {
             }
           }
         `,
+        variables() {
+          const timestamp = new Date()
+          timestamp.setMonth(timestamp.getMonth() - 1)
+          return {
+            timestamp,
+          }
+        },
         result({ data }) {
           this.avgDownloadSpeedBytesPerSec =
             data.ddc_metric_view_aggregate.aggregate.avg.value
@@ -405,7 +425,10 @@ export default {
             ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
-              where: { name: { _eq: "avgUploadSpeedBytesPerSec" } }
+              where: {
+                name: { _eq: "avgUploadSpeedBytesPerSec" }
+                timestamp: { _gte: $timestamp }
+              }
             ) {
               aggregate {
                 avg {
@@ -415,6 +438,13 @@ export default {
             }
           }
         `,
+        variables() {
+          const timestamp = new Date()
+          timestamp.setMonth(timestamp.getMonth() - 1)
+          return {
+            timestamp,
+          }
+        },
         result({ data }) {
           this.avgUploadSpeedBytesPerSec =
             data.ddc_metric_view_aggregate.aggregate.avg.value

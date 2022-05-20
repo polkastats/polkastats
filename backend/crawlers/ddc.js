@@ -2,7 +2,7 @@
 const pino = require('pino');
 const axios = require('axios');
 const _ = require('lodash');
-const { connect, ddcBucketQuery, getContract } = require('@cere/ddc-contracts-sdk');
+const { connect, ddcBucketQuery, getContract } = require('@cere-ddc-sdk/smart-contract');
 const backendConfig = require('../backend.config');
 const { getClient, dbParamQuery } = require('../lib/utils');
 
