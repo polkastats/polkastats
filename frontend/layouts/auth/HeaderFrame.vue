@@ -4,7 +4,7 @@
 		<b-navbar toggleable="xl" :color="variant" :link="link" :link-hover="hover" fixed="top" class="section container">
 			
 			<b-navbar-nav class="navbar-visible">
-				<b-navbar-toggle target="nav-collapse" :class="['text-' + link, 'bg-' + variant, 'mr-2', 'rounded-0', 'align-self-stretch']">
+				<b-navbar-toggle target="nav-collapse" :class="['text-' + link, 'bg-' + variant, 'mr-2', 'align-self-stretch']">
 					<template #default="{ expanded }">
 						<font-awesome-icon v-if="expanded" icon="times"></font-awesome-icon>
 						<font-awesome-icon v-else icon="bars"></font-awesome-icon>
@@ -29,7 +29,7 @@
 			<b-navbar-nav class="menu-tools ml-auto flex-wrap flex-row justify-content-center">
 
 				<b-nav-text class="mx-1">
-					<b-button variant="danger" size="sm" v-b-modal.wallet-modal>
+					<b-button variant="i-danger" size="sm" v-b-modal.wallet-modal>
 						<template v-if="selectedAddress">
 							<Identicon :address="selectedAddress" :size="15" />
 							{{ shortAddress(selectedAddress) }}
@@ -89,6 +89,61 @@ export default {
 		selectedAddress() {
 			return this.$store.state.ranking.selectedAddress
 		},
+		links()
+		{
+			return [
+				{
+					name: this.$t('layout.default.accounts'),
+					link: this.localePath('/accounts')
+				},
+				{
+					name: this.$t('layout.default.transfers'),
+					link: this.localePath('/transfers')
+				},
+				{
+					name: 'Staking',
+					variant: this.variant,
+					options: 
+					[ 
+						{ 
+							name: this.$t('layout.default.staking_dashboard'), 
+							link: this.localePath('/staking/dashboard') 
+						},
+						{
+							name: this.$t('layout.default.validators'), 
+							link: this.localePath('/staking/validators')
+						},
+						{
+							name: this.$t('layout.default.validator'), 
+							link: this.localePath('/staking/polkastats-validator')
+						},
+						{
+							name: this.$t('layout.default.how_to_stake'),
+							link: this.localePath('/staking/how-to-stake')
+						}
+					],
+				},
+				{
+					name: 'Blockchain',
+					variant: this.variant,
+					options:
+					[
+						{
+							name: this.$t('layout.default.blocks'),
+							link: this.localePath('/blocks'),
+						},
+						{
+							name: this.$t('layout.default.extrinsics'),
+							link: this.localePath('/extrinsics'),
+						},
+						{
+							name: this.$t('layout.default.events'),
+							link: this.localePath('/events'),
+						},
+					],
+				},
+			]
+		}
 	},
 	created() {
     // Refresh fiat conversion values every minute
@@ -108,77 +163,21 @@ export default {
 	},
 	data()
 	{
-		const THAT = this;
-
-		const links =
-		[
-			{
-				get name(){ return THAT.$t('layout.default.accounts') },
-				link: this.localePath('/accounts')
-			},
-			{
-				get name(){ return THAT.$t('layout.default.transfers') },
-				link: this.localePath('/transfers')
-			},
-			{
-				name: 'Staking',
-				variant: this.variant,
-				options: 
-				[ 
-					{ 
-						get name(){ return THAT.$t('layout.default.staking_dashboard') }, 
-						link: this.localePath('/staking/dashboard') 
-					},
-					{
-						get name(){ return THAT.$t('layout.default.validators') }, 
-						link: this.localePath('/staking/validators')
-					},
-					{
-						get name(){ return THAT.$t('layout.default.validator') }, 
-						link: this.localePath('/staking/polkastats-validator')
-					},
-					{
-						get name(){ return THAT.$t('layout.default.how_to_stake') },
-						link: this.localePath('/staking/how-to-stake')
-					}
-				],
-			},
-			{
-				name: 'Blockchain',
-				variant: this.variant,
-				options:
-				[
-					{
-						get name(){ return THAT.$t('layout.default.blocks') },
-						link: this.localePath('/blocks'),
-					},
-					{
-						get name(){ return THAT.$t('layout.default.extrinsics') },
-						link: this.localePath('/extrinsics'),
-					},
-					{
-						get name(){ return THAT.$t('layout.default.events') },
-						link: this.localePath('/events'),
-					},
-				],
-			},
-		]
-
 		const networks =
 		[
 			{
 				name: 'Kusama',
-				link: 'https://kusama.polkastats.io',
+				href: 'https://kusama.polkastats.io',
 				icon: 'kusama',
 			},
 			{
 				name: 'Polkadot',
-				link: 'https://polkastats.io',
+				href: 'https://polkastats.io',
 				icon: 'polkadot',
 			},
 		]
 
-		return { config, active: false, links: links, networks: networks };
+		return { config, active: false, networks: networks };
 	},
 	mounted()
 	{

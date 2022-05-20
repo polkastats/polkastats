@@ -41,22 +41,25 @@ import BrandComponent from '@/components/more/BrandComponent.vue'
 
 export default {
 	components: { BrandComponent },
+	computed:
+	{
+		menu()
+		{
+			return [
+				{ name: this.$t('layout.default.about_us'), link: this.localePath('/team') },
+				{ name: this.$t('layout.default.support_polkastats'), link: this.localePath('/support-us') },
+				{ name: this.$t('layout.default.made_by'), link: this.localePath('/team') },
+			]
+		},
+		legend()
+		{
+			return [
+				{ name: this.$t('layout.default.built_with') + ' Basic Atttention Token', link: 'https://basicattentiontoken.org/', icon: 'built' },
+			]
+		}
+	},
 	data()
 	{
-		const THAT = this;
-
-		const menu =
-		[
-			{ get name(){ return THAT.$t('layout.default.about_us') }, link: '/team' },
-			{ get name(){ return THAT.$t('layout.default.support_polkastats') }, link: '/support-us' },
-			{ get name(){ return THAT.$t('layout.default.made_by') }, link: '/team' },
-		]
-
-		const legend =
-		[
-			{ get name(){ return THAT.$t('layout.default.built_with') + ' Basic Atttention Token' }, link: 'https://basicattentiontoken.org/', icon: 'built' },
-		]
-
 		const address =
 		[
 			{ name: '@PolkaStats', icon: ['fab', 'twitter'], link: 'https://twitter.com/polkastats' },
@@ -64,7 +67,7 @@ export default {
 			{ name: 'polkastats@protonmail.com', icon: 'envelope', link: 'https://keybase.io/encrypt#polkastats' },
 		]
 
-		return { menu: menu, legend: legend, address: address };
+		return { address: address };
 	}
 }
 </script>

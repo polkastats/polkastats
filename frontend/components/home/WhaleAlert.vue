@@ -15,6 +15,7 @@
 			</nuxt-link>
 		</template>
 		<template #cell(timestamp)="data">
+			<font-awesome-icon icon="clock" />
 			{{ fromNow(data.item.timestamp) }}
 		</template>
 		<template #cell(source)="data">
@@ -78,54 +79,59 @@ export default {
 	TableComponent
   },
   mixins: [commonMixin],
-  data() {
-
-	const THAT = this;
-	
-    return {
-		options:
-		{
-			get title(){ return THAT.$t('components.whale_alert.title') },
-			get subtitle(){ return THAT.$t('components.whale_alert.description') },
+  computed:
+  {
+	options()
+	{
+		return {
+			title: this.$t('components.whale_alert.title'),
+			subtitle: this.$t('components.whale_alert.description'),
 			variant: 'i-secondary',
-		},
+		}
+	},
+	fields()
+	{ 
+		return [
+			{
+				key: 'hash',
+				label: this.$t('components.whale_alert.hash'),
+				sortable: false,
+				variant: 'i-fourth',
+				class: 'important'
+			},
+			{
+				key: 'block_number',
+				label: this.$t('components.whale_alert.block_number'),
+				sortable: false,
+				class: 'highlighted'
+			},
+			{
+				key: 'timestamp',
+				label: this.$t('components.whale_alert.timestamp'),
+				sortable: false,
+			},
+			{
+				key: 'source',
+				label: this.$t('components.whale_alert.source'),
+				sortable: false,
+			},
+			{
+				key: 'destination',
+				label: this.$t('components.whale_alert.destination'),
+				sortable: false,
+			},
+			{
+				key: 'amount',
+				label: this.$t('components.whale_alert.amount'),
+				sortable: false,
+				tdClass: 'text-left'
+			},
+		]
+	}
+  },
+  data() {
+    return {
       transfers: [],
-      fields: [
-        {
-          key: 'hash',
-          get label(){ return THAT.$t('components.whale_alert.hash') },
-          sortable: false,
-		  variant: 'i-fourth',
-		  class: 'important'
-        },
-        {
-          key: 'block_number',
-          get label(){ return THAT.$t('components.whale_alert.block_number') },
-          sortable: false,
-		  class: 'highlighted'
-        },
-        {
-          key: 'timestamp',
-          get label(){ return THAT.$t('components.whale_alert.timestamp') },
-          sortable: false,
-        },
-        {
-          key: 'source',
-          get label(){ return THAT.$t('components.whale_alert.source') },
-          sortable: false,
-        },
-        {
-          key: 'destination',
-          get label(){ return THAT.$t('components.whale_alert.destination') },
-          sortable: false,
-        },
-        {
-          key: 'amount',
-          get label(){ return THAT.$t('components.whale_alert.amount') },
-          sortable: false,
-		  tdClass: 'text-left'
-        },
-      ],
     }
   },
   apollo: {

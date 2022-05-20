@@ -31,7 +31,7 @@
 	{
 		padding: 0;
 
-		> .section
+		section.section
 		{
 			padding: 1.8em 2em !important; // FIX: Delete important
 		}
@@ -40,6 +40,16 @@
 		{
 			padding: 0 !important; // FIX: Delete important
 			gap: 0;
+		}
+
+		/* Sections */
+		.section-scores
+		{
+			&::before,
+			&::after
+			{
+				border-radius: 0;
+			}
 		}
 	}
 

@@ -1,6 +1,6 @@
 
 <template>
-	<section class="scores blurred p-5" variant="i-primary">
+	<section class="section-scores blurred p-5" :variant="variant">
 		<header class="row mb-5">
 			<Search />
 		</header>
@@ -14,6 +14,10 @@ import Chain from '@/components/home/Chain.vue';
 import Search from '@/components/home/Search.vue';
 
 export default {
-	components: { Search, Chain }
+	components: { Search, Chain },
+	props:
+	{
+		variant: { default: 'i-primary' }
+	}
 }
 </script>

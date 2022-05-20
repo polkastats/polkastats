@@ -1,15 +1,11 @@
 <template>
-	<section class="section" :color="variant">
+	<section class="section section-search" :class="'text-' + text" :color="variant">
 
-		<header class="mb-5 text-center" v-if="title">
-			<h1 :class="'h3 text-uppercase font-weight-bold text-' + color">
-				{{ title }}
-			</h1>
+		<header class="text-center" v-if="title">
+			<h1 class="h3 text-uppercase font-weight-normal" :class="'texst-' + color">{{ title }}</h1>
 			<h2 v-if="subtitle" class="h6 font-weight-normal">{{ subtitle }}</h2>
-		</header>
-
-		<article>
-			<input-control
+			<input-control v-if="placeholder"
+				class="mt-3 text-left"
 				:placeholder="placeholder"
 				icon="search"
 				:variant="color"
@@ -17,7 +13,14 @@
 				:label="label"
 				@input="$emit('input', $event)"
 			/>
+		</header>
+
+		<article class="text-center">
 			<slot />
+			<div class="mt-3" v-if="results !== undefined">
+				{{ $t('components.ranking.search_results') }}:
+				<b>{{ results }}</b>
+			</div>
 		</article>
 		
 	</section>
@@ -34,8 +37,10 @@ export default {
 		placeholder: String,
 		label: String,
 		value: null,
-		variant: { default: 'i-fourth' },
-		color: { default: 'i-primary' }
+		variant: { default: 'i-primary' },
+		color: { default: 'i-fourth' },
+		text: { default: 'i-fifth' },
+		results: undefined,
 	},
 	components: { InputControl }
 }

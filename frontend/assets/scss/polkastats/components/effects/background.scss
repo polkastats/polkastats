@@ -1,36 +1,40 @@
-.blurred
+[effect="blur"]
 {
 	position: relative;
 
-	&::before,
 	&::after
 	{
 		content: '';
 		position: absolute;
 		top: 0;
 		left: 0;
-		z-index: -1;
+		z-index: 1;
 		width: 100%;
 		height: 100%;
-		opacity: 25%;
-		backface-visibility: hidden;
-	}
-
-	&::before
-	{
-		filter: blur(2.5em);
-		opacity: 40%;
+		filter: blur(8px);
 	}
 
 	@each $color, $value in $theme-colors
 	{
 		&[variant="#{$color}"]
 		{
-			&::before,
+			color: $value;
+
 			&::after
 			{
 				background-color: $value;
 			}
 		}
+	}
+}
+
+[effect="gray"]
+{
+	filter: grayscale(1) opacity(0.75);
+	transition: 0.3s linear;
+
+	&:hover
+	{
+		filter: grayscale(0);
 	}
 }

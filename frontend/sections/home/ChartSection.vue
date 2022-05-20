@@ -14,14 +14,10 @@ import TransfersChart from '@/components/home/TransfersChart.vue'
 
 export default {
 	components: { TransfersChart },
-	data()
+	computed:
 	{
-		const THAT = this;
-		
-		return {
-			title: 'Balance Transfers',
-			get subtitle(){ return THAT.$t('components.transfers_chart.title') },
-		}
+		title(){ return 'Balance Transfers' },
+		subtitle(){ return this.$t('components.transfers_chart.title') },
 	}
 }
 </script>

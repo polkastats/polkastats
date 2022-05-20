@@ -1,5 +1,89 @@
 <template>
-  <div>
+
+	<main>
+
+		<header-component>
+			<search-section 
+				:title="$t('pages.transfers.title')" 
+				:results="formatNumber(totalRows)"
+				:placeholder="$t('pages.transfers.search_placeholder')"
+				v-model="filter"
+			/>
+		</header-component>
+
+		<section class="section">
+
+			<Loading v-if="loading" />
+			<table-component v-else :items="transfers" :fields="fields" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
+
+				<template #cell(block_number)="data">
+                    <nuxt-link
+                      v-b-tooltip.hover
+                      :to="
+                        localePath(
+                          `/block?blockNumber=${data.item.block_number}`
+                        )
+                      "
+                      :title="$t('common.block_details')"
+                    >
+                      #{{ formatNumber(data.item.block_number) }}
+                    </nuxt-link>
+                </template>
+                <template #cell(hash)="data">
+                    <nuxt-link :to="localePath(`/transfer/${data.item.hash}`)">
+                      {{ shortHash(data.item.hash) }}
+                    </nuxt-link>
+                </template>
+                <template #cell(timestamp)="data">
+					<font-awesome-icon icon="clock" />
+                    {{ fromNow(data.item.timestamp) }}
+                </template>
+                <template #cell(source)="data">
+                  <div icon="avatar">
+                    <Identicon :address="data.item.source" :size="20" />
+                    <nuxt-link
+                      v-b-tooltip.hover
+                      :to="localePath(`/account/${data.item.source}`)"
+                      :title="$t('pages.accounts.account_details')"
+                    >
+                      {{ shortAddress(data.item.source) }}
+                    </nuxt-link>
+                  </div>
+                </template>
+                <template #cell(destination)="data">
+                  <div icon="avatar">
+                    <Identicon :address="data.item.destination" :size="20" />
+                    <nuxt-link
+                      v-b-tooltip.hover
+                      :to="localePath(`/account/${data.item.destination}`)"
+                      :title="$t('pages.accounts.account_details')"
+                    >
+                      {{ shortAddress(data.item.destination) }}
+                    </nuxt-link>
+                  </div>
+                </template>
+                <template #cell(amount)="data">
+                    {{ formatAmount(data.item.amount) }}
+                </template>
+                <template #cell(success)="data">
+                    <font-awesome-icon
+                      v-if="data.item.success"
+                      icon="check"
+                      class="text-i-success"
+                    />
+                    <font-awesome-icon
+                      v-else
+                      icon="times"
+                      class="text-i-danger"
+                    />
+                </template>
+
+			</table-component>
+
+		</section>
+	</main>
+
+  <!-- <div>
     <section>
       <b-container class="main py-5">
         <b-row class="mb-2">
@@ -17,7 +101,7 @@
             <Loading />
           </div>
           <template v-else>
-            <!-- Filter -->
+            Filter
             <b-row style="margin-bottom: 1rem">
               <b-col cols="12">
                 <b-input-group size="xl" class="mb-2">
@@ -107,10 +191,10 @@
                 </template>
               </b-table>
             </div>
-            <!-- pagination -->
+            pagination
             <div class="row">
               <div class="col-6">
-                <!-- desktop -->
+                desktop
                 <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
                   <b-button-group>
                     <b-button
@@ -124,7 +208,7 @@
                     </b-button>
                   </b-button-group>
                 </div>
-                <!-- mobile -->
+                mobile
                 <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
                   <b-dropdown
                     class="m-md-2"
@@ -156,7 +240,8 @@
         </div>
       </b-container>
     </section>
-  </div>
+  </div> -->
+
 </template>
 
 <script>
@@ -165,15 +250,47 @@ import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
 import Identicon from '@/components/Identicon.vue'
 import { config, paginationOptions } from '@/frontend.config.js'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import TableComponent from '@/components/more/TableComponent.vue'
+import SearchSection from '@/components/more/headers/SearchSection.vue'
 
 export default {
+  	layout: 'AuthLayout',
   components: {
     Identicon,
     Loading,
+	HeaderComponent,
+	TableComponent,
+	SearchSection,
   },
   mixins: [commonMixin],
+  computed:
+  {
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.totalRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100],
+			}
+		}
+	}
+  },
   data() {
     return {
+		options:
+		{
+			variant: 'i-fourth',
+		},
       loading: true,
       filter: null,
       transfers: [],
@@ -188,6 +305,8 @@ export default {
           key: 'hash',
           label: this.$t('pages.transfers.hash'),
           sortable: false,
+		  variant: 'i-fourth',
+		  class: 'important py-3'
         },
         {
           key: 'block_number',

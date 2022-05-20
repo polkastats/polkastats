@@ -1,11 +1,5 @@
 .navbar
 {
-	.btn
-	{
-		font-size: 0.8em;
-		padding: 0.75em 1.25em;
-	}
-	
 	/* Variants */
 	@each $color, $value in $theme-colors
 	{

@@ -3,7 +3,7 @@
 	  <input-control
 			:placeholder="$t('components.search.caption')"
 			icon="search"
-			variant="i-fourth"
+			variant="i-fourthB"
 			v-model="searchInput"
 			class="text-i-fifth"
 		/>

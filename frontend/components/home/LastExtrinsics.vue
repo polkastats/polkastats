@@ -35,38 +35,43 @@ import TableComponent from '@/components/more/TableComponent.vue'
 export default {
 	components: { TableComponent },
   mixins: [commonMixin],
-  data() {
-
-	const THAT = this;
-
-    return {
-		options:
-		{
-			get title(){ return THAT.$t('components.last_extrinsics.title') },
-			get tooltip(){ return THAT.$t('components.last_extrinsics.extrinsics_details') },
-			link: '/extrinsics',
+  computed:
+  {
+	options()
+	{
+	return {
+			title: this.$t('components.last_extrinsics.title'),
+			tooltip: this.$t('components.last_extrinsics.extrinsics_details'),
+			link: this.localePath('/extrinsics'),
 			variant: 'i-secondary',
-		},
+		}
+	},
+	fields()
+	{ 
+		return [
+			{
+				key: 'block_number',
+				label: this.$t('components.last_extrinsics.id'),
+				sortable: false,
+				class: 'highlighted'
+			},
+			{
+				key: 'hash',
+				label: this.$t('components.last_extrinsics.hash'),
+				sortable: false,
+			},
+			{
+				key: 'section',
+				label: this.$t('components.last_extrinsics.extrinsic'),
+				sortable: false,
+				class:'expanded',
+			},
+		]
+	}
+  },
+  data() {
+    return {
       extrinsics: [],
-      fields: [
-        {
-          key: 'block_number',
-          get label(){ return THAT.$t('components.last_extrinsics.id') },
-          sortable: false,
-		  class: 'highlighted'
-        },
-        {
-          key: 'hash',
-          get label(){ return THAT.$t('components.last_extrinsics.hash') },
-          sortable: false,
-        },
-        {
-          key: 'section',
-          get label(){ return THAT.$t('components.last_extrinsics.extrinsic') },
-          sortable: false,
-		  class:'expanded',
-        },
-      ],
     }
   },
   apollo: {

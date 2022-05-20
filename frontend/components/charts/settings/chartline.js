@@ -2,9 +2,11 @@ import THEME from 'assets/scss/exports/polkastats.scss';
 
 export class ChartLineOptions
 {
-	constructor(x, y)
+	constructor(x, y, variant)
 	{
 		this.setAxes(x, y);
+		this.setVariant(variant);
+		this.setRounded(THEME.enableRounded == 'true' ? 0.5 : 0);
 	}
 
 	setLabels(labels)
@@ -23,12 +25,25 @@ export class ChartLineOptions
 		this.options.scales.yAxes[0].scaleLabel.labelString = y;
 	}
 
+	setVariant(variant = 'Primary')
+	{
+		if(THEME['color' + variant])
+		{
+			this.data.datasets[0].borderColor = THEME['color' + variant] + '80';
+			this.data.datasets[0].backgroundColor = THEME['color' + variant] + '40';
+		}
+	}
+
+	setRounded(tension)
+	{
+		this.data.datasets[0].tension = tension;
+	}
+
 	data = 
 	{
 		datasets:
 		[
 			{
-				borderColor: THEME.colorSecondary + '80',
 				borderWidth: 1,
 				pointBackgroundColor: 'transparent',
 				pointBorderColor: 'transparent',
@@ -38,8 +53,6 @@ export class ChartLineOptions
 				pointStyle: 'rect',
 				hoverBorderWidth: 3,
 				hoverRadius: 6,
-				tension: 0,
-				backgroundColor: THEME.colorSecondary + '40',
 			},
 		],
 	}

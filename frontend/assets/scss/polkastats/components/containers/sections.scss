@@ -36,8 +36,6 @@
 
 	&.section-header
 	{
-		padding-top: 6em;
-
 		&::before
 		{
 			opacity: 50%;
@@ -62,6 +60,11 @@
 		&[background="cubes"]::after
 		{
 			background-image: url('assets/images/backgrounds/cubes.png');
+		}
+
+		&[type="unfill"]
+		{
+			padding-top: 6em;
 		}
 	}
 	

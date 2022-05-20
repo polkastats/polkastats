@@ -1,5 +1,40 @@
 <template>
-  <div class="chain-info mb-4">
+
+	<b-row class="staking-stats py-4 mx-auto">
+		<b-col sm="3" cols="6">
+			<nuxt-link class="d-block text-i-fifth" :to="localePath(`/staking/validators`)" v-b-tooltip.hover :title="$t('components.staking_stats.goto_validators')">
+				<score-tag 
+					:title="$t('components.staking_stats.active_waiting_validators')"
+					:value="activeValidatorCount + ' / '+ waitingValidatorCount"
+					variant="i-third"
+					icon="clock"
+				/>
+			</nuxt-link>
+		</b-col>
+		<b-col sm="3" cols="6">
+			<score-tag 
+				:title="$t('components.staking_stats.current_era')"
+				:value="formatNumber(currentEra)"
+			/>
+		</b-col>
+		<b-col sm="3" cols="6">
+			<score-tag 
+				:title="$t('components.staking_stats.nominators')"
+				:value="formatNumber(nominatorCount)"
+				icon="user-friends"
+			/>
+		</b-col>
+		<b-col sm="3" cols="6">
+			<score-tag 
+				:title="$t('components.staking_stats.minimum_stake')"
+				:value="formatAmount(minimumStake, 3)"
+				variant="i-third"
+				icon="chart-area"
+			/>
+		</b-col>
+	</b-row>
+
+  <!-- <div class="chain-info mb-4">
     <div class="row">
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
@@ -56,15 +91,17 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
+import ScoreTag from '~/components/more/ScoreTag.vue'
 
 export default {
   mixins: [commonMixin],
+  components: { ScoreTag },
   data() {
     return {
       activeValidatorCount: 0,

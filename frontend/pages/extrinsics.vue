@@ -1,5 +1,103 @@
 <template>
-  <div>
+
+	<main>
+
+		<header-component>
+			<search-section 
+				:title="$t('pages.extrinsics.title')" 
+				:placeholder="$t('pages.blocks.search_placeholder')"
+				:results="formatNumber(totalRows)"
+				label="Search"
+				v-model="filter"
+			>
+				<b-row class="my-3 text-left">
+					<b-col md="4" sm="12" class="mb-2">
+						<input-control
+							kind="select"
+							variant="i-fourth"
+							label="Runtime"
+							v-model="selectedRuntimeVersion"
+							:options="runtimeSpecVersionOptions"
+							@input="selectedPalletName = null"
+						/>
+					</b-col>
+					<b-col md="4" sm="6" class="mb-2">
+						<input-control
+							kind="select"
+							variant="i-fourth"
+							label="Pallet"
+							v-model="selectedPalletName"
+							:options="palletNameOptions"
+							@input="selectedPalletExtrinsic = null"
+						/>
+					</b-col>
+					<b-col md="4" sm="6">
+						<input-control
+							kind="select"
+							variant="i-fourth"
+							label="Extrinsic"
+							v-model="selectedPalletExtrinsic"
+							:options="palletExtrinsicsOptions"
+						/>
+					</b-col>
+				</b-row>
+				<b-button size="sm" variant="i-primary" @click="reloadQueries()">
+					<font-awesome-icon icon="sync" size="sm" class="mr-1" />
+					Reload
+				</b-button>
+			</search-section>
+		</header-component>
+
+		<section class="section">
+
+			<Loading v-if="$apollo.loading" />
+			<table-component v-else :items="extrinsics" :fields="fields" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
+				<template #cell(block_number)="data">
+                    <nuxt-link
+                      v-b-tooltip.hover
+                      :to="
+                        localePath(
+                          `/extrinsic/${data.item.block_number}/${data.item.extrinsic_index}`
+                        )
+                      "
+                      :title="$t('common.extrinsic_details')"
+                    >
+                      {{ data.item.block_number }}-{{
+                        data.item.extrinsic_index
+                      }}
+                    </nuxt-link>
+                </template>
+                <template #cell(hash)="data">
+                  {{ shortHash(data.item.hash) }}
+                </template>
+                <template #cell(timestamp)="data">
+					<font-awesome-icon icon="clock" />
+                    {{ fromNow(data.item.timestamp) }}
+                </template>
+                <template #cell(section)="data">
+                  <div class="timeline" variant="i-primary">
+					<span class="timeline-item">{{ data.item.section }}</span>
+					<span class="timeline-item">{{ data.item.method }}</span>
+                  </div>
+                </template>
+                <template #cell(success)="data">
+                    <font-awesome-icon
+                      v-if="data.item.success"
+                      icon="check"
+                      class="text-i-success"
+                    />
+                    <font-awesome-icon
+                      v-else
+                      icon="times"
+                      class="text-i-danger"
+                    />
+                </template>
+			</table-component>
+
+		</section>
+	</main>
+
+  <!-- <div>
     <section>
       <b-container class="main py-5">
         <b-row class="mb-2">
@@ -18,7 +116,7 @@
           </b-col>
         </b-row>
         <div class="last-extrinsics">
-          <!-- Filter -->
+          Filter
           <b-row style="margin-bottom: 1rem">
             <b-col cols="12">
               <b-input-group size="xl" class="mb-2">
@@ -65,10 +163,6 @@
               ></b-form-select>
             </b-col>
           </b-row>
-          <!-- <p>
-            runtime: {{ selectedRuntimeVersion }} / module:
-            {{ selectedPalletName }} / extrinsic: {{ selectedPalletExtrinsic }}
-          </p> -->
           <div v-if="$apollo.loading" class="text-center py-4">
             <Loading />
           </div>
@@ -122,10 +216,10 @@
                 </template>
               </b-table>
             </div>
-            <!-- pagination -->
+            pagination
             <div class="row">
               <div class="col-6">
-                <!-- desktop -->
+                desktop
                 <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
                   <b-button-group>
                     <b-button
@@ -139,7 +233,7 @@
                     </b-button>
                   </b-button-group>
                 </div>
-                <!-- mobile -->
+                mobile
                 <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
                   <b-dropdown
                     class="m-md-2"
@@ -171,7 +265,7 @@
         </div>
       </b-container>
     </section>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -179,14 +273,29 @@ import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
 import { config, paginationOptions } from '@/frontend.config.js'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import TableComponent from '@/components/more/TableComponent.vue'
+import SearchSection from '@/components/more/headers/SearchSection.vue'
+import DropdownMenu from '@/components/more/DropdownMenu.vue';
+import InputControl from '@/components/more/InputControl.vue'
 
 export default {
+  	layout: 'AuthLayout',
   components: {
     Loading,
+	HeaderComponent,
+	TableComponent,
+	SearchSection,
+	DropdownMenu,
+	InputControl
   },
   mixins: [commonMixin],
   data() {
     return {
+		options:
+		{
+			variant: 'i-fourth',
+		},
       filter: '',
       extrinsics: [],
       paginationOptions,
@@ -200,6 +309,8 @@ export default {
           key: 'block_number',
           label: this.$t('pages.extrinsics.id'),
           sortable: false,
+		  variant: 'i-fourth',
+		  class: 'important py-3'
         },
         {
           key: 'timestamp',
@@ -215,6 +326,7 @@ export default {
           key: 'section',
           label: this.$t('pages.extrinsics.extrinsic'),
           sortable: false,
+		  class: 'text-left'
         },
         {
           key: 'success',
@@ -246,6 +358,24 @@ export default {
     }
   },
   computed: {
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.totalRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100],
+			}
+		}
+	},
     runtimeSpecVersionOptions() {
       const runtimeSpecVersionOptions = this.runtimeVersions.map(
         (specVersion) => ({

@@ -5,7 +5,7 @@
         v-b-tooltip.hover
         :title="$t('components.fiat_conversion.current_value')"
       >
-		<b-badge class="rounded-0 mr-1" :variant="variant">FIAT</b-badge>
+		<b-badge class="mr-1" :variant="variant">FIAT</b-badge>
         {{ formatNumber(FIATValue.toFixed(2)) }}
       </span>
     </template>
@@ -15,7 +15,7 @@
         v-b-tooltip.hover
         :title="$t('components.fiat_conversion.historic_value')"
       >
-		<b-badge class="mr-1 rounded-0" :variant="variant">FIAT</b-badge>
+		<b-badge class="mr-1" :variant="variant">FIAT</b-badge>
         {{ formatNumber(historicalFIATValue.toFixed(2)) }}
       </span>
       <span
@@ -23,7 +23,7 @@
         v-b-tooltip.hover
         :title="$t('components.fiat_conversion.current_value')"
       >
-		<b-badge class="mr-1 rounded-0" :variant="variant">FIAT</b-badge>
+		<b-badge class="mr-1" :variant="variant">FIAT</b-badge>
         {{ formatNumber(FIATValue.toFixed(2)) }}
       </span>
     </template>

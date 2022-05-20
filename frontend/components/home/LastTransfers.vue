@@ -56,43 +56,48 @@ export default {
     Identicon, TableComponent
   },
   mixins: [commonMixin],
-  data() {
-
-	const THAT = this;
-	
-    return {
-		options:
+  computed:
+  {
+		options()
 		{
-			get title(){ return THAT.$t('components.last_transfers.title') },
-			get tooltip(){ return THAT.$t('components.last_transfers.transfers_details') },
-			link: '/transfers',
-			variant: 'i-fourth',
+			return {
+				title: this.$t('components.last_transfers.title'),
+				tooltip: this.$t('components.last_transfers.transfers_details'),
+				link: this.localePath('/transfers'),
+				variant: 'i-fourth',
+			};
 		},
+		fields()
+		{
+			return [
+				{
+					key: 'hash',
+					label: this.$t('components.last_transfers.hash'),
+					sortable: false,
+					variant: 'i-fourth',
+					class: 'important'
+				},
+				{
+					key: 'source',
+					label: this.$t('components.last_transfers.source'),
+					sortable: false,
+				},
+				{
+					key: 'destination',
+					label: this.$t('components.last_transfers.destination'),
+					sortable: false,
+				},
+				{
+					key: 'amount',
+					label: this.$t('components.last_transfers.amount'),
+					sortable: false,
+				},
+		]
+	  },
+  },
+  data() {
+    return {
       transfers: [],
-      fields: [
-        {
-          key: 'hash',
-          get label(){ return THAT.$t('components.last_transfers.hash') },
-          sortable: false,
-		  variant: 'i-fourth',
-		  class: 'important'
-        },
-        {
-          key: 'source',
-          get label(){ return THAT.$t('components.last_transfers.source') },
-          sortable: false,
-        },
-        {
-          key: 'destination',
-          get label(){ return THAT.$t('components.last_transfers.destination') },
-          sortable: false,
-        },
-        {
-          key: 'amount',
-          get label(){ return THAT.$t('components.last_transfers.amount') },
-          sortable: false,
-        },
-      ],
     }
   },
   apollo: {

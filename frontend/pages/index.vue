@@ -1,14 +1,14 @@
 <template>
 	<main>
-		<header-component>
-			<template #inside>
-				<score-section />
-			</template>
+		<header-component type="unfill" :ads="false">
+			<score-section variant="i-primary" />
 		</header-component>
 
 		<chart-section />
+		<ads-section />
 		<table-section />
 	</main>
+
   <!-- <div>
     <section>
       <b-container class="main py-5 dashboard">
@@ -57,6 +57,7 @@ import ChartSection from '../sections/home/ChartSection.vue'
 import ScoreSection from '../sections/home/ScoreSection.vue'
 import TableSection from '../sections/home/TableSection.vue'
 import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import AdsSection from '@/components/more/AdsSection.vue'
 
 export default {
   components: {
@@ -70,7 +71,7 @@ export default {
     // Search,
     // Top10Rich,
 	// WhaleAlert, 
-	ScoreSection, ChartSection, TableSection, HeaderComponent
+	ScoreSection, ChartSection, TableSection, HeaderComponent, AdsSection
   },
   	layout: 'AuthLayout',
   data: () => {

@@ -1,10 +1,9 @@
 <template>
 	<fragment>
-		<header class="section section-header" :color="variant" :background="background">
-			<slot name="inside" />
+		<header class="section section-header" v-bind="$props">
+			<slot />
 		</header>
-		<slot />
-		<AdsSection v-if="ads" />
+		<AdsSection v-if="ads" v-bind="ads" />
 	</fragment>
 </template>
 
@@ -16,9 +15,10 @@ export default {
 	components: { AdsSection, Fragment },
 	props:
 	{
-		ads: { type: Boolean, default: true },
-		variant: { type: String, default: 'i-third' },
+		color: { type: String, default: 'i-gradient-primary' },
 		background: { type: String, default: 'cubes' },
+		type: { type: String },
+		ads: { type: Object, default: { color: 'i-primary' } },
 	}
 }
 </script>

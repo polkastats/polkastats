@@ -3,8 +3,8 @@
 	background-color: transparent;
 	font-size: 1em;
 	padding: 1.5em 1em;
-	border-radius: 0;
 	color: inherit;
+	@include border-radius($border-radius !important); // FIX: Remove important
 
 	&::placeholder
 	{

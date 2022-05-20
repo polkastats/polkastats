@@ -1,5 +1,13 @@
 .btn
 {
-	border-radius: 0;
-	font-size: 1em;
+	&.btn-sm
+	{
+		font-size: 0.65rem !important;
+		padding: 0.75em 1.25em;
+	}
+
+	&:hover
+	{
+		animation: animation-bounce 1s;
+	}
 }

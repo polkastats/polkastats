@@ -10,9 +10,7 @@
 	{
 		font-size: 1em;
 		color: $i-fifth;
-		border-radius: 0;
 		text-transform: none;
-		margin-top: 1.6em;
 		
 		// TODO: Move to inherit effect
 		&::before
@@ -22,10 +20,6 @@
 
 			border: 0.8em solid transparent;
 			border-width: 1em 0.6em;
-
-			border-bottom-color: inherit;
-			bottom: 100%;
-			left: 1em;
 		}
 
 		.dropdown-item
@@ -40,6 +34,31 @@
 				opacity: 1;
 			}
 		}
+
+		&:not([x-placement]),
+		&[x-placement="bottom-start"]
+		{
+			margin-top: 1.6em;
+
+			&::before
+			{
+				border-bottom-color: inherit;
+				bottom: 100%;
+				left: 1em;
+			}
+		}
+
+		&[x-placement="top-start"]
+		{
+			margin-top: -1.6em;
+
+			&::before
+			{
+				border-top-color: inherit;
+				top: 100%;
+				left: 1em;
+			}
+		}
 	}
 
 	@each $color, $value in $theme-colors
@@ -52,6 +71,35 @@
 				background-color: $value;
 				border-color: $value;
 			}
+		}
+	}
+}
+
+.custom-select
+{
+	padding: 0.75em 1em;
+    height: auto;
+
+	&[variant]
+	{
+		background-image: none;
+		color: $i-fifth;
+		background-color: transparent;
+		border-width: 0.2em;
+		font-size: 1em;
+		appearance: auto;
+
+		option
+		{
+			color: initial;
+		}
+	}
+	
+	@each $color, $value in $theme-colors
+	{
+		&[variant=#{$color}]
+		{
+			border-color: $value;
 		}
 	}
 }

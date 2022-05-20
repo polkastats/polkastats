@@ -28,12 +28,6 @@ table.pretty-table
 		vertical-align: middle;
 		padding: 0.6em 1.2em;
 
-		// &.important
-		// {
-		// 	transform: translateX(-0.8em);
-		// 	transform-origin: right;
-		// }
-
 		&.expanded
 		{
 			width: 100%;
@@ -63,6 +57,17 @@ table.pretty-table
 
 	td
 	{
+		&:first-of-type,
+		&.important + td
+		{
+			@include border-left-radius($border-radius);
+		}
+
+		&:last-of-type
+		{
+			@include border-right-radius($border-radius);
+		}
+
 		&.important
 		{
 			position: relative;
@@ -71,14 +76,30 @@ table.pretty-table
 			transition: 0.3s linear;
 			color: $i-fifth;
 
+			// FIX: Move to link
 			&:hover
 			{
-				cursor: pointer;
-				transform: scale(1.2);
+				animation: 1s animation-bounce;
+
+				&::before
+				{
+					background-color: $i-primary !important; // FIX: Remove important
+				}
 
 				a:hover
 				{
 					color: inherit;
+				}
+			}
+
+			&.table-i-primary
+			{
+				&:hover
+				{
+					&::before
+					{
+						background-color: $i-fourth !important; // FIX: Remove important
+					}
 				}
 			}
 
@@ -91,6 +112,8 @@ table.pretty-table
 				z-index: -1;
 				width: 95%;
 				height: 100%;
+				transition: 0.3s linear;
+				@include border-radius($border-radius);
 			}
 		}
 	}
@@ -112,7 +135,6 @@ table.pretty-table
 
 		td.important.table-#{$color}
 		{
-			// background-color: $value;
 			&::before
 			{
 				background-color: $value;

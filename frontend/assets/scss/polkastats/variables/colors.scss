@@ -5,6 +5,9 @@ $i-fourth: #161718 !default;
 $i-fourthB: #000 !default;
 $i-fifth: #FFF !default;
 
+$i-success: #13c667 !default;
+$i-danger: #dd1d30 !default;
+
 $theme-colors: () !default;
 $theme-colors: map-merge(
 (
@@ -14,12 +17,14 @@ $theme-colors: map-merge(
 	'i-fourth': $i-fourth,
 	'i-fourthB': $i-fourthB,
 	'i-fifth': $i-fifth,
+	'i-success': $i-success,
+	'i-danger': $i-danger,
 ),
 $theme-colors);
 
 /* Gradient Colors */
-$i-gradient-primary: linear-gradient(to right, $i-primary, $i-secondary) !default;
-$i-gradient-secondary: linear-gradient(to right, $i-primary, $i-third) !default;
+$i-gradient-primary: linear-gradient(to top, $i-primary, $i-third) !default;
+$i-gradient-secondary: linear-gradient(to bottom, $i-third, $i-primary) !default;
 $i-gradient-third: linear-gradient(to bottom, $i-third, $i-secondary) !default;
 
 $theme-gradients: () !default;

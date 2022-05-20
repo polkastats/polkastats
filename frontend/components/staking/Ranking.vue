@@ -1,10 +1,174 @@
 <template>
-  <div>
+
+	<main>
+
+		<header-component>
+			
+			<search-section 
+				:title="$t('pages.validators.title')" 
+				:placeholder="$t('components.ranking.search_placeholder')"
+				:results="filteredRows + ' / ' + ranking.length"
+				v-model="filter"
+			>
+				<header class="my-3">
+					<h1 class="mb-2 h6">
+						{{ $t('components.ranking.exclude_from_search') }}
+						<nuxt-link
+							class="ml-1"
+							v-b-tooltip.hover
+							to="/help#exclude-filter"
+							:title="$t('components.ranking.exclude_description')"
+						>
+							<font-awesome-icon icon="question-circle" />
+						</nuxt-link>
+					</h1>
+					<p>
+						<b-form-checkbox
+							variant="i-fourth"
+							active="i-fifth"
+							size="sm"
+							switch
+							:checked="onlyOneClusterMember"
+							@change="toggleOnlyOneClusterMember()"
+						>
+							{{ $t('components.ranking.allow_only_one_cluster_member') }}
+						</b-form-checkbox>
+					</p>
+				</header>
+				<b-row class="text-left">
+					<b-col sm="6" md="4" lg="3" xl="2" v-for="option in options" :key="option.text">
+						<b-form-checkbox
+							variant="i-fourth"
+							active="i-fifth"
+							size="sm"
+							switch
+							:checked="getExcludeState(option.value)"
+							@change="toggleExcluded(option.value)"
+						>
+							{{ option.text }}
+						</b-form-checkbox>
+					</b-col>
+				</b-row>
+			</search-section>
+
+		</header-component>
+
+		<section class="section">
+
+			<Loading v-if="loading" />
+			<table-component v-else :items="filteredRanking" :fields="fields" :settings="settings" :listeners="listeners" :options="tableOptions" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
+				<template #cell(active)="data">
+					<small
+						style="filter: blur(0.5px)"
+						effect="blur"
+						variant="i-success"
+						v-if="data.item.active"
+						v-b-tooltip.hover
+						:title="$t('components.ranking.elected_validator')"
+					>
+						<font-awesome-icon icon="circle" />
+					</small>
+					<small
+						style="filter: blur(0.5px)"
+						effect="blur"
+						variant="i-danger"
+						v-else
+						v-b-tooltip.hover
+						:title="$t('components.ranking.not_elected_validator')"
+					>
+						<font-awesome-icon icon="circle" />
+					</small>
+				</template>
+				<template #cell(name)="data">
+					<div icon="avatar">
+						<Identicon :address="data.item.stashAddress" :size="20" />
+						<nuxt-link :to="localePath(`/validator/${data.item.stashAddress}`)">
+							<span v-if="data.item.name">{{ data.item.name }}</span>
+							<span v-else>{{ shortAddress(data.item.stashAddress) }}</span>
+						</nuxt-link>
+						<VerifiedIcon v-if="data.item.verifiedIdentity" />
+					</div>
+				</template>
+				<template #cell(commission)="data">
+					{{ data.item.commission.toFixed(1) }}%
+				</template>
+
+				<template #cell(selfStake)="data">
+					{{ formatAmount(data.item.selfStake) }}
+				</template>
+				<template #cell(otherStake)="data">
+					{{ formatAmount(data.item.otherStake) }}
+				</template>
+				<template #cell(relativePerformance)="data">
+					<div class="text-left small">
+						{{ (data.item.relativePerformance * 100).toFixed(2) }} %
+					</div>
+					<b-progress
+						v-if="data.item.relativePerformance >= 0.25 && data.item.relativePerformance < 0.75"
+						:max="100"
+						height="2px"
+						variant="warning"
+						:value="data.item.relativePerformance * 100"
+					/>
+					<b-progress
+						v-else-if="data.item.relativePerformance >= 0.75"
+						:max="100"
+						height="2px"
+						variant="i-success"
+						:value="data.item.relativePerformance * 100"
+					/>
+					<b-progress
+						v-else
+						:max="100"
+						height="2px"
+						variant="i-danger"
+						:value="data.item.relativePerformance * 100"
+					/>
+				</template>
+				<template #cell(totalRating)="data">
+					<span
+						v-b-tooltip.hover
+						:title="`
+						Active: ${data.item.activeRating}, 
+						Subaccounts: ${data.item.subAccountsRating}, 
+						Identity: ${data.item.identityRating}, 
+						Address: ${data.item.addressCreationRating}, 
+						Nominators: ${data.item.nominatorsRating}, 
+						Commission: ${data.item.commissionRating}, 
+						EraPoints: ${data.item.eraPointsRating}, 
+						Slash: ${data.item.slashRating}, 
+						Governance: ${data.item.governanceRating}, 
+						Payouts: ${data.item.payoutRating}
+						`"
+						>
+							{{ data.item.totalRating }}
+						</span>
+				</template>
+				<template #cell(selected)="data">
+					<span @click="toggleSelected(data.item.stashAddress)">
+						<b-form-checkbox
+							variant="i-light"
+							active="i-success"
+							disabled
+							size="sm"
+							switch
+							v-b-tooltip.hover
+							:title="$t('components.ranking.select_unselect')"
+							:checked="data.item.selected"
+						/>
+					</span>
+				</template>
+			</table-component>
+
+		</section>
+	</main>
+
+  <!-- <div>
     <div v-if="loading" class="text-center">
       <Loading />
     </div>
     <div v-else class="ranking">
-      <!-- Exclude -->
+      Exclude
       <div class="widget mb-4">
         <div class="row">
           <div class="col-10">
@@ -58,7 +222,7 @@
           </p>
         </b-collapse>
       </div>
-      <!-- Filter -->
+      Filter
       <b-row>
         <b-col cols="12">
           <b-input-group class="mt-3 mb-4">
@@ -75,7 +239,7 @@
           </b-input-group>
         </b-col>
       </b-row>
-      <!-- Search results -->
+      Search results
       <b-row>
         <b-col cols="12">
           <p class="mb-2 text-primary2">
@@ -84,7 +248,7 @@
           </p>
         </b-col>
       </b-row>
-      <!-- Ranking table -->
+      Ranking table
       <b-table
         hover
         :fields="fields"
@@ -140,7 +304,7 @@
           </span>
         </template>
         <template #cell(name)="data">
-          <!-- desktop -->
+          desktop
           <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
             <Identicon :address="data.item.stashAddress" :size="24" />
             <nuxt-link :to="localePath(`/validator/${data.item.stashAddress}`)">
@@ -149,7 +313,7 @@
             </nuxt-link>
             <VerifiedIcon v-if="data.item.verifiedIdentity" />
           </div>
-          <!-- mobile -->
+          mobile
           <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
             <b-row>
               <b-col cols="10">
@@ -249,7 +413,7 @@
       </b-table>
       <div class="row">
         <div class="col-6">
-          <!-- desktop -->
+          desktop
           <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
             <b-button-group>
               <b-button
@@ -278,7 +442,7 @@
               >
             </b-button-group>
           </div>
-          <!-- mobile -->
+          mobile
           <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
             <b-dropdown
               class="m-md-2"
@@ -306,17 +470,35 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
+
 <script>
 import { BigNumber } from 'bignumber.js'
 import commonMixin from '@/mixins/commonMixin.js'
 import { config } from '@/frontend.config.js'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import TableComponent from '@/components/more/TableComponent.vue'
+import SearchSection from '@/components/more/headers/SearchSection.vue'
+import DropdownMenu from '@/components/more/DropdownMenu.vue';
+import InputControl from '@/components/more/InputControl.vue'
 
 export default {
+	components:
+	{
+		HeaderComponent,
+		TableComponent,
+		SearchSection,
+		DropdownMenu,
+		InputControl
+	},
   mixins: [commonMixin],
   data() {
     return {
+		tableOptions:
+		{
+			variant: 'i-fourth',
+		},
       perPage: 10,
       currentPage: 1,
       sortBy: 'rank',
@@ -326,44 +508,37 @@ export default {
           key: 'active',
           label: this.$t('components.ranking.elected'),
           sortable: true,
-          class:
-            'text-center d-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         {
           key: 'name',
           label: this.$t('components.ranking.name'),
           sortable: true,
+		  class: "text-left"
         },
         {
           key: 'relativePerformance',
           label: this.$t('components.ranking.relative_performance'),
           sortable: true,
-          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         {
           key: 'selfStake',
           label: this.$t('components.ranking.self_stake'),
           sortable: true,
-          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         {
           key: 'activeEras',
           label: this.$t('components.ranking.active_eras'),
           sortable: true,
-          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         {
           key: 'customVRCScore',
           label: this.$t('components.ranking.score'),
           sortable: true,
-          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
         {
           key: 'selected',
           label: this.$t('components.ranking.selected'),
           sortable: true,
-          class:
-            'text-center d-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         },
       ],
       exclude: [],
@@ -410,6 +585,51 @@ export default {
     }
   },
   computed: {
+	settings()
+	{
+		return {
+			'per-page': this.perPage,
+			'current-page': this.currentPage,
+			'sort-by.sync': this.sortBy,
+			'sort-desc.sync': this.sortDesc,
+			'filter': this.filter,
+			'filter-included-fields': this.filterOn,
+			'sort-compare': this.sortCompare,
+			'filter-ignored-fields': [
+				'active',
+				'commission',
+				'selfStake',
+				'totalStake',
+				'relativePerformance',
+				'totalRating',
+				'selected',
+			]
+		}
+	},
+	listeners()
+	{
+		return {
+			filtered: this.onFiltered
+		}
+	},
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.filteredRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100],
+			}
+		}
+	},
     loading() {
       return this.$store.state.ranking.loading
     },

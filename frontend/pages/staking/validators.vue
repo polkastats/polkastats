@@ -1,15 +1,16 @@
 <template>
-  <div class="page container pt-3">
-    <div>
+  <!-- <div class="page container pt-3">
+    <div> -->
       <Ranking />
-    </div>
-  </div>
+    <!-- </div>
+  </div> -->
 </template>
 
 <script>
 import Ranking from '@/components/staking/Ranking.vue'
 import { config } from '@/frontend.config.js'
 export default {
+  	layout: 'AuthLayout',
   components: {
     Ranking,
   },

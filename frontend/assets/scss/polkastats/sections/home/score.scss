@@ -1,24 +1,27 @@
-.section
+.section-scores
 {
-	.scores
+	&::before,
+	&::after
 	{
-		.score-wrap
-		{
-			gap: 3em 0;
-		}
+		@include border-top-radius($border-radius * 3);
+	}
 
-		.score-item
+	.score-wrap
+	{
+		gap: 3em 0;
+	}
+
+	.score-item
+	{
+		em
 		{
-			em
-			{
-				font-weight: normal;
-				font-style: normal;
-			}
-		
-			strong
-			{
-				font-weight: 500;
-			}
+			font-weight: normal;
+			font-style: normal;
+		}
+	
+		strong
+		{
+			font-weight: 500;
 		}
 	}
 }

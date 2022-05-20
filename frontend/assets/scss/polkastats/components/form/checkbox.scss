@@ -1,0 +1,61 @@
+.custom-switch
+{
+	.custom-control-input:active + .custom-control-label,
+	.custom-control-input:checked + .custom-control-label
+	{
+		&::before
+		{
+			background-color: transparent;
+		}
+	}
+
+	.custom-control-label
+	{
+		line-height: 2.25;
+		font-size: 1em;
+		white-space: nowrap;
+
+		&::before
+		{
+			background-color: transparent;
+			border-width: 0.2em;
+			border-radius: 0;
+			@include border-radius($border-radius * 0.8);
+		}
+
+		&::after
+		{
+			border-radius: 0;
+			@include border-radius($border-radius * 0.5);
+		}
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		[variant=#{$color}] + .custom-control-label
+		{
+			&::before
+			{
+				border-color: $value;
+			}
+	
+			&::after
+			{
+				background-color: $value;
+			}
+		}
+
+		[active=#{$color}]:checked + .custom-control-label
+		{
+			&::before
+			{
+				border-color: $value;
+			}
+	
+			&::after
+			{
+				background-color: $value;
+			}
+		}
+	}
+}

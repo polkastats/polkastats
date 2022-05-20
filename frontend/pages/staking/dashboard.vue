@@ -1,26 +1,68 @@
 <template>
-  <div class="page container pt-3">
+	<main>
+		<header-component>
+			<search-section
+				:title="$t('pages.dashboard.title')" 
+			>
+				<StakingStats class="mt-2" />
+      			<Suggestions :validators="chainValidatorAddresses" />
+			</search-section>
+		</header-component>
+		<section class="section text-center">
+			<b-row class="mb-4">
+				<b-col lg="6">
+					<header type="block" variant="i-fourth" class="mb-4">
+						<h1 class="h5">{{ $t('components.dashboard_commission.title') }}</h1>
+					</header>
+					<DashboardCommission style="height: 250px;" />
+				</b-col>
+				<b-col lg="6">
+					<header type="block" variant="i-fourth" class="mb-4">
+						<h1 class="h5">{{ $t('components.dashboard_self_stake.title') }}</h1>
+					</header>
+					<DashboardSelfStake style="height: 250px;" />
+				</b-col>
+			</b-row>
+			<b-row>
+				<b-col lg="6">
+					<header type="block" variant="i-fourth" class="mb-4">
+						<h1 class="h5">{{ $t('components.dashboard_performance.title') }}</h1>
+					</header>
+					<DashboardPerformance style="height: 250px;" />
+				</b-col>
+				<b-col lg="6">
+					<header type="block" variant="i-fourth" class="mb-4">
+						<h1 class="h5">{{ $t('components.dashboard_era_points.title') }}</h1>
+					</header>
+					<DashboardEraPoints style="height: 250px;" />
+				</b-col>
+			</b-row>
+		</section>
+	</main>
+
+
+  <!-- <div class="page container pt-3">
     <div>
       <StakingStats />
       <Suggestions :validators="chainValidatorAddresses" />
       <div class="row">
-        <div class="col-md-6">
-          <DashboardCommission />
+        <div class="col-lg-6">
+          <DashboardCommission style="height: 300px;" />
         </div>
-        <div class="col-md-6">
-          <DashboardSelfStake />
+        <div class="col-lg-6">
+          <DashboardSelfStake style="height: 300px;" />
         </div>
       </div>
       <div class="row">
-        <div class="col-md-6">
-          <DashboardPerformance />
+        <div class="col-lg-6">
+          <DashboardPerformance style="height: 300px;" />
         </div>
-        <div class="col-md-6">
-          <DashboardEraPoints />
+        <div class="col-lg-6">
+          <DashboardEraPoints style="height: 300px;" />
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -32,7 +74,11 @@ import DashboardCommission from '@/components/staking/dashboard/charts/Dashboard
 import DashboardSelfStake from '@/components/staking/dashboard/charts/DashboardSelfStake.vue'
 import DashboardPerformance from '@/components/staking/dashboard/charts/DashboardPerformance.vue'
 import DashboardEraPoints from '@/components/staking/dashboard/charts/DashboardEraPoints.vue'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import SearchSection from '@/components/more/headers/SearchSection.vue'
+
 export default {
+  	layout: 'AuthLayout',
   components: {
     StakingStats,
     Suggestions,
@@ -40,6 +86,8 @@ export default {
     DashboardSelfStake,
     DashboardPerformance,
     DashboardEraPoints,
+	HeaderComponent,
+	SearchSection
   },
   mixins: [commonMixin],
   data() {

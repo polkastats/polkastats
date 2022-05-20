@@ -2,26 +2,18 @@
 	<main>
 
 		<header-component>
-			<!-- TODO: Add Subtitle and Label -->
 			<search-section 
-				class="text-i-fifth" 
-				:title="$t('layout.default.accounts')" 
-				:subtitle="$t('pages.accounts.active_accounts')"
-
+				:title="$t('pages.accounts.active_accounts')" 
 				:placeholder="$t('pages.accounts.search_placeholder')"
-				label="Search"
+				:results="formatNumber(totalRows)"
 				v-model="filter"
 			/>
 		</header-component>
 
 		<section class="section">
 
-			<header class="text-right">
-				<table-tag :title="$t('pages.accounts.active_accounts')" :value="formatNumber(totalRows)" />
-			</header>
-
 			<Loading v-if="loading" />
-			<table-component v-else :items="parsedAccounts" :fields="fields" :options="options" :pagination="pagination" class="text-center">
+			<table-component v-else :items="parsedAccounts" :fields="fields" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
 
 				<template #cell(account_id)="data">
 					<div icon="avatar">
@@ -290,7 +282,6 @@ import { config, paginationOptions } from '@/frontend.config.js'
 import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
 import TableComponent from '@/components/more/TableComponent.vue'
 import SearchSection from '@/components/more/headers/SearchSection.vue'
-import TableTag from '@/components/more/TableTag.vue'
 
 export default {
   	layout: 'AuthLayout',
@@ -300,34 +291,13 @@ export default {
 	HeaderComponent,
 	TableComponent,
 	SearchSection,
-	TableTag
   },
   mixins: [commonMixin],
   data() {
-
-	  const THAT = this;
-
     return {
 		options:
 		{
-			variant: 'i-secondary',
-		},
-		pagination:
-		{
-			variant: 'i-primary',
-			pages:
-			{
-				get current(){ return THAT.currentPage },
-				set current(current){ THAT.currentPage = current },
-				get rows(){ return THAT.totalRows },
-				get perPage(){ return THAT.perPage },
-			},
-			perPage:
-			{
-				get num(){ return THAT.perPage },
-				click: (option) => THAT.setPageSize(option),
-				options: [10, 20, 50, 100 ],
-			},
+			variant: 'i-fourth',
 		},
       loading: true,
       paginationOptions,
@@ -341,45 +311,45 @@ export default {
       filterOn: [],
       totalRows: 1,
       agggregateRows: 1,
-      fields: [
-        {
-          key: 'account_id',
-          get label(){ return THAT.$t('pages.accounts.account') },
-          sortable: false,
-		  variant: 'i-fourth',
-		  class: 'important py-3'
-        },
-        {
-          key: 'free_balance',
-          get label(){ return THAT.$t('pages.accounts.free_balance') },
-          sortable: false,
-        },
-        {
-          key: 'locked_balance',
-          get label(){ return THAT.$t('pages.accounts.locked_balance') },
-          sortable: false,
-        },
-        {
-          key: 'available_balance',
-          get label(){ return THAT.$t('pages.accounts.available_balance') },
-          sortable: false,
-        },
-        {
-          key: 'reserved_balance',
-          get label(){ return THAT.$t('pages.accounts.reserved_balance') },
-          sortable: false,
-        },
-        {
-          key: 'total_balance',
-          get label(){ return THAT.$t('pages.accounts.total_balance') },
-          sortable: false,
-        },
-        {
-          key: 'nonce',
-          label: 'Nonce',
-          sortable: false,
-        },
-      ],
+	  fields: [
+		{
+			key: 'account_id',
+			label: this.$t('pages.accounts.account'),
+			sortable: false,
+			variant: 'i-fourth',
+			class: 'important py-3'
+		},
+		{
+			key: 'free_balance',
+			label: this.$t('pages.accounts.free_balance'),
+			sortable: false,
+		},
+		{
+			key: 'locked_balance',
+			label: this.$t('pages.accounts.locked_balance'),
+			sortable: false,
+		},
+		{
+			key: 'available_balance',
+			label: this.$t('pages.accounts.available_balance'),
+			sortable: false,
+		},
+		{
+			key: 'reserved_balance',
+			label: this.$t('pages.accounts.reserved_balance'),
+			sortable: false,
+		},
+		{
+			key: 'total_balance',
+			label: this.$t('pages.accounts.total_balance'),
+			sortable: false,
+		},
+		{
+			key: 'nonce',
+			label: 'Nonce',
+			sortable: false,
+		},
+	],
       accounts: [],
       favorites: [],
     }
@@ -400,7 +370,26 @@ export default {
       ],
     }
   },
-  computed: {
+  computed:
+  {
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.totalRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100 ],
+			}
+		}
+	},
     parsedAccounts() {
       return this.accounts.map((account, index) => {
         return {

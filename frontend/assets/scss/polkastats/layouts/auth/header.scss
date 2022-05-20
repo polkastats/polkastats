@@ -58,6 +58,9 @@ header.frame
 	/* Colapsed Menu */
 	.navbar-collapse
 	{
+		@include border-radius($border-radius);
+		border-top-left-radius: 0;
+
 		&:not(.show)
 		{
 			background-color: transparent !important;
@@ -96,6 +99,14 @@ header.frame
 	}
 	
 	/* Elements */
+	.navbar-toggler
+	{
+		&.not-collapsed
+		{
+			@include border-bottom-radius(0);
+		}
+	}
+
 	.b-dropdown
 	{
 		a
@@ -120,7 +131,7 @@ header.frame
 			width: 100%;
 			height: 100%;
 			background-color: $i-fifth;
-			opacity: 15%;
+			opacity: 5%;
 			filter: blur(1em) saturate(200%);
 		}
 

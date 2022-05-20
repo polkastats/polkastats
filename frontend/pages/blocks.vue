@@ -1,5 +1,71 @@
 <template>
-  <div>
+
+	<main>
+
+		<header-component>
+			<search-section 
+				:title="$t('pages.blocks.title')" 
+				:placeholder="$t('pages.blocks.search_placeholder')"
+				:results="formatNumber(totalRows)"
+				v-model="filter"
+			/>
+		</header-component>
+
+		<section class="section">
+
+			<Loading v-if="loading" />
+			<table-component v-else :items="blocks" :fields="fields" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
+				<template #cell(block_number)="data">
+                    <nuxt-link
+                      v-b-tooltip.hover
+                      :to="
+                        localePath(
+                          `/block?blockNumber=${data.item.block_number}`
+                        )
+                      "
+                      :title="$t('common.block_details')"
+                    >
+                      #{{ formatNumber(data.item.block_number) }}
+                    </nuxt-link>
+                </template>
+                <template #cell(timestamp)="data">
+					<font-awesome-icon icon="clock" />
+                    {{ fromNow(data.item.timestamp) }}
+                </template>
+                <template #cell(block_author)="data">
+                  <div icon="avatar">
+                    <Identicon :address="data.item.block_author" :size="22" />
+                    <nuxt-link
+                      :to="localePath(`/validator/${data.item.block_author}`)"
+                    >
+                      <template v-if="data.item.block_author_name">{{
+                        data.item.block_author_name
+                      }}</template>
+                      <template v-else>{{
+                        shortAddress(data.item.block_author)
+                      }}</template>
+                    </nuxt-link>
+                  </div>
+                </template>
+                <template #cell(finalized)="data">
+                  <template v-if="data.item.finalized">
+                    <font-awesome-icon icon="check" class="text-i-success" />
+                    {{ $t('common.finalized') }}
+                  </template>
+                  <template v-else>
+                    <font-awesome-icon icon="spinner" class="text-i-danger" spin />
+                    {{ $t('common.processing') }}
+                  </template>
+                </template>
+                <template #cell(block_hash)="data">
+                    {{ shortHash(data.item.block_hash) }}
+                </template>
+			</table-component>
+
+		</section>
+	</main>
+
+  <!-- <div>
     <section>
       <b-container class="main py-5">
         <b-row class="mb-2">
@@ -17,7 +83,7 @@
             <Loading />
           </div>
           <template v-else>
-            <!-- Filter -->
+            Filter
             <b-row style="margin-bottom: 1rem">
               <b-col cols="12">
                 <b-input-group size="xl" class="mb-2">
@@ -87,10 +153,10 @@
                 </template>
               </b-table>
             </div>
-            <!-- pagination -->
+            pagination
             <div class="row">
               <div class="col-6">
-                <!-- desktop -->
+                desktop
                 <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
                   <b-button-group>
                     <b-button
@@ -104,7 +170,7 @@
                     </b-button>
                   </b-button-group>
                 </div>
-                <!-- mobile -->
+                mobile
                 <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
                   <b-dropdown
                     class="m-md-2"
@@ -136,7 +202,7 @@
         </div>
       </b-container>
     </section>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -144,14 +210,46 @@ import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
 import { config, paginationOptions } from '@/frontend.config.js'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import TableComponent from '@/components/more/TableComponent.vue'
+import SearchSection from '@/components/more/headers/SearchSection.vue'
 
 export default {
+  	layout: 'AuthLayout',
   components: {
     Loading,
+	HeaderComponent,
+	TableComponent,
+	SearchSection,
   },
   mixins: [commonMixin],
+  computed:
+  {
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.totalRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100],
+			}
+		}
+	}
+  },
   data() {
     return {
+		options:
+		{
+			variant: 'i-fourth',
+		},
       loading: true,
       filter: '',
       blocks: [],
@@ -166,6 +264,8 @@ export default {
           key: 'block_number',
           label: this.$t('pages.blocks.block_number'),
           sortable: false,
+		  variant: 'i-fourth',
+		  class: 'important py-3'
         },
         {
           key: 'finalized',
@@ -196,6 +296,7 @@ export default {
           key: 'block_author',
           label: this.$t('pages.blocks.block_author'),
           sortable: false,
+		  class: "text-left"
         },
       ],
     }

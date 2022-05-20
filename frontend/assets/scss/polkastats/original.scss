@@ -5,6 +5,8 @@
 	@import './root/theme.scss';
 
 	/* Modules */
+	@import './modules/animation.scss';
+	@import './modules/effects.scss';
 	@import './modules/status.scss';
 	@import './modules/container.scss';
 	@import './modules/headers.scss';

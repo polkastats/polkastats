@@ -1,0 +1,10 @@
+.ads-section
+{
+	display: flex;
+	gap: 2em;
+	
+	&::before
+	{
+		opacity: 0.9;
+	}
+}

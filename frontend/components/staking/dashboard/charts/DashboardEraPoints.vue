@@ -1,13 +1,7 @@
 <template>
   <ReactiveLineChart
     :chart-data="chartData"
-    :options="chartOptions"
-    class="py-4"
-    :style="
-      config.themeVersion === 'dark'
-        ? 'height: 400px; background-color: rgba(0, 0, 0, 1)'
-        : 'height: 400px; background-color: rgba(255, 255, 255, 1)'
-    "
+    :options="chart.options"
   />
 </template>
 
@@ -16,6 +10,7 @@ import { gql } from 'graphql-tag'
 import { config } from '@/frontend.config.js'
 import commonMixin from '@/mixins/commonMixin.js'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
+import { ChartLineOptions } from '@/components/charts/settings/chartline';
 
 export default {
   components: {
@@ -24,63 +19,64 @@ export default {
   mixins: [commonMixin],
   data() {
     return {
+	  chart: new ChartLineOptions('era', this.$t('components.dashboard_era_points.avg_era_points'), 'Third'),
       config,
-      chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: true,
-        },
-        title: {
-          display: true,
-          text: this.$t('components.dashboard_era_points.title'),
-          fontSize: 18,
-          fontColor: config.themeVersion === 'dark' ? '#fff' : '#000',
-          fontStyle: 'lighter',
-        },
-        tooltips: {
-          backgroundColor: '#000000',
-        },
-        scales: {
-          xAxes: [
-            {
-              gridLines: {
-                display: true,
-                color:
-                  config.themeVersion === 'dark'
-                    ? 'rgba(255, 255, 255, 0.1)'
-                    : 'rgba(0, 0, 0, 0.1)',
-              },
-              scaleLabel: {
-                display: true,
-                labelString: 'era',
-              },
-            },
-          ],
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-                suggestedMin: 0,
-                suggestedMax: 1,
-              },
-              gridLines: {
-                display: true,
-                color:
-                  config.themeVersion === 'dark'
-                    ? 'rgba(255, 255, 255, 0.1)'
-                    : 'rgba(0, 0, 0, 0.1)',
-              },
-              scaleLabel: {
-                display: true,
-                labelString: this.$t(
-                  'components.dashboard_era_points.avg_era_points'
-                ),
-              },
-            },
-          ],
-        },
-      },
+    //   chartOptions: {
+    //     responsive: true,
+    //     maintainAspectRatio: false,
+    //     legend: {
+    //       display: true,
+    //     },
+    //     title: {
+    //       display: true,
+    //       text: this.$t('components.dashboard_era_points.title'),
+    //       fontSize: 18,
+    //       fontColor: config.themeVersion === 'dark' ? '#fff' : '#000',
+    //       fontStyle: 'lighter',
+    //     },
+    //     tooltips: {
+    //       backgroundColor: '#000000',
+    //     },
+    //     scales: {
+    //       xAxes: [
+    //         {
+    //           gridLines: {
+    //             display: true,
+    //             color:
+    //               config.themeVersion === 'dark'
+    //                 ? 'rgba(255, 255, 255, 0.1)'
+    //                 : 'rgba(0, 0, 0, 0.1)',
+    //           },
+    //           scaleLabel: {
+    //             display: true,
+    //             labelString: 'era',
+    //           },
+    //         },
+    //       ],
+    //       yAxes: [
+    //         {
+    //           ticks: {
+    //             beginAtZero: true,
+    //             suggestedMin: 0,
+    //             suggestedMax: 1,
+    //           },
+    //           gridLines: {
+    //             display: true,
+    //             color:
+    //               config.themeVersion === 'dark'
+    //                 ? 'rgba(255, 255, 255, 0.1)'
+    //                 : 'rgba(0, 0, 0, 0.1)',
+    //           },
+    //           scaleLabel: {
+    //             display: true,
+    //             labelString: this.$t(
+    //               'components.dashboard_era_points.avg_era_points'
+    //             ),
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
       chartData: null,
       rows: [],
       currentEra: 0,
@@ -133,20 +129,24 @@ export default {
         },
         result({ data }) {
           this.rows = data.era_points_avg
-          this.chartData = {
-            labels: this.rows.map(({ era }) => era),
-            datasets: [
-              {
-                label: 'network',
-                data: [...this.rows.map((row) => row.points_avg)],
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                borderColor: 'rgba(23, 162, 184, 0.8)',
-                hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-                fill: false,
-                showLine: true,
-              },
-            ],
-          }
+        //   this.chartData = {
+        //     labels: this.rows.map(({ era }) => era),
+        //     datasets: [
+        //       {
+        //         label: 'network',
+        //         data: [...this.rows.map((row) => row.points_avg)],
+        //         backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        //         borderColor: 'rgba(23, 162, 184, 0.8)',
+        //         hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+        //         fill: false,
+        //         showLine: true,
+        //       },
+        //     ],
+        //   }
+
+		  	this.chart.setData(this.rows.map((row) => row.points_avg));
+			this.chart.setLabels(this.rows.map(({ era }) => era));
+			this.chartData = this.chart.data;
         },
       },
       chain_relative_performance_avg: {
