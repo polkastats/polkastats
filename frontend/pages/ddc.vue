@@ -359,7 +359,7 @@ export default {
       },
       avgResponseTimeSec: {
         query: gql`
-          subscription avgResponseTimeSec {
+          subscription avgResponseTimeSec($timestamp: bigint!) {
             ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
@@ -380,7 +380,7 @@ export default {
           const timestamp = new Date()
           timestamp.setMonth(timestamp.getMonth() - 1)
           return {
-            timestamp,
+            timestamp: timestamp.getMilliseconds(),
           }
         },
         result({ data }) {
@@ -390,7 +390,7 @@ export default {
       },
       avgDownloadSpeedBytesPerSec: {
         query: gql`
-          subscription avgDownloadSpeedBytesPerSec {
+          subscription avgDownloadSpeedBytesPerSec($timestamp: bigint!) {
             ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
@@ -411,7 +411,7 @@ export default {
           const timestamp = new Date()
           timestamp.setMonth(timestamp.getMonth() - 1)
           return {
-            timestamp,
+            timestamp: timestamp.getMilliseconds(),
           }
         },
         result({ data }) {
@@ -421,7 +421,7 @@ export default {
       },
       avgUploadSpeedBytesPerSec: {
         query: gql`
-          subscription avgUploadSpeedBytesPerSec {
+          subscription avgUploadSpeedBytesPerSec($timestamp: bigint!) {
             ddc_metric_view_aggregate(
               distinct_on: [nodeid]
               order_by: { nodeid: asc, timestamp: desc }
@@ -442,7 +442,7 @@ export default {
           const timestamp = new Date()
           timestamp.setMonth(timestamp.getMonth() - 1)
           return {
-            timestamp,
+            timestamp: timestamp.getMilliseconds(),
           }
         },
         result({ data }) {
