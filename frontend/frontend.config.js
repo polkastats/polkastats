@@ -1,18 +1,18 @@
 export const network = {
-  id: 'kusama',
-  name: 'Kusama',
-  tokenSymbol: 'KSM',
-  tokenDecimals: 12,
-  ss58Format: 2,
-  coinGeckoDenom: 'kusama',
-  nodeWs: 'wss://kusama-rpc.polkadot.network',
-  backendWs: 'wss://kusama.polkastats.io/api/v3',
-  backendHttp: 'https://kusama.polkastats.io/api/v3',
-  googleAnalytics: 'UA-172854168-1',
+  id: 'cere',
+  name: 'Cere Network',
+  tokenSymbol: 'CERE',
+  tokenDecimals: 10,
+  ss58Format: -1,
+  coinGeckoDenom: 'cere-network',
+  nodeWs: 'wss://archive.v2.testnet.cere.network/ws',
+  backendWs: 'wss://hasura.stats.stg.cere.network/v1/graphql',
+  backendHttp: 'https://api.stats.stg.cere.network/api/v1',
+  googleAnalytics: '',
   theme: '@/assets/scss/themes/polkastats.scss',
-  // ranking
-  historySize: 84, // 21 days
-  erasPerDay: 4,
+  // ranking               Í
+  historySize: 16, // 16 days
+  erasPerDay: 1,
   validatorSetSize: 24,
 }
 export const paginationOptions = [10, 20, 50, 100]

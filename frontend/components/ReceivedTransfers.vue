@@ -75,6 +75,16 @@
               {{ formatAmount(data.item.amount) }}
             </p>
           </template>
+          <template #cell(timestamp)="data">
+            <p class="mb-0">
+              {{ data.item.timestamp }}
+            </p>
+          </template>
+          <template #cell(utc_time)="data">
+            <p class="mb-0">
+              {{ data.item.utc_time }}
+            </p>
+          </template>
           <template #cell(success)="data">
             <p class="mb-0">
               <font-awesome-icon
@@ -112,10 +122,11 @@
 <script>
 import { gql } from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
+import { BigNumber } from 'bignumber.js'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
-import { paginationOptions } from '@/frontend.config.js'
+import { paginationOptions, network } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -171,6 +182,16 @@ export default {
           sortable: true,
         },
         {
+          key: 'timestamp',
+          label: 'Timestamp',
+          sortable: true,
+        },
+        {
+          key: 'utc_time',
+          label: 'UTC time',
+          sortable: true,
+        },
+        {
           key: 'success',
           label: 'Success',
           sortable: true,
@@ -204,6 +225,7 @@ export default {
             ) {
               block_number
               data
+              timestamp
             }
           }
         `,
@@ -221,7 +243,11 @@ export default {
               block_number: event.block_number,
               from: JSON.parse(event.data)[0],
               to: this.accountId,
-              amount: JSON.parse(event.data)[2],
+              amount: new BigNumber(JSON.parse(event.data)[2])
+                .div(new BigNumber(10).pow(network.tokenDecimals))
+                .toNumber(),
+              timestamp: event.timestamp,
+              utc_time: new Date(event.timestamp * 1000).toUTCString(),
               success: true,
             }
           })

@@ -3,51 +3,6 @@
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
-    <div v-else>
-      <div v-if="showBanner" class="banner row">
-        <a :href="edpLink" target="_blank" rel="noopener noreferrer">
-          <div class="flex row banner">
-            <div class="flex child left column">
-              <div class="cere-logo">
-                <img
-                  src="../static/img/cere_logo_edp.png"
-                  alt="Cere Logo"
-                  class="img"
-                  height="60px"
-                />
-              </div>
-            </div>
-            <div class="flex child middle column">
-              <div class="content">
-                <div class="rectangle first">
-                  <span>Total tokens rewarded to EDP community members</span>
-                  <span class="value">{{ formatNumber }} CERE tokens</span>
-                </div>
-                <div class="rectangle second">
-                  <span>
-                    Number of EDP community members who finished Cere Bootcamp
-                  </span>
-                  <span class="value">{{ graduates }}</span>
-                </div>
-                <div class="rectangle third">
-                  <span>
-                    Percentage of the EDP community members think the Cere
-                    Bootcamp is 'interesting'
-                  </span>
-                  <span class="value"> {{ feedback }}%</span>
-                </div>
-              </div>
-            </div>
-            <div class="flex child right column">
-              <div class="button">
-                Click to find out more about Extended Developers Program (EDP)
-                community
-              </div>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
   </div>
 </template>
 
