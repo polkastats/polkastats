@@ -92,6 +92,8 @@ services:
   #
   crawler:
     image: crawler:latest
+    ports:
+      - '8090:8090'
     build:
       context: ../
       dockerfile: ./docker/crawler/Dockerfile
