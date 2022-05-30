@@ -1,10 +1,14 @@
+const statuses = {
+  HEALTHY: 'healthy',
+};
+
 class Status {
   constructor(names) {
     this.apps = [];
     names.forEach((name) => {
       this.apps.push({
         name,
-        status: 'healthy',
+        status: statuses.HEALTHY,
       });
     });
   }
@@ -17,7 +21,7 @@ class Status {
     return this.apps;
   }
 
-  allIsHealthy() {
+  isHealthy() {
     return !this.apps.find((app) => app.status !== 'healthy');
   }
 }

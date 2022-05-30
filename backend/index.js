@@ -3,6 +3,7 @@ const express = require('express');
 const DBMigrate = require('db-migrate');
 const pino = require('pino');
 const { spawn } = require('child_process');
+const { StatusCodes } = require('http-status-codes');
 const { wait } = require('./lib/utils');
 const config = require('./backend.config');
 const Status = require('./services/status');
@@ -15,8 +16,10 @@ const runCrawler = async ({ crawler, name }) => {
   const child = spawn('node', [`${crawler}`]);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
+  // always triggered after "exit", "error" events
   child.on('close', (exitCode) => {
     logger.warn(`Crawler ${crawler} exit with code: ${exitCode}`);
+    status.set(name, `exit code ${exitCode}`);
     return -1;
   });
   child.on('exit', (exitCode, signal) => {
@@ -25,12 +28,15 @@ const runCrawler = async ({ crawler, name }) => {
   });
   child.on('uncaughtException', (error) => {
     logger.warn(`Crawler ${crawler} exit with uncaughtException: ${error}`);
+    status.set(name, `error ${error.message}`);
   });
   child.on('SIGUSR1', () => {
     logger.warn(`Crawler ${crawler} exit SIGUSR1`);
+    status.set(name, 'exit SIGUSR1');
   });
   child.on('SIGUSR2', () => {
     logger.warn(`Crawler ${crawler} exit SIGUSR2`);
+    status.set(name, 'exit SIGUSR2');
   });
 };
 
@@ -64,7 +70,7 @@ runCrawlers().catch((error) => {
 
 app.get('/health', (req, res) => {
   const statuses = status.getAll();
-  const httpStatus = status.allIsHealthy() ? 200 : 503;
+  const httpStatus = status.isHealthy() ? StatusCodes.OK : StatusCodes.BAD_GATEWAY;
   res.status(httpStatus);
   res.json(statuses);
 });
