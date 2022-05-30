@@ -159,14 +159,16 @@
                 >
                   <font-awesome-icon
                     v-if="data.item.selected"
-                    icon="hand-paper"
-                    class="selected text-selected"
+                    icon="star"
+                    style="color: #f1bd23; cursor: pointer"
+                    class="favorite"
                     :title="$t('pages.accounts.remove_from_favorites')"
                   />
                   <font-awesome-icon
                     v-else
-                    icon="hand-paper"
-                    class="unselected text-secondary"
+                    icon="star"
+                    style="color: #e6dfdf; cursor: pointer"
+                    class="favorite"
                     :title="$t('pages.accounts.add_to_favorites')"
                   />
                 </a>
@@ -343,7 +345,7 @@ export default {
         },
         {
           key: 'selected',
-          label: 'Favourites',
+          label: 'Favorites',
           sortable: true,
           class:
             'text-center d-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',

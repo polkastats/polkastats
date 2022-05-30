@@ -19,7 +19,14 @@
         </b-col>
       </b-row>
       <JsonCSV
-        :data="transfers"
+        :data="
+          transfers.map((transfer) => {
+            const cloned = { ...transfer }
+            cloned.amount = formatAmountToDecimal(transfer.amount)
+            cloned['utc_time'] = getDateFromTimestamp(transfer.timestamp)
+            return cloned
+          })
+        "
         class="download-csv mb-2"
         :name="`polkastats_received_transfers_${accountId}.csv`"
       >
@@ -75,16 +82,6 @@
               {{ formatAmount(data.item.amount) }}
             </p>
           </template>
-          <template #cell(timestamp)="data">
-            <p class="mb-0">
-              {{ data.item.timestamp }}
-            </p>
-          </template>
-          <template #cell(utc_time)="data">
-            <p class="mb-0">
-              {{ data.item.utc_time }}
-            </p>
-          </template>
           <template #cell(success)="data">
             <p class="mb-0">
               <font-awesome-icon
@@ -122,11 +119,10 @@
 <script>
 import { gql } from 'graphql-tag'
 import JsonCSV from 'vue-json-csv'
-import { BigNumber } from 'bignumber.js'
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
-import { paginationOptions, network } from '@/frontend.config.js'
+import { paginationOptions } from '@/frontend.config.js'
 
 export default {
   components: {
@@ -182,16 +178,6 @@ export default {
           sortable: true,
         },
         {
-          key: 'timestamp',
-          label: 'Timestamp',
-          sortable: true,
-        },
-        {
-          key: 'utc_time',
-          label: 'UTC time',
-          sortable: true,
-        },
-        {
           key: 'success',
           label: 'Success',
           sortable: true,
@@ -243,12 +229,9 @@ export default {
               block_number: event.block_number,
               from: JSON.parse(event.data)[0],
               to: this.accountId,
-              amount: new BigNumber(JSON.parse(event.data)[2])
-                .div(new BigNumber(10).pow(network.tokenDecimals))
-                .toNumber(),
-              timestamp: event.timestamp,
-              utc_time: new Date(event.timestamp * 1000).toUTCString(),
+              amount: JSON.parse(event.data)[2],
               success: true,
+              timestamp: event.timestamp,
             }
           })
           this.totalRows = this.transfers.length
