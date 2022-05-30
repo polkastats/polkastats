@@ -22,7 +22,7 @@ class Status {
   }
 
   isHealthy() {
-    return !this.apps.find((app) => app.status !== 'healthy');
+    return !this.apps.find((app) => app.status !== statuses.HEALTHY);
   }
 }
 

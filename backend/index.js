@@ -70,7 +70,7 @@ runCrawlers().catch((error) => {
 
 app.get('/health', (req, res) => {
   const statuses = status.getAll();
-  const httpStatus = status.isHealthy() ? StatusCodes.OK : StatusCodes.BAD_GATEWAY;
+  const httpStatus = status.isHealthy() ? StatusCodes.OK : StatusCodes.SERVICE_UNAVAILABLE;
   res.status(httpStatus);
   res.json(statuses);
 });
