@@ -2,7 +2,7 @@
 
 ## vNext
 
-- ...
+- Added healthchecks API
 
 ## v0.13.0
 
