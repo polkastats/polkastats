@@ -83,7 +83,6 @@ That will build and start all the required dockers:
 
 Crawlers healthchecks API is available via `GET/health` request.
 
-
 ### Hasura configuration
 
 After that you need to access to Hasura console at http://localhost:8082 and:
