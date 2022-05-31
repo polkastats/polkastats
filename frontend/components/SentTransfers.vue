@@ -23,7 +23,7 @@
           transfers.map((transfer) => {
             const cloned = { ...transfer }
             cloned.amount = formatAmountToDecimal(transfer.amount)
-            cloned['utc_time'] = getDateFromTimestamp(transfer.timestamp)
+            cloned['date_time'] = getDateFromTimestamp(transfer.timestamp)
             return cloned
           })
         "
