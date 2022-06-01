@@ -7,8 +7,8 @@
 ## v0.15.0
 
 - [FE] Removed EDP banner
-- [FE] Anded "timestamp", "date_time" columns to sent transfers, received transfers excell files
-- [FE] Enabled mutiple validators selection from the same cluster
+- [FE] Added "timestamp", "date_time" columns to sent transfers, received transfers export files
+- [FE] Enabled multiple validators selection from the same cluster
 - [FE] Changed "hand" to "star" for validators page, renamed "select" column to "favorites"
 
 ## v0.14.0
