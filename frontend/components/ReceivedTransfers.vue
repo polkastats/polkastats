@@ -28,7 +28,7 @@
           })
         "
         class="download-csv mb-2"
-        :name="`polkastats_received_transfers_${accountId}.csv`"
+        :name="`cerestats_received_transfers_${accountId}.csv`"
       >
         <font-awesome-icon icon="file-csv" />
         {{ $t('pages.accounts.download_csv') }}
