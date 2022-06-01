@@ -19,9 +19,16 @@
         </b-col>
       </b-row>
       <JsonCSV
-        :data="transfers"
+        :data="
+          transfers.map((transfer) => {
+            const cloned = { ...transfer }
+            cloned.amount = formatAmountToDecimal(transfer.amount)
+            cloned['date_time'] = getDateFromTimestamp(transfer.timestamp)
+            return cloned
+          })
+        "
         class="download-csv mb-2"
-        :name="`polkastats_sent_transfers_${accountId}.csv`"
+        :name="`cerestats_sent_transfers_${accountId}.csv`"
       >
         <font-awesome-icon icon="file-csv" />
         {{ $t('pages.accounts.download_csv') }}
@@ -221,6 +228,7 @@ export default {
               hash
               args
               success
+              timestamp
             }
           }
         `,
@@ -243,6 +251,7 @@ export default {
                 : JSON.parse(transfer.args)[0],
               amount: JSON.parse(transfer.args)[1],
               success: transfer.success,
+              timestamp: transfer.timestamp,
             }
           })
           this.totalRows = this.transfers.length

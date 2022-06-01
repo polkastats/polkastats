@@ -3,7 +3,6 @@
     <section>
       <b-container class="main py-5 dashboard">
         <Chain />
-        <EDPBanner />
         <Search />
         <div class="row">
           <div class="col-md-6 mb-4">
@@ -68,7 +67,6 @@ import LastExtrinsics from '@/components/LastExtrinsics.vue'
 import LastEvents from '@/components/LastEvents.vue'
 import Chain from '@/components/Chain.vue'
 import Search from '@/components/Search.vue'
-import EDPBanner from '@/components/EDPBanner.vue'
 // import Top10Rich from '@/components/Top10Rich.vue'
 import { network } from '@/frontend.config.js'
 
@@ -80,7 +78,6 @@ export default {
     LastEvents,
     Chain,
     Search,
-    EDPBanner,
     // Top10Rich,
   },
   data: () => {

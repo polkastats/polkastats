@@ -21,7 +21,7 @@
       <JsonCSV
         :data="activities"
         class="download-csv mb-2"
-        :name="`polkastats_${accountId}_activity.csv`"
+        :name="`cerestats_${accountId}_activity.csv`"
       >
         <font-awesome-icon icon="file-csv" />
         {{ $t('pages.accounts.download_csv') }}

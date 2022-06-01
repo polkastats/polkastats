@@ -5,6 +5,7 @@ import { decodeAddress, encodeAddress } from '@polkadot/keyring'
 import { checkAddressChecksum } from 'web3-utils'
 import moment from 'moment'
 import { network } from '@/frontend.config.js'
+const base = new BigNumber(10).pow(network.tokenDecimals)
 
 export default {
   methods: {
@@ -27,12 +28,13 @@ export default {
       }
     },
     formatAmount(amount, precission = 2) {
-      const tokensAmount = new BigNumber(amount)
-        .div(new BigNumber(10).pow(network.tokenDecimals))
-        .toFixed(precission)
+      const tokensAmount = new BigNumber(amount).div(base).toFixed(precission)
       return `${this.formatWithCommas(tokensAmount.toString())} ${
         network.tokenSymbol
       }`
+    },
+    formatAmountToDecimal(amount) {
+      return new BigNumber(amount).div(base).toNumber()
     },
     capitalize(s) {
       if (typeof s !== 'string') return ''
