@@ -21,7 +21,7 @@
                 }}
                 selected
               </span>
-              <font-awesome-icon icon="hand-paper" />
+              <font-awesome-icon icon="star" style="color: #e6dfdf" />
             </template>
             <SelectedValidators />
           </b-dropdown>
@@ -53,18 +53,21 @@
           <a
             v-b-tooltip.hover
             class="select"
-            title="Select / Unselect validator"
             @click="toggleSelected(validator.stashAddress)"
           >
             <font-awesome-icon
               v-if="isSelected(validator.stashAddress)"
-              icon="hand-paper"
-              class="selected fa-2x text-selected"
+              icon="star"
+              style="color: #f1bd23; cursor: pointer"
+              class="favorite fa-2x"
+              :title="$t('pages.accounts.remove_from_favorites')"
             />
             <font-awesome-icon
               v-else
-              icon="hand-paper"
-              class="unselected fa-2x text-secondary"
+              icon="star"
+              style="color: #e6dfdf; cursor: pointer"
+              class="favorite fa-2x"
+              :title="$t('pages.accounts.add_to_favorites')"
             />
           </a>
         </div>

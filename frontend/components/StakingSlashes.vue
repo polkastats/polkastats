@@ -10,7 +10,7 @@
       <JsonCSV
         :data="stakingSlashes"
         class="download-csv mb-2"
-        :name="`polkastats_staking_slashes_${accountId}.csv`"
+        :name="`cerestats_staking_slashes_${accountId}.csv`"
       >
         <font-awesome-icon icon="file-csv" />
         {{ $t('pages.accounts.download_csv') }}
