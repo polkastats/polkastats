@@ -2,6 +2,10 @@
 
 ## vNext
 
+- ...
+
+## v0.15.0
+
 - [FE] Removed EDP banner
 - [FE] Anded "timestamp", "date_time" columns to sent transfers, received transfers excell files
 - [FE] Enabled mutiple validators selection from the same cluster
