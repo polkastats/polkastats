@@ -20,7 +20,7 @@ export default {
   mixins: [commonMixin],
   data() {
     return {
-	  chart: new ChartLineOptions('era', this.$t('components.dashboard_self_stake.avg_self_stake')),
+	  chart: new ChartLineOptions('era', this.$t('components.dashboard_self_stake.avg_self_stake'), 'Secondary'),
       config,
     //   chartOptions: {
     //     responsive: true,
@@ -284,11 +284,12 @@ export default {
                     .toNumber()
                 ),
               ],
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              borderColor: 'rgba(184, 23, 102, 0.8)',
-              hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-              fill: false,
-              showLine: true,
+            //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            //   borderColor: 'rgba(184, 23, 102, 0.8)',
+            //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+            //   fill: false,
+            //   showLine: true,
+			  ...this.chart.getDataSeed('Third')
             }
             if (localChartData?.datasets) {
               if (localChartData.datasets.find(({ id }) => id === 'selected')) {

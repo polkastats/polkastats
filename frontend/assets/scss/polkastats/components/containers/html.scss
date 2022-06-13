@@ -1,0 +1,33 @@
+.pkd-html
+{
+	p
+	{
+		margin: 0.5em 0;
+	}
+
+	ul
+	{
+		margin: 1em;
+	}
+
+	hr
+	{
+		border-top: 2px solid transparent;
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[variant="#{$color}"]
+		{
+			hr
+			{
+				border-color: $value;
+			}
+
+			code
+			{
+				color: $value;
+			}
+		}
+	}
+}

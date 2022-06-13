@@ -38,3 +38,11 @@
 		filter: grayscale(0);
 	}
 }
+
+@each $color, $value in $theme-colors
+{
+	[effect-color="#{$color}"]:hover
+	{
+		background-color: $value;
+	}
+}

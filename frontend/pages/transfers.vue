@@ -39,7 +39,6 @@
                     {{ fromNow(data.item.timestamp) }}
                 </template>
                 <template #cell(source)="data">
-                  <div icon="avatar">
                     <Identicon :address="data.item.source" :size="20" />
                     <nuxt-link
                       v-b-tooltip.hover
@@ -48,10 +47,8 @@
                     >
                       {{ shortAddress(data.item.source) }}
                     </nuxt-link>
-                  </div>
                 </template>
                 <template #cell(destination)="data">
-                  <div icon="avatar">
                     <Identicon :address="data.item.destination" :size="20" />
                     <nuxt-link
                       v-b-tooltip.hover
@@ -60,7 +57,6 @@
                     >
                       {{ shortAddress(data.item.destination) }}
                     </nuxt-link>
-                  </div>
                 </template>
                 <template #cell(amount)="data">
                     {{ formatAmount(data.item.amount) }}
@@ -306,7 +302,7 @@ export default {
           label: this.$t('pages.transfers.hash'),
           sortable: false,
 		  variant: 'i-fourth',
-		  class: 'important py-3'
+		  class: 'pkd-separate py-3'
         },
         {
           key: 'block_number',

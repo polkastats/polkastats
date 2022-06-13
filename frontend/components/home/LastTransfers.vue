@@ -7,22 +7,19 @@
             </nuxt-link>
         </template>
         <template #cell(source)="data">
-			<span icon="avatar">
-				<Identicon
-					:key="data.item.source"
-					:address="data.item.source"
-					/>
-				<nuxt-link
-				:to="localePath(`/account/${data.item.source}`)"
-				:title="$t('pages.accounts.account_details')"
-				>
-					{{ shortAddress(data.item.source) }}
-				</nuxt-link>
-			</span>
+			<Identicon
+				:key="data.item.source"
+				:address="data.item.source"
+				/>
+			<nuxt-link
+			:to="localePath(`/account/${data.item.source}`)"
+			:title="$t('pages.accounts.account_details')"
+			>
+				{{ shortAddress(data.item.source) }}
+			</nuxt-link>
         </template>
         <template #cell(destination)="data">
           <template v-if="isValidAddressPolkadotAddress(data.item.destination)">
-			  <span icon="avatar">
 				<Identicon
 					:key="data.item.destination"
 					:address="data.item.destination"
@@ -33,7 +30,6 @@
 				>
 					{{ shortAddress(data.item.destination) }}
 				</nuxt-link>
-			  </span>
           </template>
           <template v-else>
               {{ shortAddress(data.item.destination || '') }}
@@ -75,7 +71,7 @@ export default {
 					label: this.$t('components.last_transfers.hash'),
 					sortable: false,
 					variant: 'i-fourth',
-					class: 'important'
+					class: 'pkd-separate'
 				},
 				{
 					key: 'source',

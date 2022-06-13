@@ -1,0 +1,18 @@
+[background]
+{
+	background-position: center;
+	background-size: cover;
+}
+
+@each $name, $value in $theme-networks
+{
+	[background="#{$name}"]
+	{
+		background-image: url('/img/networks/backgrounds/' + $value + '.png');
+	}
+}
+
+[background="cubes"]
+{
+	background-image: url('assets/images/backgrounds/cubes.png');
+}

@@ -1,7 +1,8 @@
 <template>
 	<b-nav-item-dropdown v-if="link" :variant="variant" :size="size">
 		<template #button-content v-if="selected">
-			<span :icon="selected.icon">{{ selected.name }}</span>
+			<slot v-if="$slots['button-content']" name="button-content" />
+			<span v-else v-bind="selected.attrs">{{ selected.name }}</span>
 			<font-awesome-icon icon="chevron-down" size="sm" />
 		</template>
 		<b-dropdown-item v-for="option in options" :key="option.name" :to="option.link">
@@ -10,12 +11,13 @@
 	</b-nav-item-dropdown>
 	<b-dropdown v-else :variant="variant" :variants="variant" :size="size" class="m-0">
 		<template #button-content>
-			<span v-if="selected" :icon="selected.icon">{{ selected.name }}</span>
+			<slot v-if="$slots['button-content']" name="button-content" />
+			<span v-else-if="selected" v-bind="selected.attrs">{{ selected.name }}</span>
 			<font-awesome-icon icon="chevron-down" :size="size" />
 		</template>
 		<template v-if="options">
 			<!-- FIX: Option click empty error -->
-			<b-dropdown-item v-for="option in options" :key="option.name" @click="option.click" :href="option.href" :to="option.link" :icon="option.icon">
+			<b-dropdown-item v-for="option in options" :key="option.name" @click="option.click" :href="option.href" :to="option.link" v-bind="option.attrs">
 				{{ option.name }}
 			</b-dropdown-item>
 		</template>

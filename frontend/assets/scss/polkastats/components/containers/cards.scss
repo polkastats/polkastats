@@ -1,0 +1,29 @@
+.pkd-card
+{
+	position: relative;
+	color: $i-fifth;
+
+	.legend-link
+	{
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 1;
+		margin: 1em;
+		font-weight: bold;
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[variant="#{$color}"]
+		{
+			background-color: $value;
+		}
+
+		&[variant="#{$color}-2"]
+		{
+			background-color: rgba($value, 0.2);
+			color: $i-fourth;
+		}
+	}
+}

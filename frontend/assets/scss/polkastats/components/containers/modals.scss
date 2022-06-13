@@ -1,0 +1,32 @@
+[pkd-modal]
+{
+	.modal-dialog
+	{
+		background-color: $i-fifth;
+	}
+
+	.modal-content,
+	.modal-footer
+	{
+		border: 0;
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[variant="#{$color}-2"]
+		{
+			.modal-content
+			{
+				background-color: rgba($value, 0.2);
+			}
+		}
+		
+		&[backdrop="#{$color}-2"]
+		{
+			.modal
+			{
+				background-color: rgba($value, 0.2);
+			}
+		}
+	}
+}

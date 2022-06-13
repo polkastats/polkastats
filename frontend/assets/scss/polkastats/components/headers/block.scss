@@ -1,7 +1,12 @@
-header[type="block"]
+.header-block
 {
+	text-align: center;
+
 	h1
 	{
+		font-weight: bold;
+		white-space: nowrap;
+
 		// FIX: Move to effects
 		&::before,
 		&::after
@@ -17,16 +22,47 @@ header[type="block"]
 		}
 	}
 
+	&[size="sm"]
+	{
+		h1
+		{
+			font-size: 1.25rem;
+		}
+
+		h2
+		{
+			font-size: 1rem;
+		}
+	}
+
+	&:not([variant])
+	{
+		h1
+		{
+			color: $i-fourth;
+			
+			&::before,
+			&::after
+			{
+				background-color: $i-fourth;
+			}
+		}
+	}
+
 	@each $color, $value in $theme-colors
 	{
 		&[variant="#{$color}"]
 		{
-			color: $value;
-
-			h1::before,
-			h1::after
+			
+			h1
 			{
-				background-color: $value;
+				color: $value;
+
+				&::before,
+				&::after
+				{
+					background-color: $value;
+				}
 			}
 		}
 	}

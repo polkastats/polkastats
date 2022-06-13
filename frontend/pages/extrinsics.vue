@@ -310,7 +310,7 @@ export default {
           label: this.$t('pages.extrinsics.id'),
           sortable: false,
 		  variant: 'i-fourth',
-		  class: 'important py-3'
+		  class: 'pkd-separate py-3'
         },
         {
           key: 'timestamp',

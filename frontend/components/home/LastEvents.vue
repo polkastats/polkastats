@@ -48,7 +48,7 @@ export default {
 				key: 'block_number',
 				label: this.$t('components.last_events.id'),
 				sortable: false,
-				class: 'highlighted'
+				class: 'pkd-marked'
 			},
 			{
 				key: 'section',

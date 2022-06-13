@@ -1,5 +1,26 @@
 <template>
-  <div>
+
+	<main>
+		<section v-if="loading" class="section text-center py-4">
+			<Loading />
+		</section>
+		<section v-else-if="!parsedExtrinsic" class="section text-center">
+			<h1>{{ $t('pages.extrinsic.extrinsic_not_found') }}</h1>
+		</section>
+		<template v-else>
+			<header-component>
+				<search-section :title="$t('pages.extrinsic.extrinsic')" :subtitle="blockNumber + '-' + extrinsicIndex" />
+			</header-component>
+			
+			<Extrinsic :extrinsic="parsedExtrinsic" />
+			<ExtrinsicEvents
+				:block-number="parseInt(blockNumber)"
+				:extrinsic-index="parseInt(extrinsicIndex)"
+			/>
+		</template>
+	</main>
+
+  <!-- <div>
     <section>
       <b-container class="extrinsic-page main py-5">
         <div v-if="loading" class="text-center py-4">
@@ -28,7 +49,7 @@
         </template>
       </b-container>
     </section>
-  </div>
+  </div> -->
 </template>
 <script>
 import { gql } from 'graphql-tag'
@@ -36,11 +57,16 @@ import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import ExtrinsicEvents from '@/components/ExtrinsicEvents.vue'
 import { config } from '@/frontend.config.js'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import SearchSection from '@/components/more/headers/SearchSection.vue'
 
 export default {
+	layout: 'AuthLayout',
   components: {
     Loading,
     ExtrinsicEvents,
+	HeaderComponent,
+	SearchSection
   },
   mixins: [commonMixin],
   data() {

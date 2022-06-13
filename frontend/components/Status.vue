@@ -1,5 +1,20 @@
 <template>
-  <div v-if="status">
+	<spec-item v-if="unclass && status" variant="i-success">
+		<span>
+			<font-awesome-icon icon="check" />
+			{{ $t('components.status.success') }}
+		</span>
+	</spec-item>
+	<spec-item v-else-if="unclass && !status" variant="i-danger">
+		<span>
+			<font-awesome-icon icon="times" />
+			{{ $t('components.status.error') }}
+		</span>
+		<p v-if="errorMessage">
+			{{ errorMessage }}
+		</p>
+	</spec-item>
+  <div v-else-if="status">
     <div class="status-label status-success text-success">
       <font-awesome-icon icon="check" class="text-success" />
       {{ $t('components.status.success') }}
@@ -16,7 +31,10 @@
   </div>
 </template>
 <script>
+import SpecItem from '@/components/more/SpecItem.vue'
+
 export default {
+	components: { SpecItem },
   props: {
     status: {
       type: Boolean,
@@ -25,6 +43,9 @@ export default {
     errorMessage: {
       type: String,
       default: '',
+    },
+    unclass: {
+      type: Boolean,
     },
   },
 }

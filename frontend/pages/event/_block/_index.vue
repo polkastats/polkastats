@@ -1,5 +1,23 @@
 <template>
-  <div>
+
+	<main>
+		<section v-if="loading" class="section text-center py-4">
+			<Loading />
+		</section>
+		<section v-else-if="!parsedEvent" class="section text-center">
+			<h1>{{ $t('pages.event.event_not_found') }}</h1>
+		</section>
+		<template v-else>
+			<header-component>
+				<search-section :title="$t('pages.event.event')" :subtitle="blockNumber + '-' + eventIndex" />
+			</header-component>
+			
+			<Event :event="parsedEvent" />
+
+		</template>
+	</main>
+
+  <!-- <div>
     <section>
       <b-container class="event-page main py-5">
         <div v-if="loading" class="text-center py-4">
@@ -20,7 +38,7 @@
         </template>
       </b-container>
     </section>
-  </div>
+  </div> -->
 </template>
 <script>
 import { gql } from 'graphql-tag'
@@ -28,11 +46,16 @@ import Event from '../../../components/Event.vue'
 import Loading from '@/components/Loading.vue'
 import commonMixin from '@/mixins/commonMixin.js'
 import { config } from '@/frontend.config.js'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import SearchSection from '@/components/more/headers/SearchSection.vue'
 
 export default {
+	layout: 'AuthLayout',
   components: {
     Loading,
     Event,
+	HeaderComponent,
+	SearchSection
   },
   mixins: [commonMixin],
   data() {

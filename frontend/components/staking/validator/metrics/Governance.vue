@@ -1,5 +1,30 @@
 <template>
-  <div class="metric h-100">
+
+	<rating-item :title="$t('components.governance.title')" :score="rating">
+		<nuxt-link
+            v-b-tooltip.hover
+            to="/help/metrics#governance"
+            :title="$t('components.governance.help')"
+			class="legend-link h6"
+		>
+            <font-awesome-icon icon="question-circle" />
+		</nuxt-link>
+
+		<div>
+			<p v-if="councilBacking && active">
+				{{ $t('components.governance.description_1') }}
+			</p>
+			<p v-else-if="councilBacking && !active">
+				{{ $t('components.governance.description_2') }}
+			</p>
+			<p v-else-if="!councilBacking && active">
+				{{ $t('components.governance.description_3') }}
+			</p>
+			<p v-else>{{ $t('components.governance.description_4') }}</p>
+		</div>
+	</rating-item>
+
+  <!-- <div class="metric h-100">
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
@@ -33,14 +58,16 @@
       </p>
       <p v-else>{{ $t('components.governance.description_4') }}</p>
     </div>
-  </div>
+  </div> -->
 </template>
 <script>
-import Rating from '@/components/staking/Rating.vue'
+// import Rating from '@/components/staking/Rating.vue'
+import RatingItem from '@/components/more/RatingItem.vue'
 
 export default {
   components: {
-    Rating,
+    // Rating,
+	RatingItem
   },
   props: {
     councilBacking: {

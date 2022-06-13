@@ -1,0 +1,23 @@
+.section-tabs
+{
+	.nav-tabs
+	{
+		border: 0;
+	
+		.nav-item .nav-link
+		{
+			text-transform: uppercase;
+			border: 0;
+		
+			&.active
+			{
+				background-color: transparent;
+			}
+		
+			.badge
+			{
+				vertical-align: super;
+			}
+		}
+	}
+}

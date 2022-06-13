@@ -19,22 +19,20 @@
 			{{ fromNow(data.item.timestamp) }}
 		</template>
 		<template #cell(source)="data">
-			<span icon="avatar">
-				<Identicon
+			<Identicon
 				:key="data.item.source"
 				:address="data.item.source"
 				:size="20"
-				/>
-				<nuxt-link
+			/>
+			<nuxt-link
 				:to="localePath(`/account/${data.item.source}`)"
 				:title="$t('pages.accounts.account_details')"
-				>
+			>
 				{{ shortAddress(data.item.source) }}
-				</nuxt-link>
-			</span>
+			</nuxt-link>
 		</template>
 		<template #cell(destination)="data">
-			<span v-if="isValidAddressPolkadotAddress(data.item.destination)" icon="avatar">
+			<template v-if="isValidAddressPolkadotAddress(data.item.destination)">
 				<Identicon
 					:key="data.item.destination"
 					:address="data.item.destination"
@@ -46,7 +44,7 @@
 				>
 					{{ shortAddress(data.item.destination) }}
 				</nuxt-link>
-			</span>
+			</template>
 			<template v-else>
 				{{ shortAddress(data.item.destination || '') }}
 			</template>
@@ -97,13 +95,13 @@ export default {
 				label: this.$t('components.whale_alert.hash'),
 				sortable: false,
 				variant: 'i-fourth',
-				class: 'important'
+				class: 'pkd-separate'
 			},
 			{
 				key: 'block_number',
 				label: this.$t('components.whale_alert.block_number'),
 				sortable: false,
-				class: 'highlighted'
+				class: 'pkd-marked'
 			},
 			{
 				key: 'timestamp',

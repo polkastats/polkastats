@@ -1,5 +1,63 @@
 <template>
-  <div class="metric h-100">
+
+	<rating-item :title="$t('components.identity.title')" :score="rating">
+		
+		<nuxt-link
+			v-b-tooltip.hover
+			to="/help/metrics#identity"
+			:title="$t('components.identity.help')"
+			class="legend-link h6"
+		>
+			<font-awesome-icon icon="question-circle" />
+		</nuxt-link>
+
+		<div class="my-2">
+			<template v-if="rating === 3">{{ $t('components.identity.description_1') }}</template>
+			<template v-else-if="rating === 2">{{ $t('components.identity.description_2') }}</template>
+			<template v-else-if="rating === 1">{{ $t('components.identity.description_3') }}</template>
+			<template v-else>{{ $t('components.identity.description_4') }}</template>
+		</div>
+
+		<div specs class="text-left overflow-hidden mt-2">
+			<spec-item v-if="identity.legal" title="Legal">
+				{{ identity.legal }}
+			</spec-item>
+			<spec-item v-if="identity.email" title="Email">
+				<a :href="`mailto:${identity.email}`" target="_blank">
+					{{ identity.email }}
+				</a>
+			</spec-item>
+			<spec-item v-if="identity.web" title="Web">
+				<a 
+					:href="identity.web.indexOf('://') === -1
+					? 'http://' + identity.web
+					: identity.web" target="_blank"
+				>
+					{{
+						identity.web.indexOf('://') === -1
+						? 'http://' + identity.web
+						: identity.web
+					}}
+				</a>
+			</spec-item>
+			<spec-item v-if="identity.twitter" title="Twitter">
+				<a
+					:href="`https://twitter.com/${identity.twitter.substring(1)}`"
+					target="_blank"
+				>
+					{{ identity.twitter }}
+				</a>
+			</spec-item>
+			<spec-item v-if="identity.riot" title="Element">
+				<a href="https://app.element.io/" target="_blank">
+					{{ identity.riot }}
+				</a>
+			</spec-item>
+		</div>
+
+	</rating-item>
+
+  <!-- <div class="metric h-100">
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
@@ -85,15 +143,19 @@
         </a>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
-import Rating from '@/components/staking/Rating.vue'
+// import Rating from '@/components/staking/Rating.vue'
+import RatingItem from '@/components/more/RatingItem.vue'
+import SpecItem from '@/components/more/SpecItem.vue'
 
 export default {
   components: {
-    Rating,
+    // Rating,
+	RatingItem,
+	SpecItem
   },
   props: {
     identity: {

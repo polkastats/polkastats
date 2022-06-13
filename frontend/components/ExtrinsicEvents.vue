@@ -1,5 +1,34 @@
 <template>
-  <div class="extrinsic-events">
+	<section class="section text-i-fourthB" colors="i-fourth-1">
+		<table-component :items="events" :fields="fields" :settings="settings" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
+			<template #cell(block_number)="data">
+				<nuxt-link
+				:to="
+					localePath(
+					`/event/${data.item.block_number}/${data.item.event_index}`
+					)
+				"
+				>
+				#{{ formatNumber(data.item.block_number) }}-{{
+					data.item.event_index
+				}}
+				</nuxt-link>
+			</template>
+			<template #cell(section)="data">
+				<div class="timeline" variant="i-primary">
+					<span class="timeline-item">{{ data.item.section }}</span>
+					<span class="timeline-item">{{ data.item.method }}</span>
+				</div>
+			</template>
+			<template #cell(data)="data">
+				{{ data.item.data.substring(0, 64)
+				}}{{ data.item.data.length > 64 ? '...' : '' }}
+			</template>
+		</table-component>
+	</section>
+
+
+  <!-- <div class="extrinsic-events">
     <h4 class="my-4 text-center">
       {{ $t('components.extrinsic_events.title') }}
     </h4>
@@ -43,10 +72,10 @@
         </template>
       </b-table>
     </div>
-    <!-- pagination -->
+    pagination
     <div class="row">
       <div class="col-6">
-        <!-- desktop -->
+        desktop
         <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
           <b-button-group>
             <b-button
@@ -60,7 +89,7 @@
             </b-button>
           </b-button-group>
         </div>
-        <!-- mobile -->
+        mobile
         <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
           <b-dropdown
             class="m-md-2"
@@ -88,16 +117,20 @@
         ></b-pagination>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
 import { gql } from 'graphql-tag'
 import { paginationOptions } from '@/frontend.config.js'
 import commonMixin from '@/mixins/commonMixin.js'
+import TableComponent from '@/components/more/TableComponent.vue'
 
 export default {
   mixins: [commonMixin],
+  components: {
+	  TableComponent
+  },
   props: {
     blockNumber: {
       type: Number,
@@ -124,16 +157,19 @@ export default {
           key: 'block_number',
           label: this.$t('components.extrinsic_events.id'),
           sortable: true,
+		  class: 'pkd-marked',
         },
         {
           key: 'section',
           label: this.$t('components.extrinsic_events.section'),
           sortable: true,
+		  class: 'text-left'
         },
         {
           key: 'data',
           label: this.$t('components.extrinsic_events.data'),
           sortable: true,
+		  class: 'text-left'
         },
       ],
     }
@@ -177,6 +213,43 @@ export default {
       localStorage.paginationOptions = num
       this.perPage = parseInt(num)
     },
+  },
+  computed:
+  {
+	settings()
+	{
+		return {
+			'per-page': this.perPage,
+			'current-page': this.currentPage,
+			'sort-by.sync': this.sortBy,
+			'sort-desc.sync': this.sortDesc
+		}
+	},
+	options()
+	{
+		return {
+			title: this.$t('components.extrinsic_events.title'),
+			variant: 'i-secondary',
+		}
+	},
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.totalRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100],
+			}
+		}
+	},
   },
 }
 </script>

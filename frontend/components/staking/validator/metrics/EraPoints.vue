@@ -1,5 +1,32 @@
 <template>
-  <div class="metric h-100">
+
+	<rating-item :title="$t('components.era_points.title')" :score="rating">
+		<nuxt-link
+            v-b-tooltip.hover
+            to="/help/metrics#erapoints"
+            :title="$t('components.era_points.help')"
+			class="legend-link h6"
+		>
+            <font-awesome-icon icon="question-circle" />
+		</nuxt-link>
+
+		<div>
+			<p v-if="rating === 2">
+				{{ $t('components.address.description_1', {
+					percent: percent.toFixed(2),
+					average: average.toFixed(2),
+				}) }}<br />
+			</p>
+			<p v-else>
+				{{ $t('components.address.description_2', {
+					percent: percent.toFixed(2),
+					average: average.toFixed(2),
+				}) }}<br />
+			</p>
+		</div>
+	</rating-item>
+
+  <!-- <div class="metric h-100">
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
@@ -39,14 +66,16 @@
         }}<br />
       </p>
     </div>
-  </div>
+  </div> -->
 </template>
 <script>
-import Rating from '@/components/staking/Rating.vue'
+// import Rating from '@/components/staking/Rating.vue'
+import RatingItem from '@/components/more/RatingItem.vue'
 
 export default {
   components: {
-    Rating,
+    // Rating,
+	RatingItem
   },
   props: {
     rating: {

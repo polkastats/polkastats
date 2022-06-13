@@ -1,9 +1,7 @@
 <template>
   <ReactiveLineChart
     :chart-data="chartData"
-    :options="chartOptions"
-    :height="100"
-    class="mb-4"
+    :options="chart.options"
   />
 </template>
 <script>
@@ -11,6 +9,7 @@ import { gql } from 'graphql-tag'
 import { BigNumber } from 'bignumber.js'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
 import { config } from '@/frontend.config.js'
+import { ChartLineOptions } from '@/components/charts/settings/chartline';
 
 export default {
   components: {
@@ -24,75 +23,85 @@ export default {
   },
   data() {
     return {
-      chartOptions: {
-        responsive: true,
-        legend: {
-          display: false,
-        },
-        title: {
-          display: true,
-          text: this.$t('components.staking_slashes_chart.title'),
-          fontSize: 18,
-          fontColor: '#000',
-          fontStyle: 'lighter',
-        },
-        tooltips: {
-          backgroundColor: '#000000',
-        },
-        scales: {
-          xAxes: [
-            {
-              gridLines: {
-                display: true,
-                color: 'rgba(200, 200, 200, 0.4)',
-              },
-              scaleLabel: {
-                display: true,
-                labelString: 'era',
-              },
-            },
-          ],
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-                suggestedMin: 0,
-              },
-              gridLines: {
-                display: true,
-                color: 'rgba(200, 200, 200, 0.4)',
-              },
-              scaleLabel: {
-                display: true,
-                labelString: this.$t('components.staking_slashes_chart.slash'),
-              },
-            },
-          ],
-        },
-      },
+	  chart: new ChartLineOptions('era', this.$t('components.staking_slashes_chart.slash')),
+    //   chartOptions: {
+    //     responsive: true,
+    //     legend: {
+    //       display: false,
+    //     },
+    //     title: {
+    //       display: true,
+    //       text: this.$t('components.staking_slashes_chart.title'),
+    //       fontSize: 18,
+    //       fontColor: '#000',
+    //       fontStyle: 'lighter',
+    //     },
+    //     tooltips: {
+    //       backgroundColor: '#000000',
+    //     },
+    //     scales: {
+    //       xAxes: [
+    //         {
+    //           gridLines: {
+    //             display: true,
+    //             color: 'rgba(200, 200, 200, 0.4)',
+    //           },
+    //           scaleLabel: {
+    //             display: true,
+    //             labelString: 'era',
+    //           },
+    //         },
+    //       ],
+    //       yAxes: [
+    //         {
+    //           ticks: {
+    //             beginAtZero: true,
+    //             suggestedMin: 0,
+    //           },
+    //           gridLines: {
+    //             display: true,
+    //             color: 'rgba(200, 200, 200, 0.4)',
+    //           },
+    //           scaleLabel: {
+    //             display: true,
+    //             labelString: this.$t('components.staking_slashes_chart.slash'),
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
       slashes: [],
     }
   },
   computed: {
-    chartData() {
-      return {
-        labels: this.slashes.map(({ era }) => era),
-        datasets: [
-          {
-            labels: 'slashes',
-            data: this.slashes.map(({ amount }) =>
-              new BigNumber(amount)
-                .div(new BigNumber(10).pow(config.tokenDecimals))
-                .toNumber()
-            ),
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            borderColor: 'rgba(230, 0, 122, 0.8)',
-            hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-            fill: false,
-            showLine: true,
-          },
-        ],
-      }
+	  chartData() {
+		this.chart.setData(
+			this.slashes.map(({ amount }) => new BigNumber(amount)
+			.div(new BigNumber(10).pow(config.tokenDecimals))
+			.toNumber())
+		);
+		this.chart.setLabels(this.slashes.map(({ era }) => era));
+
+	return this.chart.data;
+
+    //   return {
+    //     labels: this.slashes.map(({ era }) => era),
+    //     datasets: [
+    //       {
+    //         labels: 'slashes', // TODO
+    //         data: this.slashes.map(({ amount }) =>
+    //           new BigNumber(amount)
+    //             .div(new BigNumber(10).pow(config.tokenDecimals))
+    //             .toNumber()
+    //         ),
+    //         backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    //         borderColor: 'rgba(230, 0, 122, 0.8)',
+    //         hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+    //         fill: false,
+    //         showLine: true,
+    //       },
+    //     ],
+    //   }
     },
   },
   apollo: {

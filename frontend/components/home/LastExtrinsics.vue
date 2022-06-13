@@ -53,7 +53,7 @@ export default {
 				key: 'block_number',
 				label: this.$t('components.last_extrinsics.id'),
 				sortable: false,
-				class: 'highlighted'
+				class: 'pkd-marked'
 			},
 			{
 				key: 'hash',

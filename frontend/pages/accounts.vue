@@ -16,26 +16,24 @@
 			<table-component v-else :items="parsedAccounts" :fields="fields" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
 
 				<template #cell(account_id)="data">
-					<div icon="avatar">
-						<Identicon :address="data.item.account_id" />
-						<nuxt-link
-							v-b-tooltip.hover
-							:to="localePath(`/account/${data.item.account_id}`)"
-							:title="$t('pages.accounts.account_details')"
-						>
-							<template v-if="data.item.identity_display_parent">
-								{{ data.item.identity_display_parent }}/{{
-									data.item.identity_display
-								}}
-							</template>
-							<template v-else-if="data.item.identity_display">
-								{{ data.item.identity_display }}
-							</template>
-							<template v-else>
-								{{ shortAddress(data.item.account_id) }}
-							</template>
-						</nuxt-link>
-					</div>
+					<Identicon :address="data.item.account_id" />
+					<nuxt-link
+						v-b-tooltip.hover
+						:to="localePath(`/account/${data.item.account_id}`)"
+						:title="$t('pages.accounts.account_details')"
+					>
+						<template v-if="data.item.identity_display_parent">
+							{{ data.item.identity_display_parent }}/{{
+								data.item.identity_display
+							}}
+						</template>
+						<template v-else-if="data.item.identity_display">
+							{{ data.item.identity_display }}
+						</template>
+						<template v-else>
+							{{ shortAddress(data.item.account_id) }}
+						</template>
+					</nuxt-link>
 				</template>
 				<template #cell(free_balance)="data">
 					{{ formatAmount(data.item.free_balance) }}
@@ -317,7 +315,7 @@ export default {
 			label: this.$t('pages.accounts.account'),
 			sortable: false,
 			variant: 'i-fourth',
-			class: 'important py-3'
+			class: 'pkd-separate py-3'
 		},
 		{
 			key: 'free_balance',

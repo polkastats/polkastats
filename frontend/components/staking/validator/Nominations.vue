@@ -1,5 +1,21 @@
 <template>
-  <div class="nominations">
+
+	<table-component :items="nominations" :fields="fields" :settings="settings" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
+		<template #cell(who)="data">
+            <nuxt-link
+              :to="localePath(`/account/${data.item.who}`)"
+              :title="$t('pages.accounts.account_details')"
+            >
+              <Identicon :address="data.item.who" :size="20" class="mr-1" />
+              {{ shortAddress(data.item.who) }}
+            </nuxt-link>
+        </template>
+        <template #cell(value)="data">
+            {{ formatAmount(data.item.value) }}
+        </template>
+	</table-component>
+
+  <!-- <div class="nominations">
     <div class="table-responsive">
       <b-table
         striped
@@ -49,17 +65,19 @@
         </b-button-group>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
 import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
 import { paginationOptions } from '@/frontend.config.js'
+import TableComponent from '@/components/more/TableComponent.vue'
 
 export default {
   components: {
     Identicon,
+	TableComponent
   },
   mixins: [commonMixin],
   props: {
@@ -83,10 +101,12 @@ export default {
         {
           key: 'who',
           label: this.$t('components.nominations.who'),
+		  class: 'text-left'
         },
         {
           key: 'value',
           label: this.$t('components.nominations.value'),
+		  class: 'expanded'
         },
       ],
     }
@@ -95,6 +115,40 @@ export default {
     totalRows() {
       return this.nominations.length
     },
+	options()
+	{
+		return {
+			title: this.$t('pages.validator.nominations'),
+			variant: 'i-secondary',
+		}
+	},
+	settings()
+	{
+		return {
+			'per-page': this.perPage,
+			'current-page': this.currentPage,
+			'sort-by.sync': this.sortBy,
+			'sort-desc.sync': this.sortDesc,
+		}
+	},
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.totalRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100],
+			}
+		}
+	},
   },
   methods: {
     setPageSize(num) {

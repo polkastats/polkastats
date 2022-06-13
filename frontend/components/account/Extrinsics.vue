@@ -1,5 +1,55 @@
 <template>
-  <div class="sent-transfers">
+	<div v-if="loading" class="text-center py-4">
+      <Loading />
+    </div>
+    <div v-else-if="extrinsics.length === 0" class="text-center py-4">
+      <h5>{{ $t('components.extrinsics.no_extrinsic_found') }}</h5>
+    </div>
+	<table-component v-else :items="extrinsics" :fields="fields" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
+		<template #cell(block_number)="data">
+              <nuxt-link
+                v-b-tooltip.hover
+                :to="localePath(`/block?blockNumber=${data.item.block_number}`)"
+                :title="$t('common.block_details')"
+              >
+                #{{ formatNumber(data.item.block_number) }}
+              </nuxt-link>
+          </template>
+          <template #cell(hash)="data">
+              <nuxt-link
+                v-b-tooltip.hover
+                :to="localePath(`/extrinsic/${data.item.hash}`)"
+                :title="$t('common.extrinsic_details')"
+              >
+                {{ shortHash(data.item.hash) }}
+              </nuxt-link>
+          </template>
+          <template #cell(timestamp)="data">
+			  <font-awesome-icon icon="calendar-alt" class="mr-1" />
+              {{ getDateFromTimestamp(data.item.timestamp) }}
+          </template>
+          <template #cell(signer)="data">
+              <nuxt-link
+                :to="localePath(`/account/${data.item.signer}`)"
+                :title="$t('pages.accounts.account_details')"
+              >
+                <Identicon :address="data.item.signer" />
+                {{ shortAddress(data.item.signer) }}
+              </nuxt-link>
+          </template>
+          <template #cell(section)="data">
+            <div class="timeline" variant="i-primary">
+				<span class="timeline-item">{{ data.item.section }}</span>
+				<span class="timeline-item">{{ data.item.method }}</span>
+            </div>
+          </template>
+          <template #cell(success)="data">
+              <font-awesome-icon v-if="data.item.success" icon="check" class="text-i-success" />
+              <font-awesome-icon v-else icon="times" class="text-i-danger" />
+          </template>
+	</table-component>
+
+  <!-- <div class="sent-transfers">
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
@@ -65,10 +115,10 @@
           </template>
         </b-table>
       </div>
-      <!-- pagination -->
+      pagination
       <div class="row">
         <div class="col-6">
-          <!-- desktop -->
+          desktop
           <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
             <b-button-group>
               <b-button
@@ -82,7 +132,7 @@
               </b-button>
             </b-button-group>
           </div>
-          <!-- mobile -->
+          mobile
           <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
             <b-dropdown
               class="m-md-2"
@@ -111,7 +161,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -120,11 +170,13 @@ import commonMixin from '@/mixins/commonMixin.js'
 import Identicon from '@/components/Identicon.vue'
 import Loading from '@/components/Loading.vue'
 import { paginationOptions } from '@/frontend.config.js'
+import TableComponent from '@/components/more/TableComponent.vue'
 
 export default {
   components: {
     Identicon,
     Loading,
+	TableComponent
   },
   mixins: [commonMixin],
   props: {
@@ -148,12 +200,15 @@ export default {
           key: 'hash',
           label: 'Hash',
           sortable: false,
+		  variant: 'i-fourth',
+		  class: 'pkd-separate'
         },
         {
           key: 'block_number',
           label: 'Block',
-          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
+        //   class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: false,
+		  class: 'pkd-marked'
         },
         {
           key: 'timestamp',
@@ -169,6 +224,7 @@ export default {
           key: 'section',
           label: 'Extrinsic',
           sortable: false,
+		  class: 'text-left'
         },
         {
           key: 'success',
@@ -177,6 +233,34 @@ export default {
         },
       ],
     }
+  },
+  computed:
+  {
+	options()
+	{
+		return {
+			title: 'Extrinsics',
+			variant: 'i-secondary',
+		}
+	},
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.totalRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100],
+			}
+		}
+	},
   },
   methods: {
     setPageSize(num) {

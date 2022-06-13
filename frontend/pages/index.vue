@@ -1,11 +1,12 @@
 <template>
 	<main>
-		<header-component type="unfill" :ads="false">
+		<header-component iclass="pt-md-6">
 			<score-section variant="i-primary" />
+			<template #sections>
+				<chart-section />
+			</template>
 		</header-component>
 
-		<chart-section />
-		<ads-section />
 		<table-section />
 	</main>
 
@@ -57,7 +58,6 @@ import ChartSection from '../sections/home/ChartSection.vue'
 import ScoreSection from '../sections/home/ScoreSection.vue'
 import TableSection from '../sections/home/TableSection.vue'
 import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
-import AdsSection from '@/components/more/AdsSection.vue'
 
 export default {
   components: {
@@ -71,7 +71,7 @@ export default {
     // Search,
     // Top10Rich,
 	// WhaleAlert, 
-	ScoreSection, ChartSection, TableSection, HeaderComponent, AdsSection
+	ScoreSection, ChartSection, TableSection, HeaderComponent
   },
   	layout: 'AuthLayout',
   data: () => {

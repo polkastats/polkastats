@@ -34,7 +34,7 @@ table.pretty-table
 			text-align: left;
 		}
 
-		&.highlighted
+		&.pkd-marked
 		{
 			font-weight: 900;
 		}
@@ -42,14 +42,14 @@ table.pretty-table
 
 	th
 	{
-		&.important
+		&.pkd-separate
 		{
 			font-weight: 900;
 			font-size: 1.2em;
 			background-color: transparent;
 		}
 
-		&.highlighted
+		&.pkd-marked
 		{
 			font-size: 1.2em;
 		}
@@ -58,7 +58,7 @@ table.pretty-table
 	td
 	{
 		&:first-of-type,
-		&.important + td
+		&.pkd-separate + td
 		{
 			@include border-left-radius($border-radius);
 		}
@@ -68,7 +68,7 @@ table.pretty-table
 			@include border-right-radius($border-radius);
 		}
 
-		&.important
+		&.pkd-separate
 		{
 			position: relative;
 			background-color: transparent !important; // FIX: Remove important
@@ -116,6 +116,11 @@ table.pretty-table
 				@include border-radius($border-radius);
 			}
 		}
+
+		.identicon
+		{
+			height: 1em;
+		}
 	}
 
 	@each $color, $value in $theme-colors
@@ -128,12 +133,12 @@ table.pretty-table
 			}
 		}
 
-		th.important.table-#{$color}
+		th.pkd-separate.table-#{$color}
 		{
 			color: $value;
 		}
 
-		td.important.table-#{$color}
+		td.pkd-separate.table-#{$color}
 		{
 			&::before
 			{

@@ -1,9 +1,9 @@
 
 <template>
-	<section class="section chart" color="i-third">
-		<header class="mb-4">
-			<h1 v-if="title" class="h1">{{ title }}</h1>
-			<h2 v-if="subtitle" class="h6">{{ subtitle }}</h2>
+	<section class="section section-chart text-center" color="i-third-1">
+		<header class="header-block mb-4" size="sm">
+			<h1 v-if="title">{{ title }}</h1>
+			<h2 v-if="subtitle">{{ subtitle }}</h2>
 		</header>
 		<TransfersChart />
 	</section>

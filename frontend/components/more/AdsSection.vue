@@ -1,9 +1,10 @@
 
 <template>
 	<section class="section ads-section text-i-fifth py-4" :color="variant">
-		<article v-if="$slots.adInfo" class="section ad d-none d-xl-block my-n4 py-4 flex-grow-1" :color="variant" pos="right">
-			<slot name="adInfo" />
-		</article>
+		<!-- <article class="section d-xl-blsock my-n4 py-4 flex-grow-1" :color="variant" pos="right">
+			<h1 class="mb-2">Ad Space</h1>
+			<b-button :variant="color">Contact</b-button>
+		</article> -->
 		<article class="m-auto overflow-hidden" style="line-height: 0;">
 			<CoinZillaBanner effect="gray" />
 		</article>

@@ -50,7 +50,7 @@ export default {
 		return [
 			{
 				variant: 'i-primary',
-				class: 'important',
+				class: 'pkd-separate',
 				key: 'block_number',
 				label: this.$t('components.last_blocks.block_number'),
 				sortable: false,

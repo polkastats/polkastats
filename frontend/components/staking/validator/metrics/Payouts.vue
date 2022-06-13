@@ -1,5 +1,30 @@
 <template>
-  <div class="metric h-100">
+
+	<rating-item :title="$t('components.payouts.title')" :score="rating">
+		<nuxt-link
+            v-b-tooltip.hover
+            to="/help/metrics#payouts"
+            :title="$t('components.payouts.help')"
+			class="legend-link h6"
+		>
+            <font-awesome-icon icon="question-circle" />
+		</nuxt-link>
+
+		<div>
+			<p v-if="rating === 3">
+				{{ $t('components.payouts.description_1', { pending }) }}
+			</p>
+			<p v-else-if="rating === 2">
+				{{ $t('components.payouts.description_2', { pending }) }}
+			</p>
+			<p v-else-if="rating === 1">
+				{{ $t('components.payouts.description_3', { pending }) }}
+			</p>
+			<p v-else>{{ $t('components.payouts.description_4') }}</p>
+		</div>
+	</rating-item>
+
+  <!-- <div class="metric h-100">
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
@@ -33,15 +58,17 @@
       </p>
       <p v-else>{{ $t('components.payouts.description_4') }}</p>
     </div>
-  </div>
+  </div> -->
 </template>
 <script>
-import Rating from '@/components/staking/Rating.vue'
+// import Rating from '@/components/staking/Rating.vue'
 import { config } from '@/frontend.config.js'
+import RatingItem from '@/components/more/RatingItem.vue'
 
 export default {
   components: {
-    Rating,
+    // Rating,
+	RatingItem
   },
   props: {
     payoutHistory: {

@@ -28,7 +28,7 @@
 			</p>
 			<p variant="i-primary" class="address-item row m-0 p-4 align-items-center justify-content-center flex-grow-1">
 				<a href="https://web3.foundation/grants/" target="_blank">
-					<img icon="grant" src="/brand/grant_badge.png" alt="Built with" height="64" />
+					<img src="/brand/grant_badge.png" alt="Built with" height="64" />
 				</a>
 			</p>
 		</address>

@@ -1,0 +1,60 @@
+.team-member
+{
+	position: relative;
+	overflow: hidden;
+	width: 15em;
+	height: 25em;
+
+	// TODO: Move to effects
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+
+	// TODO: Move to effects
+	&::before
+	{
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: $i-gradient-third;
+		opacity: 0.5;
+	}
+
+	.badge
+	{
+		font-size: 1.2em;
+	}
+
+	// TODO: Move to effects
+	footer
+	{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		align-content: center;
+    	justify-content: center;
+		word-break: break-word;
+
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+
+		transform: translate(100%);
+		transition: 0.3s ease-in;
+	}
+
+	&:hover
+	{
+		footer
+		{
+			transform: translate(0);
+			transition: 0.3s ease-out;
+		}
+	}
+}

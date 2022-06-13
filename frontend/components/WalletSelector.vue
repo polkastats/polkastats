@@ -1,5 +1,46 @@
 <template>
-  <div class="wallet-selector">
+
+	<section class="text-center">
+		<header class="header-block my-3" variant>
+			<font-awesome-icon class="h4" icon="id-card-alt" />
+			<h1 class="h6 mb-1">{{ $t('components.wallet_selector.title') }}</h1>
+			<p class="col-sm-8 m-auto">{{ $t('components.wallet_selector.description') }}</p>
+		</header>
+
+		<div>
+			<Loading v-if="loading" color="gray" />
+			<div v-else>
+				
+				<b-table
+					striped
+					:fields="fields"
+					:items="extensionAccounts"
+					class="pretty-table small"
+					variant="i-fourthB"
+				>
+					<template #cell(address)="data">
+						<Identicon class="mr-1" :address="data.item.address" />
+						<b v-if="data.item.name" class="mr-1">{{ data.item.name }}</b>
+						<span>{{ shortAddress(data.item.address) }}</span>
+					</template>
+					<template #cell(selected)="data">
+						<b-button
+							class="text-i-primary font-weight-bold"
+							variant="transparent"
+							size="sm"
+							@click="selectAddress(data.item.address)"
+						>
+							<font-awesome-icon icon="sign-in-alt" class="mr-1" />
+							{{ $t('components.wallet_selector.connect') }}
+						</b-button>
+					</template>
+				</b-table>
+			</div>
+		</div>
+
+	</section>
+
+  <!-- <div class="wallet-selector">
     <h2 class="text-center d-block">
       {{ $t('components.wallet_selector.title') }}
     </h2>
@@ -38,7 +79,7 @@
         </template>
       </b-table>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -71,6 +112,7 @@ export default {
         {
           key: 'address',
           label: 'Account',
+		  class: 'text-left',
         },
         {
           key: 'role',

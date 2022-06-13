@@ -1,0 +1,23 @@
+.section-steps
+{
+	counter-reset: counterA;
+
+	.accordion
+	{
+		margin-bottom: 1.5em;
+	}
+
+	.accordion[type="number"] > .list-item
+	{
+		&::before
+		{
+			counter-increment: counterA;
+			content: counter(counterA);
+		}
+	}
+
+	a
+	{
+		font-weight: bold;
+	}
+}

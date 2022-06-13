@@ -1,5 +1,86 @@
 <template>
-  <div class="staking-slashes">
+	<div v-if="loading" class="text-center py-4">
+      <Loading />
+    </div>
+    <div v-else-if="stakingSlashes.length === 0" class="text-center py-4">
+      <h5>{{ $t('components.staking_slashes.no_slash_found') }}</h5>
+    </div>
+	<div v-else>
+
+		<section class="section section-chart text-center">
+
+			<header class="header-block my-3" size="sm">
+				<h1>Slashes</h1>
+				<h2>{{ $t('components.staking_slashes_chart.title') }}</h2>
+			</header>
+
+      		<StakingSlashesChart :account-id="accountId" />
+
+		</section>
+
+		<section class="section py-4">
+			<header class="header-block" variant="transparent">
+				<h1 class="h6 mb-2">Search</h1>
+				<input-control
+					:placeholder="$t('components.staking_slashes.search')"
+					icon="search"
+					variant="i-primary"
+					v-model="filter"
+				/>
+				<JsonCSV
+					class="text-right mt-2"
+					:data="stakingSlashes"
+					:name="`polkastats_staking_slashes_${accountId}.csv`"
+				>
+					<b-button size="sm" variant="i-primary" class="font-weight-bold">
+						<font-awesome-icon icon="file-csv" class="mr-1" />
+						{{ $t('pages.accounts.download_csv') }}
+					</b-button>
+				</JsonCSV>
+			</header>
+
+			<table-component :items="stakingSlashes" :fields="fields" :settings="settings" :listeners="listeners" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
+			
+				<template #cell(block_number)="data">
+					<nuxt-link
+						v-b-tooltip.hover
+						:to="localePath(`/block?blockNumber=${data.item.block_number}`)"
+						:title="$t('common.block_details')"
+					>
+						#{{ formatNumber(data.item.block_number) }}
+					</nuxt-link>
+				</template>
+				<template #cell(validator_stash_address)="data">
+					<nuxt-link
+						:to="
+						localePath(`/validator/${data.item.validator_stash_address}`)
+						"
+						:title="$t('pages.accounts.account_details')"
+					>
+						<Identicon :address="data.item.validator_stash_address" />
+						{{ shortAddress(data.item.validator_stash_address) }}
+					</nuxt-link>
+				</template>
+				<template #cell(timestamp)="data">
+					<font-awesome-icon icon="calendar-alt" class="mr-1" />
+					{{ getDateFromTimestamp(data.item.timestamp) }}
+				</template>
+				<template #cell(timeago)="data">
+					<font-awesome-icon icon="clock" class="mr-1" />
+					{{ fromNow(data.item.timestamp) }}
+				</template>
+				<template #cell(amount)="data">
+					{{ formatAmount(data.item.amount, 6) }}
+				</template>
+			
+			</table-component>
+		</section>
+
+
+	</div>
+
+
+  <!-- <div class="staking-slashes">
     <div v-if="loading" class="text-center py-4">
       <Loading />
     </div>
@@ -16,7 +97,7 @@
         <font-awesome-icon icon="file-csv" />
         {{ $t('pages.accounts.download_csv') }}
       </JsonCSV>
-      <!-- Filter -->
+      Filter
       <b-row style="margin-bottom: 1rem">
         <b-col cols="12">
           <b-form-input
@@ -101,7 +182,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -111,12 +192,18 @@ import commonMixin from '@/mixins/commonMixin.js'
 import Loading from '@/components/Loading.vue'
 import StakingSlashesChart from '@/components/account/StakingSlashesChart.vue'
 import { paginationOptions } from '@/frontend.config.js'
+import TableComponent from '@/components/more/TableComponent.vue'
+import InputControl from '@/components/more/InputControl.vue'
+import { Fragment } from 'vue-fragment'
 
 export default {
   components: {
     Loading,
     JsonCSV,
     StakingSlashesChart,
+	TableComponent,
+	InputControl,
+	Fragment
   },
   mixins: [commonMixin],
   props: {
@@ -141,8 +228,10 @@ export default {
         {
           key: 'block_number',
           label: 'Block number',
-          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
+        //   class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
           sortable: true,
+		  variant: 'i-fourth',
+		  class: 'pkd-separate'
         },
         {
           key: 'timestamp',
@@ -158,6 +247,7 @@ export default {
           key: 'validator_stash_address',
           label: 'Validator',
           sortable: true,
+		  class: 'text-left'
         },
         {
           key: 'timeago',
@@ -171,6 +261,47 @@ export default {
         },
       ],
     }
+  },
+  computed:
+  {
+	options()
+	{
+		return {
+			variant: 'i-secondary',
+		}
+	},
+	settings()
+	{
+		return {
+			'per-page': this.perPage,
+			'current-page': this.currentPage,
+			'filter': this.filter,
+		}
+	},
+	listeners()
+	{
+		return {
+			 filtered: this.onFiltered
+		}
+	},
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.totalRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100],
+			}
+		}
+	},
   },
   methods: {
     setPageSize(num) {

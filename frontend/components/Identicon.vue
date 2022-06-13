@@ -13,6 +13,7 @@
       :value="address"
       class="identicon"
     />
+	<slot />
   </div>
 </template>
 <script>

@@ -1,5 +1,7 @@
 header.frame
 {
+	z-index: 10;
+
 	.navbar
 	{
 		position: fixed;
@@ -141,7 +143,7 @@ header.frame
 		}
 	}
 
-	[icon]::before
+	[icon-network]::before
 	{
 		margin-right: 0.5em;
 	}

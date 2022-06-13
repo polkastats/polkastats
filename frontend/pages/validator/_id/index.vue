@@ -1,5 +1,299 @@
 <template>
-  <div class="page validator-page container pt-3">
+
+	<main>
+		<section v-if="loading || !validator" class="section text-center py-4">
+			<Loading />
+		</section>
+		<template v-else>
+			<header-component>
+				<search-section variant="i-gradient-third" image="avatar" image-size="auto">
+
+						<template #header>
+
+								<p>
+									<b-button
+										v-if="validator.includedThousandValidators"
+										:href="`https://thousand-validators.kusama.network/#/leaderboard/${accountId}`"
+										target="_blank"
+										variant="i-fourth"
+										size="sm"
+										class="mx-2 mb-3"
+									>
+										1KV Program
+									</b-button>
+									<SelectedValidators v-if="config.showValSelectorInPage" variant="i-primary" class="mb-3" />
+								</p>
+								
+								<h2 class="h4">
+									<Identicon :address="accountId" :size="50" p-relative>
+										<VerifiedIcon v-if="validator.verifiedIdentity" :unclass="true" class="m-n2" size="md" p-absolute="top-right" />
+									</Identicon>
+								</h2>
+								
+								<h1 class="h4 mt-2">
+									<template v-if="validator.name">
+										{{ validator.name }}
+									</template>
+									<template v-else>
+										{{ shortAddress(accountId) }}
+									</template>
+								</h1>
+								<b-form-checkbox
+									v-b-tooltip.hover
+									title="Select / Unselect validator"
+									class="mt-2"
+									variant="i-fifth"
+									active="i-success"
+									size="sm"
+									switch
+									:checked="isSelected(validator.stashAddress)"
+									@change="toggleSelected(validator.stashAddress)"
+								/>
+								
+						</template>
+			  
+				</search-section>
+				<section class="section text-left text-nowrap text-uppercase text-i-fifth font-weight-600" color="i-fourthB">
+					<ValidatorLinks :account-id="accountId" :unclass="true" />
+				</section>
+
+				<template #sections>
+					<section class="section" color="i-third-1">
+
+						<!-- TODO: Translate -->
+						<header class="header-block mb-4" size="sm">
+							<h1>Specs</h1>
+							<h2 class="text-i-fourth">Important validator account data</h2>
+						</header>
+						
+						<section class="text-i-fifth overflow-hidden small">
+							<spec-item v-if="validator.stashAddress" :title="$t('details.validator.stash')">
+								<div class="fee">
+									<Identicon :address="validator.stashAddress" :size="20" class="mr-1" />
+									<nuxt-link :to="localePath(`/account/${validator.stashAddress}`)">
+										{{ shortAddress(validator.stashAddress) }}
+									</nuxt-link>
+								</div>
+							</spec-item>
+							<spec-item v-if="validator.controllerAddress" :title="$t('details.validator.controller')">
+								<div class="fee">
+									<Identicon :address="validator.controllerAddress" :size="20" class="mr-1" />
+									<nuxt-link :to="localePath(`/account/${validator.controllerAddress}`)">
+										{{ shortAddress(validator.controllerAddress) }}
+									</nuxt-link>
+								</div>
+							</spec-item>
+							<!-- identity start -->
+							<spec-item v-if="validator.identity.email" :title="$t('details.validator.email')">
+								<div class="fee">
+									<a :href="`mailto:${validator.identity.email}`" target="_blank">
+										{{ validator.identity.email }}
+									</a>
+								</div>
+							</spec-item>
+							<spec-item v-if="validator.identity.legal" :title="$t('details.validator.legal')">
+								<div class="fee">
+									{{ validator.identity.legal }}
+								</div>
+							</spec-item>
+							<spec-item v-if="validator.identity.riot" :title="$t('details.validator.riot')">
+								<div class="fee">
+									<a :href="`https://riot.im/app/#/user/${validator.identity.riot}`" target="_blank">
+										{{ validator.identity.riot }}
+									</a>
+								</div>
+							</spec-item>
+							<spec-item v-if="validator.identity.twitter" title="Twitter">
+								<div class="fee">
+									<a :href="`https://twitter.com/${validator.identity.twitter}`" target="_blank">
+										{{ validator.identity.twitter }}
+									</a>
+								</div>
+							</spec-item>
+							<spec-item v-if="validator.identity.web" title="Web">
+								<div class="fee">
+									<a :href="validator.identity.web" target="_blank">
+										{{ validator.identity.web }}
+									</a>
+								</div>
+							</spec-item>
+							<!-- identity end -->
+						</section>
+
+					</section>
+				</template>
+
+			</header-component>
+
+			<section class="section section-tabs">
+
+				<b-tabs active-nav-item-class="text-i-primary" align="center">
+					<b-tab active>
+						<template #title>
+							<h6>{{ $t('pages.validator.metrics') }}</h6>
+						</template>
+
+						<header class="header-block my-3" size="sm">
+							<h1>{{ $t('pages.validator.metrics') }}</h1>
+						</header>
+
+						<b-alert
+							show
+							dismissible
+							fade
+							variant="i-fourth"
+							class="bg-i-fourth text-i-fifth text-center py-3"
+						>
+							{{ $t('pages.validator.metrics_description', { networkName: config.name }) }}
+						</b-alert>
+
+						<section class="section-rating" align="center">
+							<b-row class="align-items-stretch">
+								<b-col md="6">
+									<Identity
+										:identity="validator.identity"
+										:rating="validator.identityRating"
+									/>
+								</b-col>
+								<b-col md="6">
+									<Address
+										:account-id="validator.stashAddress"
+										:identity="validator.identity"
+										:rating="validator.addressCreationRating"
+										:created-at-block="validator.stashAddressCreationBlock"
+										:parent-created-at-block="
+										validator.stashParentAddressCreationBlock
+										"
+									/>
+								</b-col>
+							</b-row>
+							<b-row>
+								<b-col md="6">
+									<Slashes
+										:slashes="validator.slashes"
+										:rating="validator.slashRating"
+									/>
+								</b-col>
+								<b-col md="6">
+									<Subaccounts
+										:rating="validator.subAccountsRating"
+										:cluster-members="validator.clusterMembers"
+									/>
+								</b-col>
+							</b-row>
+							<b-row>
+								<b-col md="6">
+									<Nominators
+										:nominators="validator.nominators"
+										:rating="validator.nominatorsRating"
+									/>
+								</b-col>
+								<b-col md="6">
+									<EraPoints
+										:percent="validator.eraPointsPercent"
+										:average="eraPointsAveragePercent"
+										:era-points-history="validator.eraPointsHistory"
+										:rating="validator.eraPointsRating"
+									/>
+								</b-col>
+							</b-row>
+							<b-row>
+								<b-col md="6">
+									<Commission
+										:commission="validator.commission"
+										:commission-history="validator.commissionHistory"
+										:rating="validator.commissionRating"
+									/>
+								</b-col>
+								<b-col md="6">
+									<Payouts
+										:payout-history="validator.payoutHistory"
+										:rating="validator.payoutRating"
+									/>
+								</b-col>
+							</b-row>
+							<b-row>
+								<b-col md="6">
+									<Governance
+										:council-backing="validator.councilBacking"
+										:active="validator.activeInGovernance"
+										:rating="validator.governanceRating"
+									/>
+								</b-col>
+								<b-col md="6">
+									<Thousand
+										v-if="validator.includedThousandValidators"
+										:account-id="validator.stashAddress"
+										:thousand="validator.thousandValidator"
+									/>
+								</b-col>
+							</b-row>
+						</section>
+
+					</b-tab>
+					<b-tab>
+						<template #title>
+							<h6>{{ $t('pages.validator.charts') }}</h6>
+						</template>
+
+						<header class="header-block my-3" size="sm">
+							<h1>{{ $t('pages.validator.charts') }}</h1>
+						</header>
+						<b-row>
+							<b-col xl="6">
+								<header class="header-block my-4" size="sm" variant="transparent">
+									<h1>{{ $t('components.relative_performance_chart.title') }}</h1>
+								</header>
+								<RelativePerformanceChart
+									style="height: 25em;"
+									:relative-performance-history="
+									validator.relativePerformanceHistory"
+								/>
+							</b-col>
+							<b-col xl="6">
+								<header class="header-block my-4" size="sm" variant="transparent">
+									<h1>{{ $t('components.era_points_chart.title') }}</h1>
+								</header>
+								<EraPointsChart style="height: 25em;" :era-points-history="validator.eraPointsHistory" />
+							</b-col>
+							<b-col cols="12">
+								<header class="header-block my-4" size="sm" variant="transparent">
+									<h1>{{ $t('components.payouts_chart.title') }}</h1>
+								</header>
+								<PayoutsChart style="height: 25em;" :payout-history="validator.payoutHistory" />
+							</b-col>
+							<b-col xl="6">
+								<header class="header-block my-4" size="sm" variant="transparent">
+									<h1>{{ $t('components.stake_chart.title', { tokenSymbol: config.tokenSymbol }) }}</h1>
+								</header>
+								<StakeChart style="height: 25em;" :stake-history="validator.stakeHistory" />
+							</b-col>
+							<b-col xl="6">
+								<header class="header-block my-4" size="sm" variant="transparent">
+									<h1>{{ $t('components.commission_chart.title') }}</h1>
+								</header>
+								<CommissionChart style="height: 25em;" :commission-history="validator.commissionHistory" />
+							</b-col>
+						</b-row>
+
+					</b-tab>
+					<b-tab>
+						<template #title>
+							<h6>{{ $t('pages.validator.nominations') }}</h6>
+						</template>
+
+						<Nominations :nominations="validator.nominations" />
+					</b-tab>
+				</b-tabs>
+
+			</section>
+
+		</template>
+
+	</main>
+
+
+  <!-- <div class="page validator-page container pt-3">
     <div v-if="loading || !validator">
       <Loading />
     </div>
@@ -96,7 +390,7 @@
             </nuxt-link>
           </div>
         </div>
-        <!-- identity start -->
+        identity start
         <div v-if="validator.identity.email" class="row">
           <div class="col-md-3 mb-2">
             <strong>{{ $t('details.validator.email') }}</strong>
@@ -151,7 +445,7 @@
             </a>
           </div>
         </div>
-        <!-- identity end -->
+        identity end
       </b-card>
       <b-tabs content-class="py-4">
         <b-tab :title="$t('pages.validator.metrics')" active>
@@ -285,7 +579,7 @@
         </b-tab>
       </b-tabs>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -310,8 +604,12 @@ import CommissionChart from '@/components/staking/validator/charts/CommissionCha
 import Nominations from '@/components/staking/validator/Nominations.vue'
 import ValidatorLinks from '@/components/staking/validator/ValidatorLinks.vue'
 import { config } from '@/frontend.config.js'
+import HeaderComponent from '@/components/more/headers/HeaderComponent.vue'
+import SearchSection from '@/components/more/headers/SearchSection.vue'
+import SpecItem from '@/components/more/SpecItem.vue'
 
 export default {
+	layout: 'AuthLayout',
   components: {
     SelectedValidators,
     Identity,
@@ -331,6 +629,9 @@ export default {
     CommissionChart,
     Nominations,
     ValidatorLinks,
+	HeaderComponent,
+	SearchSection,
+	SpecItem
   },
   mixins: [commonMixin],
   data() {

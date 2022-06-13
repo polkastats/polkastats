@@ -13,7 +13,7 @@
 				<b-navbar-brand>
 					<brand-component size="1.5"></brand-component>
 				</b-navbar-brand>
-				<b-nav-item :href="`https://www.coingecko.com/en/coins/${config.coinGeckoDenom}`" target="_blank" :link-attrs="{ icon: 'kusama', color: 'secondary' }" class="crypto-price ml-auto text-nowrap">
+				<b-nav-item :href="`https://www.coingecko.com/en/coins/${config.coinGeckoDenom}`" target="_blank" :link-attrs="{ 'icon-network': 'kusama', variant: 'i-secondary' }" class="crypto-price ml-auto text-nowrap">
 					{{ config.tokenSymbol }} ${{ USDConversion }} ({{ USD24hChange }}%)
 				</b-nav-item>
 			</b-navbar-nav>
@@ -38,10 +38,10 @@
 					</b-button>
 				</b-nav-text>
 				<b-nav-text class="mx-1">
-					<SelectedValidators variant="i-primary" :value="{ get name(){ return selected() } }" />
+					<SelectedValidators variant="i-primary" />
 				</b-nav-text>
 				<b-nav-text class="mx-1"><dropdown-menu variant="i-primary" :options="networks" /></b-nav-text>
-				<b-nav-text class="mx-1">
+				<b-nav-text class="ml-1">
 					<Languages variant="i-fourthB" />
 				</b-nav-text>
 
@@ -50,12 +50,9 @@
 		</b-collapse>
 		</b-navbar>
 
-		<b-modal id="wallet-modal" size="lg" hide-header hide-footer>
+		<b-modal :static="true" pkd-modal variant="i-third-2" backdrop="i-primary-2" id="wallet-modal" hide-header ok-only ok-variant="i-primary btn-sm mt-n4" ok-title="Close">
 			<template #default="{ hide }">
-			<WalletSelector @close="hide()" />
-			<p class="text-right mb-0">
-				<b-button class="btn-sm" @click="hide()">Close</b-button>
-			</p>
+				<WalletSelector @close="hide()" />
 			</template>
 		</b-modal>
 
@@ -168,12 +165,12 @@ export default {
 			{
 				name: 'Kusama',
 				href: 'https://kusama.polkastats.io',
-				icon: 'kusama',
+				attrs: { 'icon-network': 'kusama' },
 			},
 			{
 				name: 'Polkadot',
 				href: 'https://polkastats.io',
-				icon: 'polkadot',
+				attrs: { 'icon-network': 'polkadot' },
 			},
 		]
 
@@ -188,15 +185,6 @@ export default {
 		scroll()
 		{
 			this.active = window.scrollY > 60;
-		},
-		selected()
-		{
-			let selected = this.$t('components.header.selected');
-
-			if(!this.loading)
-				selected = this.selectedValidatorAddresses.length + '/' + this.config.validatorSetSize + ' ' + selected;
-
-			return selected;
 		}
 	}
 }

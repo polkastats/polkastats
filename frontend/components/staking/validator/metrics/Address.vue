@@ -1,5 +1,26 @@
 <template>
-  <div class="metric h-100">
+
+	<rating-item :title="$t('components.address.title')" :score="rating">
+
+		<nuxt-link
+			v-b-tooltip.hover
+			to="/help/metrics#address"
+			:title="$t('components.address.help')"
+			class="legend-link h6"
+		>
+			<font-awesome-icon icon="question-circle" />
+		</nuxt-link>
+
+		<div>
+			{{ $t('components.address.description_1') }} #{{ formatNumber(createdAtBlock) }}
+			<span v-if="identity.parent">
+				{{ $t('components.address.description_2') }} #{{ formatNumber(parentCreatedAtBlock) }}
+			</span>
+		</div>
+
+	</rating-item>
+
+  <!-- <div class="metric h-100">
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
@@ -31,16 +52,18 @@
         }}
       </span>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
-import Rating from '@/components/staking/Rating.vue'
+// import Rating from '@/components/staking/Rating.vue'
 import commonMixin from '@/mixins/commonMixin.js'
+import RatingItem from '@/components/more/RatingItem.vue'
 
 export default {
   components: {
-    Rating,
+    // Rating,
+	RatingItem
   },
   mixins: [commonMixin],
   props: {

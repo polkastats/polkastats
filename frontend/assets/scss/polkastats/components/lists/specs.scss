@@ -1,0 +1,53 @@
+.spec-item
+{
+	gap: 0 2em;
+
+	.spec-content
+	{
+		position: relative;
+		font-weight: 500;
+		color: $i-fifth;
+
+		// TODO: add transparent variant
+		// &[variant="transparent"]
+		// {
+		// 	padding: 0 !important;
+		// }
+
+		// TODO: Move to effects
+		&::after
+		{
+			content: "";
+			position: absolute;
+			top: 50%;
+			right: 100%;
+			margin-top: -0.8em;
+			border: 0.8em solid transparent;
+			border-right-width: 1.5em;
+		}
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		.spec-title[variant="#{$color}"]
+		{
+			background-color: rgba($value, 1);
+		}
+
+		.spec-content[variant="#{$color}"]
+		{
+			background-color: rgba($value, 1);
+
+			&::after
+			{
+				border-right-color: rgba($value, 1);
+			}
+
+			@if $color == 'i-fifth'
+			{
+				color: $i-fourth;
+			}
+		}
+	}
+
+}

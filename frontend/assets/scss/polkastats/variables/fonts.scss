@@ -1,8 +1,48 @@
 // TODO: Move to not load on export variables
-@import "/assets/fonts/font-awesome.scss";
 @import "/assets/fonts/roboto.scss";
 
 $i-font-primary: 'Segoe UI' !default;
 $i-font-secondary: 'Roboto' !default;
 $i-font-secondary-mono: 'Roboto Mono', monospace !default;
-$i-font-icon: 'Font Awesome 5 Free', 'Font Awesome 5 Brands' !default;
+
+$theme-networks: () !default;
+$theme-networks: map-merge(
+(
+	'kusama': 'kusama',
+	'polkadot': 'polkadot',
+),
+$theme-networks);
+
+$theme-font-sizes: () !default;
+$theme-font-sizes: map-merge(
+(
+	'xxs': 0.25em,
+	'xs': 0.5em,
+	'sm': 0.75em,
+	'md': 1em,
+	'lg': 1.25em,
+	'xl': 1.5em,
+),
+$theme-font-sizes);
+
+@each $name, $value in $theme-font-sizes
+{
+	.text-#{$name}
+	{
+		font-size: $value !important;
+	}
+}
+
+// TODO: Add in map
+.font-weight-600
+{
+	font-weight: 600;
+}
+
+$spacer: 1rem !default;
+$spacers: () !default;
+$spacers: map-merge(
+(
+	6: ($spacer * 4)
+),
+$spacers);

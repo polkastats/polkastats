@@ -1,5 +1,21 @@
 <template>
-  <div class="mt-0 mb-4">
+  <b-row v-if="unclass" class="justify-content-center">
+	<b-col v-for="link in links.validator" :key="`${link.path}${accountId}`" sm="6" md="4" lg="2" class="p-0">
+		<a
+			v-b-tooltip.hover
+			:href="`${link.path}${accountId}`"
+			target="_blank"
+			class="p-3 d-block"
+			effect="gray"
+			effect-color="i-fifth"
+			:title="`${$t('components.validator_links.check_validator')} ${link.name}`"
+		>
+			<img class="mr-1" :src="`/img/icons/${link.icon}`" height="35" />
+			{{ link.name }}
+		</a>
+	</b-col>
+  </b-row>
+  <div v-else class="mt-0 mb-4">
     <a
       v-for="link in links.validator"
       :key="`${link.path}${accountId}`"
@@ -25,6 +41,9 @@ export default {
       required: true,
       type: String,
       default: '',
+    },
+	unclass: {
+      type: Boolean,
     },
   },
   data() {

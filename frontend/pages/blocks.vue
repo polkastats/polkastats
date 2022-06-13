@@ -33,7 +33,6 @@
                     {{ fromNow(data.item.timestamp) }}
                 </template>
                 <template #cell(block_author)="data">
-                  <div icon="avatar">
                     <Identicon :address="data.item.block_author" :size="22" />
                     <nuxt-link
                       :to="localePath(`/validator/${data.item.block_author}`)"
@@ -45,7 +44,6 @@
                         shortAddress(data.item.block_author)
                       }}</template>
                     </nuxt-link>
-                  </div>
                 </template>
                 <template #cell(finalized)="data">
                   <template v-if="data.item.finalized">
@@ -265,7 +263,7 @@ export default {
           label: this.$t('pages.blocks.block_number'),
           sortable: false,
 		  variant: 'i-fourth',
-		  class: 'important py-3'
+		  class: 'pkd-separate py-3'
         },
         {
           key: 'finalized',

@@ -1,5 +1,118 @@
 <template>
-  <div v-if="extrinsic" class="table-responsive pb-0 mb-0">
+
+	<section v-if="extrinsic" class="section" color="i-third-1">
+
+		<header class="header-block mb-4" size="sm">
+			<h1>Specs</h1>
+			<h2 class="text-i-fourth">Important info of the extrinsic</h2>
+		</header>
+
+		<section class="text-i-fifth overflow-hidden small">
+
+			<spec-item :title="$t('components.extrinsic.hash')" :multi="true">
+				<Hash :unclass="true" :hash="extrinsic.hash" />
+			</spec-item>
+			<spec-item :title="$t('components.extrinsic.status')" :multi="true">
+				<Status
+					:unclass="true"
+					:status="extrinsic.success"
+					:error-message="extrinsic.error_message"
+				/>
+			</spec-item>
+			<spec-item :title="$t('components.extrinsic.block_number')">
+				<nuxt-link
+					v-b-tooltip.hover
+					:to="localePath(`/block?blockNumber=${extrinsic.block_number}`)"
+					:title="$t('common.block_details')"
+				>
+					#{{ formatNumber(extrinsic.block_number) }}
+				</nuxt-link>
+			</spec-item>
+			<spec-item :title="$t('components.extrinsic.timestamp')" icon="clock" :multi="true">
+				<spec-item>
+					{{ getDateFromTimestamp(extrinsic.timestamp) }}
+				</spec-item>
+				<spec-item variant="i-fourth" sm="2">
+					{{ fromNow(extrinsic.timestamp) }}
+				</spec-item>
+			</spec-item>
+			<spec-item :title="$t('components.extrinsic.extrinsic_index')">
+				{{ extrinsic.extrinsic_index }}
+			</spec-item>
+			<spec-item :title="$t('components.extrinsic.signed')" :multi="true">
+				<spec-item v-if="extrinsic.is_signed" variant="i-success">
+					<font-awesome-icon icon="check" class="mr-1" />
+				</spec-item>
+				<spec-item v-else variant="i-danger">
+					<font-awesome-icon icon="times" class="mr-1" />
+				</spec-item>
+			</spec-item>
+			<spec-item v-if="extrinsic.is_signed" :title="$t('components.extrinsic.signer')">
+				<template v-if="extrinsic.signer">
+					<Identicon :address="extrinsic.signer" />
+					<nuxt-link
+						v-b-tooltip.hover
+						:to="localePath(`/account/${extrinsic.signer}`)"
+						:title="$t('details.block.account_details')"
+					>
+						{{ shortAddress(extrinsic.signer) }}
+					</nuxt-link>
+				</template>
+			</spec-item>
+			<spec-item :title="$t('components.extrinsic.section_and_method')">
+				<div class="timeline ml-2 pl-1" variant="i-primary">
+					<span class="timeline-item">{{ extrinsic.section }}</span>
+					<span class="timeline-item">{{ extrinsic.method }}</span>
+				</div>
+			</spec-item>
+			<spec-item :title="$t('components.extrinsic.documentation')">
+				<div
+					class="pkd-html"
+					variant="i-primary"
+					v-html="$md.render(JSON.parse(extrinsic.doc).join('\n'))"
+				></div>
+			</spec-item>
+			<spec-item :title="$t('components.extrinsic.arguments')">
+				<template v-for="(arg, index) in JSON.parse(extrinsic.args)">
+					<div :key="`extrinsic-arg-def-${index}`" class="m-1">
+						<b class="d-block">{{ Object.entries(JSON.parse(extrinsic.args_def))[index][0] }}</b>
+						<code class="text-i-primary">{{ JSON.stringify(arg, null, 2) }}</code>
+					</div>
+				</template>
+			</spec-item>
+
+			<template v-if="extrinsic.is_signed">
+				<spec-item :title="$t('components.extrinsic.weight')">
+					<template v-if="extrinsic.fee_info">
+						{{ formatNumber(JSON.parse(extrinsic.fee_info).weight) }}
+					</template>
+				</spec-item>
+				<spec-item :title="$t('components.extrinsic.fee_class')">
+					<template v-if="extrinsic.fee_info">
+						{{ JSON.parse(extrinsic.fee_info).class }}
+					</template>
+				</spec-item>
+				<spec-item :title="$t('components.extrinsic.fee')" :multi="true">
+					<template v-if="extrinsic.fee_info">
+						<spec-item>
+							{{ formatAmount(JSON.parse(extrinsic.fee_info).partialFee, 6) }}
+						</spec-item>
+						<spec-item variant="i-primary">
+							<FIATConversion
+								variant="i-fourth"
+								:units="JSON.parse(extrinsic.fee_info).partialFee"
+								:timestamp="extrinsic.timestamp"
+							/>
+						</spec-item>
+					</template>
+				</spec-item>
+			</template>
+
+		</section>
+
+	</section>
+
+  <!-- <div v-if="extrinsic" class="table-responsive pb-0 mb-0">
     <table class="table table-striped extrinsic-table">
       <tbody>
         <tr>
@@ -133,7 +246,7 @@
         </tr>
       </tbody>
     </table>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -141,12 +254,14 @@ import commonMixin from '@/mixins/commonMixin.js'
 import Status from '@/components/Status.vue'
 import FIATConversion from '@/components/FIATConversion.vue'
 import Hash from '@/components/Hash.vue'
+import SpecItem from '@/components/more/SpecItem.vue'
 
 export default {
   components: {
     Status,
     FIATConversion,
     Hash,
+	SpecItem
   },
   mixins: [commonMixin],
   props: {

@@ -1,5 +1,12 @@
 <template>
-  <div v-if="parsedLogs.length > 0">
+
+	<table-component v-if="parsedLogs.length > 0" :items="parsedLogs" :fields="fields" :options="options" class="text-center">
+		<template #cell(engine)="data">
+			<b-badge variant="i-primary">{{ data.value }}</b-badge>
+		</template>
+
+	</table-component>
+  <!-- <div v-if="parsedLogs.length > 0">
     <div class="card mt-4 mb-3">
       <table class="table table-striped">
         <thead>
@@ -18,13 +25,15 @@
         </tbody>
       </table>
     </div>
-  </div>
+  </div> -->
 </template>
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
+import TableComponent from '@/components/more/TableComponent.vue'
 
 export default {
+	components: { TableComponent },
   mixins: [commonMixin],
   props: {
     blockNumber: {
@@ -36,7 +45,37 @@ export default {
     return {
       loading: true,
       parsedLogs: [],
+	  fields: [
+        {
+          key: 'log_index',
+          label: this.$t('details.block.index'),
+          sortable: true,
+		  class: 'pkd-marked'
+        },
+        {
+          key: 'engine',
+          label: this.$t('details.block.engine'),
+          sortable: true,
+        },
+        {
+          key: 'data',
+          label: this.$t('details.block.data'),
+          sortable: true,
+		  class: 'text-left',
+		  tdClass: 'text-wrap text-break'
+        },
+      ],
     }
+  },
+  computed:
+  {
+	options()
+	{
+		return {
+			title: this.$t('details.block.logs'),
+			variant: 'i-secondary',
+		}
+	},
   },
   apollo: {
     $subscribe: {

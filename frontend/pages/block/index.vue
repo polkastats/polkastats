@@ -1,17 +1,19 @@
 <template>
-  <div>
+	<Block :block-number="blockNumber" />
+  <!-- <div>
     <section>
       <b-container class="block-page main py-5">
         <Block :block-number="blockNumber" />
       </b-container>
     </section>
-  </div>
+  </div> -->
 </template>
 <script>
 import Block from '@/components/block/Block.vue'
 import { config } from '@/frontend.config.js'
 
 export default {
+	layout: 'AuthLayout',
   components: {
     Block,
   },

@@ -1,5 +1,24 @@
 <template>
-  <div class="metric h-100">
+	<rating-item :title="$t('components.subaccounts.title')" :score="rating">
+		<nuxt-link
+            v-b-tooltip.hover
+            to="/help/metrics#subaccounts"
+            :title="$t('components.subaccounts.help')"
+			class="legend-link h6"
+		>
+            <font-awesome-icon icon="question-circle" />
+		</nuxt-link>
+		<div>
+			<p v-if="rating > 0">
+				{{ $t('components.subaccounts.description_1') }}
+				<span v-if="clusterMembers > 1">
+					{{ $t('components.subaccounts.description_2', { clusterMembers }) }}
+				</span>
+			</p>
+			<p v-else>{{ $t('components.subaccounts.description_3') }}</p>
+		</div>
+	</rating-item>
+  <!-- <div class="metric h-100">
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
@@ -30,14 +49,16 @@
       </p>
       <p v-else>{{ $t('components.subaccounts.description_3') }}</p>
     </div>
-  </div>
+  </div> -->
 </template>
 <script>
-import Rating from '@/components/staking/Rating.vue'
+// import Rating from '@/components/staking/Rating.vue'
+import RatingItem from '@/components/more/RatingItem.vue'
 
 export default {
   components: {
-    Rating,
+    // Rating,
+	RatingItem
   },
   props: {
     rating: {

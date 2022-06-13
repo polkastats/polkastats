@@ -1,14 +1,8 @@
-.section.chart
+.section-chart
 {
-	text-align: center;
-
-	&::before
-	{
-		opacity: 0.1;
-	}
-
 	canvas
 	{
+		min-height: 25em;
 		max-height: 15rem;
 		max-height: 25em;
 	}

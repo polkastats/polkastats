@@ -1,6 +1,6 @@
 
 <template>
-  <section class="section tables row">
+  <section class="section tables row" color="i-fifth">
 		<LastBlocks class="col-lg-6 col-sm-12" />
 		<LastTransfers class="col-lg-6 col-sm-12" />
 		<LastExtrinsics class="col-lg-6 col-sm-12" />

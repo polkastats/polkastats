@@ -80,14 +80,12 @@
 					</small>
 				</template>
 				<template #cell(name)="data">
-					<div icon="avatar">
-						<Identicon :address="data.item.stashAddress" :size="20" />
-						<nuxt-link :to="localePath(`/validator/${data.item.stashAddress}`)">
-							<span v-if="data.item.name">{{ data.item.name }}</span>
-							<span v-else>{{ shortAddress(data.item.stashAddress) }}</span>
-						</nuxt-link>
-						<VerifiedIcon v-if="data.item.verifiedIdentity" />
-					</div>
+					<Identicon :address="data.item.stashAddress" :size="20" />
+					<nuxt-link :to="localePath(`/validator/${data.item.stashAddress}`)">
+						<span v-if="data.item.name">{{ data.item.name }}</span>
+						<span v-else>{{ shortAddress(data.item.stashAddress) }}</span>
+					</nuxt-link>
+					<VerifiedIcon v-if="data.item.verifiedIdentity" :unclass="true" />
 				</template>
 				<template #cell(commission)="data">
 					{{ data.item.commission.toFixed(1) }}%

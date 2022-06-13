@@ -7,34 +7,38 @@
 				<StakingStats class="mt-2" />
       			<Suggestions :validators="chainValidatorAddresses" />
 			</search-section>
+			<template #sections>
+				<section class="section text-center" color="i-third-1">
+					<b-row class="mb-4">
+						<b-col lg="6">
+							<header class="header-block mb-4" size="sm" variant="transparent">
+								<h1>{{ $t('components.dashboard_commission.title') }}</h1>
+							</header>
+							<DashboardCommission style="height: 25em;" />
+						</b-col>
+						<b-col lg="6">
+							<header class="header-block mb-4" size="sm" variant="transparent">
+								<h1>{{ $t('components.dashboard_self_stake.title') }}</h1>
+							</header>
+							<DashboardSelfStake style="height: 25em;" />
+						</b-col>
+					</b-row>
+				</section>
+			</template>
 		</header-component>
-		<section class="section text-center">
-			<b-row class="mb-4">
-				<b-col lg="6">
-					<header type="block" variant="i-fourth" class="mb-4">
-						<h1 class="h5">{{ $t('components.dashboard_commission.title') }}</h1>
-					</header>
-					<DashboardCommission style="height: 250px;" />
-				</b-col>
-				<b-col lg="6">
-					<header type="block" variant="i-fourth" class="mb-4">
-						<h1 class="h5">{{ $t('components.dashboard_self_stake.title') }}</h1>
-					</header>
-					<DashboardSelfStake style="height: 250px;" />
-				</b-col>
-			</b-row>
+		<section class="section text-center" color="i-third-1">
 			<b-row>
 				<b-col lg="6">
-					<header type="block" variant="i-fourth" class="mb-4">
-						<h1 class="h5">{{ $t('components.dashboard_performance.title') }}</h1>
+					<header class="header-block mb-4" size="sm" variant="transparent">
+						<h1>{{ $t('components.dashboard_performance.title') }}</h1>
 					</header>
-					<DashboardPerformance style="height: 250px;" />
+					<DashboardPerformance style="height: 25em;" />
 				</b-col>
 				<b-col lg="6">
-					<header type="block" variant="i-fourth" class="mb-4">
-						<h1 class="h5">{{ $t('components.dashboard_era_points.title') }}</h1>
+					<header class="header-block mb-4" size="sm" variant="transparent">
+						<h1>{{ $t('components.dashboard_era_points.title') }}</h1>
 					</header>
-					<DashboardEraPoints style="height: 250px;" />
+					<DashboardEraPoints style="height: 25em;" />
 				</b-col>
 			</b-row>
 		</section>

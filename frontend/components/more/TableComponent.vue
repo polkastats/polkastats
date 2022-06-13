@@ -1,9 +1,9 @@
 
 <template>
 	<article v-if="options">
-		<header v-if="options.title" type="block" class="my-3 text-nowrap" variant="i-fourth">
-			<h1 v-if="options.title" class="h5 text-uppercase font-weight-bold">{{ options.title }}</h1>
-			<h2 v-if="options.subtitle" class="h6">{{ options.subtitle }}</h2>
+		<header v-if="options.title" class="header-block my-3" size="sm">
+			<h1 v-if="options.title">{{ options.title }}</h1>
+			<h2 v-if="options.subtitle">{{ options.subtitle }}</h2>
 		</header>
 		<div class="table-wrap">
 			<b-table class="pretty-table" v-bind="settings" v-on="listeners" :variant="options.variant" v-if="items && items.length > 0" borderless :items="items" :fields="fields">

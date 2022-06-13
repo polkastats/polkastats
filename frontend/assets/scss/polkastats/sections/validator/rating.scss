@@ -1,0 +1,18 @@
+.section-rating
+{
+	> .row
+	{
+		margin-bottom: 2em;
+		gap: 2em 0;
+	}
+
+	&[align="center"]
+	{
+		.pkd-card
+		{
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+	}
+}

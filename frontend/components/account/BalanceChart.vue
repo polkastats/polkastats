@@ -1,15 +1,29 @@
 <template>
-  <div v-if="loading" class="text-center py-4">
-    <Loading />
-  </div>
-  <div v-else>
+	<section class="section section-chart text-center" color="i-third-2">
+		<div v-if="loading" class="text-center py-4">
+			<Loading />
+		</div>
+		<template v-else>
+			<header class="header-block my-3" varisant="i-primary" size="sm">
+				<!-- TODO: Translate -->
+				<h1>Balance</h1>
+				<h2>{{ $t('components.balance_chart.title') }}</h2>
+			</header>
+
+			<ReactiveLineChart
+				:chart-data="chartData"
+				:options="chart.options"
+			/>
+		</template>
+	</section>
+  <!-- <div v-else>
     <ReactiveLineChart
       :chart-data="chartData"
       :options="chartOptions"
       :height="100"
       class="mb-4"
     />
-  </div>
+  </div> -->
 </template>
 <script>
 import { ApiPromise, WsProvider } from '@polkadot/api'
@@ -17,6 +31,7 @@ import { BigNumber } from 'bignumber.js'
 import Loading from '@/components/Loading.vue'
 import ReactiveLineChart from '@/components/charts/ReactiveLineChart.js'
 import { config } from '@/frontend.config.js'
+import { ChartLineOptions } from '@/components/charts/settings/chartline';
 
 export default {
   components: {
@@ -31,53 +46,54 @@ export default {
   },
   data() {
     return {
-      chartOptions: {
-        responsive: true,
-        legend: {
-          display: false,
-        },
-        title: {
-          display: true,
-          text: this.$t('components.balance_chart.title'),
-          fontSize: 18,
-          fontColor: '#000',
-          fontStyle: 'lighter',
-        },
-        tooltips: {
-          backgroundColor: '#000000',
-        },
-        scales: {
-          xAxes: [
-            {
-              gridLines: {
-                display: true,
-                color: 'rgba(200, 200, 200, 0.4)',
-              },
-              scaleLabel: {
-                display: true,
-                labelString: this.$t('components.balance_chart.block'),
-              },
-            },
-          ],
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-                suggestedMin: 0,
-                // suggestedMax: 100,
-              },
-              gridLines: {
-                display: true,
-                color: 'rgba(200, 200, 200, 0.4)',
-              },
-              scaleLabel: {
-                display: true,
-                labelString: 'balance',
-              },
-            },
-          ],
-        },
-      },
+	  chart: new ChartLineOptions(this.$t('components.balance_chart.block'), 'balance', 'Secondary'),
+    //   chartOptions: {
+    //     responsive: true,
+    //     legend: {
+    //       display: false,
+    //     },
+    //     title: {
+    //       display: true,
+    //       text: this.$t('components.balance_chart.title'),
+    //       fontSize: 18,
+    //       fontColor: '#000',
+    //       fontStyle: 'lighter',
+    //     },
+    //     tooltips: {
+    //       backgroundColor: '#000000',
+    //     },
+    //     scales: {
+    //       xAxes: [
+    //         {
+    //           gridLines: {
+    //             display: true,
+    //             color: 'rgba(200, 200, 200, 0.4)',
+    //           },
+    //           scaleLabel: {
+    //             display: true,
+    //             labelString: this.$t('components.balance_chart.block'),
+    //           },
+    //         },
+    //       ],
+    //       yAxes: [
+    //         {
+    //           ticks: {
+    //             beginAtZero: true,
+    //             suggestedMin: 0,
+    //             // suggestedMax: 100,
+    //           },
+    //           gridLines: {
+    //             display: true,
+    //             color: 'rgba(200, 200, 200, 0.4)',
+    //           },
+    //           scaleLabel: {
+    //             display: true,
+    //             labelString: 'balance',
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
       loading: true,
       balances: [],
       points: 7, // 1 point per day
@@ -86,38 +102,42 @@ export default {
   },
   computed: {
     chartData() {
-      return {
-        labels: this.balances.map(({ block }) => block),
-        datasets: [
-          {
-            labels: 'total',
-            data: this.balances.map(({ total }) => total),
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            borderColor: 'rgba(230, 0, 122, 0.8)',
-            hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-            fill: false,
-            showLine: true,
-          },
-          // {
-          //   labels: 'free',
-          //   data: this.balances.map(({ free }) => free),
-          //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          //   borderColor: 'rgba(230, 0, 122, 0.8)',
-          //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-          //   fill: false,
-          //   showLine: true,
-          // },
-          // {
-          //   labels: 'reserved',
-          //   data: this.balances.map(({ reserved }) => reserved),
-          //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          //   borderColor: 'rgba(230, 0, 122, 0.8)',
-          //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-          //   fill: false,
-          //   showLine: true,
-          // },
-        ],
-      }
+		this.chart.setData(this.balances.map(({ total }) => total));
+		this.chart.setLabels(this.balances.map(({ block }) => block));
+
+		return this.chart.data;
+    //   return {
+    //     labels: this.balances.map(({ block }) => block),
+    //     datasets: [
+    //       {
+    //         labels: 'total',
+    //         data: this.balances.map(({ total }) => total),
+    //         backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    //         borderColor: 'rgba(230, 0, 122, 0.8)',
+    //         hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+    //         fill: false,
+    //         showLine: true,
+    //       },
+    //       // {
+    //       //   labels: 'free',
+    //       //   data: this.balances.map(({ free }) => free),
+    //       //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    //       //   borderColor: 'rgba(230, 0, 122, 0.8)',
+    //       //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+    //       //   fill: false,
+    //       //   showLine: true,
+    //       // },
+    //       // {
+    //       //   labels: 'reserved',
+    //       //   data: this.balances.map(({ reserved }) => reserved),
+    //       //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    //       //   borderColor: 'rgba(230, 0, 122, 0.8)',
+    //       //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+    //       //   fill: false,
+    //       //   showLine: true,
+    //       // },
+    //     ],
+    //   }
     },
   },
   async created() {

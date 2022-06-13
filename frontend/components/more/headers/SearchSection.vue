@@ -1,7 +1,7 @@
 <template>
 	<section class="section section-search" :class="'text-' + text" :color="variant">
 
-		<header class="text-center" v-if="title">
+		<header class="text-center" v-if="title || $slots.header">
 			<h1 class="h3 text-uppercase font-weight-normal" :class="'texst-' + color">{{ title }}</h1>
 			<h2 v-if="subtitle" class="h6 font-weight-normal">{{ subtitle }}</h2>
 			<input-control v-if="placeholder"
@@ -13,6 +13,7 @@
 				:label="label"
 				@input="$emit('input', $event)"
 			/>
+			<slot name="header" />
 		</header>
 
 		<article class="text-center">

@@ -9,3 +9,14 @@
 	right: 0;
 	transform: translateY(-50%);
 }
+
+[p-absolute="top-right"]
+{
+	top: 0;
+	right: 0;
+}
+
+[p-relative]
+{
+	position: relative;
+}

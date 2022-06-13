@@ -1,0 +1,100 @@
+.accordion
+{
+    text-align: left;
+	transition: 0.3s linear;
+
+	> .accordion-header
+	{
+		position: relative;
+		display: block;
+		font-weight: 600;
+		transition: 0.3s linear;
+		
+		.summary-arrow
+		{
+			[close]
+			{
+				display: none;
+			}
+		}
+
+		.summary-counter
+		{
+			position: absolute;
+			right: 100%;
+			top: 0;
+			font-weight: bold;
+		}
+	}
+
+	> article
+	{
+		p,
+		li
+		{
+			margin: 0.25em;
+		}
+	}
+
+	&[open]
+	{
+		> .accordion-header
+		{
+			.summary-arrow
+			{
+				[open]
+				{
+					display: none;
+				}
+
+				[close]
+				{
+					display: inline-block;
+				}
+			}
+		}
+	}
+
+	@each $color, $value in $theme-colors
+	{
+		&[variant="#{$color}"]
+		{
+			&:not([open])
+			{
+				> .accordion-header
+				{
+					&::before
+					{
+						border-color: $value;
+					}
+				}
+			}
+
+			&[open]
+			{
+				> .accordion-header
+				{
+					background-color: $value;
+				}
+			}
+		}
+
+		&[color="#{$color}"]
+		{
+			&[open]
+			{
+				> .accordion-header
+				{
+					color: $value;
+
+					&::before
+					{
+						border-color: $value;
+					}
+				}
+			}
+
+			background-color: $value;
+		}
+	}
+}

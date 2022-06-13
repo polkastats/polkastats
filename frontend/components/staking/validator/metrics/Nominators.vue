@@ -1,5 +1,29 @@
 <template>
-  <div class="metric h-100">
+
+	<rating-item :title="$t('components.nominators.title')" :score="rating">
+		<nuxt-link
+            v-b-tooltip.hover
+            to="/help/metrics#nominators"
+            :title="$t('components.nominators.help')"
+			class="legend-link h6"
+		>
+            <font-awesome-icon icon="question-circle" />
+		</nuxt-link>
+
+		<div>
+			<p v-if="rating > 0">
+				{{ $t('components.nominators.description_1', { nominators }) }}
+				<span v-if="nominators > 1">s</span>,
+				{{ $t('components.nominators.description_2') }}
+			</p>
+			<p v-else-if="rating === 0 && nominators > 0">
+				{{ $t('components.nominators.description_3', { nominators }) }}
+			</p>
+			<p v-else>{{ $t('components.nominators.description_4') }}</p>
+		</div>
+	</rating-item>
+
+  <!-- <div class="metric h-100">
     <div class="row mb-4">
       <div class="col-8">
         <h5 class="mb-0">
@@ -32,14 +56,16 @@
       </p>
       <p v-else>{{ $t('components.nominators.description_4') }}</p>
     </div>
-  </div>
+  </div> -->
 </template>
 <script>
-import Rating from '@/components/staking/Rating.vue'
+// import Rating from '@/components/staking/Rating.vue'
+import RatingItem from '@/components/more/RatingItem.vue'
 
 export default {
   components: {
-    Rating,
+    // Rating,
+	RatingItem
   },
   props: {
     nominators: {

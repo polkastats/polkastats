@@ -19,7 +19,7 @@ export default {
   mixins: [commonMixin],
   data() {
     return {
-	  chart: new ChartLineOptions('era', this.$t('components.dashboard_performance.avg_performance'), 'Third'),
+	  chart: new ChartLineOptions('era', this.$t('components.dashboard_performance.avg_performance')),
       config,
     //   chartOptions: {
     //     responsive: true,
@@ -270,11 +270,12 @@ export default {
               id: 'selected',
               label: 'selected validators',
               data: items,
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              borderColor: 'rgba(184, 23, 102, 0.8)',
-              hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
-              fill: false,
-              showLine: true,
+            //   backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            //   borderColor: 'rgba(184, 23, 102, 0.8)',
+            //   hoverBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+            //   fill: false,
+            //   showLine: true,
+				...this.chart.getDataSeed('Fourth')
             }
             if (localChartData?.datasets) {
               if (localChartData.datasets.find(({ id }) => id === 'selected')) {

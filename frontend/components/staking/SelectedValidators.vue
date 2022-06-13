@@ -1,6 +1,10 @@
 <template>
-  <dropdown-menu v-if="variant" :variant="variant" :value="value">
+  <dropdown-menu v-if="variant" :variant="variant">
     
+	<template #button-content>
+		<span>{{ list.length }}/{{ config.validatorSetSize }} {{ $t('components.header.selected') }}</span>
+	</template>
+	
 	<b-dropdown-header class="mb-3">
 		<div class="text-center text-i-fifth">
 			<template v-if="loading">
@@ -10,7 +14,7 @@
 				{{ $t('components.selected_validators.no_validators_selected') }}
 			</template>
 			<div v-else class="row align-items-center">
-				<div class="col-8">{{ list.length }}/{{ config.validatorSetSize }}</div>
+				<div class="col-8 text-left">{{ list.length }}/{{ config.validatorSetSize }}</div>
 				<div class="col-4 text-right">
 					<a
 					href="#"
@@ -38,7 +42,7 @@
 				<nuxt-link :to="localePath(`/validator/${validator.stashAddress}`)">
 				<span v-if="validator.name">
 					{{ validator.name }}
-					<VerifiedIcon class="ml-2" />
+					<VerifiedIcon class="ml-2" :unclass="true" />
 				</span>
 				<span v-else>
 					{{ shortAddress(validator.stashAddress) }}
@@ -104,7 +108,7 @@
         <nuxt-link :to="localePath(`/validator/${validator.stashAddress}`)">
           <span v-if="validator.name">
             {{ validator.name }}
-            <VerifiedIcon />
+            <VerifiedIcon :unclass="true" />
           </span>
           <span v-else>
             {{ shortAddress(validator.stashAddress) }}
@@ -150,7 +154,7 @@ import DropdownMenu from '@/components/more/DropdownMenu.vue';
 export default {
   mixins: [commonMixin],
   components: { DropdownMenu },
-  props: ['variant', 'value'],
+  props: ['variant'],
   data() {
     return {
       config,

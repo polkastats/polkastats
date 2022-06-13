@@ -292,7 +292,7 @@ export default {
           label: 'Event',
           sortable: false,
 		  variant: 'i-fourth',
-		  class: 'important py-3'
+		  class: 'pkd-separate py-3'
         },
         {
           key: 'timestamp',

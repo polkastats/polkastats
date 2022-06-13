@@ -1,5 +1,62 @@
 <template>
-  <div v-if="blockEvents.length > 0">
+	<table-component :items="blockEvents" :fields="fields" :settings="settings" :options="options" :pagination="pagination" @paginate="currentPage = $event" class="text-center">
+		
+		<template #cell(event_index)="data">
+          <p class="mb-0">
+            <nuxt-link
+              v-b-tooltip.hover
+              :to="
+                localePath(
+                  `/event/${data.item.block_number}/${data.item.event_index}`
+                )
+              "
+              :title="$t('components.block_events.event_details')"
+            >
+              #{{ formatNumber(data.item.block_number) }}-{{
+                data.item.event_index
+              }}
+            </nuxt-link>
+          </p>
+        </template>
+        <template #cell(data)="data">
+          <template
+            v-if="
+              data.item.section === `balances` &&
+              data.item.method === `Transfer`
+            "
+          >
+            <Identicon :address="JSON.parse(data.item.data)[0]" :size="20" />
+            <nuxt-link
+              v-b-tooltip.hover
+              :to="localePath(`/account/${JSON.parse(data.item.data)[0]}`)"
+              :title="$t('details.block.account_details')"
+            >
+              {{ shortAddress(JSON.parse(data.item.data)[0]) }}
+            </nuxt-link>
+            <font-awesome-icon icon="arrow-right" />
+            <Identicon :address="JSON.parse(data.item.data)[1]" :size="20" />
+            <nuxt-link
+              v-b-tooltip.hover
+              :to="localePath(`/account/${JSON.parse(data.item.data)[1]}`)"
+              :title="$t('details.block.account_details')"
+            >
+              {{ shortAddress(JSON.parse(data.item.data)[1]) }}
+            </nuxt-link>
+            <font-awesome-icon icon="arrow-right" />
+            <span class="amount">
+              {{ formatAmount(JSON.parse(data.item.data)[2]) }}
+            </span>
+          </template>
+          <template v-else>
+            {{ data.item.data.substring(0, 32)
+            }}{{ data.item.data.length > 32 ? '...' : '' }}</template
+          >
+        </template>
+
+	</table-component>
+
+
+  <!-- <div v-if="blockEvents.length > 0">
     <div class="table-responsive">
       <b-table
         striped
@@ -64,10 +121,10 @@
         </template>
       </b-table>
     </div>
-    <!-- pagination -->
+    pagination
     <div class="row">
       <div class="col-6">
-        <!-- desktop -->
+        desktop
         <div class="d-none d-sm-none d-md-none d-lg-block d-xl-block">
           <b-button-group>
             <b-button
@@ -81,7 +138,7 @@
             </b-button>
           </b-button-group>
         </div>
-        <!-- mobile -->
+        mobile
         <div class="d-block d-sm-block d-md-block d-lg-none d-xl-none">
           <b-dropdown
             class="m-md-2"
@@ -109,14 +166,16 @@
         ></b-pagination>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 <script>
 import { gql } from 'graphql-tag'
 import commonMixin from '@/mixins/commonMixin.js'
 import { paginationOptions } from '@/frontend.config.js'
+import TableComponent from '@/components/more/TableComponent.vue'
 
 export default {
+	components: { TableComponent },
   mixins: [commonMixin],
   props: {
     blockNumber: {
@@ -141,6 +200,7 @@ export default {
           key: 'event_index',
           label: this.$t('details.block.event'),
           sortable: true,
+		  class: 'pkd-marked'
         },
         {
           key: 'section',
@@ -164,6 +224,43 @@ export default {
         },
       ],
     }
+  },
+  computed:
+  {
+	options()
+	{
+		return {
+			title: this.$t('details.block.events'),
+			variant: 'i-secondary',
+		}
+	},
+	settings()
+	{
+		return {
+			'per-page': this.perPage,
+			'current-page': this.currentPage,
+			'sort-by.sync': this.sortBy,
+			'sort-desc.sync': this.sortDesc
+		}
+	},
+	pagination()
+	{
+		return {
+			variant: 'i-primary',
+			pages:
+			{
+				current: this.currentPage,
+				rows: this.totalRows,
+				perPage: this.perPage,
+			},
+			perPage:
+			{
+				num: this.perPage,
+				click: (option) => this.setPageSize(option),
+				options: [10, 20, 50, 100],
+			}
+		}
+	},
   },
   methods: {
     setPageSize(num) {
