@@ -1,0 +1,154 @@
+name: Release to dev
+on:
+  push:
+    branches:
+      - dev-cere
+  workflow_dispatch:
+
+jobs:
+  build_backend:
+    runs-on: [self-hosted, cere-network-large-workers]
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Process version
+        id: version
+        run: |
+          echo "::set-output name=version::dev-${{ github.run_attempt}}-$(git rev-parse --short HEAD)"
+      - name: Configure AWS credentials for push images
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.ORG_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ORG_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push docker image for cerestats-api
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: crb-cerestats-api
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./api/Dockerfile
+          push: true
+          no-cache: true
+          build-args: |
+            NPM_TOKEN=${{ secrets.NPM_TOKEN }}
+          tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.version.outputs.version }}
+      - name: Build and push docker image for cerestats-crawler
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: crb-cerestats-crawler
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./backend/docker/crawler/Dockerfile
+          push: true
+          no-cache: true
+          build-args: |
+            NPM_TOKEN=${{ secrets.NPM_TOKEN }}
+          tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.version.outputs.version }}
+
+  build_frontend:
+    runs-on: [self-hosted, cere-network-large-workers]
+    container:
+      image: node:14-buster-slim
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install system packages
+        run: |
+          apt update
+          apt install -y python3 libpq-dev make build-essential
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: 'node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: Install packages
+        run: |
+          cp -rf frontend/frontend.config-cere-dev.js frontend/frontend.config.js
+          yarn install
+      - name: Build
+        run: yarn workspace frontend generate
+      - name: Prepare artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: frontend/dist
+
+  deploy_backend:
+    runs-on: [self-hosted, cere-network-dev-deployer]
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: ${{ secrets.K8S_DEPLOYMENT_CONFIGS_REPOSITORY }}
+          token: ${{ secrets.TRIGGER_GITHUB_TOKEN }}
+      - uses: azure/setup-helm@v1
+        with:
+          version: ${{ secrets.HELM_VERSION }}
+      - uses: azure/setup-kubectl@v1
+        with:
+          version: ${{ secrets.KUBECTL_VERSION }}
+      - name: Deploy cerestats-api
+        env:
+          HELM_RELEASE: cerestats-api
+          HELM_REPO_PATH: cerestats/cerestats-api
+          NAMESPACE: cerestats
+          ENVIRONMENT: dev
+        run: |
+          helm upgrade --install ${HELM_RELEASE} ${HELM_REPO_PATH} \
+            -f ${HELM_REPO_PATH}/envs/${ENVIRONMENT}.yaml \
+            --set image.tag=${{ needs.build.outputs.version }} \
+            --debug --atomic --cleanup-on-fail \
+            --timeout 5m \
+            -n ${NAMESPACE}
+      - name: Deploy cerestats-crawler
+        env:
+          HELM_RELEASE: cerestats-crawler
+          HELM_REPO_PATH: cerestats/cerestats-crawler
+          NAMESPACE: cerestats
+          ENVIRONMENT: dev
+        run: |
+          helm upgrade --install ${HELM_RELEASE} ${HELM_REPO_PATH} \
+            -f ${HELM_REPO_PATH}/envs/${ENVIRONMENT}.yaml \
+            --set image.tag=${{ needs.build.outputs.version }} \
+            --debug --atomic --cleanup-on-fail \
+            --timeout 5m \
+            -n ${NAMESPACE}
+
+  deploy_frontend:
+    runs-on: [self-hosted, cere-network-large-workers]
+    needs: build
+    container:
+      image: ubuntu:20.04
+    steps:
+      - name: Restore build
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
+      - name: Install aws-cli
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt update
+          apt install -y awscli
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEV_NETWORK_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_NETWORK_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Deploy
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET_NAME_DEV }}
+          CF_DISTRIBUTION_ID: ${{ secrets.CF_DISTRIBUTION_ID_DEV }}
+        run: |
+          aws s3 sync --metadata-directive="REPLACE" dist/ s3://${S3_BUCKET}
+          aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION_ID} --paths "/*"
