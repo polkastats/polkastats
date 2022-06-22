@@ -26,7 +26,7 @@ export const state = () => ({
     subaccounts: 1,
   },
   customVRCScoreEnabled: false,
-  onlyOneClusterMember: true,
+  onlyOneClusterMember: false,
 })
 
 export const getters = {

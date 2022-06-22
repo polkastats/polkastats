@@ -4,6 +4,17 @@
 
 - ...
 
+## v0.15.0
+
+- [FE] Removed EDP banner
+- [FE] Added "timestamp", "date_time" columns to sent transfers, received transfers export files
+- [FE] Enabled multiple validators selection from the same cluster
+- [FE] Changed "hand" to "star" for validators page, renamed "select" column to "favorites"
+
+## v0.14.0
+
+- Added health check API
+
 ## v0.13.0
 
 - Updated Mainnet urls

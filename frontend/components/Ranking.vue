@@ -155,19 +155,21 @@
               <b-col cols="2">
                 <a
                   v-b-tooltip.hover
-                  class="select"
-                  title="Select / Unselect validator"
                   @click="toggleSelected(data.item.stashAddress)"
                 >
                   <font-awesome-icon
                     v-if="data.item.selected"
-                    icon="hand-paper"
-                    class="selected text-selected"
+                    icon="star"
+                    style="color: #f1bd23; cursor: pointer"
+                    class="favorite"
+                    :title="$t('pages.accounts.remove_from_favorites')"
                   />
                   <font-awesome-icon
                     v-else
-                    icon="hand-paper"
-                    class="unselected text-secondary"
+                    icon="star"
+                    style="color: #e6dfdf; cursor: pointer"
+                    class="favorite"
+                    :title="$t('pages.accounts.add_to_favorites')"
                   />
                 </a>
               </b-col>
@@ -219,19 +221,20 @@
           <p class="text-center mb-0">
             <a
               v-b-tooltip.hover
-              class="select"
-              title="Select / Unselect validator"
+              class="favorite"
               @click="toggleSelected(data.item.stashAddress)"
             >
               <font-awesome-icon
                 v-if="data.item.selected"
-                icon="hand-paper"
-                class="selected text-selected"
+                icon="star"
+                style="color: #f1bd23; cursor: pointer"
+                :title="$t('pages.accounts.remove_from_favorites')"
               />
               <font-awesome-icon
                 v-else
-                icon="hand-paper"
-                class="unselected text-secondary"
+                icon="star"
+                style="color: #e6dfdf; cursor: pointer"
+                :title="$t('pages.accounts.add_to_favorites')"
               />
             </a>
           </p>
@@ -342,7 +345,7 @@ export default {
         },
         {
           key: 'selected',
-          label: 'Select',
+          label: 'Favorites',
           sortable: true,
           class:
             'text-center d-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',

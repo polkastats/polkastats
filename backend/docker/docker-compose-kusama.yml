@@ -107,6 +107,8 @@ services:
   #
   crawler:
     image: crawler:latest
+    ports:
+      - '8001:8001'
     build:
       context: ../../
       dockerfile: ./backend/docker/crawler/Dockerfile
