@@ -62,8 +62,9 @@ module.exports = {
       name: 'ddc',
       enabled: !process.env.DDC_DISABLE,
       crawler: './crawlers/ddc.js',
+      contractRpc: process.env.DDC_CONTRACT_RPC || 'wss://rpc.v2.testnet.cere.network/ws',
       contractName: process.env.DDC_CONTRACT_NAME || 'ddc_bucket',
-      rpc: process.env.DDC_RPC || 'wss://rpc.v2.testnet.cere.network/ws',
+      contractAddress: process.env.DDC_CONTRACT_ADDRESS || '5DTZfAcmZctJodfa4W88BW5QXVBxT4v7UEax91HZCArTih6U',
       pollingTime:
           parseInt(process.env.DDC_POLLING_TIME_MS, 10)
           || 2 * 60 * 1000, // 2 minutes

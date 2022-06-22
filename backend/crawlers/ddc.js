@@ -2,7 +2,9 @@
 const pino = require('pino');
 const axios = require('axios');
 const _ = require('lodash');
-const { connect, ddcBucketQuery, getContract } = require('@cere-ddc-sdk/smart-contract');
+const { connect, ddcBucketQuery, getABI } = require('@cere-ddc-sdk/smart-contract');
+const { ContractPromise } = require('@polkadot/api-contract');
+
 const backendConfig = require('../backend.config');
 const { getClient, dbParamQuery } = require('../lib/utils');
 
@@ -159,9 +161,10 @@ const crawler = async () => {
   logger.info(loggerOptions, 'Starting DDC crawler...');
   const dbClient = await getClient(loggerOptions);
 
-  const { api, chainName } = await connect(config.rpc);
+  const { api } = await connect(config.contractRpc);
+  const abi = getABI(config.contractName);
 
-  const contract = getContract(config.contractName, chainName, api);
+  const contract = new ContractPromise(api, abi, config.contractAddress);
 
   const { storageNodes, gatewayNodes } = await collectContractMetrics(dbClient, contract);
   await collectStorageMetrics(dbClient, storageNodes);
