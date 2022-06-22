@@ -33,7 +33,7 @@ async function insertMetricAndReturnId(dbClient, name, nodeId) {
 }
 
 async function insertMetricValue(dbClient, metricId, value) {
-  if (value === -1) {
+  if (!value || value === -1) {
     return;
   }
 
@@ -83,14 +83,13 @@ async function collectContractMetrics(dbClient, contract) {
 
   const storageFreeResource = _.sum(storageNodes.map((n) => n.node.free_resource));
   const storageUsedResource = _.sum(storageClusters
-    .map((c) => c.cluster.resource_per_vnode * c.cluster.vnodes.length));
+    .map((c) => c.cluster.total_rent));
 
   const storageCapacity = storageFreeResource + storageUsedResource;
   const storageCapacityMetricId = await insertMetricAndReturnId(dbClient, 'storageCapacity');
   await insertMetricValue(dbClient, storageCapacityMetricId, storageCapacity);
 
-  const avgPricePerStorage = _.mean(storageClusters
-    .map((c) => c.cluster.total_rent / (c.cluster.resource_per_vnode * c.cluster.vnodes.length)));
+  const avgPricePerStorage = _.mean(storageNodes.map((c) => c.node.rent_per_month));
   const avgPricePerStorageMetricId = await insertMetricAndReturnId(dbClient, 'avgPricePerStorage');
   await insertMetricValue(dbClient, avgPricePerStorageMetricId, avgPricePerStorage);
 
