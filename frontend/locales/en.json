@@ -307,7 +307,7 @@
       "providers": "Providers",
       "storage_capacity": "Storage capacity",
       "storage_nodes": "Storage nodes",
-      "gateway_nodes": "Gateway nodes",
+      "cdn_nodes": "CDN nodes",
       "avg_response_time": "Avg. Response time",
       "avg_download_speed": "Avg. Download speed",
       "avg_upload_speed": "Avg. Upload speed",

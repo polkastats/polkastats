@@ -91,10 +91,10 @@
               <div class="card h-100">
                 <div class="card-body">
                   <h4 class="mb-3 title">
-                    {{ $t('pages.ddc.gateway_nodes') }}
+                    {{ $t('pages.ddc.cdn_nodes') }}
                   </h4>
                   <h6 class="d-inline-block">
-                    {{ formatNumber(gatewayNodes) }}
+                    {{ formatNumber(cdnNodes) }}
                   </h6>
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default {
       providers: 0,
       storageCapacity: 0,
       storageNodes: 0,
-      gatewayNodes: 0,
+      cdnNodes: 0,
       avgResponseTimeSec: 0,
       avgDownloadSpeedBytesPerSec: 0,
       avgUploadSpeedBytesPerSec: 0,
@@ -341,20 +341,20 @@ export default {
           this.storageNodes = data.ddc_metric_view[0].value
         },
       },
-      gatewayNodes: {
+      cdnNodes: {
         query: gql`
           subscription providers {
             ddc_metric_view(
               order_by: { timestamp: desc }
               limit: 1
-              where: { name: { _eq: "gatewayNodes" } }
+              where: { name: { _eq: "cdnNodes" } }
             ) {
               value
             }
           }
         `,
         result({ data }) {
-          this.gatewayNodes = data.ddc_metric_view[0].value
+          this.cdnNodes = data.ddc_metric_view[0].value
         },
       },
       avgResponseTimeSec: {

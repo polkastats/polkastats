@@ -58,22 +58,22 @@ async function collectContractMetrics(dbClient, contract) {
   await insertMetricValue(dbClient, providersMetricId, providerIds.size);
 
   const storageNodes = [];
-  const gatewayNodes = [];
+  const cdnNodes = [];
   nodes.forEach((n) => {
     const nodeType = JSON.parse(n.params).type;
     if (!nodeType || nodeType === 'storage') {
       storageNodes.push(n);
     }
-    if (nodeType === 'gateway') {
-      gatewayNodes.push(n);
+    if (nodeType === 'cdn') {
+      cdnNodes.push(n);
     }
   });
 
   const storageNodesMetricId = await insertMetricAndReturnId(dbClient, 'storageNodes');
   await insertMetricValue(dbClient, storageNodesMetricId, storageNodes.length);
 
-  const gatewayNodesMetricId = await insertMetricAndReturnId(dbClient, 'gatewayNodes');
-  await insertMetricValue(dbClient, gatewayNodesMetricId, gatewayNodes.length);
+  const cdnNodesMetricId = await insertMetricAndReturnId(dbClient, 'cdnNodes');
+  await insertMetricValue(dbClient, cdnNodesMetricId, cdnNodes.length);
 
   const clusters = await ddcBucketQuery.clusterList(contract);
   const storageClusters = clusters.filter((c) => {
@@ -100,7 +100,7 @@ async function collectContractMetrics(dbClient, contract) {
   const uniqueAccountsMetricId = await insertMetricAndReturnId(dbClient, 'uniqueAccounts');
   await insertMetricValue(dbClient, uniqueAccountsMetricId, uniqueAccounts.size);
 
-  return { storageNodes, gatewayNodes };
+  return { storageNodes, cdnNodes };
 }
 
 async function collectStorageNodeMetrics(dbClient, node) {
@@ -129,10 +129,10 @@ async function collectStorageMetrics(dbClient, nodes) {
   return Promise.all(nodes.map((n) => collectStorageNodeMetrics(dbClient, n)));
 }
 
-async function collectGatewayNodeMetrics(dbClient, node) {
+async function collectCdnNodeMetrics(dbClient, node) {
   const { url } = JSON.parse(node.params);
   if (!url) {
-    logger.warn(`Can't collect gateway node ${node.node_id} metrics (url undefined)`);
+    logger.warn(`Can't collect cdn node ${node.node_id} metrics (url undefined)`);
     return;
   }
 
@@ -141,7 +141,7 @@ async function collectGatewayNodeMetrics(dbClient, node) {
     const response = await axios.get(`${url}/metrics/stats`);
     metrics = response.data;
   } catch (error) {
-    logger.error(loggerOptions, `Can't collect gateway node metrics ${node.node_id} (${JSON.stringify(error)})`);
+    logger.error(loggerOptions, `Can't collect cdn node metrics ${node.node_id} (${JSON.stringify(error)})`);
     return;
   }
 
@@ -152,9 +152,9 @@ async function collectGatewayNodeMetrics(dbClient, node) {
   }));
 }
 
-async function collectGatewayMetrics(dbClient, nodes) {
-  logger.info(loggerOptions, 'Collecting gateway metrics...');
-  return Promise.all(nodes.map((n) => collectGatewayNodeMetrics(dbClient, n)));
+async function collectCdnMetrics(dbClient, nodes) {
+  logger.info(loggerOptions, 'Collecting cdn metrics...');
+  return Promise.all(nodes.map((n) => collectCdnNodeMetrics(dbClient, n)));
 }
 
 const crawler = async () => {
@@ -166,9 +166,9 @@ const crawler = async () => {
 
   const contract = new ContractPromise(api, abi, config.contractAddress);
 
-  const { storageNodes, gatewayNodes } = await collectContractMetrics(dbClient, contract);
+  const { storageNodes, cdnNodes } = await collectContractMetrics(dbClient, contract);
   await collectStorageMetrics(dbClient, storageNodes);
-  await collectGatewayMetrics(dbClient, gatewayNodes);
+  await collectCdnMetrics(dbClient, cdnNodes);
 
   logger.info(loggerOptions, 'DDC crawler completed');
 

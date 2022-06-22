@@ -307,7 +307,7 @@
       "providers": "Proveedores",
       "storage_capacity": "Capacidad de almacenamiento",
       "storage_nodes": "Nodos de almacenamiento",
-      "gateway_nodes": "Nodos de puerta de enlace",
+      "cdn_nodes": "Nodos de puerta de enlace",
       "avg_response_time": "Tiempo promedio de respuesta",
       "avg_download_speed": "Velocidad de descarga promedio",
       "avg_upload_speed": "Promedio velocidad de subida",
