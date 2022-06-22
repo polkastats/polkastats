@@ -82,9 +82,8 @@ async function collectContractMetrics(dbClient, contract) {
   });
 
   const storageFreeResource = _.sum(storageNodes.map((n) => n.node.free_resource));
-  // bytes to gigabytes
   const storageUsedResource = _.sum(storageClusters
-    .map((c) => c.cluster.total_rent)) / 1_000_000_000;
+    .map((c) => c.cluster.resource_per_vnode * c.cluster.vnodes.length));
 
   const storageCapacity = storageFreeResource + storageUsedResource;
   const storageCapacityMetricId = await insertMetricAndReturnId(dbClient, 'storageCapacity');
