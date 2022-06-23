@@ -47,7 +47,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
     "networks": [
       {
         "name": networkNames.DEVNET,
-        "rpcUrl": "wss://rpc.devnet.cere.network:9945",
+        "rpcUrl": "wss://rpc.v2.devnet.cere.network/ws",
       },
       {
         "name": networkNames.QANET,
@@ -303,13 +303,13 @@ blockchains.forEach(blockchain => {
         case networkNames.TESTNET:
           network.faucetMnemonic = cereTestnet.MNEMONICS;
           network.rpcUrl = cereTestnet.URL;
-          break;        
+          break;
         default:
           console.warn(`Network "${network.name}" is not supported`);
       }
     }
-      
-    network.accounts && network.accounts.forEach(account => {        
+
+    network.accounts && network.accounts.forEach(account => {
       if (!account.type) account.type = tokenTypes.NATIVE;
       if (!account.tokenSymbol) account.tokenSymbol = blockchain.nativeTokenSymbol;
     });
