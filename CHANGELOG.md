@@ -22,6 +22,7 @@
 ## v0.12.0
 
 - Updated QAnet/Testnet urls
+- DDC metrics (includes ddc-metric migration that is compatible with the code previous version)
 
 ## v0.11.0
 
