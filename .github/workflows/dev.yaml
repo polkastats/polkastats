@@ -83,7 +83,7 @@ jobs:
 
   deploy_backend:
     runs-on: [self-hosted, cere-network-dev-deployer]
-    needs: build
+    needs: build_backend
     steps:
       - uses: actions/checkout@v3
         with:
@@ -124,7 +124,7 @@ jobs:
 
   deploy_frontend:
     runs-on: [self-hosted, cere-network-large-workers]
-    needs: build
+    needs: build_frontend
     container:
       image: ubuntu:20.04
     steps:
