@@ -3,6 +3,7 @@
 ## vNext
 
 - Updated Devnet url
+- [FE] Updated link to Cere Docs 
 
 ## v0.15.0
 
