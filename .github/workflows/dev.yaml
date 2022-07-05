@@ -104,7 +104,7 @@ jobs:
         run: |
           helm upgrade --install ${HELM_RELEASE} ${HELM_REPO_PATH} \
             -f ${HELM_REPO_PATH}/envs/${ENVIRONMENT}.yaml \
-            --set image.tag=${{ needs.build.outputs.version }} \
+            --set image.tag=${{ needs.build_backend.outputs.version }} \
             --debug --atomic --cleanup-on-fail \
             --timeout 5m \
             -n ${NAMESPACE}
@@ -117,7 +117,7 @@ jobs:
         run: |
           helm upgrade --install ${HELM_RELEASE} ${HELM_REPO_PATH} \
             -f ${HELM_REPO_PATH}/envs/${ENVIRONMENT}.yaml \
-            --set image.tag=${{ needs.build.outputs.version }} \
+            --set image.tag=${{ needs.build_backend.outputs.version }} \
             --debug --atomic --cleanup-on-fail \
             --timeout 5m \
             -n ${NAMESPACE}
