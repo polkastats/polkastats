@@ -3,7 +3,7 @@ require('dotenv').config();
 
 module.exports = {
   substrateNetwork: process.env.SUBSTRATE_NETWORK || 'kusama',
-  wsProviderUrl: process.env.WS_PROVIDER_URL || 'ws://substrate-node:9944',
+  wsProviderUrl: process.env.WS_PROVIDER_URL || 'wss://rpc.v2.devnet.cere.network/ws',
   port: process.env.PORT || 8001,
   postgresConnParams: {
     user: process.env.POSTGRES_USER || 'polkastats',
