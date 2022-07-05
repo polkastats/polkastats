@@ -63,8 +63,8 @@
               <li>
                 <a
                   target="_blank"
-                  href="https://cere-network.gitbook.io/cere-network/"
-                  >DDC Wiki</a
+                  href="https://docs.cere.network/"
+                  >DDC & Blockchain Docs</a
                 >
               </li>
             </ul>
