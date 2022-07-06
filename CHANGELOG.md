@@ -4,9 +4,9 @@
 - ...
 
 ## v0.16.0
-- Updated Devnet url
+- [BE, FE] Added DDC metrics 
+- [BE] Updated Devnet url
 - [FE] Updated link to Cere Docs 
-- Fixed CERE types according to a new version of "@polkadot/api@^5.9.1"
 
 ## v0.15.0
 
