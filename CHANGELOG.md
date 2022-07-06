@@ -4,7 +4,7 @@
 
 - Updated Devnet url
 - [FE] Updated link to Cere Docs 
-- Fix CERE types according to a new version of "@polkadot/api@^5.9.1"
+- Fixed CERE types according to a new version of "@polkadot/api@^5.9.1"
 
 ## v0.15.0
 
