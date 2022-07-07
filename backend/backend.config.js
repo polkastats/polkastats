@@ -3,7 +3,7 @@ require('dotenv').config();
 
 module.exports = {
   substrateNetwork: process.env.SUBSTRATE_NETWORK || 'kusama',
-  wsProviderUrl: process.env.WS_PROVIDER_URL || 'ws://substrate-node:9944',
+  wsProviderUrl: process.env.WS_PROVIDER_URL || 'wss://rpc.v2.devnet.cere.network/ws',
   port: process.env.PORT || 8001,
   postgresConnParams: {
     user: process.env.POSTGRES_USER || 'polkastats',
@@ -57,6 +57,18 @@ module.exports = {
       pollingTime:
         parseInt(process.env.ACTIVE_ACCOUNTS_POLLING_TIME_MS, 10)
         || 6 * 60 * 60 * 1000, // 6 hours
+    },
+    {
+      name: 'ddc',
+      enabled: !process.env.DDC_DISABLE,
+      crawler: './crawlers/ddc.js',
+      // TODO update default to Mainnet once DDC Mainnet deployed. Ticket: https://cerenetwork.atlassian.net/browse/CBI-2050
+      contractRpc: process.env.DDC_CONTRACT_RPC || 'wss://rpc.v2.testnet.cere.network/ws',
+      contractName: process.env.DDC_CONTRACT_NAME || 'ddc_bucket',
+      contractAddress: process.env.DDC_CONTRACT_ADDRESS || '5DTZfAcmZctJodfa4W88BW5QXVBxT4v7UEax91HZCArTih6U',
+      pollingTime:
+          parseInt(process.env.DDC_POLLING_TIME_MS, 10)
+          || 2 * 60 * 1000, // 2 minutes
     },
   ],
 };

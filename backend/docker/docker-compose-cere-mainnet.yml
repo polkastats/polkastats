@@ -95,8 +95,8 @@ services:
     ports:
       - '8001:8001'
     build:
-      context: ../
-      dockerfile: ./docker/crawler/Dockerfile
+      context: ../../
+      dockerfile: ./backend/docker/crawler/Dockerfile
     depends_on:
       - 'postgres'
     restart: always
@@ -125,7 +125,11 @@ services:
       RANKING_START_DELAY_MS: '1800000' # 30 min
       ACTIVE_ACCOUNTS_START_DELAY_MS: '300000' # 5 min
       ACTIVE_ACCOUNTS_CHUNK_SIZE: '100'
-
+      POSTGRES_USER: 'polkastats'
+      POSTGRES_HOST: 'postgres'
+      POSTGRES_DATABASE: 'polkastats'
+      POSTGRES_PASSWORD: 'polkastats'
+      POSTGRES_PORT: '5432'
   #
   # API
   #
@@ -134,21 +138,26 @@ services:
     ports:
       - '8000:8000'
     build:
-      context: ../../api
-      dockerfile: Dockerfile
+      context: ../../
+      dockerfile: api/Dockerfile
     depends_on:
       - 'postgres'
     restart: always
     environment:
-      - NODE_ENV=production
-      - NODE_PORT=8000
-      - API_KEY=my_access_key
-      - NETWORKS={"URL":"wss://rpc.devnet.cere.network:9945","MNEMONICS":"","NETWORK":"DEVNET"},{"URL":"wss://rpc.v2.testnet.cere.network/ws","MNEMONICS":"","NETWORK":"TESTNET"},{"URL":"wss://rpc.v2.qanet.cere.network/ws","MNEMONICS":"","NETWORK":"QANET"}
-      - MAX_BALANCE=1
-      - NUMBER_OF_TOKENS_TO_SEND=10
-      - REQUESTS_PER_DAY=100
-      - REQUESTS_PER_IP_PER_DAY=3
-      - ETHEREUM_CERE_LOCKED_ADDRESSES=["0x4a3406bEEdBA323497cb0b78c9b8273025D6Ca2c", "0x91F5f7d8A486ee532abf02E889690A639C770B3c", "0xd48B20754126dAD38DC7062303aB9b0572f9De7F", "0x28D6C0A4247ff359cc43fD14E9326EbF030AD34C", "0xEA1E345F7b3dd12cA24461F839F0083c3A547337", "0xe96625d91998c1954CF7C10911c4BF28d3e10107", "0x844195Bba29D9087b85ba4AC8eF51be69c91Ee8C", "0x6D5185fa0e358d22250aE689800E7a57d47a7e3f", "0x7764eD13EaE5BC5e440D4eb07ef5Ef4A5F7C8807", "0x865a05cd1F4A501EF482506F4C4809beD8602480", "0x4E764087B5b9F7C7F4b4009FdEd2d2d5D042A89A"]
+      NODE_ENV: 'production'
+      NODE_PORT: '8000'
+      API_KEY: 'my_access_key'
+      NETWORKS: '{"URL":"wss://rpc.v2.devnet.cere.network/ws","MNEMONICS":"","NETWORK":"DEVNET"},{"URL":"wss://rpc.v2.testnet.cere.network/ws","MNEMONICS":"","NETWORK":"TESTNET"},{"URL":"wss://rpc.v2.qanet.cere.network/ws","MNEMONICS":"","NETWORK":"QANET"}'
+      MAX_BALANCE: '1'
+      NUMBER_OF_TOKENS_TO_SEND: '10'
+      REQUESTS_PER_DAY: '100'
+      REQUESTS_PER_IP_PER_DAY: '3'
+      ETHEREUM_CERE_LOCKED_ADDRESSES: '["0x4a3406bEEdBA323497cb0b78c9b8273025D6Ca2c", "0x91F5f7d8A486ee532abf02E889690A639C770B3c", "0xd48B20754126dAD38DC7062303aB9b0572f9De7F", "0x28D6C0A4247ff359cc43fD14E9326EbF030AD34C", "0xEA1E345F7b3dd12cA24461F839F0083c3A547337", "0xe96625d91998c1954CF7C10911c4BF28d3e10107", "0x844195Bba29D9087b85ba4AC8eF51be69c91Ee8C", "0x6D5185fa0e358d22250aE689800E7a57d47a7e3f", "0x7764eD13EaE5BC5e440D4eb07ef5Ef4A5F7C8807", "0x865a05cd1F4A501EF482506F4C4809beD8602480", "0x4E764087B5b9F7C7F4b4009FdEd2d2d5D042A89A"]'
+      POSTGRES_USER: 'polkastats'
+      POSTGRES_HOST: 'postgres'
+      POSTGRES_DATABASE: 'polkastats'
+      POSTGRES_PASSWORD: 'polkastats'
+      POSTGRES_PORT: '5432'
 
 #
 # Persistent volumes

@@ -1,8 +1,12 @@
 # Cere Stats
 
 ## vNext
-
 - ...
+
+## v0.16.0
+- [BE, FE] Added DDC metrics 
+- [BE] Updated Devnet url
+- [FE] Updated link to Cere Docs 
 
 ## v0.15.0
 
@@ -22,6 +26,7 @@
 ## v0.12.0
 
 - Updated QAnet/Testnet urls
+- DDC metrics (includes ddc-metric migration that is compatible with the code previous version)
 
 ## v0.11.0
 

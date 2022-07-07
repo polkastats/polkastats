@@ -39,7 +39,7 @@ async function initProvider(url) {
   });
   await api.isReady;
   const chain = await api.rpc.system.chain();
-  console.log(`Connected to ${chain}`);
+  console.log(`Connected to ${chain} at ${url}`);
   return api;
 }
 
