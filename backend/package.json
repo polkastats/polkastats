@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "PolkaStats NG Backend",
+  "description": "Polkastats block explorer backend",
   "author": "Mario Pino Uceda",
   "license": "Apache-2.0",
   "main": "built/index.js",
@@ -20,7 +20,7 @@
     "docker:postgres:restore": "docker stop backend_crawler_1 && cat polkastats_dump.sql | docker exec -i backend_postgres_1 psql -U polkastats -d polkastats && docker restart backend_postgres_1 && docker start backend_crawler_1"
   },
   "dependencies": {
-    "@polkadot/api": "^8.2.1",
+    "@polkadot/api": "^8.12.2",
     "@sentry/node": "^6.17.9",
     "@sentry/tracing": "^6.17.9",
     "axios": "^0.21.1",

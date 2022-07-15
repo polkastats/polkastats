@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "polkastats-ng",
-  "description": "PolkaStats Next Gen mono repo",
+  "description": "Polkastats block explorer",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Colm3na/polkastats-ng.git"
