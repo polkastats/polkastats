@@ -141,6 +141,7 @@ export default {
       '@polkadot/x-textdecoder',
       '@polkadot/x-textencoder',
       '@polkadot/x-ws',
+      '@polkadot/wasm-bridge',
     ],
     extend(config, ctx) {
       config.module.rules.push({
