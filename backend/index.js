@@ -10,7 +10,12 @@ const Status = require('./services/status');
 
 const app = express();
 const logger = pino();
-const status = new Status(config.crawlers.map((crawler) => crawler.name));
+
+const crawlersConfig = config.crawlers.map((crawler) => ({
+  name: crawler.name,
+  enabled: crawler.enabled,
+}));
+const status = new Status(crawlersConfig);
 
 const runCrawler = async ({ crawler, name }) => {
   const child = spawn('node', [`${crawler}`]);
