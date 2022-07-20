@@ -103,7 +103,7 @@ services:
     environment:
       NODE_ENV: 'production'
       NODE_OPTIONS: '--max-old-space-size=8192'
-      WS_PROVIDER_URL: 'wss://archive.v2.mainnet.cere.network/ws'
+      WS_PROVIDER_URL: 'wss://archive.mainnet.cere.network/ws'
       SUBSTRATE_NETWORK: 'cere'
       API_CUSTOM_TYPES: 'cere_custom_types.json'
       # RANKING_DISABLE: 'true'
@@ -147,7 +147,7 @@ services:
       NODE_ENV: 'production'
       NODE_PORT: '8000'
       API_KEY: 'my_access_key'
-      NETWORKS: '{"URL":"wss://rpc.v2.devnet.cere.network/ws","MNEMONICS":"","NETWORK":"DEVNET"},{"URL":"wss://rpc.v2.testnet.cere.network/ws","MNEMONICS":"","NETWORK":"TESTNET"},{"URL":"wss://rpc.v2.qanet.cere.network/ws","MNEMONICS":"","NETWORK":"QANET"}'
+      NETWORKS: '{"URL":"wss://archive.devnet.cere.network/ws","MNEMONICS":"","NETWORK":"DEVNET"},{"URL":"wss://archive.testnet.cere.network/ws","MNEMONICS":"","NETWORK":"TESTNET"},{"URL":"wss://archive.qanet.cere.network/ws","MNEMONICS":"","NETWORK":"QANET"}'
       MAX_BALANCE: '1'
       NUMBER_OF_TOKENS_TO_SEND: '10'
       REQUESTS_PER_DAY: '100'
