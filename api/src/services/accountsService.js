@@ -4,7 +4,7 @@ const { blockchainNames, tokenTypes, decimals } = require('../config/blockchains
 const { blockchains } = require('../config');
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
-const { getCentsFromDecimals } = require("../lib/utils");
+const { toBaseUnits } = require("../lib/utils");
 
 async function  get() {
   const promises  = [];
@@ -52,7 +52,7 @@ async function  get() {
             address: account.address,
             tokenSymbol: account.tokenSymbol,
             group: account.group,
-            minBalance: getCentsFromDecimals(account.minBalance, decimals[account.tokenSymbol]),
+            minBalance: toBaseUnits(account.minBalance, decimals[account.tokenSymbol]),
             balance
           };
         }
