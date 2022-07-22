@@ -4,15 +4,14 @@ const DBMigrate = require('db-migrate');
 const pino = require('pino');
 const { spawn } = require('child_process');
 const { StatusCodes } = require('http-status-codes');
-const { wait, getEnabledCrawlers, getCrawlerNames } = require('./lib/utils');
+const { wait, getEnabledCrawlerNames, getEnabledCrawlers } = require('./lib/utils');
 const config = require('./backend.config');
 const Status = require('./services/status');
 
 const app = express();
 const logger = pino();
 
-const enabledCrawlers = getEnabledCrawlers(config.crawlers);
-const enabledCrawlersNames = getCrawlerNames(enabledCrawlers);
+const enabledCrawlersNames = getEnabledCrawlerNames(config.crawlers);
 const status = new Status(enabledCrawlersNames);
 
 const runCrawler = async ({ crawler, name }) => {
