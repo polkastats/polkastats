@@ -16,7 +16,7 @@ async function checkAccountsBalances(req, res) {
     
     let belowMinAccounts = []
     accounts.forEach(account => {
-        if(
+        if (
           blockchains.includes(account.blockchain)
           && (networks? networks.includes(account.network): true)
           && (groups? groups.includes(account.group): true)
@@ -27,7 +27,7 @@ async function checkAccountsBalances(req, res) {
         }
       });
 
-    if(belowMinAccounts.length) {
+    if (belowMinAccounts.length) {
       res.json({
         msg: "The following accounts have below the minimum balances",
         accounts: belowMinAccounts
@@ -51,7 +51,7 @@ function validateBlockchains(blockchains){
   
   const supportedBlockchains = Object.values(blockchainNames);
   blockchains.forEach(blockchain => {
-    if(!supportedBlockchains.includes(blockchain)) {
+    if (!supportedBlockchains.includes(blockchain)) {
       throw new Error(`Incorrect "blockchains" param value "${blockchain}"`);
     }
   });
@@ -61,7 +61,7 @@ function validateNetworks(networks){
   if (networks) {
     const supportedNetworks = Object.values(networkNames);
     networks.forEach(network =>{
-      if(!supportedNetworks.includes(network)) {
+      if (!supportedNetworks.includes(network)) {
         throw new Error(`Incorrect "networks" param value "${network}"`);
       }
     });
@@ -72,7 +72,7 @@ function validateGroups(groups) {
   if (groups) {
     const supportedGroups = Object.values(accountGroups);
     groups.forEach(group =>{
-      if(!supportedGroups.includes(group)) {
+      if (!supportedGroups.includes(group)) {
         throw new Error(`Incorrect "groups" param value "${group}"`);
       }
     });
@@ -82,7 +82,7 @@ function validateGroups(groups) {
 function validateAddresses(addresses, accounts) {
   if (addresses) {
     addresses.forEach(address => {
-      if(!accounts.find(account => account.address === address)) {
+      if (!accounts.find(account => account.address === address)) {
         throw new Error(`Address "${address}" doesn't exist`);
       }
     })
