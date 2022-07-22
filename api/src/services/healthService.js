@@ -4,14 +4,14 @@ const accountsService = require('./accountsService');
 async function checkAccountsBalances(req, res) {  
   try {
     const { query } = req;    
-    const blockchains = query.blockchains && query.blockchains.split('|');
+    const blockchains = query.blockchains && query.blockchains.split(',');
     validateBlockchains(blockchains);
-    const networks = query.networks && query.networks.split('|');
+    const networks = query.networks && query.networks.split(',');
     validateNetworks(networks);
-    const groups = query.groups && query.groups.split('|');
+    const groups = query.groups && query.groups.split(',');
     validateGroups(groups);
     const accounts = await accountsService.get();
-    const addresses = query.addresses && query.addresses.split('|');
+    const addresses = query.addresses && query.addresses.split(',');
     validateAddresses(addresses, accounts);
     
     let belowMinAccounts = []
