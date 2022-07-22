@@ -7,15 +7,13 @@ const { StatusCodes } = require('http-status-codes');
 const { wait } = require('./lib/utils');
 const config = require('./backend.config');
 const Status = require('./services/status');
+const { getEnabledCrawlerNames } = require('./helpers/crawlerHelper');
 
 const app = express();
 const logger = pino();
 
-const crawlersConfig = config.crawlers.map((crawler) => ({
-  name: crawler.name,
-  enabled: crawler.enabled,
-}));
-const status = new Status(crawlersConfig);
+const crawlersNames = getEnabledCrawlerNames(config.crawlers);
+const status = new Status(crawlersNames);
 
 const runCrawler = async ({ crawler, name }) => {
   const child = spawn('node', [`${crawler}`]);

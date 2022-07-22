@@ -3,19 +3,11 @@ const statuses = {
 };
 
 class Status {
-  constructor(crawlersConfig) {
-    this.initAppStatuses(crawlersConfig);
-  }
-
-  initAppStatuses(crawlersConfig) {
+  constructor(names) {
     this.apps = [];
-    crawlersConfig.forEach((crawlerConfig) => {
-      if (!crawlerConfig.enabled) {
-        return;
-      }
-
+    names.forEach((name) => {
       this.apps.push({
-        name: crawlerConfig.name,
+        name,
         status: statuses.HEALTHY,
       });
     });
