@@ -47,15 +47,15 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
     "networks": [
       {
         "name": networkNames.DEVNET,
-        "rpcUrl": "wss://archive.devnet.cere.network/ws",
+        "rpcUrl": "wss://rpc.devnet.cere.network/ws",
       },
       {
         "name": networkNames.QANET,
-        "rpcUrl": "wss://archive.qanet.cere.network/ws",
+        "rpcUrl": "wss://rpc.qanet.cere.network/ws",
       },
       {
         "name": networkNames.TESTNET,
-        "rpcUrl": "wss://archive.testnet.cere.network/ws",
+        "rpcUrl": "wss://rpc.testnet.cere.network/ws",
         "accounts": [
           {
             "address": "5GjivYu4Sb9qNLWp6GYqm5VgPqbYCA2JsePBENAZTdsgqGmn",
@@ -91,7 +91,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
       },
       {
         "name": networkNames.MAINNET,
-        "rpcUrl": "wss://archive.mainnet.cere.network/ws",
+        "rpcUrl": "wss://rpc.mainnet.cere.network/ws",
         "accounts": [
           {
             "address": "5DDArkL7BzgQqRSKF4jeaDUi9ezr9UbYYjX6G3dyDM2eA3bi",
