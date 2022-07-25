@@ -1,5 +1,3 @@
-const Web3 = require('web3');
-const { BN } = Web3.utils;
 const { blockchainNames, tokenTypes, decimals } = require('../config/blockchains');
 const { blockchains } = require('../config');
 const cereNetworkService = require('./cereNetworkService');

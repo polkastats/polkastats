@@ -1,17 +1,18 @@
 const { blockchainNames, networkNames, accountGroups } = require('../config/blockchains');
 const accountsService = require('./accountsService');
+const SEPARATOR = ',';
 
 async function checkAccountsBalances(req, res) {  
   try {
     const { query } = req;    
-    const blockchains = query.blockchains && query.blockchains.split(',');
+    const blockchains = splitParams(query.blockchains);
     validateBlockchains(blockchains);
-    const networks = query.networks && query.networks.split(',');
+    const networks = splitParams(query.networks);
     validateNetworks(networks);
-    const groups = query.groups && query.groups.split(',');
+    const groups = splitParams(query.groups);
     validateGroups(groups);
     const accounts = await accountsService.get();
-    const addresses = query.addresses && query.addresses.split(',');
+    const addresses = splitParams(query.addresses);
     validateAddresses(addresses, accounts);
     
     let belowMinAccounts = []
@@ -44,7 +45,7 @@ async function checkAccountsBalances(req, res) {
   }
 }
 
-function validateBlockchains(blockchains){
+function validateBlockchains(blockchains) {
   if (!blockchains) {
     throw new Error('"blockchains" param is required')
   }
@@ -60,7 +61,7 @@ function validateBlockchains(blockchains){
 function validateNetworks(networks){
   if (networks) {
     const supportedNetworks = Object.values(networkNames);
-    networks.forEach(network =>{
+    networks.forEach(network => {
       if (!supportedNetworks.includes(network)) {
         throw new Error(`Incorrect "networks" param value "${network}"`);
       }
@@ -71,7 +72,7 @@ function validateNetworks(networks){
 function validateGroups(groups) {
   if (groups) {
     const supportedGroups = Object.values(accountGroups);
-    groups.forEach(group =>{
+    groups.forEach(group => {
       if (!supportedGroups.includes(group)) {
         throw new Error(`Incorrect "groups" param value "${group}"`);
       }
@@ -87,6 +88,10 @@ function validateAddresses(addresses, accounts) {
       }
     })
   }
+}
+
+function splitParams(params) {
+  return params && params.split(SEPARATOR)
 }
 
 module.exports = {
