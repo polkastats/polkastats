@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-- ...
+- Removed v2 subdomains from public urls
 
 ## v0.16.0
 - [BE, FE] Added DDC metrics 
