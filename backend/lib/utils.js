@@ -429,4 +429,13 @@ module.exports = {
       ;`;
     await module.exports.dbParamQuery(client, query, data, loggerOptions);
   },
+  getEnabledCrawlers: (crawlersConfig) => (
+    crawlersConfig.filter((crawlerConfig) => (
+      crawlerConfig.enabled === true
+    ))
+  ),
+  getEnabledCrawlerNames: (crawlersConfig) => {
+    const enabledCrawlers = module.exports.getEnabledCrawlers(crawlersConfig);
+    return enabledCrawlers.map((crawlerConfig) => crawlerConfig.name);
+  },
 };
