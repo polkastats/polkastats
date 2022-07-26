@@ -1,7 +1,8 @@
-const { blockchainNames, tokenTypes } = require("../config/blockchains");
-const { blockchains } = require("../config");
+const { blockchainNames, tokenTypes, decimals } = require('../config/blockchains');
+const { blockchains } = require('../config');
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
+const { toBaseUnits } = require("../lib/utils");
 
 async function  get() {
   const promises  = [];
@@ -49,6 +50,7 @@ async function  get() {
             address: account.address,
             tokenSymbol: account.tokenSymbol,
             group: account.group,
+            minBalance: toBaseUnits(account.minBalance, decimals[account.tokenSymbol]),
             balance
           };
         }

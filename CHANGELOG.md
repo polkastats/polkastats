@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-- ...
+- [BE] Implemented balances monitoring API
 
 ## v0.16.0
 - [BE, FE] Added DDC metrics 
