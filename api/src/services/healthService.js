@@ -1,5 +1,5 @@
 const { blockchainNames, networkNames, accountGroups } = require('../config/blockchains');
-const accountsService = require('./accountsService');
+const cacheService = require('./cacheService');
 const SEPARATOR = ',';
 
 async function checkAccountsBalances(req, res) {  
@@ -11,7 +11,7 @@ async function checkAccountsBalances(req, res) {
     validateNetworks(networks);
     const groups = splitParams(query.groups);
     validateGroups(groups);
-    const accounts = await accountsService.get();
+    const accounts = cacheService.getAccounts();
     const addresses = splitParams(query.addresses);
     validateAddresses(addresses, accounts);
     
