@@ -10,6 +10,7 @@ const {
   REQUESTS_PER_DAY,
 } = process.env;
 const cereNetworkService = require('./cereNetworkService');
+const { toFloat } = require('../lib/utils');
 
 module.exports = {
   faucet: async (req, res) => {
@@ -38,7 +39,7 @@ module.exports = {
       const base = new BN(10);
       const numberOfTokensToSend = new BN(NUMBER_OF_TOKENS_TO_SEND);
       const value = numberOfTokensToSend.mul(base.pow(decimals.CERE));
-      const maxBalanceCoins = new BN(MAX_BALANCE)
+      const maxBalanceCoins = new BN(MAX_BALANCE);
       const maxBalance =  maxBalanceCoins.mul(base.pow(decimals.CERE));
 
       // Fetch client IP address
@@ -47,7 +48,7 @@ module.exports = {
       // Check for minimum balance
       if (balance.gte(maxBalance)) {
         throw new Error(
-          `Your balance is ${balance.toHuman()}, so we couldn't process your request.`
+          `Your balance is ${toFloat(balance, decimals.CERE)} CERE, so we couldn't process your request.`
         );
       }
 

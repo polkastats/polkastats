@@ -57,7 +57,7 @@ module.exports = {
   getBalance: async (network, address) => {
     const { api, _ } = networkParams.get(network.toUpperCase());
     const { data: balance } = await api.query.system.account(address);
-    return new BN(balance.free);
+    return new BN(balance.free.toString());
   },
   transferFromFaucet: async (network, address, value) => {
     const { api, faucet } = networkParams.get(network.toUpperCase());

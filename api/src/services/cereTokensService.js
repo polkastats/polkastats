@@ -1,6 +1,6 @@
 const { blockchains } = require("../config");
 const { decimals } = require("../config/blockchains");
-const { getTokenFloatAmount } = require("../lib/utils");
+const { toFloat } = require("../lib/utils");
 const { blockchainNames, networkNames } = require("../config/blockchains");
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
@@ -13,7 +13,7 @@ function getTotalSupplyInternal(network) {
 module.exports = {
   getTotalSupply: async (req, res) => {
     const totalSupply = await getTotalSupplyInternal(networkNames.MAINNET);
-    res.json(getTokenFloatAmount(totalSupply, decimals.CERE));
+    res.json(toFloat(totalSupply, decimals.CERE));
   },
   getCirculatingSupply: async (req, res) => {
     const totalSupply = await getTotalSupplyInternal(networkNames.MAINNET);
@@ -32,6 +32,6 @@ module.exports = {
       });
       circulatingSupply = circulatingSupply.sub(balance);
     }    
-    res.json(getTokenFloatAmount(circulatingSupply, decimals.CERE));
+    res.json(toFloat(circulatingSupply, decimals.CERE));
   },
 };

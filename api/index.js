@@ -14,6 +14,7 @@ const apicache = require('apicache');
 const ethNetworkService = require('./src/services/ethNetworkService');
 const cereNetworkService = require('./src/services/cereNetworkService');
 const cacheService = require('./src/services/cacheService');
+const healthService = require('./src/services/healthService');
 const DBMigrate = require("db-migrate");
 
 console.log('Running migrations');
@@ -306,6 +307,7 @@ app.use("/api/v1/faucet", limiter, faucet.faucet);
 app.get("/api/v1/tokens/total-supply", cache('10 minutes'), tokensService.getTotalSupply);
 app.get("/api/v1/tokens/circulating-supply", cache('10 minutes'), tokensService.getCirculatingSupply);
 app.get("/api/v1/metrics", cache('10 minutes'), metricsService.getAll);
+app.get("/api/v1/health/accounts-balances", cache('10 minutes'), healthService.checkAccountsBalances);
 
 app.use('/', (req, res) => {
   res.status(404).json({

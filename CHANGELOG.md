@@ -1,7 +1,11 @@
 # Cere Stats
 
 ## vNext
-- ...
+...
+
+## v0.17.0
+- [BE] Implemented balances monitoring API
+- [BE, FE] Updated Cere Blockchain public URLs
 
 ## v0.16.0
 - [BE, FE] Added DDC metrics 
