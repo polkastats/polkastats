@@ -34,16 +34,9 @@
                   @PolkaStats
                 </a>
               </li>
-              <li class="mr-2" data-testid="footer-pgp">
-                <a target="_blank" href="https://keybase.io/encrypt#polkastats">
-                  <font-awesome-icon :icon="['fab', 'keybase']" />
-                  PGP: 14C5 91D0 8ABA 03B7
-                </a>
-              </li>
               <li data-testid="footer-email">
-                <a target="_blank" href="mailto:polkastats@protonmail.com"
-                  ><font-awesome-icon icon="envelope" />
-                  polkastats@protonmail.com</a
+                <a target="_blank" href="mailto:hello@polkastats.io"
+                  ><font-awesome-icon icon="envelope" />hello@polkastats.io</a
                 >
               </li>
             </ul>
