@@ -46,6 +46,7 @@ module.exports = {
       erasPerDay: 1,
       tokenDecimals: 10,
       featuredTimespan: 60 * 60 * 24 * 7 * 2 * 1000, // 2 weeks
+      isThousandValidatorsEnabled: process.env.IS_THOUSAND_VALIDATORS_ENABLED || false,
     },
     {
       name: 'activeAccounts',
