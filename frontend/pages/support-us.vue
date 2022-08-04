@@ -24,7 +24,7 @@
 
         <p>
           {{ $t('pages.support-us.we_love_feedback_TEXT') }}
-          <a href="https://github.com/Colm3na/polkastats-v3" target="_blank">{{
+          <a href="https://github.com/Colm3na/polkastats-ng" target="_blank">{{
             $t('pages.support-us.github_repository')
           }}</a
           >.
