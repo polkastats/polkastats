@@ -1,4 +1,4 @@
-FROM phusion/baseimage:jammy
+FROM phusion/baseimage:jammy-1.0.0
 ARG POLKADOT_VERSION
 LABEL maintainer "@mariopino"
 LABEL description="Parity Polkadot client"
