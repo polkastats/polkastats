@@ -9,13 +9,10 @@ const {
   wait,
   dbQuery,
   dbParamQuery,
-  getCrawlerConfigByName,
 } = require('../lib/utils');
 const backendConfig = require('../backend.config');
 
 const crawlerName = 'ranking';
-const crawlerConfig = getCrawlerConfigByName(backendConfig, crawlerName);
-
 const logger = pino({
   level: backendConfig.logLevel,
 });
@@ -608,8 +605,8 @@ const crawler = async (delayedStart) => {
 
     // thousand validators program data
     // https://wiki.polkadot.network/docs/thousand-validators
-    let thousandValidators;
-    if (crawlerConfig.isThousandValidatorsEnabled) {
+    let thousandValidators = [];
+    if (config.isThousandValidatorsProgrammeEnabled) {
       logger.debug(loggerOptions, 'Fetching thousand validator program validators ...');
       thousandValidators = await getThousandValidators();
       logger.debug(loggerOptions, `Got info of ${thousandValidators.length} validators from Thousand Validators program API`);
@@ -865,10 +862,9 @@ const crawler = async (delayedStart) => {
         }
 
         // thousand validators program
-        const includedThousandValidators = crawlerConfig.isThousandValidatorsEnabled
-            && thousandValidators.some(
-              ({ stash }) => stash === stashAddress,
-            );
+        const includedThousandValidators = thousandValidators.some(
+          ({ stash }) => stash === stashAddress,
+        );
         const thousandValidator = includedThousandValidators ? thousandValidators.find(
           ({ stash }) => stash === stashAddress,
         ) : '';

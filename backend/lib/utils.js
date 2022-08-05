@@ -438,7 +438,4 @@ module.exports = {
     const enabledCrawlers = module.exports.getEnabledCrawlers(crawlersConfig);
     return enabledCrawlers.map((crawlerConfig) => crawlerConfig.name);
   },
-  getCrawlerConfigByName: (crawlersConfig, name) => (
-    crawlersConfig.crawlers.find((crawler) => crawler.name === name)
-  ),
 };
