@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-...
+- [BE] Hid "Thousand Validator Programme" under feature flag
 
 ## v0.17.0
 - [BE] Implemented balances monitoring API
