@@ -604,9 +604,13 @@ const crawler = async (delayedStart) => {
     logger.debug(loggerOptions, `Last era in DB is ${lastEraInDb}`);
 
     // thousand validators program data
-    logger.debug(loggerOptions, 'Fetching thousand validator program validators ...');
-    const thousandValidators = await getThousandValidators();
-    logger.debug(loggerOptions, `Got info of ${thousandValidators.length} validators from Thousand Validators program API`);
+    // https://wiki.polkadot.network/docs/thousand-validators
+    let thousandValidators = [];
+    if (config.isThousandValidatorsProgrammeEnabled) {
+      logger.debug(loggerOptions, 'Fetching thousand validator program validators ...');
+      thousandValidators = await getThousandValidators();
+      logger.debug(loggerOptions, `Got info of ${thousandValidators.length} validators from Thousand Validators program API`);
+    }
 
     // chain data
     logger.debug(loggerOptions, 'Fetching chain data ...');
