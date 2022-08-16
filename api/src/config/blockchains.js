@@ -31,7 +31,8 @@ const accountGroups = {
   BRIDGE: 'BRIDGE',
   BRIDGE_RELAYERS: 'BRIDGE_RELAYERS',
   DAVINCI: 'DAVINCI',
-  STATS: 'STATS'
+  STATS: 'STATS',
+  LIVEONE: 'LIVEONE'
 }
 
 const decimals = {}
@@ -146,6 +147,12 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
             "name": "davinci-ddc-wallet",
             "minBalance": 1000,
             "group": accountGroups.DAVINCI
+          },
+          {
+            "address": "5CrTTUY62vpywpTfyXupzJve2imVEqLry8Gn461muwCGHm74",
+            "name": "liveone-ddc-wallet",
+            "minBalance": 100,
+            "group": accountGroups.LIVEONE
           }
         ]
       }
@@ -182,7 +189,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
             "name": "polygon-erc20-handler",
             "minBalance": 100,
             "type": tokenTypes.ERC20,
-            "tokenSymbol": 'CERE', // by fact it has "CN" token symbol
+            "tokenSymbol": tokenSymbols.CERE, // by fact it has "CN" token symbol
             "erc20TokenAddress": "0xd111d479e23A8342A81ad595Ea1CAF229B3528c3",
             "group": accountGroups.BRIDGE
           }
@@ -199,7 +206,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
             "minBalance": 10000,
             "type": tokenTypes.ERC20,
             "erc20TokenAddress": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-            "tokenSymbol": "USDC",
+            "tokenSymbol": tokenSymbols.USDC,
             "group": accountGroups.DAVINCI
           },
           {
@@ -238,8 +245,29 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
             "minBalance": 10000000,
             "type": tokenTypes.ERC20,
             "erc20TokenAddress": "0x2da719db753dfa10a62e140f436e1d67f2ddb0d6",
-            "tokenSymbol": "CERE",
+            "tokenSymbol": tokenSymbols.CERE,
             "group": accountGroups.BRIDGE
+          },
+          {
+            "address": "0x718B310Be805e3Df552621b3ea11b59871183D19",
+            "name": "liveone-fiat-gateway-service-gas",
+            "minBalance": 5,
+            "group": accountGroups.LIVEONE
+          },
+          {
+            "address": "0xfeD5BEf12E4Cd3C42E697Baff743d65E83b5f005",
+            "name": "liveone-minting-wallet",
+            "minBalance": 1,
+            "group": accountGroups.LIVEONE
+          },
+          {
+            "address": "0xeC9b0dEEE224c759D99D1ebb90330Ed9A275beBb",
+            "name": "liveone-fiat-gateway-contract",
+            "minBalance": 10,
+            "type": tokenTypes.ERC20,
+            "erc20TokenAddress": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+            "tokenSymbol": tokenSymbols.USDC,
+            "group": accountGroups.LIVEONE
           }
         ]
       }
@@ -259,7 +287,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
           "minBalance": 10000000,
           "type": "ERC20",
           "erc20TokenAddress": "0x2da719db753dfa10a62e140f436e1d67f2ddb0d6",
-          "tokenSymbol": "CERE",
+          "tokenSymbol": tokenSymbols.CERE,
           "group": "BRIDGE"
         }]
       },
@@ -273,7 +301,7 @@ let blockchains = (process.env.BLOCKCHAINS && JSON.parse(process.env.BLOCKCHAINS
           "minBalance": 10000000,
           "type": "ERC20",
           "erc20TokenAddress": "0x0b10e304088b2BA2B2acfD2f72573FAaD31a13A5",
-          "tokenSymbol": "CERE",
+          "tokenSymbol": tokenSymbols.CERE,
           "group": "BRIDGE"
         }]
       }
@@ -304,6 +332,7 @@ blockchains.forEach(blockchain => {
           network.faucetMnemonic = cereTestnet.MNEMONICS;
           network.rpcUrl = cereTestnet.URL;
           break;
+        //there is no case for MAINNET as we don't support faucet for it
         default:
           console.warn(`Network "${network.name}" is not supported`);
       }
