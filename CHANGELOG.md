@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-- 
+- [BE] Move blockchains config to `.env.default`
 
 ## v0.18.0
 - [BE] Hid "Thousand Validator Programme" under feature flag
