@@ -3,6 +3,9 @@
 ## vNext
 - 
 
+## v0.19.0
+- Configured LiveOne accounts to provide their monitoring
+
 ## v0.18.0
 - [BE] Hid "Thousand Validator Programme" under feature flag
 
