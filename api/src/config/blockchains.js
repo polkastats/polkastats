@@ -332,7 +332,7 @@ blockchains.forEach(blockchain => {
           network.faucetMnemonic = cereTestnet.MNEMONICS;
           network.rpcUrl = cereTestnet.URL;
           break;
-          //there is no case for MAINNET as we don't support faucet for it
+          // there is no case for MAINNET as we don't support faucet for it
         default:
           console.warn(`Network "${network.name}" is not supported`);
       }
