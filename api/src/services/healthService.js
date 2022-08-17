@@ -1,5 +1,7 @@
 const { blockchainNames, networkNames, accountGroups } = require('../config/blockchains');
 const cacheService = require('./cacheService');
+const getClient = require('../../db/db');
+const { get } = require('./accountsService');
 const SEPARATOR = ',';
 
 async function checkAccountsBalances(req, res) {  
@@ -94,6 +96,33 @@ function splitParams(params) {
   return params && params.split(SEPARATOR)
 }
 
+async function liveness(req, res) {
+  res.status(200).json({
+    msg: 'Liveness probe is ok',
+  });
+}
+
+async function readiness(req, res) {
+  let errors = [];
+  
+  try {
+    await getClient();
+  } catch (err) {
+    errors.push(`Unable to connect to database:${err.message}`);
+  }
+
+  const accounts = cacheService.getAccounts();
+  if(!accounts.length) {
+    errors.push('Blockchain accounts not cached yet');
+  }
+  
+  errors.length
+    ? res.status(503).json({msg: errors})
+    : res.status(200).json({msg: 'Readiness probe is ok'});
+}
+
 module.exports = {
-  checkAccountsBalances
+  checkAccountsBalances,
+  liveness,
+  readiness
 };
