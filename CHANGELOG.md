@@ -2,6 +2,7 @@
 
 ## vNext
 - [BE] Move blockchains config to `.env.default`
+- [BE] Implement liveness/readiness probes API
 
 ## v0.19.0
 - Configured LiveOne accounts to provide their monitoring
