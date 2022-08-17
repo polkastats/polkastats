@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-- 
+- [BE] Move blockchains config to `.env.default`
 
 ## v0.19.0
 - Configured LiveOne accounts to provide their monitoring
