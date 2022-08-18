@@ -5,6 +5,7 @@ const web3 = require('web3');
 const { BN } = web3.utils;
 
 const networkParams = new Map();
+let initialized = false;
 
 async function init() {
   const promises = [];
@@ -20,6 +21,7 @@ async function init() {
   res.forEach(network => {
     networkParams.set(network.name, network.rpc);
   });
+  initialized = true;
 }
 
 async function initNetwork(url, faucetMnemonic) {
@@ -79,5 +81,6 @@ module.exports = {
   getTotalSupply: async (network) => {
     const { api, _ } = networkParams.get(network.toUpperCase());
     return new BN((await api.query.balances.totalIssuance()).toString());
-  }
+  },
+  initialized: () => initialized,
 };

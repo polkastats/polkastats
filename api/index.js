@@ -308,6 +308,8 @@ app.get("/api/v1/tokens/total-supply", cache('10 minutes'), tokensService.getTot
 app.get("/api/v1/tokens/circulating-supply", cache('10 minutes'), tokensService.getCirculatingSupply);
 app.get("/api/v1/metrics", cache('10 minutes'), metricsService.getAll);
 app.get("/api/v1/health/accounts-balances", cache('10 minutes'), healthService.checkAccountsBalances);
+app.get("/api/v1/health/liveness", healthService.liveness);
+app.get("/api/v1/health/readiness", healthService.readiness);
 
 app.use('/', (req, res) => {
   res.status(404).json({
