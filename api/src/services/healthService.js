@@ -106,27 +106,28 @@ async function liveness(req, res) {
 async function readiness(req, res) {
   let errors = [];
   
-  try {
-    await getClient();
-  } catch (err) {
-    errors.push(`Unable to connect to database:${err.message}`);
-  }
-
-  if (!cacheService.initialized()) {
-    errors.push('Cache service is not initialized yet');
-  }
-
-  if (!cereNetworkService.initialized()) {
-    errors.push('Cere network service is not initialized yet');
-  }
-
-  if (!ethNetworkService.initialized()) {
-    errors.push('Ethereum network service is not initialized yet');
-  }
+    try {
+      await getClient();
+    } catch (err) {
+      errors.push(`Unable to connect to database:${err.message}`);
+    }
   
-  errors.length
-    ? res.status(503).json({msg: errors})
-    : res.status(200).json({msg: 'Readiness probe is ok'});
+    if (!cacheService.initialized()) {
+      errors.push('Cache service is not initialized yet');
+    }
+  
+    if (!cereNetworkService.initialized()) {
+      errors.push('Cere network service is not initialized yet');
+    }
+  
+    if (!ethNetworkService.initialized()) {
+      errors.push('Ethereum network service is not initialized yet');
+    }
+    
+    res.status(503).json({msg: errors});
+    // errors.length
+    //   ? res.status(503).json({msg: errors})
+    //   : res.status(200).json({msg: 'Readiness probe is ok'});
 }
 
 module.exports = {
