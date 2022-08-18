@@ -1,7 +1,8 @@
 const { blockchainNames, networkNames, accountGroups } = require('../config/blockchains');
 const cacheService = require('./cacheService');
+const cereNetworkService = require('./cereNetworkService');
+const ethNetworkService = require('./ethNetworkService');
 const getClient = require('../../db/db');
-const { get } = require('./accountsService');
 const SEPARATOR = ',';
 
 async function checkAccountsBalances(req, res) {  
@@ -111,9 +112,16 @@ async function readiness(req, res) {
     errors.push(`Unable to connect to database:${err.message}`);
   }
 
-  const accounts = cacheService.getAccounts();
-  if(!accounts.length) {
-    errors.push('Blockchain accounts not cached yet');
+  if (!cacheService.initialized()) {
+    errors.push('Cache service is not initialized yet');
+  }
+
+  if (!cereNetworkService.initialized()) {
+    errors.push('Cere network service is not initialized yet');
+  }
+
+  if (!ethNetworkService.initialized()) {
+    errors.push('Ethereum network service is not initialized yet');
   }
   
   errors.length

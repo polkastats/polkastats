@@ -4,6 +4,7 @@ const { blockchains } = require("../config");
 const erc20TokenAbi = require("../config/contracts/erc20TokenAbi.json");
 const { blockchainNames } = require("../config/blockchains");
 const networkParams = new Map();
+let initialized = false;
 
 async function init() {
   const promises = [];
@@ -24,7 +25,8 @@ async function init() {
   res.forEach(network => {
     const providerId = getProviderId(network.blockchain, network.name);
     networkParams.set(providerId, network.rpc);
-  });  
+  });
+  initialized = true;  
 }
 
 async function initNetwork(url) {
@@ -58,5 +60,6 @@ module.exports = {
     );
 
     return new BN(await contract.methods.balanceOf(address).call());
-  }
+  },
+  initialized: () => initialized,
 };

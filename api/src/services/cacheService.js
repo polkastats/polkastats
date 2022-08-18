@@ -14,5 +14,8 @@ module.exports = {
       cache.accounts = await accountsService.get();
     }, cacheIntervalMs);
   },
-  getAccounts: ()=> cache.accounts
+  getAccounts: ()=> cache.accounts,
+  initialized: ()=> {
+    return !!cache.accounts.length;
+  }
 };
