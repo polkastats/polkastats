@@ -126,10 +126,10 @@ async function readiness(req, res) {
       errors.push('Ethereum network service is not initialized yet');
     }
     
-    // res.status(503).json({msg: errors});
-    errors.length
-      ? res.status(503).json({msg: errors})
-      : res.status(200).json({msg: 'Readiness probe is ok'});
+    res.status(503).json({msg: errors});
+    // errors.length
+    //   ? res.status(503).json({msg: errors})
+    //   : res.status(200).json({msg: 'Readiness probe is ok'});
 }
 
 module.exports = {
