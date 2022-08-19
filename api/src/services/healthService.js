@@ -1,4 +1,4 @@
-const { blockchainNames, networkNames, accountGroups } = require('../config/blockchains');
+const { blockchains, blockchainNames, networkNames, accountGroups } = require('../config/blockchains');
 const cacheService = require('./cacheService');
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
@@ -11,7 +11,7 @@ async function checkAccountsBalances(req, res) {
     const blockchains = splitParams(query.blockchains);
     validateBlockchains(blockchains);
     const networks = splitParams(query.networks);
-    validateNetworks(networks);
+    validateNetworksNames(networks);
     const groups = splitParams(query.groups);
     validateGroups(groups);
     const accounts = cacheService.getAccounts();
@@ -61,7 +61,7 @@ function validateBlockchains(blockchains) {
   });
 }
 
-function validateNetworks(networks){
+function validateNetworksNames(networks){
   if (networks) {
     const supportedNetworks = Object.values(networkNames);
     networks.forEach(network => {
@@ -91,6 +91,14 @@ function validateAddresses(addresses, accounts) {
       }
     })
   }
+}
+
+function validateEmpty(fields) {
+  for(var name in fields) {
+    if (!fields[name] || !fields[name].length) {
+      throw new Error(`Field "${name}" is empty`);
+    }
+  }  
 }
 
 function splitParams(params) {
@@ -131,8 +139,106 @@ async function readiness(req, res) {
       : res.status(200).json({msg: 'Readiness probe is ok'});
 }
 
+async function checkBlockchain(req, res) {
+    const { query } = req;
+    const networks = splitParams(query.networks);
+    let errors = [];
+    
+    try {
+      validateEmpty({networks});
+      validateNetworksNames(networks);
+    } catch (error) {
+      return res.status(400).json({
+        msg: error.message,
+      });
+    }
+
+    await Promise.all(networks.map(async network => {
+      try {
+        await cereNetworkService.getHealth(network);
+      } catch (error) {
+        console.error(error);
+        errors.push(`Unable to connect to ${network} network`);
+      }
+    }));
+
+    errors.length
+      ? res.status(503).json({msg: errors})
+      : res.status(200).json({msg: `${networks.join(',')} status is ok`});
+}
+
+async function checkBlockFinalization(req, res) {
+  const { query } = req;
+  const networks = splitParams(query.networks);
+  const blockchain = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
+  let errors = [];
+
+  try {
+    validateEmpty({networks});
+    validateNetworksNames(networks);
+  } catch (error) {
+    return res.status(400).json({
+      msg: error.message,
+    });
+  }
+  
+  await Promise.all(
+    networks.map(async network => {      
+      const [best, finalized] = await Promise.all([
+        cereNetworkService.getFinalizedBlock(network),
+        cereNetworkService.getBestBlock(network)
+      ]);      
+      const bestBlockNumberDiff = best - finalized;
+      if (bestBlockNumberDiff > blockchain.bestBlockNumberDiff) {
+        errors.push(`Network ${network} has ineffective best block finalization difference number: ${bestBlockNumberDiff}`);
+      }
+    })
+  );
+
+  errors.length
+    ? res.status(503).json({msg: errors})
+    : res.status(200).json({msg: `${networks.join(',')} best block finalization difference number is ok`});
+}
+
+async function checkBlockProduction(req, res) {
+  const { query } = req;
+  const networks = splitParams(query.networks);
+  const blockchain = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
+  let errors = [];
+
+  try {
+    validateEmpty({networks});
+    validateNetworksNames(networks);
+  } catch (error) {
+    return res.status(400).json({
+      msg: error.message,
+    });
+  }
+  
+  await Promise.all(
+    networks.map(async network => {
+      const { block } = await cereNetworkService.getLatestBlock(network);
+      const [previousTime, lastTime] = await Promise.all([
+        cereNetworkService.getBlockTime(network, block.header.number - 1),
+        cereNetworkService.getBlockTime(network, block.header.number),
+      ]);
+      const timeDiff = lastTime - previousTime;
+      if (timeDiff > blockchain.blockTimeDiffMs) {
+        errors.push(`Network ${network} has ineffective block production time difference: ${timeDiff}`);
+      }
+    })
+  );
+
+  errors.length
+    ? res.status(503).json({msg: errors})
+    : res.status(200).json({msg: `${networks.join(',')} block production time difference is ok`});
+}
+
 module.exports = {
-  checkAccountsBalances,
   liveness,
-  readiness
+  readiness,
+  checkAccountsBalances,
+  checkBlockchain,
+  checkBlockFinalization,
+  checkBlockProduction,
 };

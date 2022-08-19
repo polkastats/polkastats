@@ -310,6 +310,9 @@ app.get("/api/v1/metrics", cache('10 minutes'), metricsService.getAll);
 app.get("/api/v1/health/accounts-balances", cache('10 minutes'), healthService.checkAccountsBalances);
 app.get("/api/v1/health/liveness", healthService.liveness);
 app.get("/api/v1/health/readiness", healthService.readiness);
+app.get("/api/v1/health/blockchain", healthService.checkBlockchain);
+app.get("/api/v1/health/block-finalization", healthService.checkBlockFinalization);
+app.get("/api/v1/health/block-production", healthService.checkBlockProduction);
 
 app.use('/', (req, res) => {
   res.status(404).json({
