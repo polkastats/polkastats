@@ -109,7 +109,8 @@ async function readiness(req, res) {
     try {
       const client = await getClient();
       client.end();
-    } catch (err) {
+    } catch (error) {
+      console.error(error);
       errors.push(`Unable to connect to database:${err.message}`);
     }
   
