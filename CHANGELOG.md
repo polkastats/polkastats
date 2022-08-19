@@ -1,6 +1,9 @@
 # Cere Stats
 
 ## vNext
+
+
+## v0.20.0
 - [BE] Move blockchains config to `.env.default`
 - [BE] Implement liveness/readiness probes API
 
