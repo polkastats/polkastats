@@ -106,12 +106,14 @@ async function liveness(req, res) {
 async function readiness(req, res) {
   let errors = [];
   
+    let client;
     try {
-      const client = await getClient();
-      client.end();
+      client = await getClient();      
     } catch (error) {
       console.error(error);
       errors.push(`Unable to connect to database:${err.message}`);
+    } finally {
+      client?.end();
     }
   
     if (!cacheService.initialized()) {

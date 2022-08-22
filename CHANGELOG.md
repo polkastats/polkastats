@@ -1,8 +1,11 @@
 # Cere Stats
 
 ## vNext
-- [BE] Move blockchains config to `.env.default`
-- [BE] Implement liveness/readiness probes API
+-
+
+## v0.20.0
+- [BE] Moved blockchains config to `.env.default`
+- [BE] Implemented liveness/readiness probes API
 
 ## v0.19.0
 - Configured LiveOne accounts to provide their monitoring
