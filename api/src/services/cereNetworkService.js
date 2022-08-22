@@ -9,8 +9,8 @@ let initialized = false;
 
 async function init() {
   const promises = [];
-  const cere = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
-  cere.networks.forEach(network => {
+  const cereConfig = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
+  cereConfig.networks.forEach(network => {
     const promise = async() => ({
       name: network.name,
       rpc: await initNetwork(network.rpcUrl, network.faucetMnemonic)
