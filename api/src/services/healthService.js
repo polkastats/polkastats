@@ -113,7 +113,7 @@ async function readiness(req, res) {
       console.error(error);
       errors.push(`Unable to connect to database:${err.message}`);
     } finally {
-      client.end();
+      client?.end();
     }
   
     if (!cacheService.initialized()) {
