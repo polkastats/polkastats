@@ -8,9 +8,9 @@ let initialized = false;
 
 async function init() {
   const promises = [];
-  const polygon = blockchains.find(blockchain => blockchain.name === blockchainNames.POLYGON);
-  const ethereum = blockchains.find(blockchain => blockchain.name === blockchainNames.ETHEREUM);
-  [polygon, ethereum].forEach(blockchain => {
+  const polygonConfig = blockchains.find(blockchain => blockchain.name === blockchainNames.POLYGON);
+  const ethereumConfig = blockchains.find(blockchain => blockchain.name === blockchainNames.ETHEREUM);
+  [polygonConfig, ethereumConfig].forEach(blockchain => {
     blockchain.networks.forEach(network => {
       const { rpcUrl } = network;
       const promise = async() => ({

@@ -9,8 +9,8 @@ let initialized = false;
 
 async function init() {
   const promises = [];
-  const cere = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
-  cere.networks.forEach(network => {
+  const cereConfig = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
+  cereConfig.networks.forEach(network => {
     const promise = async() => ({
       name: network.name,
       rpc: await initNetwork(network.rpcUrl, network.faucetMnemonic)
@@ -51,6 +51,16 @@ function initFaucet(faucetMnemonic) {
   return newPair;
 }
 
+function getBlock(network, blockHash) {
+  const { api } = networkParams.get(network.toUpperCase());
+  return api.rpc.chain.getBlock(blockHash);
+}
+
+function getBlockHash(network, blockNumber) {
+  const { api } = networkParams.get(network.toUpperCase());
+  return api.rpc.chain.getBlockHash(blockNumber);
+}
+
 module.exports = {
   init,
   supportsNetwork: (network) => {
@@ -81,6 +91,30 @@ module.exports = {
   getTotalSupply: async (network) => {
     const { api, _ } = networkParams.get(network.toUpperCase());
     return new BN((await api.query.balances.totalIssuance()).toString());
+  },
+  getHealth: async (network) => {
+    const { api } = networkParams.get(network.toUpperCase());
+    return api.rpc.system.health();
+  },
+  getBlock,
+  getLatestBlock: async (network) => {
+    const { api } = networkParams.get(network.toUpperCase());
+    return api.rpc.chain.getBlock();
+  },
+  getFinalizedBlock: async (network) => {
+    const { api } = networkParams.get(network.toUpperCase());
+    return Number(await api.derive.chain.bestNumberFinalized());
+  },
+  getBestBlock: async (network) => {
+    const { api } = networkParams.get(network.toUpperCase());
+    return Number(await api.derive.chain.bestNumber());
+  },
+  getBlockHash,
+  getBlockTime: async (network, blockNumber) => {
+    const blockHash = await getBlockHash(network, blockNumber);
+    const { block } = await getBlock(network, blockHash);
+    const extrinsic =  block.extrinsics.find((extrinsic) => extrinsic.method.section === 'timestamp');
+    return Number(extrinsic.method.args[0]);
   },
   initialized: () => initialized,
 };
