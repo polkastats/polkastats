@@ -93,7 +93,7 @@ function validateAddresses(addresses, accounts) {
   }
 }
 
-function validateEmptyFields(fields) {
+function validateNoEmptyFields(fields) {
   for (var name in fields) {
     if (!fields[name] || !fields[name].length) {
       throw new Error(`Field "${name}" is empty`);
@@ -139,13 +139,13 @@ async function readiness(req, res) {
       : res.status(200).json({msg: 'Readiness probe is ok'});
 }
 
-async function checkBlockchain(req, res) {
+async function checkBlockchainHealth(req, res) {
     const { query } = req;
     const networks = splitParams(query.networks);
     let errors = [];
     
     try {
-      validateEmpty({networks});
+      validateNoEmptyFields({networks});
       validateNetworksNames(networks);
     } catch (error) {
       return res.status(400).json({
@@ -174,7 +174,7 @@ async function checkBlockchainBlocksFinalization(req, res) {
   let errors = [];
 
   try {
-    validateEmptyFields({networks});
+    validateNoEmptyFields({networks});
     validateNetworksNames(networks);
   } catch (error) {
     return res.status(400).json({
@@ -205,7 +205,7 @@ async function checkBlockchainBlocksProducing(req, res) {
   let errors = [];
 
   try {
-    validateEmptyFields({networks});
+    validateNoEmptyFields({networks});
     validateNetworksNames(networks);
   } catch (error) {
     return res.status(400).json({
@@ -234,7 +234,7 @@ module.exports = {
   liveness,
   readiness,
   checkAccountsBalances,
-  checkBlockchain,
+  checkBlockchainHealth,
   checkBlockchainBlocksFinalization,
   checkBlockchainBlocksProducing,
 };
