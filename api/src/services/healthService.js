@@ -162,9 +162,7 @@ async function checkBlockchainHealth(req, res) {
       }
     }));
 
-    errors.length
-      ? res.status(503).json({msg: errors})
-      : res.status(200).json({msg: `${networks.join(',')} status is ok`});
+    res.status(200).json(errors.length ? { errors } : { msg: `${networks.join(',')} status is ok`});
 }
 
 async function checkBlockchainBlocksFinalization(req, res) {
