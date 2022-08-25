@@ -1,51 +1,54 @@
-const { blockchains, blockchainNames, networkNames, accountGroups } = require('../config/blockchains');
+const { blockchainNames, networkNames, accountGroups, decimals } = require('../config/blockchains');
 const cacheService = require('./cacheService');
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
 const getClient = require('../../db/db');
+const { toFloat } = require("../lib/utils");
 const SEPARATOR = ',';
 
-async function checkAccountsBalances(req, res) {  
-  try {
-    const { query } = req;    
-    const blockchains = splitParams(query.blockchains);
-    validateBlockchains(blockchains);
-    const networks = splitParams(query.networks);
-    validateNetworksNames(networks);
-    const groups = splitParams(query.groups);
-    validateGroups(groups);
-    const accounts = cacheService.getAccounts();
-    const addresses = splitParams(query.addresses);
-    validateAddresses(addresses, accounts);
-    
-    let belowMinAccounts = []
-    accounts.forEach(account => {
-        if (
-          blockchains.includes(account.blockchain)
-          && (networks? networks.includes(account.network): true)
-          && (groups? groups.includes(account.group): true)
-          && (addresses? addresses.includes(account.address): true)
-          && account.balance.lt(account.minBalance)
-        ) {
-          belowMinAccounts.push(account);
-        }
-      });
+async function checkAccountsBalances(req, res) {
+  const { query } = req;
+  let accounts;
+  let blockchains;
+  let networks;
+  let groups;
+  let addresses;  
 
-    if (belowMinAccounts.length) {
-      res.json({
-        msg: "The following accounts have below the minimum balances",
-        accounts: belowMinAccounts
-      })
-    } else {
-      res.send({
-        msg: "All accounts are good",
-      });
-    }
+  try {
+    blockchains = splitParams(query.blockchains);
+    validateBlockchains(blockchains);
+    networks = splitParams(query.networks);
+    validateNetworksNames(networks);
+    groups = splitParams(query.groups);
+    validateGroups(groups);
+    accounts = cacheService.getAccounts();
+    addresses = splitParams(query.addresses);
+    validateAddresses(addresses, accounts);
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       msg: error.message,
     });
   }
+    
+  let errors = [];
+  let validatedAccountsNumber = 0;
+  accounts.forEach(account => {
+    if (
+      blockchains.includes(account.blockchain)
+      && (networks? networks.includes(account.network): true)
+      && (groups? groups.includes(account.group): true)
+      && (addresses? addresses.includes(account.address): true)
+    ) {
+      ++validatedAccountsNumber;
+      if (account.balance.lt(account.minBalance)) {
+        let accountBalance = toFloat(account.balance, decimals[account.tokenSymbol]);
+        let accountMinBalance = toFloat(account.minBalance, decimals[account.tokenSymbol]);
+        errors.push(`${account.blockchain}:${account.network} account ${account.address} has balance ${accountBalance} ${account.tokenSymbol} below the ${accountMinBalance} ${account.tokenSymbol} threshold`)
+      }      
+    }
+  });
+
+  res.json(errors.length ? { errors } : { msg: `Validated ${validatedAccountsNumber} account(s)` });
 }
 
 function validateBlockchains(blockchains) {
