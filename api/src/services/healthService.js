@@ -1,4 +1,4 @@
-const { blockchainNames, networkNames, accountGroups, decimals } = require('../config/blockchains');
+const { blockchains, blockchainNames, networkNames, accountGroups, decimals } = require('../config/blockchains');
 const cacheService = require('./cacheService');
 const cereNetworkService = require('./cereNetworkService');
 const ethNetworkService = require('./ethNetworkService');
@@ -8,26 +8,21 @@ const SEPARATOR = ',';
 
 async function checkAccountsBalances(req, res) {
   const { query } = req;
-  let accounts;
-  let blockchains;
-  let networks;
-  let groups;
-  let addresses;  
+  const blockchains = splitParams(query.blockchains);
+  const networks = splitParams(query.networks);
+  const groups = splitParams(query.groups);
+  const addresses = splitParams(query.addresses);
+  const accounts = cacheService.getAccounts();
+  
+  let validationErrors = [
+    ...validateBlockchains(blockchains),
+    ...validateNetworks(networks),
+    ...validateGroups(groups),
+    ...validateAddresses(addresses, accounts)
+  ];
 
-  try {
-    blockchains = splitParams(query.blockchains);
-    validateBlockchains(blockchains);
-    networks = splitParams(query.networks);
-    validateNetworksNames(networks);
-    groups = splitParams(query.groups);
-    validateGroups(groups);
-    accounts = cacheService.getAccounts();
-    addresses = splitParams(query.addresses);
-    validateAddresses(addresses, accounts);
-  } catch (error) {
-    return res.status(400).json({
-      msg: error.message,
-    });
+  if (validationErrors.length) {
+    return res.status(400).json({ msg: validationErrors });
   }
     
   let errors = [];
@@ -51,63 +46,6 @@ async function checkAccountsBalances(req, res) {
   res.json(errors.length ? { errors } : { msg: `Validated ${validatedAccountsNumber} account(s)` });
 }
 
-function validateBlockchains(blockchains) {
-  if (!blockchains) {
-    throw new Error('"blockchains" param is required')
-  }
-  
-  const supportedBlockchains = Object.values(blockchainNames);
-  blockchains.forEach(blockchain => {
-    if (!supportedBlockchains.includes(blockchain)) {
-      throw new Error(`Incorrect "blockchains" param value "${blockchain}"`);
-    }
-  });
-}
-
-function validateNetworksNames(networks){
-  if (networks) {
-    const supportedNetworks = Object.values(networkNames);
-    networks.forEach(network => {
-      if (!supportedNetworks.includes(network)) {
-        throw new Error(`Incorrect "networks" param value "${network}"`);
-      }
-    });
-  }
-}
-
-function validateGroups(groups) {
-  if (groups) {
-    const supportedGroups = Object.values(accountGroups);
-    groups.forEach(group => {
-      if (!supportedGroups.includes(group)) {
-        throw new Error(`Incorrect "groups" param value "${group}"`);
-      }
-    });
-  }
-}
-
-function validateAddresses(addresses, accounts) {
-  if (addresses) {
-    addresses.forEach(address => {
-      if (!accounts.find(account => account.address === address)) {
-        throw new Error(`Address "${address}" doesn't exist`);
-      }
-    })
-  }
-}
-
-function validateNoEmptyFields(fields) {
-  for (var name in fields) {
-    if (!fields[name] || !fields[name].length) {
-      throw new Error(`Field "${name}" is empty`);
-    }
-  }  
-}
-
-function splitParams(params) {
-  return params && params.split(SEPARATOR)
-}
-
 async function liveness(req, res) {
   res.status(200).json({
     msg: 'Liveness probe is ok',
@@ -116,75 +54,75 @@ async function liveness(req, res) {
 
 async function readiness(req, res) {
   let errors = [];
+  let client;
+  try {
+    client = await getClient();
+  } catch (error) {
+    console.error(error);
+    errors.push(`Unable to connect to database:${err.message}`);
+  } finally {
+    client?.end();
+  }
+
+  if (!cacheService.initialized()) {
+    errors.push('Cache service is not initialized yet');
+  }
+
+  if (!cereNetworkService.initialized()) {
+    errors.push('Cere network service is not initialized yet');
+  }
+
+  if (!ethNetworkService.initialized()) {
+    errors.push('Ethereum network service is not initialized yet');
+  }
   
-    let client;
-    try {
-      client = await getClient();      
-    } catch (error) {
-      console.error(error);
-      errors.push(`Unable to connect to database:${err.message}`);
-    } finally {
-      client?.end();
-    }
-  
-    if (!cacheService.initialized()) {
-      errors.push('Cache service is not initialized yet');
-    }
-  
-    if (!cereNetworkService.initialized()) {
-      errors.push('Cere network service is not initialized yet');
-    }
-  
-    if (!ethNetworkService.initialized()) {
-      errors.push('Ethereum network service is not initialized yet');
-    }
-    
-    errors.length
-      ? res.status(503).json({msg: errors})
-      : res.status(200).json({msg: 'Readiness probe is ok'});
+  errors.length
+    ? res.status(503).json({msg: errors})
+    : res.status(200).json({msg: 'Readiness probe is ok'});
 }
 
 async function checkBlockchainHealth(req, res) {
-    const { query } = req;
-    const networks = splitParams(query.networks);
-    let errors = [];
-    
-    try {
-      validateNoEmptyFields({networks});
-      validateNetworksNames(networks);
-    } catch (error) {
-      return res.status(400).json({
-        msg: error.message,
-      });
+  const { query } = req;
+  let networks = splitParams(query.networks);
+  
+  if (networks) {
+    const validationErrors = validateNetworks(networks);
+    if (validationErrors.length) {
+      return res.status(400).json({msg: validationErrors });
     }
+  } else {
+    networks = Object.values(networkNames);
+  }
+  
 
-    await Promise.all(networks.map(async network => {
-      try {
-        await cereNetworkService.getHealth(network);
-      } catch (error) {
-        console.error(error);
-        errors.push(`Unable to connect to ${network} network`);
-      }
-    }));
+  let errors = [];
+  await Promise.all(networks.map(async network => {
+    try {
+      await cereNetworkService.getHealth(network);
+    } catch (error) {
+      console.error(error);
+      errors.push(`Unable to connect to ${network} network`);
+    }
+  }));
 
-    res.status(200).json(errors.length ? { errors } : { msg: `${networks.join(',')} status is ok`});
+  res.status(200).json(errors.length ? { errors } : { msg: `${networks.join(',')} status is ok`});
 }
 
 async function checkBlockchainBlocksFinalization(req, res) {
   const { query } = req;
-  const networks = splitParams(query.networks);
+  let networks = splitParams(query.networks);
   const cereConfig = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
-  let errors = [];
-
-  try {
-    validateNoEmptyFields({networks});
-    validateNetworksNames(networks);
-  } catch (error) {
-    return res.status(400).json({
-      msg: error.message,
-    });
+  
+  if (networks) {
+    const validationErrors = validateNetworks(networks);
+    if (validationErrors.length) {
+      return res.status(400).json({msg: validationErrors });
+    }
+  } else {
+    networks = Object.values(networkNames);
   }
   
+  let errors = [];
   await Promise.all(
     networks.map(async network => {      
       const [best, finalized] = await Promise.all([
@@ -193,7 +131,7 @@ async function checkBlockchainBlocksFinalization(req, res) {
       ]);      
       const bestBlockNumberDiff = best - finalized;
       if (bestBlockNumberDiff > cereConfig.bestBlockNumberDiff) {
-        errors.push(`Network ${network} has ineffective best block finalization difference number: ${bestBlockNumberDiff}`);
+        errors.push(`${network} network best block finalization difference number ${bestBlockNumberDiff} below the ${cereConfig.bestBlockNumberDiff} threshold`);
       }
     })
   );
@@ -203,19 +141,20 @@ async function checkBlockchainBlocksFinalization(req, res) {
 
 async function checkBlockchainBlocksProducing(req, res) {
   const { query } = req;
-  const networks = splitParams(query.networks);
+  let networks = splitParams(query.networks);
   const cereConfig = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
-  let errors = [];
-
-  try {
-    validateNoEmptyFields({networks});
-    validateNetworksNames(networks);
-  } catch (error) {
-    return res.status(400).json({
-      msg: error.message,
-    });
+  
+  if (networks) {
+    const validationErrors = validateNetworks(networks);
+    if (validationErrors.length) {
+      return res.status(400).json({msg: validationErrors });
+    }
+  } else {
+    networks = Object.values(networkNames);
   }
   
+  
+  let errors = [];
   await Promise.all(
     networks.map(async network => {
       const { block } = await cereNetworkService.getLatestBlock(network);
@@ -225,12 +164,71 @@ async function checkBlockchainBlocksProducing(req, res) {
       ]);
       const timeDiff = lastTime - previousTime;
       if (timeDiff > cereConfig.blockTimeDiffMs) {
-        errors.push(`Network ${network} has ineffective block production time difference: ${timeDiff}`);
+        errors.push(`${network} network block production time difference ${timeDiff}ms below the ${cereConfig.blockTimeDiffMs}ms threshold`);
       }
     })
   );
 
   res.status(200).json(errors.length ? { errors } : { msg: `${networks.join(',')} block production time difference is ok`});
+}
+
+function validateBlockchains(blockchains) {
+  let errors = []
+  
+  if (!blockchains) {
+    errors.push(`"blockchains" param is required`);
+    return errors;
+  }
+  
+  const supportedBlockchains = Object.values(blockchainNames);
+  blockchains.forEach(blockchain => {
+    if (!supportedBlockchains.includes(blockchain)) {
+      errors.push(`Incorrect "blockchains" param value "${blockchain}"`);
+    }
+  });
+  return errors
+}
+
+function validateNetworks(networks) {
+  let errors = [];
+  if (networks && networks.length) {
+    const supportedNetworks = Object.values(networkNames);    
+    networks.forEach(network => {
+      if (!supportedNetworks.includes(network)) {
+        errors.push(`Incorrect "networks" param value "${network}"`);
+      }
+    });
+  }
+  return errors;
+}
+
+function validateGroups(groups) {
+  let errors = []
+  if (groups) {
+    const supportedGroups = Object.values(accountGroups);    
+    groups.forEach(group => {
+      if (!supportedGroups.includes(group)) {
+        errors.push(`Incorrect "groups" param value "${group}"`);
+      }
+    });    
+  }
+  return errors;
+}
+
+function validateAddresses(addresses, accounts) {
+  let errors = [];
+  if (addresses) {    
+    addresses.forEach(address => {
+      if (!accounts.find(account => account.address === address)) {
+        errors.push(`Address "${address}" doesn't exist`);
+      }
+    })    
+  }
+  return errors;
+}
+
+function splitParams(params) {
+  return params && params.split(SEPARATOR)
 }
 
 module.exports = {
