@@ -3,6 +3,9 @@
 ## vNext
 -
 
+## v0.21.0
+- [BE] Implemented network monitoring API
+
 ## v0.20.0
 - [BE] Moved blockchains config to `.env.default`
 - [BE] Implemented liveness/readiness probes API

@@ -7,11 +7,11 @@ function toFloat(amount, decimals) {
     return parseFloat(`${float.div}.${float.mod}`);
 }
 
-function toBaseUnits(amount, decimals) {
+function toBN(amount, decimals) {
     return (new BN(amount)).mul(base.pow(decimals));
 }
 
 module.exports = {
     toFloat,
-    toBaseUnits
+    toBN
 }
