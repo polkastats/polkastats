@@ -1,7 +1,10 @@
 # Cere Stats
 
 ## vNext
--
+- 
+
+## v0.22.0
+- [BE] Implemented all errors catch to avoid app crash
 
 ## v0.21.0
 - [BE] Implemented network monitoring API
