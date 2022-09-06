@@ -14,7 +14,7 @@ module.exports = {
       try {
         cache.accounts = await accountsService.get();
       } catch (err) {
-        err.message = `Failed to get accounts balances. ${err.message }`;
+        err.message = `Failed to get accounts balances. ${err.message}`;
         console.error(err);
       }
     }, cacheIntervalMs);
