@@ -11,7 +11,11 @@ module.exports = {
     console.log('Cache service initialized');
 
     setInterval(async () => {
-      cache.accounts = await accountsService.get();
+      try {
+        cache.accounts = await accountsService.get();
+      } catch (err) {
+        console.log(err);
+      }
     }, cacheIntervalMs);
   },
   getAccounts: ()=> cache.accounts,
