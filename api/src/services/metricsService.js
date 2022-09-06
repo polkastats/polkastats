@@ -10,15 +10,19 @@ const accountsBalancesMetric = new prom.Gauge({
 });
 
 module.exports = {
-  getAll: async (req, res) => {
-    const accounts = cacheService.getAccounts();
-    accounts.forEach(account => {
-      const { blockchain , network, name, address, tokenSymbol, group, balance } = account;
-      accountsBalancesMetric
-        .labels({ blockchain, network, name, address, tokenSymbol, group })
-        .set(toFloat(balance, decimals[tokenSymbol]));
-    });
-    res.set('Content-Type', prom.register.contentType);
-    res.end(await prom.register.metrics());
+  getAll: async (req, res, next) => {
+    try {
+      const accounts = cacheService.getAccounts();
+      accounts.forEach(account => {
+        const { blockchain , network, name, address, tokenSymbol, group, balance } = account;
+        accountsBalancesMetric
+          .labels({ blockchain, network, name, address, tokenSymbol, group })
+          .set(toFloat(balance, decimals[tokenSymbol]));
+      });
+      res.set('Content-Type', prom.register.contentType);
+      res.end(await prom.register.metrics());
+    } catch (err) {
+      next(err);
+    }    
   },
 };
