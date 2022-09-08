@@ -1,6 +1,9 @@
 # Cere Stats
 
 ## vNext
+- ...
+
+## v0.23.0
 - [FE] Updated the main metrics grid: removed accounts, split validators into active and waiting
 
 ## v0.22.0
