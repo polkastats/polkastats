@@ -71,16 +71,12 @@
       <div class="col-6 col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h4 class="mb-3 title">{{ $t('components.network.accounts') }}</h4>
-            <nuxt-link
-              v-b-tooltip.hover
-              to="/accounts"
-              title="Click to see accounts!"
-            >
-              <h6 class="d-inline-block">
-                {{ formatNumber(totalAccounts) }}
-              </h6>
-            </nuxt-link>
+            <h4 class="mb-3 title">
+              {{ $t('components.network.current_index') }}
+            </h4>
+            <h6 class="d-inline-block">
+              {{ formatNumber(currentIndex) }}
+            </h6>
           </div>
         </div>
       </div>
@@ -139,10 +135,10 @@
         <div class="card h-100">
           <div class="card-body">
             <h4 class="mb-3 title">
-              {{ $t('components.network.current_index') }}
+              {{ $t('components.network.active_validators') }}
             </h4>
             <h6 class="d-inline-block">
-              {{ formatNumber(currentIndex) }}
+              {{ formatNumber(totalValidators) }}
             </h6>
           </div>
         </div>
@@ -151,10 +147,9 @@
         <div class="card h-100">
           <div class="card-body">
             <h4 class="mb-3 title">
-              {{ $t('components.network.validators') }}
+              {{ $t('components.network.waiting_validators') }}
             </h4>
             <h6 class="d-inline-block">
-              {{ formatNumber(totalValidators) }} /
               {{ formatNumber(totalWaiting) }}
             </h6>
           </div>

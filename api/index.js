@@ -321,6 +321,14 @@ app.use('/', (req, res) => {
   })
 });
 
+app.use((err, req, res, next) => {
+  err.message = `Failed to process ${req.path} request. ${err.message}`;
+  console.error(err);
+  res.status(500).json({
+    msg: 'Unexpected server error'
+  });
+});
+
 // Start app
 app.listen(port, async () => {
   console.log(`PolkaStats API is listening on port ${port}.`);
