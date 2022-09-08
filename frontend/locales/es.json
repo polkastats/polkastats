@@ -21,6 +21,8 @@
       "transfers": "Transferencias",
       "nominators": "Nominadores",
       "validators": "Validadores",
+      "active_validators": "Validadores activos",
+      "waiting_validators": "Validadores en espera",
       "signedTransactions": "Transacción total",
       "transactionsFees": "Tarifas de transacción totales"
     },
