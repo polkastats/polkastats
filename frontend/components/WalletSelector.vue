@@ -102,7 +102,7 @@ export default {
                 for (const account of accounts) {
                   const address = encodeAddress(
                     account.address,
-                    config.addressPrefix
+                    config.ss58Format
                   )
                   const balances = await this.getAccountBalances(address)
                   const role = await this.getAddressRole(address)
