@@ -70,7 +70,7 @@
           <p class="mb-0">
             {{ formatAmount(data.item.amount) }}
             <FIATConversion
-              :units="data.item.amount"
+              :units="data.item.amount.toString()"
               :timestamp="data.item.timestamp"
             />
           </p>
