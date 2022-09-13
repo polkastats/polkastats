@@ -20,7 +20,7 @@ export const processLog = async (
 ): Promise<void> => {
   const { type } = log;
   // this can change in the future...
-  const [[engine, logData]] =
+  const [[engine, logData]]: any =
     type === 'RuntimeEnvironmentUpdated'
       ? [[null, null]]
       : Object.values(log.toHuman());
