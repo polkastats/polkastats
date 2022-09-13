@@ -6,14 +6,14 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
-    "start": "node built/index.js",
+    "start": "tsc && node built/index.js",
     "tsc": "tsc",
     "lint": "npx eslint . --ext .js,.ts",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@polkadot/api": "^8.12.2",
+    "@polkadot/api": "^9.3.3",
     "@sentry/node": "^6.17.9",
     "@sentry/tracing": "^6.17.9",
     "axios": "^0.21.1",

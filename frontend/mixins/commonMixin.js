@@ -148,5 +148,10 @@ export default {
         .toLowerCase()
         .replace(/([-_])([a-z])/g, (_match, _p1, p2) => p2.toUpperCase())
     },
+    generateUniqueID: (idLength) => {
+      return [...Array(idLength).keys()]
+        .map((elem) => Math.random().toString(36).substr(2, 1))
+        .join('')
+    },
   },
 }

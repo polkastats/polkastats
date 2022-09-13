@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "main": "built/index.js",
   "scripts": {
-    "start": "node built/index.js",
+    "start": "tsc && node built/index.js",
     "tsc": "tsc",
     "lint": "npx eslint . --ext .js,.ts",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
@@ -20,7 +20,7 @@
     "docker:postgres:restore": "docker stop backend_crawler_1 && cat polkastats_dump.sql | docker exec -i backend_postgres_1 psql -U polkastats -d polkastats && docker restart backend_postgres_1 && docker start backend_crawler_1"
   },
   "dependencies": {
-    "@polkadot/api": "^8.12.2",
+    "@polkadot/api": "^9.3.3",
     "@sentry/node": "^6.17.9",
     "@sentry/tracing": "^6.17.9",
     "axios": "^0.21.1",
