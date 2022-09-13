@@ -61,8 +61,8 @@ export default {
     '@nuxtjs/apollo',
     // https://github.com/nuxt-community/fontawesome-module
     '@nuxtjs/fontawesome',
-    // https://www.npmjs.com/package/nuxt-clipboard2
-    'nuxt-clipboard2',
+    // https://github.com/chantouchsek/nuxt-clipboard
+    'nuxt-clipboard',
     // https://www.npmjs.com/package/cookie-universal-nuxt
     ['cookie-universal-nuxt', { alias: 'cookies' }],
     // https://github.com/nuxt-community/redirect-module
@@ -114,6 +114,9 @@ export default {
   },
   googleAnalytics: {
     id: config.googleAnalytics,
+  },
+  clipboard: {
+    autoSetContainer: true,
   },
   redirect: [{ from: '^/intention/(.*)$', to: '/validator/$1' }],
 
