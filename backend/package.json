@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "main": "built/index.js",
   "scripts": {
-    "start": "node built/index.js",
+    "start": "tsc && node built/index.js",
     "tsc": "tsc",
     "lint": "npx eslint . --ext .js,.ts",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
