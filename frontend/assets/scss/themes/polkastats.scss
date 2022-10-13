@@ -775,3 +775,12 @@ section .section-title {
 .fiat-conversion-short:hover .fa-dollar-sign {
   color: white;
 }
+
+.dropdown-item {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 0.9rem;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+  color: rgba(0, 0, 0, 0.9);
+}

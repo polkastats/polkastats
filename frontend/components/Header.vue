@@ -113,6 +113,13 @@
                 />
                 POLKADOT
               </b-dropdown-item>
+              <b-dropdown-item href="https://xx.polkastats.io">
+                <img
+                  class="network-logo"
+                  src="/img/networks/icons/xx-network.svg"
+                />
+                XX NETWORK
+              </b-dropdown-item>
             </b-nav-item-dropdown>
             <Languages />
           </b-navbar-nav>
