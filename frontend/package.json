@@ -32,7 +32,7 @@
     "@nuxtjs/axios": "^5.12.5",
     "@nuxtjs/fontawesome": "^1.1.2",
     "@nuxtjs/redirect-module": "^0.3.1",
-    "@polkadot/api": "^5.9.1",
+    "@polkadot/api": "7.15.2-15",
     "@polkadot/keyring": "^7.3.1",
     "@polkadot/util": "^7.3.1",
     "@polkadot/vue-identicon": "^0.85.3",
