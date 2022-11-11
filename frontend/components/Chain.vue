@@ -256,22 +256,22 @@ export default {
         `,
         result({ data }) {
           this.totalExtrinsics =
-            data.total.find((row) => row.name === 'extrinsics').count || 0
+            data.total.find((row) => row.name === 'extrinsics')?.count || 0
           this.totalSignedExtrinsics =
-            data.total.find((row) => row.name === 'signed_extrinsics').count ||
+            data.total.find((row) => row.name === 'signed_extrinsics')?.count ||
             0
           this.totalEvents =
-            data.total.find((row) => row.name === 'events').count || 0
+            data.total.find((row) => row.name === 'events')?.count || 0
           this.totalValidators =
             data.total.find((row) => row.name === 'active_validator_count')
-              .count || 0
+              ?.count || 0
           this.totalWaiting =
             data.total.find((row) => row.name === 'waiting_validator_count')
-              .count || 0
+              ?.count || 0
           this.totalNominators =
-            data.total.find((row) => row.name === 'nominator_count').count || 0
+            data.total.find((row) => row.name === 'nominator_count')?.count || 0
           this.minStake =
-            data.total.find((row) => row.name === 'minimum_stake').count || 0
+            data.total.find((row) => row.name === 'minimum_stake')?.count || 0
         },
       },
       accounts: {
