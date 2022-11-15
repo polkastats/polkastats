@@ -112,7 +112,7 @@
           /></a>
           <span class="mx-2">|</span>
           <a
-            href="https://github.com/Colm3na/polkastats-ng"
+            href="https://github.com/polkastats/polkastats"
             aria-label="View source on GitHub"
             title="View source code on GitHub"
             target="_blank"
@@ -124,7 +124,7 @@
       </div>
     </footer>
     <a
-      href="https://github.com/Colm3na/polkastats-ng"
+      href="https://github.com/polkastats/polkastats"
       class="github-corner"
       aria-label="View source on GitHub"
       title="View source code on GitHub"
