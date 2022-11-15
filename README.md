@@ -43,7 +43,7 @@ Clone Polkastats-ng repository and install js dependencies:
 
 ```
 cd /usr/local/
-git clone https://github.com/Colm3na/polkastats-ng.git
+git clone https://github.com/polkastats/polkastats.git
 cd polkastats-ng
 yarn
 ```
