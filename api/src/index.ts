@@ -115,7 +115,7 @@ app.get('/api/v1/batsignal/system.remarks', async (_req, res) => {
       JSON.stringify(councilMembers.concat(technicalCommitteeMembers)),
     );
     const timestamp = Math.floor(Date.now() / 1000 - 28800); // last 8h
-    
+
     const query = `
       SELECT
         block_number,
@@ -267,7 +267,6 @@ app.get('/api/v1/batsignal/council-events', async (_req, res) => {
 
 // transfers in the last 30 days
 app.get('/api/v1/charts/transfers', async (_req, res) => {
-
   const history = 30;
   const timestamps = [];
   const timePeriods = [];
