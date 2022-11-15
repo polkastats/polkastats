@@ -208,14 +208,14 @@ export const harvestBlock = async (
     const timestamp =
       blockNumber !== 0
         ? parseInt(
-          block.extrinsics
-            .find(
-              ({ method: { section, method } }) =>
-                section === 'timestamp' && method === 'set',
-            )
-            .args[0].toString(),
-          10,
-        )
+            block.extrinsics
+              .find(
+                ({ method: { section, method } }) =>
+                  section === 'timestamp' && method === 'set',
+              )
+              .args[0].toString(),
+            10,
+          )
         : 0;
 
     // Totals
@@ -359,7 +359,16 @@ export const harvestBlock = async (
         loggerOptions,
       ),
       // Update account info for addresses found in events (only for block listener)
-      doUpdateAccountsInfo ? updateAccountsInfo(api, client, blockNumber, timestamp, loggerOptions, blockEvents) : false,
+      doUpdateAccountsInfo
+        ? updateAccountsInfo(
+            api,
+            client,
+            blockNumber,
+            timestamp,
+            loggerOptions,
+            blockEvents,
+          )
+        : false,
     ]);
   } catch (error) {
     logger.error(loggerOptions, `Error adding block #${blockNumber}: ${error}`);
@@ -393,7 +402,14 @@ export const harvestBlocksSeq = async (
 
   for (const blockNumber of blocks) {
     const blockStartTime = Date.now();
-    await harvestBlock(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions);
+    await harvestBlock(
+      config,
+      api,
+      client,
+      blockNumber,
+      doUpdateAccountsInfo,
+      loggerOptions,
+    );
     const blockEndTime = new Date().getTime();
 
     // Cook some stats
@@ -456,7 +472,14 @@ export const harvestBlocks = async (
     const chunkStartTime = Date.now();
     await Promise.all(
       chunk.map((blockNumber: number) =>
-        harvestBlock(config, api, client, blockNumber, doUpdateAccountsInfo, loggerOptions),
+        harvestBlock(
+          config,
+          api,
+          client,
+          blockNumber,
+          doUpdateAccountsInfo,
+          loggerOptions,
+        ),
       ),
     );
     const chunkEndTime = new Date().getTime();
@@ -544,7 +567,9 @@ export const updateFinalizedBlock = async (
         loggerOptions,
         `Updated finalized block #${blockNumber} (${shortHash(
           blockHash.toString(),
-        )}) in ${((endTime - startTime) / 1000).toFixed(config.statsPrecision)}s`,
+        )}) in ${((endTime - startTime) / 1000).toFixed(
+          config.statsPrecision,
+        )}s`,
       );
     }
   } catch (error) {
