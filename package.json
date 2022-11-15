@@ -1,10 +1,10 @@
 {
   "private": true,
-  "name": "polkastats-ng",
+  "name": "polkastats",
   "description": "Polkastats block explorer",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Colm3na/polkastats-ng.git"
+    "url": "git+https://github.com/polkastats/polkastats.git"
   },
   "keywords": [
     "blockchain",
@@ -17,9 +17,9 @@
   "author": "Mario Pino Uceda",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Colm3na/polkastats-ng/issues"
+    "url": "https://github.com/polkastats/polkastats/issues"
   },
-  "homepage": "https://github.com/Colm3na/polkastats-ng#readme",
+  "homepage": "https://github.com/polkastats/polkastats#readme",
   "workspaces": [
     "frontend",
     "backend",
