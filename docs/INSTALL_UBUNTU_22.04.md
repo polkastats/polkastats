@@ -1,32 +1,27 @@
-# PolkaStats
-
-Polkastats is a block explorer for [Polkadot](https://polkadot.network/), [Kusama](https://kusama.network/) and other blockchains based on [Substrate](https://substrate.dev/) framework.
-
-Check it out live versions:
-
-- Polkadot: [polkastats.io](https://polkastats.io)
-- Kusama: [kusama.polkastats.io](https://kusama.polkastats.io)
+Support for Ubuntu 22.04 is not ready yet (Work In Progress)!
 
 ## Install
 
 ### Dependencies
 
-In Ubuntu 20.04 server you can do:
+In Ubuntu 22.04 server you can do:
 
 ```
-apt update
-apt upgrade
-apt install git build-essential apt-transport-https ca-certificates curl software-properties-common libpq-dev
+apt update && apt upgrade -y && apt auto-remove
+apt install build-essential apt-transport-https ca-certificates software-properties-common libpq-dev
 
 # docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt update
 apt install docker-ce
+systemctl status docker
 
 # docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
+mkdir -p ~/.docker/cli-plugins/
+curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+chmod +x ~/.docker/cli-plugins/docker-compose
+docker compose version
 
 # node v16
 curl -fsSL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
@@ -44,7 +39,7 @@ Clone Polkastats repository and install js dependencies:
 ```
 cd /usr/local/
 git clone https://github.com/polkastats/polkastats.git
-cd polkastats-ng
+cd polkastats
 yarn
 ```
 
