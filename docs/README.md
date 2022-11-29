@@ -14,8 +14,7 @@ Check it out live versions:
 In Ubuntu 20.04 server you can do:
 
 ```
-apt update
-apt upgrade
+apt update && apt upgrade -y && apt auto-remove
 apt install git build-essential apt-transport-https ca-certificates curl software-properties-common libpq-dev
 
 # docker
@@ -44,7 +43,7 @@ Clone Polkastats repository and install js dependencies:
 ```
 cd /usr/local/
 git clone https://github.com/polkastats/polkastats.git
-cd polkastats-ng
+cd polkastats
 yarn
 ```
 
