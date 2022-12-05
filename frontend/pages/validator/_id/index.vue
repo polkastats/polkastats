@@ -214,22 +214,6 @@
               />
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6 mb-5">
-              <Governance
-                :council-backing="validator.councilBacking"
-                :active="validator.activeInGovernance"
-                :rating="validator.governanceRating"
-              />
-            </div>
-            <div class="col-md-6 mb-5">
-              <Thousand
-                v-if="validator.includedThousandValidators"
-                :account-id="validator.stashAddress"
-                :thousand="validator.thousandValidator"
-              />
-            </div>
-          </div>
         </b-tab>
         <b-tab title="Charts">
           <div class="row">
@@ -285,7 +269,6 @@ import Slashes from '@/components/validator/metrics/Slashes.vue'
 import Nominators from '@/components/validator/metrics/Nominators.vue'
 import EraPoints from '@/components/validator/metrics/EraPoints.vue'
 import Commission from '@/components/validator/metrics/Commission.vue'
-import Thousand from '@/components/validator/metrics/Thousand.vue'
 import RelativePerformanceChart from '@/components/validator/charts/RelativePerformanceChart.vue'
 import EraPointsChart from '@/components/validator/charts/EraPointsChart.vue'
 import PayoutsChart from '@/components/validator/charts/PayoutsChart.vue'
@@ -301,7 +284,6 @@ export default {
     Nominators,
     EraPoints,
     Commission,
-    Thousand,
     RelativePerformanceChart,
     EraPointsChart,
     PayoutsChart,
