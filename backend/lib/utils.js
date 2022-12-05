@@ -295,31 +295,31 @@ module.exports = {
     logger.debug(loggerOptions, `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`);
   },
   processLog: async (client, blockNumber, log, index, timestamp, loggerOptions) => {
-    const { type } = log;
-    const [[engine, data]] = Object.values(log.toJSON());
-    const sql = `INSERT INTO log (
-        block_number,
-        log_index,
-        type,
-        engine,
-        data,
-        timestamp
-      ) VALUES (
-        '${blockNumber}',
-        '${index}',
-        '${type}',
-        '${engine}',
-        '${data}',
-        '${timestamp}'
-      )
-      ON CONFLICT ON CONSTRAINT log_pkey 
-      DO NOTHING;
-      ;`;
     try {
+      const { type } = log;
+      const [[engine, data]] = Object.values(log.toJSON());
+      const sql = `INSERT INTO log (
+          block_number,
+          log_index,
+          type,
+          engine,
+          data,
+          timestamp
+        ) VALUES (
+          '${blockNumber}',
+          '${index}',
+          '${type}',
+          '${engine}',
+          '${data}',
+          '${timestamp}'
+        )
+        ON CONFLICT ON CONSTRAINT log_pkey 
+        DO NOTHING;
+        ;`;
       await client.query(sql);
       logger.debug(loggerOptions, `Added log ${blockNumber}-${index}`);
     } catch (error) {
-      logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${JSON.stringify(error)}`);
+      logger.error(loggerOptions, `Error adding log ${blockNumber}-${index}: ${log}, error: ${JSON.stringify(error)}`);
     }
   },
   getExtrinsicSuccess: (index, blockEvents) => {
