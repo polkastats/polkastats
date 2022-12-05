@@ -292,7 +292,6 @@ import PayoutsChart from '@/components/validator/charts/PayoutsChart.vue'
 import StakeChart from '@/components/validator/charts/StakeChart.vue'
 import CommissionChart from '@/components/validator/charts/CommissionChart.vue'
 import { network } from '@/frontend.config.js'
-import Governance from '@/components/Ranking.vue'
 
 export default {
   components: {
@@ -308,7 +307,6 @@ export default {
     PayoutsChart,
     StakeChart,
     CommissionChart,
-    Governance,
   },
   mixins: [commonMixin],
   data() {
