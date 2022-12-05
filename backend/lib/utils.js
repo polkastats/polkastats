@@ -297,7 +297,7 @@ module.exports = {
   processLog: async (client, blockNumber, log, index, timestamp, loggerOptions) => {
     try {
       const { type } = log;
-      const [[engine, data]] = Object.values(log.toJSON());
+      const [[engine, data]] = type === 'RuntimeEnvironmentUpdated' ? [[null, null]] : Object.values(log.toJSON());
       const sql = `INSERT INTO log (
           block_number,
           log_index,
