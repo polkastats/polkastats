@@ -1,23 +1,24 @@
 const cereTypes = {
-  ChainId: 'u8',
-  DepositNonce: 'u64',
-  ResourceId: '[u8; 32]',
-  ProposalStatus: {
-    _enum: ['Initiated', 'Approved', 'Rejected']
+  "ChainId": "u8",
+  "DepositNonce": "u64",
+  "ResourceId": "[u8; 32]",
+  "ProposalStatus": {
+    "_enum": ["Initiated", "Approved", "Rejected"]
   },
-  ProposalVotes: {
-    votes_for: 'Vec<AccountId>',
-    votes_against: 'Vec<AccountId>',
-    status: 'ProposalStatus',
-    expiry: 'BlockNumber'
+  "ProposalVotes": {
+    "votes_for": "Vec<AccountId>",
+    "votes_against": "Vec<AccountId>",
+    "status": "ProposalStatus",
+    "expiry": "BlockNumber"
   },
-  TokenId: 'u256',
-  Erc721Token: {
-    id: 'TokenId',
-    metadata: 'Vec<u8>'
+  "TokenId": "u256",
+  "Erc721Token": {
+    "id": "TokenId",
+    "metadata": "Vec<u8>"
   },
-  Address: 'IndicesLookupSource',
-  LookupSource: 'IndicesLookupSource'
+  "Address": "MultiAddress",
+  "LookupSource": "MultiAddress",
+  "AccountInfo": "AccountInfoWithDualRefCount"
 };
 
 module.exports = cereTypes;

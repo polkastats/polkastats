@@ -3,6 +3,9 @@
 ## vNext
 - ...
 
+## v0.24.0
+- [FE] Added support of the Cere node v2.32.0
+
 ## v0.23.0
 - [FE] Updated the main metrics grid: removed accounts, split validators into active and waiting
 
@@ -121,3 +124,5 @@
 
 - Adapted for Cere Network.
 - Added API to add and get EDP info.
+                     
+TMP

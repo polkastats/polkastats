@@ -219,7 +219,7 @@ const addNewFeaturedValidator = async (client, ranking) => {
     );
     logger.debug(loggerOptions, `New featured validator added: ${featured.name} ${featured.stashAddress}`);
   } else {
-    logger.debug(loggerOptions, `No candidates to be added`);
+    logger.debug(loggerOptions, 'No candidates to be added');
   }
 };
 
@@ -743,7 +743,7 @@ const crawler = async (delayedStart) => {
       }
     }
     nominatorStakes.sort((a, b) => ((a.unwrap().lt(b.unwrap())) ? -1 : 1));
-    const minimumStake = nominatorStakes[0];
+    const minimumStake = nominatorStakes.length ? nominatorStakes[0] : 0;
 
     logger.debug(loggerOptions, `${activeValidatorCount} active validators`);
     logger.debug(loggerOptions, `${waitingValidatorCount} waiting validators`);
