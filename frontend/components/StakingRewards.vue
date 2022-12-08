@@ -163,7 +163,7 @@ export default {
               order_by: { block_number: desc }
               where: {
                 section: { _eq: "staking" }
-                method: { _eq: "Reward" }
+                method: { _like: "Reward%" }
                 data: { _like: $accountId }
               }
             ) {
