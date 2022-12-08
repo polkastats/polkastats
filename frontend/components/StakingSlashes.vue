@@ -163,7 +163,7 @@ export default {
               order_by: { block_number: desc }
               where: {
                 section: { _eq: "staking" }
-                method: { _eq: "Slash" }
+                method: { _like: "Slash%" }
                 phase: { _eq: $phase }
                 data: { _like: $accountId }
               }
