@@ -3,6 +3,9 @@
 ## vNext
 - ...
 
+## v0.24.1
+- [FE] Updated `staking` methods
+
 ## v0.24.0
 - [FE] Added support of the Cere node v2.32.0
 
