@@ -134,7 +134,7 @@
         </template>
       </b-modal>
     </b-navbar>
-    <CoinZillaBanner />
+    <!-- <CoinZillaBanner /> -->
   </div>
 </template>
 
