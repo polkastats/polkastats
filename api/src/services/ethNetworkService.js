@@ -5,6 +5,7 @@ const erc20TokenAbi = require("../config/contracts/erc20TokenAbi.json");
 const { blockchainNames } = require("../config/blockchains");
 const networkParams = new Map();
 let initialized = false;
+const contracts = new Map();
 
 async function init() {
   const promises = [];
@@ -54,10 +55,18 @@ module.exports = {
   getErc20Balance: async ({ blockchain, network, erc20TokenAddress, address }) => {
     const providerId = getProviderId(blockchain, network);
     const { web3 } = networkParams.get(providerId);
-    const contract = new web3.eth.Contract(
-      erc20TokenAbi,
-      erc20TokenAddress
-    );
+    const contractKey = `${blockchain}_${network}_${erc20TokenAddress}`;
+    const contractCreated = contracts.has(contractKey);
+    
+    const contract = 
+      contractCreated ?
+      contracts.get(contractKey) :
+      new web3.eth.Contract(
+        erc20TokenAbi,
+        erc20TokenAddress
+      );
+
+    if(!contractCreated) contracts.set(contractKey, contract);
 
     return new BN(await contract.methods.balanceOf(address).call());
   },
