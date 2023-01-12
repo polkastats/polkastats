@@ -6,7 +6,7 @@ const { spawn } = require('child_process');
 const { StatusCodes } = require('http-status-codes');
 const { wait, getEnabledCrawlerNames, getEnabledCrawlers } = require('./lib/utils');
 const config = require('./backend.config');
-const Status = require('./lib/status');
+const { Status, statuses: appStatuses } = require('./lib/status');
 
 const app = express();
 const logger = pino();
@@ -43,7 +43,7 @@ const runCrawler = async ({ crawler, name }) => {
   });
   child.on('spawn', () => {
     logger.info('Process spawned');
-    status.set(name, 'healthy');
+    status.set(name, appStatuses.HEALTHY);
   });
 };
 
