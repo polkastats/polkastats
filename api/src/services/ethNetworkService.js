@@ -66,7 +66,7 @@ module.exports = {
         erc20TokenAddress
       );
 
-    if(!contractCreated) contracts.set(contractKey, contract);
+    if (!contractCreated) contracts.set(contractKey, contract);
 
     return new BN(await contract.methods.balanceOf(address).call());
   },

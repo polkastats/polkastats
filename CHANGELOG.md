@@ -4,7 +4,7 @@
 - ...
 
 ## v0.24.2
-- [FE] Fix memory leak issue
+- [BE] Fix memory leak issue
 
 ## v0.24.1
 - [FE] Updated `staking` methods
