@@ -13,6 +13,7 @@ module.exports = {
     port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
   },
   logLevel: process.env.LOG_LEVEL || 'info', // Use 'debug' to see DEBUG level messages
+  spawnTimeoutMs: parseInt(process.env.SPAWN_TIMEOUT_MS, 10) || 5000,
   crawlers: [
     {
       name: 'blockListener',
