@@ -3,6 +3,9 @@
 ## vNext
 - ...
 
+## v0.24.2
+- [BE] Fix memory leak issue
+
 ## v0.24.1
 - [FE] Updated `staking` methods
 
