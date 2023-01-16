@@ -129,7 +129,7 @@ async function checkBlockchainHealth(req, res, next) {
   }
 }
 
-async function checkBlockchainBlocksFinalization(req, res) {
+async function checkBlockchainBlocksFinalization(req, res, next) {
   try {
     const { query } = req;
     let networks = splitParams(query.networks);
@@ -167,7 +167,7 @@ async function checkBlockchainBlocksFinalization(req, res) {
   }
 }
 
-async function checkBlockchainBlocksProducing(req, res) {
+async function checkBlockchainBlocksProducing(req, res, next) {
   try {
     const { query } = req;
     let networks = splitParams(query.networks);
