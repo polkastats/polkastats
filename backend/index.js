@@ -6,7 +6,7 @@ const { spawn } = require('child_process');
 const { StatusCodes } = require('http-status-codes');
 const { wait, getEnabledCrawlerNames, getEnabledCrawlers } = require('./lib/utils');
 const config = require('./backend.config');
-const Status = require('./lib/status');
+const { Status, statuses: appStatuses } = require('./lib/status');
 
 const app = express();
 const logger = pino();
@@ -27,6 +27,7 @@ const runCrawler = async ({ crawler, name }) => {
   child.on('exit', (exitCode, signal) => {
     logger.warn(`Crawler ${crawler} exit with code: ${exitCode} and signal: ${signal}`);
     status.set(name, `exit code ${exitCode}, signal ${signal}`);
+    setTimeout(() => runCrawler({ crawler, name }), config.spawnTimeoutMs);
   });
   child.on('uncaughtException', (error) => {
     logger.warn(`Crawler ${crawler} exit with uncaughtException: ${error}`);
@@ -39,6 +40,10 @@ const runCrawler = async ({ crawler, name }) => {
   child.on('SIGUSR2', () => {
     logger.warn(`Crawler ${crawler} exit SIGUSR2`);
     status.set(name, 'exit SIGUSR2');
+  });
+  child.on('spawn', () => {
+    logger.info('Process spawned');
+    status.set(name, appStatuses.HEALTHY);
   });
 };
 
