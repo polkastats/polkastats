@@ -3,6 +3,9 @@
 ## vNext
 - ...
 
+## v0.24.3
+- [BE] Add missing `next` functions to prevent Stats API crash
+
 ## v0.24.2
 - [BE] Fix memory leak issue
 
