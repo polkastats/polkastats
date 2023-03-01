@@ -36,11 +36,15 @@ const convertAccountTable = (db, ss58Format) => {
 }
 
 exports.up = function (db) {
-    return convertAccountTable(db, 54);
+    db.startMigration();
+    convertAccountTable(db, 54);
+    return db.endMigration();
 };
 
 exports.down = function (db) {
-    return convertAccountTable(db, 42);
+    db.startMigration();
+    convertAccountTable(db, 42);
+    return db.endMigration();
 };
 
 exports._meta = {
