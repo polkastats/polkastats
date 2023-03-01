@@ -21,14 +21,15 @@ exports.setup = function (options, seedLink) {
 const convertAccountTable = (db, ss58Format) => {
     return db.runSql('SELECT * from account;', (_, result) => {
 
-        result.rows.forEach((row) => {
-            const currentAccountId = row.account_id;
+        result.rows.forEach(({ account_id, balances }) => {
 
             const nextAddress = keyring.encodeAddress(
-                keyring.decodeAddress(currentAccountId),
+                keyring.decodeAddress(account_id),
                 ss58Format);
 
-            const queryString = `UPDATE account SET account_id='${nextAddress}' WHERE account_id='${currentAccountId}';`
+            const nextBalances = balances.replace(account_id, nextAddress);
+
+            const queryString = `UPDATE account SET account_id='${nextAddress}', balances='${nextBalances}' WHERE account_id='${account_id}';`
 
             db.runSql(queryString);
         });
