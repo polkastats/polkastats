@@ -19,8 +19,8 @@ exports.setup = function (options, seedLink) {
 
 // Migration script for Account Table
 const convertAccountTable = (db, ss58Format) => {
-    return db.runSql('SELECT * from account;', (_, result) => {
-        result.rows.forEach(({ account_id, balances }) => {
+    db.runSql('SELECT * from account;', (_, result) => {
+        result.rows.forEach(({account_id, balances}) => {
 
             const nextAddress = keyring.encodeAddress(
                 keyring.decodeAddress(account_id),
@@ -48,14 +48,13 @@ const convertEraTables = (db, ss58Format) => {
     tables.forEach((table) => {
         db.runSql(`SELECT * from ${table}`, (_, result) => {
 
-            result.rows.forEach((row) => {
-                const currentAccountId = row.stash_address;
+            result.rows.forEach(({stash_address}) => {
 
                 const nextAddress = keyring.encodeAddress(
-                    keyring.decodeAddress(currentAccountId),
+                    keyring.decodeAddress(stash_address),
                     ss58Format);
 
-                const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${currentAccountId}';`
+                const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${stash_address}';`
 
                 db.runSql(queryString);
 
@@ -66,9 +65,9 @@ const convertEraTables = (db, ss58Format) => {
 };
 
 const convertRankingTable = (db, ss58Format) => {
-    return db.runSql('SELECT * from ranking;', (_, result) => {
+    db.runSql('SELECT * from ranking;', (_, result) => {
 
-        result.rows.forEach(({ identity, stash_address, controller_address }) => {
+        result.rows.forEach(({identity, stash_address, controller_address}) => {
             const nextStashAddress = keyring.encodeAddress(
                 keyring.decodeAddress(stash_address),
                 ss58Format);
@@ -81,7 +80,6 @@ const convertRankingTable = (db, ss58Format) => {
             const nextIdentity = identity;
 
             const queryString = `UPDATE ranking SET identity='${nextIdentity}', stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}' WHERE stash_address='${stash_address}';`
-            console.log("Prev and next", queryString);
 
             db.runSql(queryString);
         });
@@ -89,9 +87,9 @@ const convertRankingTable = (db, ss58Format) => {
     });
 }
 
-const convertBlockTable = async (db, ss55Format) => {
-
-    return db.runSql('SELECT block_author from block;', (_, result) => {
+// This batching approach is very slow, it should be replaced with creating temp. table and joining https://stackoverflow.com/questions/35903375/how-to-update-large-table-with-millions-of-rows-in-sql-server
+const convertBlockTable = (db, ss55Format) => {
+    db.runSql('SELECT block_author from block;', (_, result) => {
         const totalRows = result.rows.length;
         const batchSize = 10000;
         let currentIndex = 0;
@@ -102,34 +100,34 @@ const convertBlockTable = async (db, ss55Format) => {
                 ss55Format);
 
             const queryString = `UPDATE block SET block_author='${nextBlockAuthor}' WHERE block_author='${block_author}';`
-
             db.runSql(queryString);
         };
 
-        while(currentIndex < totalRows) {
+        while (currentIndex < totalRows) {
             const currentBatch = result.rows.slice(currentIndex, currentIndex + batchSize);
 
-            currentBatch.forEach(({ block_author }) => {
+            currentBatch.forEach(({block_author}) => {
                 updateBlock(block_author);
             });
 
-            currentIndex+= batchSize;
-        };
+            currentIndex += batchSize;
+        }
     });
 };
 
+const convertTables = (db, prefix) => {
+    convertAccountTable(db, prefix);
+    convertEraTables(db, prefix);
+    convertRankingTable(db, prefix);
+    // convertBlockTable(db, prefix);
+}
+
 exports.up = async function (db) {
-    convertAccountTable(db, 54);
-    convertEraTables(db, 54);
-    convertRankingTable(db, 54);
-    // convertBlockTable(db, 54);
+    convertTables(db, 54);
 };
 
 exports.down = async function (db) {
-    convertAccountTable(db, 42);
-    convertEraTables(db, 42);
-    convertRankingTable(db, 42);
-    // convertBlockTable(db, 42);
+    convertTables(db, 42);
 };
 
 exports._meta = {
