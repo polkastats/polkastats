@@ -20,7 +20,6 @@ exports.setup = function (options, seedLink) {
 // Migration script for Account Table
 const convertAccountTable = (db, ss58Format) => {
     return db.runSql('SELECT * from account;', (_, result) => {
-
         result.rows.forEach(({ account_id, balances }) => {
 
             const nextAddress = keyring.encodeAddress(
@@ -33,7 +32,6 @@ const convertAccountTable = (db, ss58Format) => {
 
             db.runSql(queryString);
         });
-
     });
 }
 
@@ -67,18 +65,71 @@ const convertEraTables = (db, ss58Format) => {
     });
 };
 
-exports.up = function (db) {
-    db.startMigration();
-    convertAccountTable(db, 54);
-    convertEraTables(db, 54);
-    return db.endMigration();
+const convertRankingTable = (db, ss58Format) => {
+    return db.runSql('SELECT * from ranking;', (_, result) => {
+
+        result.rows.forEach(({ identity, stash_address, controller_address }) => {
+            const nextStashAddress = keyring.encodeAddress(
+                keyring.decodeAddress(stash_address),
+                ss58Format);
+
+            const nextControllerAddress = keyring.encodeAddress(
+                keyring.decodeAddress(controller_address),
+                ss58Format);
+
+            // TODO: Think how to deal with identity? Regex for addresses
+            const nextIdentity = identity;
+
+            const queryString = `UPDATE ranking SET identity='${nextIdentity}', stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}' WHERE stash_address='${stash_address}';`
+            console.log("Prev and next", queryString);
+
+            db.runSql(queryString);
+        });
+
+    });
+}
+
+const convertBlockTable = async (db, ss55Format) => {
+
+    return db.runSql('SELECT block_author from block;', (_, result) => {
+        const totalRows = result.rows.length;
+        const batchSize = 10000;
+        let currentIndex = 0;
+
+        const updateBlock = (block_author) => {
+            const nextBlockAuthor = keyring.encodeAddress(
+                keyring.decodeAddress(block_author),
+                ss55Format);
+
+            const queryString = `UPDATE block SET block_author='${nextBlockAuthor}' WHERE block_author='${block_author}';`
+
+            db.runSql(queryString);
+        };
+
+        while(currentIndex < totalRows) {
+            const currentBatch = result.rows.slice(currentIndex, currentIndex + batchSize);
+
+            currentBatch.forEach(({ block_author }) => {
+                updateBlock(block_author);
+            });
+
+            currentIndex+= batchSize;
+        };
+    });
 };
 
-exports.down = function (db) {
-    db.startMigration();
+exports.up = async function (db) {
+    convertAccountTable(db, 54);
+    convertEraTables(db, 54);
+    convertRankingTable(db, 54);
+    // convertBlockTable(db, 54);
+};
+
+exports.down = async function (db) {
     convertAccountTable(db, 42);
     convertEraTables(db, 42);
-    return db.endMigration();
+    convertRankingTable(db, 42);
+    // convertBlockTable(db, 42);
 };
 
 exports._meta = {
