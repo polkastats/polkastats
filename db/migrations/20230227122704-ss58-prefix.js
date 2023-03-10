@@ -81,7 +81,7 @@ const convertEraTables = (db, ss58Format) => {
 const convertRankingTable = (db, ss58Format) => {
     db.runSql('SELECT * from ranking;', (_, result) => {
 
-        result.rows.forEach(({identity, stash_address, controller_address}) => {
+        result.rows.forEach(({identity, stash_address, controller_address, rank}) => {
             const nextStashAddress = keyring.encodeAddress(
                 keyring.decodeAddress(stash_address),
                 ss58Format);
@@ -104,8 +104,7 @@ const convertRankingTable = (db, ss58Format) => {
                 queryString += `, identity='${nextIdentity}'`
             }
 
-            // TODO: check where condition
-            queryString += ` WHERE stash_address='${stash_address}'`;
+            queryString += ` WHERE rank='${rank}'`;
 
             db.runSql(queryString);
         });
