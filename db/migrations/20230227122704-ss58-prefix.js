@@ -60,7 +60,7 @@ const convertEraTables = (db, ss58Format) => {
         'era_vrc_score',
     ];
     tables.forEach((table) => {
-        db.runSql(`SELECT * from ${table}`, (_, result) => {
+        db.runSql(`SELECT DISTINCT stash_address from ${table}`, (_, result) => {
 
             result.rows.forEach(({stash_address}) => {
 
@@ -68,7 +68,6 @@ const convertEraTables = (db, ss58Format) => {
                     keyring.decodeAddress(stash_address),
                     ss58Format);
 
-                // TODO: check where condition!
                 const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${stash_address}';`
 
                 db.runSql(queryString);
