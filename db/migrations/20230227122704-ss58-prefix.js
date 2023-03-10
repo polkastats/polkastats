@@ -54,6 +54,7 @@ const convertEraTables = (db, ss58Format) => {
                     keyring.decodeAddress(stash_address),
                     ss58Format);
 
+                // TODO: check where condition!
                 const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${stash_address}';`
 
                 db.runSql(queryString);
@@ -80,6 +81,26 @@ const convertRankingTable = (db, ss58Format) => {
             const nextIdentity = identity;
 
             const queryString = `UPDATE ranking SET identity='${nextIdentity}', stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}' WHERE stash_address='${stash_address}';`
+
+            db.runSql(queryString);
+        });
+
+    });
+}
+
+const convertFaucetTable = (db, ss58Format) => {
+    db.runSql('SELECT * from faucet;', (_, result) => {
+
+        result.rows.forEach(({ id, sender, destination }) => {
+            const nextSender = keyring.encodeAddress(
+                keyring.decodeAddress(sender),
+                ss58Format);
+
+            const nextDestination = keyring.encodeAddress(
+                keyring.decodeAddress(destination),
+                ss58Format);
+
+            const queryString = `UPDATE faucet SET sender='${nextSender}', destination='${nextDestination}' WHERE id='${id}';`
 
             db.runSql(queryString);
         });
@@ -119,6 +140,7 @@ const convertTables = (db, prefix) => {
     convertAccountTable(db, prefix);
     convertEraTables(db, prefix);
     convertRankingTable(db, prefix);
+    convertFaucetTable(db, prefix);
     // convertBlockTable(db, prefix);
 }
 
