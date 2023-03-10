@@ -19,7 +19,7 @@ exports.setup = function (options, seedLink) {
 
 // Migration script for Account Table
 const convertAccountTable = (db, ss58Format) => {
-    db.runSql('SELECT * from account;', (_, result) => {
+    db.runSql('SELECT account_id, balances, identity from account;', (_, result) => {
         result.rows.forEach(({account_id, balances, identity}) => {
 
             const nextAddress = keyring.encodeAddress(
@@ -79,7 +79,7 @@ const convertEraTables = (db, ss58Format) => {
 };
 
 const convertRankingTable = (db, ss58Format) => {
-    db.runSql('SELECT * from ranking;', (_, result) => {
+    db.runSql('SELECT identity, stash_address, controller_address, rank from ranking;', (_, result) => {
 
         result.rows.forEach(({identity, stash_address, controller_address, rank}) => {
             const nextStashAddress = keyring.encodeAddress(
@@ -113,7 +113,7 @@ const convertRankingTable = (db, ss58Format) => {
 }
 
 const convertFaucetTable = (db, ss58Format) => {
-    db.runSql('SELECT * from faucet;', (_, result) => {
+    db.runSql('SELECT id, sender, destination from faucet;', (_, result) => {
 
         result.rows.forEach(({id, sender, destination}) => {
             const nextSender = keyring.encodeAddress(
@@ -134,7 +134,7 @@ const convertFaucetTable = (db, ss58Format) => {
 
 // Transfers are a part of extrinsict table
 const convertTransfers = (db, ss58Format) => {
-    db.runSql(`select * from extrinsic where method like 'transfer%'`, (_, result) => {
+    db.runSql(`select block_number, signer, args, method from extrinsic where method like 'transfer%'`, (_, result) => {
 
         result.rows.forEach(({block_number, signer, args, method}) => {
             const nextSigner = keyring.encodeAddress(
