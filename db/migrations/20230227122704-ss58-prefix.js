@@ -20,7 +20,7 @@ exports.setup = function (options, seedLink) {
 // Migration script for Account Table
 const convertAccountTable = (db, ss58Format) => {
     db.runSql('SELECT * from account;', (_, result) => {
-        result.rows.forEach(({ account_id, balances, identity }) => {
+        result.rows.forEach(({account_id, balances, identity}) => {
 
             const nextAddress = keyring.encodeAddress(
                 keyring.decodeAddress(account_id),
@@ -30,7 +30,7 @@ const convertAccountTable = (db, ss58Format) => {
 
             let queryString = `UPDATE account SET account_id='${nextAddress}', balances='${nextBalances}'`
 
-            if(identity && identity.includes("parent")) {
+            if (identity && identity.includes("parent")) {
                 const currentParent = JSON.parse(identity).parent;
 
                 const nextParent = keyring.encodeAddress(
@@ -39,10 +39,10 @@ const convertAccountTable = (db, ss58Format) => {
 
                 const nextIdentity = identity.replace(currentParent, nextParent);
 
-                queryString+= `, identity='${nextIdentity}'`
+                queryString += `, identity='${nextIdentity}'`
             }
 
-            queryString+= ` WHERE account_id='${account_id}';`
+            queryString += ` WHERE account_id='${account_id}';`
 
             db.runSql(queryString);
         });
@@ -93,7 +93,7 @@ const convertRankingTable = (db, ss58Format) => {
 
             let queryString = `UPDATE ranking SET stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}'`
 
-            if(identity && identity.includes("parent")) {
+            if (identity && identity.includes("parent")) {
                 const currentParent = JSON.parse(identity).parent;
 
                 const nextParent = keyring.encodeAddress(
@@ -102,11 +102,11 @@ const convertRankingTable = (db, ss58Format) => {
 
                 const nextIdentity = identity.replace(currentParent, nextParent);
 
-                queryString+= `, identity='${nextIdentity}'`
+                queryString += `, identity='${nextIdentity}'`
             }
 
             // TODO: check where condition
-            queryString+= ` WHERE stash_address='${stash_address}'`;
+            queryString += ` WHERE stash_address='${stash_address}'`;
 
             db.runSql(queryString);
         });
@@ -117,7 +117,7 @@ const convertRankingTable = (db, ss58Format) => {
 const convertFaucetTable = (db, ss58Format) => {
     db.runSql('SELECT * from faucet;', (_, result) => {
 
-        result.rows.forEach(({ id, sender, destination }) => {
+        result.rows.forEach(({id, sender, destination}) => {
             const nextSender = keyring.encodeAddress(
                 keyring.decodeAddress(sender),
                 ss58Format);
@@ -138,24 +138,24 @@ const convertFaucetTable = (db, ss58Format) => {
 const convertTransfers = (db, ss58Format) => {
     db.runSql(`select * from extrinsic where method like 'transfer%'`, (_, result) => {
 
-        result.rows.forEach(({ block_number, signer, args, method }) => {
+        result.rows.forEach(({block_number, signer, args, method}) => {
             const nextSigner = keyring.encodeAddress(
                 keyring.decodeAddress(signer),
                 ss58Format);
 
             let queryString = `UPDATE extrinsic SET signer='${nextSigner}'`
 
-            if(method === 'transfer' || method === 'transferKeepAlive') {
+            if (method === 'transfer' || method === 'transferKeepAlive') {
                 const [account] = JSON.parse(args);
                 const accountId = typeof account === 'string' ? account : account.id;
                 const nextAccountId = keyring.encodeAddress(
                     keyring.decodeAddress(accountId),
                     ss58Format);
                 const nextArgs = args.replace(accountId, nextAccountId);
-                queryString+= `, args='${nextArgs}'`;
+                queryString += `, args='${nextArgs}'`;
             }
 
-            queryString+= ` WHERE block_number='${block_number}';`
+            queryString += ` WHERE block_number='${block_number}';`
 
             db.runSql(queryString);
         });
@@ -172,11 +172,13 @@ const convertTables = (db, prefix) => {
 }
 
 exports.up = async function (db) {
-    convertTables(db, 54);
+    const newSs58Prefix = 54;
+    convertTables(db, newSs58Prefix);
 };
 
 exports.down = async function (db) {
-    convertTables(db, 42);
+    const oldSs58Prefix = 42;
+    convertTables(db, oldSs58Prefix);
 };
 
 exports._meta = {
