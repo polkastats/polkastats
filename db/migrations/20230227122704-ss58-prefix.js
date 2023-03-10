@@ -17,9 +17,35 @@ exports.setup = function (options, seedLink) {
     Promise = options.Promise;
 };
 
+class Logger {
+    constructor(tableName) {
+        this.tableName = tableName;
+        this.totalRows = 0;
+        this.currentRow = 0;
+    }
+
+    setTotalRows = (totalRows) => {
+        this.totalRows = totalRows;
+    }
+
+    log = () => {
+        this.currentRow++;
+        const {currentRow, totalRows, tableName} = this;
+
+        if (currentRow === totalRows) {
+            console.log(`✅ Done for ${tableName} table`);
+        } else {
+            console.log(`⏳ Migrated ${Math.trunc(currentRow / totalRows * 10000) / 100}% for ${tableName} table`);
+        }
+    }
+}
+
 // Migration script for Account Table
 const convertAccountTable = (db, ss58Format) => {
+    const logger = new Logger('account');
+
     db.runSql('SELECT account_id, balances, identity from account;', (_, result) => {
+        logger.setTotalRows(result.rows.length);
         result.rows.forEach(({account_id, balances, identity}) => {
 
             const nextAddress = keyring.encodeAddress(
@@ -44,7 +70,7 @@ const convertAccountTable = (db, ss58Format) => {
 
             queryString += ` WHERE account_id='${account_id}';`
 
-            db.runSql(queryString);
+            db.runSql(queryString, logger.log);
         });
     });
 }
@@ -60,7 +86,10 @@ const convertEraTables = (db, ss58Format) => {
         'era_vrc_score',
     ];
     tables.forEach((table) => {
+        const logger = new Logger(table);
+
         db.runSql(`SELECT DISTINCT stash_address from ${table}`, (_, result) => {
+            logger.setTotalRows(result.rows.length);
 
             result.rows.forEach(({stash_address}) => {
 
@@ -70,7 +99,7 @@ const convertEraTables = (db, ss58Format) => {
 
                 const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${stash_address}';`
 
-                db.runSql(queryString);
+                db.runSql(queryString, logger.log);
 
             });
 
@@ -79,7 +108,10 @@ const convertEraTables = (db, ss58Format) => {
 };
 
 const convertRankingTable = (db, ss58Format) => {
+    const logger = new Logger('ranking');
+
     db.runSql('SELECT identity, stash_address, controller_address, rank from ranking;', (_, result) => {
+        logger.setTotalRows(result.rows.length);
 
         result.rows.forEach(({identity, stash_address, controller_address, rank}) => {
             const nextStashAddress = keyring.encodeAddress(
@@ -106,14 +138,17 @@ const convertRankingTable = (db, ss58Format) => {
 
             queryString += ` WHERE rank='${rank}'`;
 
-            db.runSql(queryString);
+            db.runSql(queryString, logger.log);
         });
 
     });
 }
 
 const convertFaucetTable = (db, ss58Format) => {
+    const logger = new Logger('faucet');
+
     db.runSql('SELECT id, sender, destination from faucet;', (_, result) => {
+        logger.setTotalRows(result.rows.length);
 
         result.rows.forEach(({id, sender, destination}) => {
             const nextSender = keyring.encodeAddress(
@@ -126,7 +161,7 @@ const convertFaucetTable = (db, ss58Format) => {
 
             const queryString = `UPDATE faucet SET sender='${nextSender}', destination='${nextDestination}' WHERE id='${id}';`
 
-            db.runSql(queryString);
+            db.runSql(queryString, logger.log);
         });
 
     });
@@ -134,7 +169,10 @@ const convertFaucetTable = (db, ss58Format) => {
 
 // Transfers are a part of extrinsict table
 const convertTransfers = (db, ss58Format) => {
+    const logger = new Logger('transfer');
+
     db.runSql(`select block_number, signer, args, method from extrinsic where method like 'transfer%'`, (_, result) => {
+        logger.setTotalRows(result.rows.length);
 
         result.rows.forEach(({block_number, signer, args, method}) => {
             const nextSigner = keyring.encodeAddress(
@@ -155,7 +193,7 @@ const convertTransfers = (db, ss58Format) => {
 
             queryString += ` WHERE block_number='${block_number}';`
 
-            db.runSql(queryString);
+            db.runSql(queryString, logger.log);
         });
 
     });
