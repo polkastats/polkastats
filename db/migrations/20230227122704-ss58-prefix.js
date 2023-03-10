@@ -134,34 +134,6 @@ const convertFaucetTable = (db, ss58Format) => {
     });
 }
 
-// This batching approach is very slow, it should be replaced with creating temp. table and joining https://stackoverflow.com/questions/35903375/how-to-update-large-table-with-millions-of-rows-in-sql-server
-const convertBlockTable = (db, ss55Format) => {
-    db.runSql('SELECT block_author from block;', (_, result) => {
-        const totalRows = result.rows.length;
-        const batchSize = 10000;
-        let currentIndex = 0;
-
-        const updateBlock = (block_author) => {
-            const nextBlockAuthor = keyring.encodeAddress(
-                keyring.decodeAddress(block_author),
-                ss55Format);
-
-            const queryString = `UPDATE block SET block_author='${nextBlockAuthor}' WHERE block_author='${block_author}';`
-            db.runSql(queryString);
-        };
-
-        while (currentIndex < totalRows) {
-            const currentBatch = result.rows.slice(currentIndex, currentIndex + batchSize);
-
-            currentBatch.forEach(({block_author}) => {
-                updateBlock(block_author);
-            });
-
-            currentIndex += batchSize;
-        }
-    });
-};
-
 // Transfers are a part of extrinsict table
 const convertTransfers = (db, ss58Format) => {
     db.runSql(`select * from extrinsic where method like 'transfer%'`, (_, result) => {
@@ -197,7 +169,6 @@ const convertTables = (db, prefix) => {
     convertRankingTable(db, prefix);
     convertFaucetTable(db, prefix);
     convertTransfers(db, prefix);
-    // convertBlockTable(db, prefix);
 }
 
 exports.up = async function (db) {
