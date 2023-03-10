@@ -91,10 +91,22 @@ const convertRankingTable = (db, ss58Format) => {
                 keyring.decodeAddress(controller_address),
                 ss58Format);
 
-            // TODO: Think how to deal with identity? Regex for addresses
-            const nextIdentity = identity;
+            let queryString = `UPDATE ranking SET stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}'`
 
-            const queryString = `UPDATE ranking SET identity='${nextIdentity}', stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}' WHERE stash_address='${stash_address}';`
+            if(identity && identity.includes("parent")) {
+                const currentParent = JSON.parse(identity).parent;
+
+                const nextParent = keyring.encodeAddress(
+                    keyring.decodeAddress(currentParent),
+                    ss58Format);
+
+                const nextIdentity = identity.replace(currentParent, nextParent);
+
+                queryString+= `, identity='${nextIdentity}'`
+            }
+
+            // TODO: check where condition
+            queryString+= ` WHERE stash_address='${stash_address}'`;
 
             db.runSql(queryString);
         });
