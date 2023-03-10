@@ -20,7 +20,7 @@ exports.setup = function (options, seedLink) {
 // Migration script for Account Table
 const convertAccountTable = (db, ss58Format) => {
     db.runSql('SELECT * from account;', (_, result) => {
-        result.rows.forEach(({account_id, balances}) => {
+        result.rows.forEach(({ account_id, balances, identity }) => {
 
             const nextAddress = keyring.encodeAddress(
                 keyring.decodeAddress(account_id),
@@ -28,7 +28,21 @@ const convertAccountTable = (db, ss58Format) => {
 
             const nextBalances = balances.replace(account_id, nextAddress);
 
-            const queryString = `UPDATE account SET account_id='${nextAddress}', balances='${nextBalances}' WHERE account_id='${account_id}';`
+            let queryString = `UPDATE account SET account_id='${nextAddress}', balances='${nextBalances}'`
+
+            if(identity && identity.includes("parent")) {
+                const currentParent = JSON.parse(identity).parent;
+
+                const nextParent = keyring.encodeAddress(
+                    keyring.decodeAddress(currentParent),
+                    ss58Format);
+
+                const nextIdentity = identity.replace(currentParent, nextParent);
+
+                queryString+= `, identity='${nextIdentity}'`
+            }
+
+            queryString+= ` WHERE account_id='${account_id}';`
 
             db.runSql(queryString);
         });
