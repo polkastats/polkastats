@@ -162,11 +162,41 @@ const convertBlockTable = (db, ss55Format) => {
     });
 };
 
+// Transfers are a part of extrinsict table
+const convertTransfers = (db, ss58Format) => {
+    db.runSql(`select * from extrinsic where method like 'transfer%'`, (_, result) => {
+
+        result.rows.forEach(({ block_number, signer, args, method }) => {
+            const nextSigner = keyring.encodeAddress(
+                keyring.decodeAddress(signer),
+                ss58Format);
+
+            let queryString = `UPDATE extrinsic SET signer='${nextSigner}'`
+
+            if(method === 'transfer' || method === 'transferKeepAlive') {
+                const [account] = JSON.parse(args);
+                const accountId = typeof account === 'string' ? account : account.id;
+                const nextAccountId = keyring.encodeAddress(
+                    keyring.decodeAddress(accountId),
+                    ss58Format);
+                const nextArgs = args.replace(accountId, nextAccountId);
+                queryString+= `, args='${nextArgs}'`;
+            }
+
+            queryString+= ` WHERE block_number='${block_number}';`
+
+            db.runSql(queryString);
+        });
+
+    });
+};
+
 const convertTables = (db, prefix) => {
     convertAccountTable(db, prefix);
     convertEraTables(db, prefix);
     convertRankingTable(db, prefix);
     convertFaucetTable(db, prefix);
+    convertTransfers(db, prefix);
     // convertBlockTable(db, prefix);
 }
 
