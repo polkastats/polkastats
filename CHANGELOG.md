@@ -3,6 +3,9 @@
 ## vNext
 - ...
 
+## v0.25.0
+- [BE] Add ss58 prefix migration for first priority data
+
 ## v0.24.3
 - [BE] Add missing `next` functions to prevent Stats API crash
 
