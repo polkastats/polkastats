@@ -56,7 +56,7 @@ const convertAccountTable = (db, ss58Format) => {
 
             let queryString = `UPDATE account SET account_id='${nextAddress}', balances='${nextBalances}'`
 
-            if (identity && identity.includes("parent")) {
+            if (identity?.includes("parent")) {
                 const currentParent = JSON.parse(identity).parent;
 
                 const nextParent = keyring.encodeAddress(
@@ -124,7 +124,7 @@ const convertRankingTable = (db, ss58Format) => {
 
             let queryString = `UPDATE ranking SET stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}'`
 
-            if (identity && identity.includes("parent")) {
+            if (identity?.includes("parent")) {
                 const currentParent = JSON.parse(identity).parent;
 
                 const nextParent = keyring.encodeAddress(
