@@ -181,7 +181,7 @@ const convertTransfers = (db, ss58Format) => {
 
             let queryString = `UPDATE extrinsic SET signer='${nextSigner}'`
 
-            if (method === 'transfer' || method === 'transferKeepAlive') {
+            if (method === 'transfer' || method === 'transferKeepAlive' || method === 'transferAll') {
                 const [account] = JSON.parse(args);
                 const accountId = typeof account === 'string' ? account : account.id;
                 const nextAccountId = keyring.encodeAddress(
