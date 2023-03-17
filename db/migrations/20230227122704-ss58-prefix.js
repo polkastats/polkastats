@@ -40,6 +40,17 @@ class Logger {
     }
 }
 
+const decode = (address, ss58) => {
+    if (address.startsWith('0x')) {
+        console.log('Address starts with 0x', address);
+        return address;
+    } else {
+        return keyring.encodeAddress(
+            keyring.decodeAddress(address),
+            ss58);
+    }
+};
+
 // Migration script for Account Table
 const convertAccountTable = (db, ss58Format) => {
     const logger = new Logger('account');
@@ -48,9 +59,7 @@ const convertAccountTable = (db, ss58Format) => {
         logger.setTotalRows(result.rows.length);
         result.rows.forEach(({account_id, balances, identity}) => {
 
-            const nextAddress = keyring.encodeAddress(
-                keyring.decodeAddress(account_id),
-                ss58Format);
+            const nextAddress = decode(account_id, ss58Format);
 
             const nextBalances = balances.replace(account_id, nextAddress);
 
@@ -59,9 +68,7 @@ const convertAccountTable = (db, ss58Format) => {
             if (identity?.includes("parent")) {
                 const currentParent = JSON.parse(identity).parent;
 
-                const nextParent = keyring.encodeAddress(
-                    keyring.decodeAddress(currentParent),
-                    ss58Format);
+                const nextParent = decode(currentParent, ss58Format);
 
                 const nextIdentity = identity.replace(currentParent, nextParent);
 
@@ -93,9 +100,7 @@ const convertEraTables = (db, ss58Format) => {
 
             result.rows.forEach(({stash_address}) => {
 
-                const nextAddress = keyring.encodeAddress(
-                    keyring.decodeAddress(stash_address),
-                    ss58Format);
+                const nextAddress = decode(stash_address, ss58Format)
 
                 const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${stash_address}';`
 
@@ -114,22 +119,17 @@ const convertRankingTable = (db, ss58Format) => {
         logger.setTotalRows(result.rows.length);
 
         result.rows.forEach(({identity, stash_address, controller_address, rank}) => {
-            const nextStashAddress = keyring.encodeAddress(
-                keyring.decodeAddress(stash_address),
-                ss58Format);
 
-            const nextControllerAddress = keyring.encodeAddress(
-                keyring.decodeAddress(controller_address),
-                ss58Format);
+            const nextStashAddress = decode(stash_address, ss58Format);
+
+            const nextControllerAddress = decode(controller_address, ss58Format);
 
             let queryString = `UPDATE ranking SET stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}'`
 
             if (identity?.includes("parent")) {
                 const currentParent = JSON.parse(identity).parent;
 
-                const nextParent = keyring.encodeAddress(
-                    keyring.decodeAddress(currentParent),
-                    ss58Format);
+                const nextParent = decode(currentParent, ss58Format);
 
                 const nextIdentity = identity.replace(currentParent, nextParent);
 
@@ -151,13 +151,10 @@ const convertFaucetTable = (db, ss58Format) => {
         logger.setTotalRows(result.rows.length);
 
         result.rows.forEach(({id, sender, destination}) => {
-            const nextSender = keyring.encodeAddress(
-                keyring.decodeAddress(sender),
-                ss58Format);
 
-            const nextDestination = keyring.encodeAddress(
-                keyring.decodeAddress(destination),
-                ss58Format);
+            const nextSender = decode(sender, ss58Format);
+
+            const nextDestination = decode(destination, ss58Format);
 
             const queryString = `UPDATE faucet SET sender='${nextSender}', destination='${nextDestination}' WHERE id='${id}';`
 
@@ -175,18 +172,16 @@ const convertTransfers = (db, ss58Format) => {
         logger.setTotalRows(result.rows.length);
 
         result.rows.forEach(({block_number, signer, args, method}) => {
-            const nextSigner = keyring.encodeAddress(
-                keyring.decodeAddress(signer),
-                ss58Format);
+            const nextSigner = decode(signer, ss58Format);
 
             let queryString = `UPDATE extrinsic SET signer='${nextSigner}'`
 
             if (method === 'transfer' || method === 'transferKeepAlive' || method === 'transferAll') {
                 const [account] = JSON.parse(args);
-                const accountId = typeof account === 'string' ? account : account.id;
-                const nextAccountId = keyring.encodeAddress(
-                    keyring.decodeAddress(accountId),
-                    ss58Format);
+                const accountId = typeof account === 'string' ? account : account.id ? account.id : account.address20;
+
+                const nextAccountId = decode(accountId, ss58Format);
+
                 const nextArgs = args.replace(accountId, nextAccountId);
                 queryString += `, args='${nextArgs}'`;
             }
