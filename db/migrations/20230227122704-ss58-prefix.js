@@ -61,7 +61,7 @@ const convertAccountTable = (db, ss58Format) => {
         db.runSql('SELECT account_id, balances, identity from account;', (_, result) => {
             logger.setTotalRows(result.rows.length);
 
-            for (let i = 0; i < result.rows.length; i++) {
+            // for (let i = 0; i < result.rows.length; i++) {
             for (let i = 0; i < 1; i++) {
                 const {account_id, balances, identity} = result.rows[i];
 
@@ -90,6 +90,7 @@ const convertAccountTable = (db, ss58Format) => {
                     if (e !== null) {
                         console.log(`${e} + ${JSON.stringify(r)}`);
                     }
+                    resolve();
                     if (i === result.rows.length - 1) {
                         resolve();
                     }
