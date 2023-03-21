@@ -48,7 +48,7 @@ const runCrawler = async ({ crawler, name }) => {
 };
 
 const runCrawlers = async () => {
-  logger.info('Running migrations');
+  logger.info('Running migrations 1');
   await DBMigrate.getInstance(true, {
     env: process.env.NODE_ENV || 'local',
     config: '../db/database.json',
