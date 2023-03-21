@@ -82,8 +82,11 @@ const convertAccountTable = (db, ss58Format) => {
 
                 queryString += ` WHERE account_id='${account_id}';`
 
-                db.runSql(queryString, () => {
+                db.runSql(queryString, (e, r) => {
                     logger.log();
+                    if (e !== null) {
+                        console.log(`${e} + ${JSON.stringify(r)}`);
+                    }
                     if (i === result.rows.length - 1) {
                         resolve();
                     }
