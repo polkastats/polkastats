@@ -57,29 +57,38 @@ const decode = (address, ss58) => {
 const convertAccountTable = (db, ss58Format) => {
     const logger = new Logger('account');
 
-    db.runSql('SELECT account_id, balances, identity from account;', (_, result) => {
-        logger.setTotalRows(result.rows.length);
-        result.rows.forEach(({account_id, balances, identity}) => {
+    return new Promise(function(resolve, reject) {
+        db.runSql('SELECT account_id, balances, identity from account;', (_, result) => {
+            logger.setTotalRows(result.rows.length);
 
-            const nextAddress = decode(account_id, ss58Format);
+            for (let i = 0; i < result.rows.length; i++) {
+                const {account_id, balances, identity} = result.rows[i];
 
-            const nextBalances = balances.replace(account_id, nextAddress);
+                const nextAddress = decode(account_id, ss58Format);
 
-            let queryString = `UPDATE account SET account_id='${nextAddress}', balances='${nextBalances}'`
+                const nextBalances = balances.replace(account_id, nextAddress);
 
-            if (identity?.includes("parent")) {
-                const currentParent = JSON.parse(identity).parent;
+                let queryString = `UPDATE account SET account_id='${nextAddress}', balances='${nextBalances}'`
 
-                const nextParent = decode(currentParent, ss58Format);
+                if (identity?.includes("parent")) {
+                    const currentParent = JSON.parse(identity).parent;
 
-                const nextIdentity = identity.replace(currentParent, nextParent);
+                    const nextParent = decode(currentParent, ss58Format);
 
-                queryString += `, identity='${nextIdentity}'`
+                    const nextIdentity = identity.replace(currentParent, nextParent);
+
+                    queryString += `, identity='${nextIdentity}'`
+                }
+
+                queryString += ` WHERE account_id='${account_id}';`
+
+                db.runSql(queryString, () => {
+                    logger.log();
+                    if (i === result.rows.length - 1) {
+                        resolve();
+                    }
+                });
             }
-
-            queryString += ` WHERE account_id='${account_id}';`
-
-            db.runSql(queryString, logger.log);
         });
     });
 }
@@ -197,21 +206,21 @@ const convertTransfers = (db, ss58Format) => {
 };
 
 const convertTables = (db, prefix) => {
-    convertAccountTable(db, prefix);
-    convertEraTables(db, prefix);
-    convertRankingTable(db, prefix);
-    convertFaucetTable(db, prefix);
-    convertTransfers(db, prefix);
+    return convertAccountTable(db, prefix);
+    // convertEraTables(db, prefix);
+    // convertRankingTable(db, prefix);
+    // convertFaucetTable(db, prefix);
+    // convertTransfers(db, prefix);
 }
 
 exports.up = async function (db) {
     const newSs58Prefix = 54;
-    convertTables(db, newSs58Prefix);
+    return convertTables(db, newSs58Prefix);
 };
 
 exports.down = async function (db) {
     const oldSs58Prefix = 42;
-    convertTables(db, oldSs58Prefix);
+    return convertTables(db, oldSs58Prefix);
 };
 
 exports._meta = {
