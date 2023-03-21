@@ -35,7 +35,9 @@ class Logger {
         if (currentRow === totalRows) {
             console.log(`✅ Done for ${tableName} table`);
         } else {
-            console.log(`⏳ Migrated ${Math.trunc(currentRow / totalRows * 10000) / 100}% for ${tableName} table`);
+            if (currentRow % 150 === 0) {
+                console.log(`⏳ Migrated ${Math.trunc(currentRow / totalRows * 10000) / 100}% for ${tableName} table`);
+            }
         }
     }
 }
