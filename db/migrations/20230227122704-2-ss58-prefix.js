@@ -57,18 +57,10 @@ const decode = (address, ss58) => {
 const convertAccountTable = async (db, ss58Format) => {
     const logger = new Logger('account');
 
-    const rows = await new Promise(function(resolve, reject) {
-        db.runSql('SELECT account_id, balances, identity from account;', (error, result) => {
-            if (error) {
-                reject(error);
-            }
-            resolve(result.rows);
-        })});
+    const rows = await executeDbRunSqlAsPromise(db, 'SELECT account_id, balances, identity from account;');
     logger.setTotalRows(rows.length);
 
     for (let i = 0; i < rows.length; i++) {
-        console.log(i);
-
         const {account_id, balances, identity} = rows[i];
 
         const nextAddress = decode(account_id, ss58Format);
@@ -89,18 +81,8 @@ const convertAccountTable = async (db, ss58Format) => {
 
         queryString += ` WHERE account_id='${account_id}';`
 
-        console.log(`Query is ${queryString}`);
+        await executeDbRunSqlAsPromise(db, queryString);
 
-        const updateResult = await new Promise(function (resolve, reject) {
-            db.runSql(queryString, (e, r) => {
-                if (e) {
-                    console.log(`${e} + ${JSON.stringify(r)}`);
-                    reject(e);
-                } else {
-                    resolve(r);
-                }
-            });
-        });
         logger.log();
     }
 }
@@ -223,6 +205,17 @@ const convertTables = (db, prefix) => {
     // convertRankingTable(db, prefix);
     // convertFaucetTable(db, prefix);
     // convertTransfers(db, prefix);
+}
+
+const executeDbRunSqlAsPromise = (db, sqlQuery) => {
+    return new Promise(function (resolve, reject) {
+        db.runSql(sqlQuery, (error, result) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(result);
+        })
+    });
 }
 
 exports.up = async function (db) {
