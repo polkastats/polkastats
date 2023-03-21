@@ -23,7 +23,8 @@ const convertAccountTable = async (db, ss58Format) => {
 
     const logger = new Logger('account');
 
-    const rows = await executeDbRunSqlAsPromise(db, 'SELECT account_id, balances, identity from account;');
+    const result = await executeDbRunSqlAsPromise(db, 'SELECT account_id, balances, identity from account;');
+    const rows = result.rows;
     logger.setTotalRows(rows.length);
 
     for (let i = 0; i < rows.length; i++) {
@@ -69,7 +70,8 @@ const convertEraTables = async (db, ss58Format) => {
 
         const logger = new Logger(table);
 
-        const rows = await executeDbRunSqlAsPromise(db, `SELECT DISTINCT stash_address from ${table}`);
+        const result = await executeDbRunSqlAsPromise(db, `SELECT DISTINCT stash_address from ${table}`);
+        const rows = result.rows;
         logger.setTotalRows(rows.length);
 
         for (let j = 0; j < rows.length; j++) {
@@ -89,7 +91,8 @@ const convertEraTables = async (db, ss58Format) => {
 const convertRankingTable = async (db, ss58Format) => {
     const logger = new Logger('ranking');
 
-    const rows = await executeDbRunSqlAsPromise(db, 'SELECT identity, stash_address, controller_address, rank from ranking;');
+    const result = await executeDbRunSqlAsPromise(db, 'SELECT identity, stash_address, controller_address, rank from ranking;');
+    const rows = result.rows;
     logger.setTotalRows(rows.length);
 
     for (let i = 0; i < rows.length; i++) {
@@ -122,7 +125,8 @@ const convertRankingTable = async (db, ss58Format) => {
 const convertFaucetTable = async (db, ss58Format) => {
     const logger = new Logger('faucet');
 
-    const rows = await executeDbRunSqlAsPromise(db, 'SELECT id, sender, destination from faucet;');
+    const result = await executeDbRunSqlAsPromise(db, 'SELECT id, sender, destination from faucet;');
+    const rows = result.rows;
     logger.setTotalRows(rows.length);
 
     for (let i = 0; i < rows.length; i++) {
@@ -143,8 +147,9 @@ const convertFaucetTable = async (db, ss58Format) => {
 // Transfers are a part of extrinsics table
 const convertTransfers = async (db, ss58Format) => {
     const logger = new Logger('transfer');
-    const rows = await executeDbRunSqlAsPromise(db, `select block_number, signer, args, method from extrinsic where method like 'transfer%'`);
 
+    const result = await executeDbRunSqlAsPromise(db, `select block_number, signer, args, method from extrinsic where method like 'transfer%'`);
+    const rows = result.rows;
     logger.setTotalRows(rows.length);
 
     for (let i = 0; i < rows.length; i++) {
@@ -185,10 +190,12 @@ class Logger {
         this.tableName = tableName;
         this.totalRows = 0;
         this.currentRow = 0;
+        console.log(`Migrating ${this.tableName}`);
     }
 
     setTotalRows = (totalRows) => {
         this.totalRows = totalRows;
+        console.log(`Total Rows are ${this.tableName}`);
     }
 
     log = () => {
