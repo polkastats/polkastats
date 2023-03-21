@@ -89,10 +89,12 @@ const convertAccountTable = (db, ss58Format) => {
                     logger.log();
                     if (e !== null) {
                         console.log(`${e} + ${JSON.stringify(r)}`);
-                    }
-                    resolve();
-                    if (i === result.rows.length - 1) {
+                        reject(e);
+                    } else {
                         resolve();
+                        if (i === result.rows.length - 1) {
+                            resolve();
+                        }
                     }
                 });
             }
