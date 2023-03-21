@@ -62,6 +62,7 @@ const convertAccountTable = (db, ss58Format) => {
             logger.setTotalRows(result.rows.length);
 
             for (let i = 0; i < result.rows.length; i++) {
+            for (let i = 0; i < 1; i++) {
                 const {account_id, balances, identity} = result.rows[i];
 
                 const nextAddress = decode(account_id, ss58Format);
@@ -81,6 +82,8 @@ const convertAccountTable = (db, ss58Format) => {
                 }
 
                 queryString += ` WHERE account_id='${account_id}';`
+
+                console.log(`Query is ${queryString}`);
 
                 db.runSql(queryString, (e, r) => {
                     logger.log();
@@ -209,7 +212,7 @@ const convertTransfers = (db, ss58Format) => {
 };
 
 const convertTables = (db, prefix) => {
-    // return convertAccountTable(db, prefix);
+    return convertAccountTable(db, prefix);
     // convertEraTables(db, prefix);
     // convertRankingTable(db, prefix);
     // convertFaucetTable(db, prefix);
