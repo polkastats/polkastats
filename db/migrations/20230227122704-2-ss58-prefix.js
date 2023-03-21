@@ -55,6 +55,8 @@ const decode = (address, ss58) => {
 
 // Migration script for Account Table
 const convertAccountTable = async (db, ss58Format) => {
+    const deleteResult = await executeDbRunSqlAsPromise(db, "DELETE FROM account WHERE account_id LIKE '6%'");
+
     const logger = new Logger('account');
 
     const rows = await executeDbRunSqlAsPromise(db, 'SELECT account_id, balances, identity from account;');
