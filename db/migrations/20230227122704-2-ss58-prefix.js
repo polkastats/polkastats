@@ -90,7 +90,7 @@ const convertAccountTable = async (db, ss58Format) => {
 }
 
 // Migration script for featured, era_commission, era_points, era_relative_performance, era_self_stake, era_vrc_score tables
-const convertEraTables = (db, ss58Format) => {
+const convertEraTables = async (db, ss58Format) => {
     const tables = [
         'featured',
         'era_commission',
@@ -99,24 +99,27 @@ const convertEraTables = (db, ss58Format) => {
         'era_self_stake',
         'era_vrc_score',
     ];
-    tables.forEach((table) => {
+
+    for (let i = 0; i < tables.length; i++) {
+        const table = tables[i];
+
         const logger = new Logger(table);
 
-        db.runSql(`SELECT DISTINCT stash_address from ${table}`, (_, result) => {
-            logger.setTotalRows(result.rows.length);
+        const rows = await executeDbRunSqlAsPromise(db, `SELECT DISTINCT stash_address from ${table}`);
+        logger.setTotalRows(rows.length);
 
-            result.rows.forEach(({stash_address}) => {
+        for (let j = 0; j < rows.length; j++) {
+            const {stash_address} = rows[j];
 
-                const nextAddress = decode(stash_address, ss58Format)
+            const nextAddress = decode(stash_address, ss58Format)
 
-                const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${stash_address}';`
+            const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${stash_address}';`
 
-                db.runSql(queryString, logger.log);
+            await executeDbRunSqlAsPromise(db, queryString);
 
-            });
-
-        });
-    });
+            logger.log();
+        }
+    }
 };
 
 const convertRankingTable = (db, ss58Format) => {
