@@ -209,7 +209,7 @@ const convertTransfers = (db, ss58Format) => {
 };
 
 const convertTables = (db, prefix) => {
-    return convertAccountTable(db, prefix);
+    // return convertAccountTable(db, prefix);
     // convertEraTables(db, prefix);
     // convertRankingTable(db, prefix);
     // convertFaucetTable(db, prefix);
