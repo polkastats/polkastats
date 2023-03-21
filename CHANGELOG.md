@@ -3,6 +3,9 @@
 ## vNext
 - ...
 
+## v0.25.1
+- [BE] Add package.json and yarn.lock to Dockerfile
+
 ## v0.25.0
 - [BE] Add ss58 prefix migration for first priority data
 
