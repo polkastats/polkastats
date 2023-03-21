@@ -2,6 +2,7 @@
 
 ## vNext
 - [BE] Add ss58 prefix migration for first priority data
+- [BE] Add package.json and yarn.lock to Dockerfile
 
 ## v0.25.0
 - [BE] Fix crawlers status restore after fail
