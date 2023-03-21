@@ -54,52 +54,55 @@ const decode = (address, ss58) => {
 };
 
 // Migration script for Account Table
-const convertAccountTable = (db, ss58Format) => {
+const convertAccountTable = async (db, ss58Format) => {
     const logger = new Logger('account');
 
-    return new Promise(function(resolve, reject) {
-        db.runSql('SELECT account_id, balances, identity from account;', (_, result) => {
-            logger.setTotalRows(result.rows.length);
-
-            // for (let i = 0; i < result.rows.length; i++) {
-            for (let i = 0; i < 1; i++) {
-                const {account_id, balances, identity} = result.rows[i];
-
-                const nextAddress = decode(account_id, ss58Format);
-
-                const nextBalances = balances.replace(account_id, nextAddress);
-
-                let queryString = `UPDATE account SET account_id='${nextAddress}', balances='${nextBalances}'`
-
-                if (identity?.includes("parent")) {
-                    const currentParent = JSON.parse(identity).parent;
-
-                    const nextParent = decode(currentParent, ss58Format);
-
-                    const nextIdentity = identity.replace(currentParent, nextParent);
-
-                    queryString += `, identity='${nextIdentity}'`
-                }
-
-                queryString += ` WHERE account_id='${account_id}';`
-
-                console.log(`Query is ${queryString}`);
-
-                db.runSql(queryString, (e, r) => {
-                    logger.log();
-                    if (e !== null) {
-                        console.log(`${e} + ${JSON.stringify(r)}`);
-                        reject(e);
-                    } else {
-                        resolve();
-                        if (i === result.rows.length - 1) {
-                            resolve();
-                        }
-                    }
-                });
+    const rows = await new Promise(function(resolve, reject) {
+        db.runSql('SELECT account_id, balances, identity from account;', (error, result) => {
+            if (error) {
+                reject(error);
             }
+            resolve(result.rows);
+        })});
+    logger.setTotalRows(rows.length);
+
+    for (let i = 0; i < rows.length; i++) {
+        console.log(i);
+
+        const {account_id, balances, identity} = rows[i];
+
+        const nextAddress = decode(account_id, ss58Format);
+
+        const nextBalances = balances.replace(account_id, nextAddress);
+
+        let queryString = `UPDATE account SET account_id='${nextAddress}', balances='${nextBalances}'`
+
+        if (identity?.includes("parent")) {
+            const currentParent = JSON.parse(identity).parent;
+
+            const nextParent = decode(currentParent, ss58Format);
+
+            const nextIdentity = identity.replace(currentParent, nextParent);
+
+            queryString += `, identity='${nextIdentity}'`
+        }
+
+        queryString += ` WHERE account_id='${account_id}';`
+
+        console.log(`Query is ${queryString}`);
+
+        const updateResult = await new Promise(function (resolve, reject) {
+            db.runSql(queryString, (e, r) => {
+                if (e) {
+                    console.log(`${e} + ${JSON.stringify(r)}`);
+                    reject(e);
+                } else {
+                    resolve(r);
+                }
+            });
         });
-    });
+        logger.log();
+    }
 }
 
 // Migration script for featured, era_commission, era_points, era_relative_performance, era_self_stake, era_vrc_score tables
