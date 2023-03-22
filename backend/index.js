@@ -1,5 +1,6 @@
 // @ts-check
 const express = require('express');
+const DBMigrate = require('db-migrate');
 const pino = require('pino');
 const { spawn } = require('child_process');
 const { StatusCodes } = require('http-status-codes');
@@ -47,6 +48,16 @@ const runCrawler = async ({ crawler, name }) => {
 };
 
 const runCrawlers = async () => {
+  logger.info('Running migrations 1');
+  await DBMigrate.getInstance(true, {
+    env: process.env.NODE_ENV || 'local',
+    config: '../db/database.json',
+    cmdOptions: {
+      'migrations-dir': '../db/migrations',
+    },
+  }).up();
+  logger.info('Migrations completed');
+
   logger.info('Starting backend, waiting 10s...');
   await wait(10000);
 
