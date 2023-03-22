@@ -188,6 +188,7 @@ class Logger {
         this.tableName = tableName;
         this.totalRows = 0;
         this.currentRow = 0;
+        this.migratedPercent = 0;
         console.log(`Migrating ${this.tableName}`);
     }
 
@@ -203,8 +204,11 @@ class Logger {
         if (currentRow === totalRows) {
             console.log(`✅ Done for ${tableName} table`);
         } else {
-            if (currentRow % 150 === 0) {
-                console.log(`⏳ Migrated ${Math.trunc(currentRow / totalRows * 10000) / 100}% for ${tableName} table`);
+            const migratedPercent = Math.trunc(100 * currentRow / totalRows);
+
+            if (migratedPercent % 20 === 0 && migratedPercent > this.migratedPercent) {
+                this.migratedPercent = migratedPercent;
+                console.log(`⏳ Migrated ${migratedPercent}% for ${tableName} table`);
             }
         }
     }
