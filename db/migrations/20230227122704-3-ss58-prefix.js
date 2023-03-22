@@ -89,6 +89,8 @@ const convertEraTables = async (db, ss58Format) => {
 };
 
 const convertRankingTable = async (db, ss58Format) => {
+    const deleteResult = await executeDbRunSqlAsPromise(db, "DELETE FROM ranking WHERE stash_address LIKE '6%' OR controller_address LIKE '6%'");
+
     const logger = new Logger('ranking');
 
     const result = await executeDbRunSqlAsPromise(db, 'SELECT identity, stash_address, controller_address, rank from ranking;');
