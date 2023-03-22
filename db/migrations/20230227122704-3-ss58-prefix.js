@@ -225,6 +225,7 @@ const executeDbRunSqlAsPromise = (db, sqlQuery) => {
     return new Promise(function (resolve, reject) {
         db.runSql(sqlQuery, (error, result) => {
             if (error) {
+                console.log(error);
                 reject(error);
             }
             resolve(result);
