@@ -19,8 +19,6 @@ exports.setup = function (options, seedLink) {
 
 // Migration script for Account Table
 const convertAccountTable = async (db, ss58Format) => {
-    const deleteResult = await executeDbRunSqlAsPromise(db, "DELETE FROM account WHERE account_id LIKE '6%'");
-
     const logger = new Logger('account');
 
     const result = await executeDbRunSqlAsPromise(db, 'SELECT account_id, balances, identity from account;');
@@ -68,8 +66,6 @@ const convertEraTables = async (db, ss58Format) => {
     for (let i = 0; i < tables.length; i++) {
         const table = tables[i];
 
-        const deleteResult = await executeDbRunSqlAsPromise(db, `DELETE FROM ${table} WHERE stash_address LIKE '6%'`);
-
         const logger = new Logger(table);
 
         const result = await executeDbRunSqlAsPromise(db, `SELECT DISTINCT stash_address from ${table}`);
@@ -91,8 +87,6 @@ const convertEraTables = async (db, ss58Format) => {
 };
 
 const convertRankingTable = async (db, ss58Format) => {
-    const deleteResult = await executeDbRunSqlAsPromise(db, "DELETE FROM ranking WHERE stash_address LIKE '6%' OR controller_address LIKE '6%'");
-
     const logger = new Logger('ranking');
 
     const result = await executeDbRunSqlAsPromise(db, 'SELECT identity, stash_address, controller_address, rank from ranking;');
