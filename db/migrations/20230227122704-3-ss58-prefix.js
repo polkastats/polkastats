@@ -68,6 +68,8 @@ const convertEraTables = async (db, ss58Format) => {
     for (let i = 0; i < tables.length; i++) {
         const table = tables[i];
 
+        const deleteResult = await executeDbRunSqlAsPromise(db, `DELETE FROM ${table} WHERE stash_address LIKE '6%'`);
+
         const logger = new Logger(table);
 
         const result = await executeDbRunSqlAsPromise(db, `SELECT DISTINCT stash_address from ${table}`);
