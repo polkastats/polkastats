@@ -10,6 +10,9 @@ const base = new BigNumber(10).pow(network.tokenDecimals)
 export default {
   methods: {
     shortAddress(address) {
+      if (address.address20) {
+        return this.shortAddress(address.address20)
+      }
       return (
         address.substring(0, 5) + '…' + address.substring(address.length - 5)
       )
