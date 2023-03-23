@@ -77,6 +77,7 @@ module.exports = {
       name: 'ss58PrefixMigration',
       enabled: !process.env.SS58_PREFIX_MIGRATION_DISABLED,
       crawler: './crawlers/ss58PrefixMigration.js',
+      ss58Prefix: 54,
     },
   ],
 };

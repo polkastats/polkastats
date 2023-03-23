@@ -1,14 +1,10 @@
 // @ts-check
 const pino = require('pino');
+const keyring = require('@polkadot/keyring');
 const {
-    wait,
     getClient,
-    getPolkadotAPI,
-    isNodeSynced,
-    dbParamQuery,
     dbQuery,
 } = require('../lib/utils');
-const keyring = require('@polkadot/keyring');
 
 const backendConfig = require('../backend.config');
 
@@ -24,9 +20,6 @@ const config = backendConfig.crawlers.find(
     ({name}) => name === crawlerName,
 );
 
-// TODO: Move to ENV Variable
-const newSs58Prefix = 54;
-
 const decode = (address) => {
     if (address.startsWith('0x')) {
         console.log('Address starts with 0x', address);
@@ -34,35 +27,34 @@ const decode = (address) => {
     } else {
         return keyring.encodeAddress(
             keyring.decodeAddress(address),
-            newSs58Prefix);
+            config.ss58Prefix);
     }
 };
 
 const migrateBlockTable = async (client) => {
-    logger.info(loggerOptions, 'Start Migration for Block table');
+    logger.info(loggerOptions, 'Start migration for Block table');
 
     const result = await dbQuery(client, `SELECT DISTINCT block_author  FROM block WHERE block_author LIKE '5%'`, loggerOptions);
 
     logger.info(loggerOptions, `Selected ${result.rowCount} accounts from block table`);
 
-    await dbQuery(client, `BEGIN;`, loggerOptions);
+    await dbQuery(client, 'BEGIN;', loggerOptions);
 
     for (const row of result.rows) {
         const {block_author} = row;
         const nextAddress = decode(block_author);
-        logger.info(loggerOptions, `Start Migration for ${block_author} -> ${nextAddress}`);
 
-        const sql = `UPDATE block SET block_author='${nextAddress}' WHERE block_author='${block_author}'`;
+        logger.info(loggerOptions, `Start migration for ${block_author}`);
 
-        await dbQuery(client, sql, loggerOptions);
+        await dbQuery(client, `UPDATE block SET block_author='${nextAddress}' WHERE block_author='${block_author}'`, loggerOptions);
 
-        logger.info(loggerOptions, `Finished Migration for ${block_author} -> ${nextAddress}`);
+        logger.info(loggerOptions, `Finished migration for ${block_author}`);
     }
     ;
 
-    await dbQuery(client, `COMMIT;`, loggerOptions);
+    await dbQuery(client, 'COMMIT;', loggerOptions);
 
-    logger.info(loggerOptions, `Finished migration for Block table`);
+    logger.info(loggerOptions, '✅ Finished migration for Block table');
 };
 
 const crawler = async () => {
