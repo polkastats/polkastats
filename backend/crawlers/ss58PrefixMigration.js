@@ -31,6 +31,28 @@ const decode = (address) => {
     }
 };
 
+const migrateSignerProperty = async (client) => {
+    logger.info(loggerOptions, 'Start migration for signer property for extrinsic table');
+
+    const result = await dbQuery(client, `SELECT DISTINCT signer FROM extrinsic WHERE signer LIKE '5%'`, loggerOptions);
+
+    logger.info(loggerOptions, `Selected ${result.rowCount} signer from extrinsic table`);
+
+    for (const row of result.rows) {
+        const {signer} = row;
+        const nextAddress = decode(signer);
+
+        console.log(`Signer is ${signer}, ${nextAddress}`);
+
+        logger.info(loggerOptions, `Start migration for ${signer}`);
+
+        await dbQuery(client, `UPDATE extrinsic SET signer='${nextAddress}' WHERE signer='${signer}'`, loggerOptions);
+
+        logger.info(loggerOptions, `Finished migration for ${signer}`);
+    }
+
+    logger.info(loggerOptions, '✅ Finished migration for signer property for exricnsic table');
+};
 const migrateBlockTable = async (client) => {
     logger.info(loggerOptions, 'Start migration for Block table');
 
@@ -59,6 +81,7 @@ const crawler = async () => {
 
     const client = await getClient(loggerOptions);
 
+    await migrateSignerProperty(client);
     await migrateBlockTable(client);
 };
 
