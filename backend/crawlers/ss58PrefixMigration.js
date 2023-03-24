@@ -31,7 +31,7 @@ const decode = (address) => {
     }
 };
 
-const changeAccountInArgs = (args) => {
+const changeAccountInJSON = (args) => {
     if (typeof args !== 'string') {
         logger.warning(loggerOptions, 'args are not a sting');
         return args;
@@ -74,7 +74,7 @@ const migrateDataForEvent = async (client, defaultStartBlock = 0) => {
 
             for (row of rows) {
                 const {data, block_number, event_index} = row;
-                const nextData = changeAccountInArgs(data);
+                const nextData = changeAccountInJSON(data);
                 if (data !== nextData) {
                     await dbQuery(client, `UPDATE event SET data='${nextData}' WHERE block_number=${block_number} AND event_index=${event_index};`);
                 }
@@ -107,7 +107,7 @@ const migrateArgsForExtrinsic = async (client, defaultStartBlock = 0) => {
 
             for (row of rows) {
                 const {args, block_number, extrinsic_index} = row;
-                const nextArgs = changeAccountInArgs(args);
+                const nextArgs = changeAccountInJSON(args);
                 if (args !== nextArgs) {
                     await dbQuery(client, `UPDATE extrinsic SET args='${nextArgs}' WHERE block_number=${block_number} AND extrinsic_index=${extrinsic_index};`);
                 }
