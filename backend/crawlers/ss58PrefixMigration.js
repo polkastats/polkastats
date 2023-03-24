@@ -52,7 +52,42 @@ const changeAccountInArgs = (args) => {
     return result;
 };
 
-const migrateArgsForExtrincsc = async (client, defaultStartBlock = 0) => {
+const migrateDataForEvent = async (client, defaultStartBlock = 0) => {
+    logger.info(loggerOptions, 'Start migration for data property for event table');
+
+    const result = await dbQuery(client, `SELECT MIN(block_number), MAX(block_number) FROM event WHERE method NOT LIKE 'ExtrinsicSuccess' AND data LIKE '%"5%'`, loggerOptions);
+    const {min, max} = result.rows[0];
+
+    let startBlock = defaultStartBlock || +min;
+    const endBlock = +max;
+    const batchSize = config.batchSize || 50000;
+
+    console.log(startBlock, endBlock, min, max);
+
+    while (startBlock < endBlock) {
+        const sql = `SELECT block_number, event_index, data FROM event WHERE method NOT LIKE 'ExtrinsicSuccess' AND data LIKE '%"5%' AND block_number BETWEEN ${startBlock} AND ${startBlock + batchSize};`;
+        const {rowCount, rows} = await dbQuery(client, sql);
+
+        startBlock += batchSize;
+
+        if (!rowCount) {
+            logger.info(loggerOptions, `Skiped for batch ${startBlock} -> ${endBlock + batchSize}`);
+        } else {
+            logger.info(loggerOptions, `Extracted ${rowCount} rows. Batch ${startBlock} -> ${startBlock + batchSize}`);
+
+            for (row of rows) {
+                const {data, block_number, event_index} = row;
+                const nextData = changeAccountInArgs(data);
+                if (data !== nextData) {
+                    await dbQuery(client, `UPDATE event SET data='${nextData}' WHERE block_number=${block_number} AND event_index=${event_index};`);
+                }
+            }
+            logger.info(loggerOptions, `Finished batching for ${startBlock} -> ${endBlock + batchSize}`);
+        }
+    }
+};
+
+const migrateArgsForExtrinsic = async (client, defaultStartBlock = 0) => {
     logger.info(loggerOptions, 'Start migration for args property for extrinsic table');
 
     const result = await dbQuery(client, `SELECT MIN(block_number), MAX(block_number) FROM extrinsic WHERE is_signed = TRUE;`, loggerOptions);
@@ -135,8 +170,14 @@ const crawler = async () => {
 
     const client = await getClient(loggerOptions);
 
-    await migrateArgsForExtrincsc(client);
+    // Event table
+    await migrateDataForEvent(client);
+
+    // Extrinsic table
+    await migrateArgsForExtrinsic(client);
     await migrateSignerProperty(client);
+
+    // // Block table
     await migrateBlockTable(client);
 };
 
