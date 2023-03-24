@@ -7,6 +7,7 @@ const {
 } = require('../lib/utils');
 
 const backendConfig = require('../backend.config');
+const {logLevel} = require("../backend.config");
 
 const crawlerName = 'ss58PrefixMigration';
 
@@ -37,16 +38,51 @@ const changeAccountInArgs = (args) => {
         return args;
     }
     // Extract list of accounts
-    const accounts = args.match(/5[a-zA-Z0-9]{47}/gm);
+    const accounts = args.match(/"5[a-zA-Z0-9]{47}"/gm);
     let result = args;
 
     if (Array.isArray(accounts)) {
         accounts.forEach((account) => {
-            result = result.replace(account, decode(account));
+            // Slice is needed to remove ""
+            const slicedAccount = account.slice(1, -1);
+            result = result.replace(slicedAccount, decode(slicedAccount));
         });
     }
 
     return result;
+};
+
+const migrateArgsForExtrincsc = async (client, defaultStartBlock = 0) => {
+    logger.info(loggerOptions, 'Start migration for args property for extrinsic table');
+
+    const result = await dbQuery(client, `SELECT MIN(block_number), MAX(block_number) FROM extrinsic WHERE is_signed = TRUE;`, loggerOptions);
+    const {min, max} = result.rows[0];
+
+    let startBlock = defaultStartBlock || +min;
+    const endBlock = +max;
+    const batchSize = config.batchSize || 50000;
+
+    while (startBlock < endBlock) {
+        const sql = `SELECT block_number, extrinsic_index, args FROM extrinsic WHERE is_signed = TRUE AND block_number BETWEEN ${startBlock} AND ${startBlock + batchSize};`;
+        const {rows, rowCount} = await dbQuery(client, sql);
+
+        startBlock += batchSize;
+
+        if (!rowCount) {
+            logger.info(loggerOptions, `Skiped for batch ${startBlock} -> ${endBlock + batchSize}`);
+        } else {
+            logger.info(loggerOptions, `Extracted ${rowCount} rows. Batch ${startBlock} -> ${startBlock + batchSize}`);
+
+            for (row of rows) {
+                const {args, block_number, extrinsic_index} = row;
+                const nextArgs = changeAccountInArgs(args);
+                if (args !== nextArgs) {
+                    await dbQuery(client, `UPDATE extrinsic SET args='${nextArgs}' WHERE block_number=${block_number} AND extrinsic_index=${extrinsic_index};`);
+                }
+            }
+            logger.info(loggerOptions, `Finished batching for ${startBlock} -> ${endBlock + batchSize}`);
+        }
+    }
 };
 
 const migrateSignerProperty = async (client) => {
@@ -99,6 +135,7 @@ const crawler = async () => {
 
     const client = await getClient(loggerOptions);
 
+    await migrateArgsForExtrincsc(client);
     await migrateSignerProperty(client);
     await migrateBlockTable(client);
 };
