@@ -82,6 +82,8 @@ const migrateDataForEvent = async (client, defaultStartBlock = 0) => {
             logger.info(loggerOptions, `Finished batching for ${startBlock} -> ${endBlock + batchSize}`);
         }
     }
+
+    logger.info(loggerOptions, '✅ Finished migration for data property for event table');
 };
 
 const migrateArgsForExtrinsic = async (client, defaultStartBlock = 0) => {
@@ -115,6 +117,8 @@ const migrateArgsForExtrinsic = async (client, defaultStartBlock = 0) => {
             logger.info(loggerOptions, `Finished batching for ${startBlock} -> ${endBlock + batchSize}`);
         }
     }
+
+    logger.info(loggerOptions, '✅ Finished migration for args property for extrinsic table');
 };
 
 const migrateSignerProperty = async (client) => {
@@ -137,6 +141,7 @@ const migrateSignerProperty = async (client) => {
 
     logger.info(loggerOptions, '✅ Finished migration for signer property for exricnsic table');
 };
+
 const migrateBlockTable = async (client) => {
     logger.info(loggerOptions, 'Start migration for Block table');
 
@@ -154,7 +159,6 @@ const migrateBlockTable = async (client) => {
 
         logger.info(loggerOptions, `Finished migration for ${block_author}`);
     }
-    ;
 
     logger.info(loggerOptions, '✅ Finished migration for Block table');
 };
