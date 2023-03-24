@@ -7,7 +7,6 @@ const {
 } = require('../lib/utils');
 
 const backendConfig = require('../backend.config');
-const {logLevel} = require("../backend.config");
 
 const crawlerName = 'ss58PrefixMigration';
 
@@ -23,7 +22,7 @@ const config = backendConfig.crawlers.find(
 
 const decode = (address) => {
     if (address.startsWith('0x')) {
-        console.log('Address starts with 0x', address);
+        logger.info(`Address starts with 0x ${address}`);
         return address;
     } else {
         return keyring.encodeAddress(
@@ -61,8 +60,6 @@ const migrateDataForEvent = async (client, defaultStartBlock = 0) => {
     let startBlock = defaultStartBlock || +min;
     const endBlock = +max;
     const batchSize = config.batchSize || 50000;
-
-    console.log(startBlock, endBlock, min, max);
 
     while (startBlock < endBlock) {
         const sql = `SELECT block_number, event_index, data FROM event WHERE method NOT LIKE 'ExtrinsicSuccess' AND data LIKE '%"5%' AND block_number BETWEEN ${startBlock} AND ${startBlock + batchSize};`;
@@ -130,8 +127,6 @@ const migrateSignerProperty = async (client) => {
     for (const row of result.rows) {
         const {signer} = row;
         const nextAddress = decode(signer);
-
-        console.log(`Signer is ${signer}, ${nextAddress}`);
 
         logger.info(loggerOptions, `Start migration for ${signer}`);
 
