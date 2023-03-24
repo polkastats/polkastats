@@ -31,6 +31,24 @@ const decode = (address) => {
     }
 };
 
+const changeAccountInArgs = (args) => {
+    if (typeof args !== 'string') {
+        logger.warning(loggerOptions, 'args are not a sting');
+        return args;
+    }
+    // Extract list of accounts
+    const accounts = args.match(/5[a-zA-Z0-9]{47}/gm);
+    let result = args;
+
+    if (Array.isArray(accounts)) {
+        accounts.forEach((account) => {
+            result = result.replace(account, decode(account));
+        });
+    }
+
+    return result;
+};
+
 const migrateSignerProperty = async (client) => {
     logger.info(loggerOptions, 'Start migration for signer property for extrinsic table');
 
