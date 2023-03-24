@@ -38,8 +38,6 @@ const migrateBlockTable = async (client) => {
 
     logger.info(loggerOptions, `Selected ${result.rowCount} accounts from block table`);
 
-    await dbQuery(client, 'BEGIN;', loggerOptions);
-
     for (const row of result.rows) {
         const {block_author} = row;
         const nextAddress = decode(block_author);
@@ -51,8 +49,6 @@ const migrateBlockTable = async (client) => {
         logger.info(loggerOptions, `Finished migration for ${block_author}`);
     }
     ;
-
-    await dbQuery(client, 'COMMIT;', loggerOptions);
 
     logger.info(loggerOptions, '✅ Finished migration for Block table');
 };
