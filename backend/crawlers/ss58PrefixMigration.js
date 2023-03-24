@@ -22,7 +22,7 @@ const config = backendConfig.crawlers.find(
 
 const decode = (address) => {
     if (address.startsWith('0x')) {
-        logger.info(`Address starts with 0x ${address}`);
+        logger.info(loggerOptions, `Address starts with 0x ${address}`);
         return address;
     } else {
         return keyring.encodeAddress(
