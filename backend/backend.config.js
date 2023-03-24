@@ -78,6 +78,8 @@ module.exports = {
       enabled: !process.env.SS58_PREFIX_MIGRATION_DISABLED,
       crawler: './crawlers/ss58PrefixMigration.js',
       ss58Prefix: 54,
+      // Batch size for Event and Extrinsic tables
+      batchSize: 50000,
     },
   ],
 };
