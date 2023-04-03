@@ -50,31 +50,7 @@ const migrateDataForEvent = async (db, ss58Format) => {
     const result = await executeDbRunSqlAsPromise(db, `SELECT MIN(block_number), MAX(block_number) FROM event WHERE method NOT LIKE 'ExtrinsicSuccess' AND data LIKE '%"5%'`);
     const {min, max} = result.rows[0];
 
-    let startBlock = +min;
-    const endBlock = +max;
-    const batchSize = 50000;
-
-    while (startBlock < endBlock) {
-        const sql = `SELECT block_number, event_index, data FROM event WHERE method NOT LIKE 'ExtrinsicSuccess' AND data LIKE '%"5%' AND block_number BETWEEN ${startBlock} AND ${startBlock + batchSize};`;
-        const {rowCount, rows} = await executeDbRunSqlAsPromise(db, sql);
-
-        startBlock += batchSize;
-
-        if (!rowCount) {
-            console.log(`Skiped for batch ${startBlock} -> ${endBlock + batchSize}`);
-        } else {
-            console.log(`Extracted ${rowCount} rows. Batch ${startBlock} -> ${startBlock + batchSize}`);
-
-            for (const row of rows) {
-                const {data, block_number, event_index} = row;
-                const nextData = changeAccountInJSON(data, ss58Format);
-                if (data !== nextData) {
-                    await executeDbRunSqlAsPromise(db, `UPDATE event SET data='${nextData}' WHERE block_number=${block_number} AND event_index=${event_index};`);
-                }
-            }
-            console.log(`Finished batching for ${startBlock} -> ${endBlock + batchSize}`);
-        }
-    }
+    await migrateTableData(db, ss58Format, min, max, 'event', 'data');
 
     console.log('✅ Finished migration for data property for event table');
 };
@@ -85,33 +61,37 @@ const migrateArgsForExtrinsic = async (db, ss58Format) => {
     const result = await executeDbRunSqlAsPromise(db, `SELECT MIN(block_number), MAX(block_number) FROM extrinsic WHERE is_signed = TRUE;`);
     const {min, max} = result.rows[0];
 
+    await migrateTableData(db, ss58Format, min, max, 'extrinsic', 'args');
+
+    console.log('✅ Finished migration for args property for extrinsic table');
+};
+
+const migrateTableData = async (db, ss58Format, min, max, table, property) => {
     let startBlock = +min;
     const endBlock = +max;
     const batchSize = 50000;
 
     while (startBlock < endBlock) {
-        const sql = `SELECT block_number, extrinsic_index, args FROM extrinsic WHERE is_signed = TRUE AND block_number BETWEEN ${startBlock} AND ${startBlock + batchSize};`;
+        const sql = `SELECT block_number, ${table}_index, ${property} FROM ${table} WHERE ${property} LIKE '%"%5%"%' AND block_number BETWEEN ${startBlock} AND ${startBlock + batchSize};`;
         const {rows, rowCount} = await executeDbRunSqlAsPromise(db, sql);
 
         startBlock += batchSize;
 
         if (!rowCount) {
-            console.log(`Skiped for batch ${startBlock} -> ${endBlock + batchSize}`);
+            console.log(`Skipped for batch ${startBlock} -> ${endBlock + batchSize}`);
         } else {
             console.log(`Extracted ${rowCount} rows. Batch ${startBlock} -> ${startBlock + batchSize}`);
 
             for (const row of rows) {
-                const {args, block_number, extrinsic_index} = row;
-                const nextArgs = changeAccountInJSON(args, ss58Format);
-                if (args !== nextArgs) {
-                    await executeDbRunSqlAsPromise(db, `UPDATE extrinsic SET args='${nextArgs}' WHERE block_number=${block_number} AND extrinsic_index=${extrinsic_index};`);
+                const { [property]: value, block_number, [table + '_index']: index } = row;
+                const nextValue = changeAccountInJSON(value, ss58Format);
+                if (value !== nextValue) {
+                    await executeDbRunSqlAsPromise(db, `UPDATE ${table} SET ${property}='${nextValue}' WHERE block_number=${block_number} AND ${table}_index=${index};`);
                 }
             }
             console.log(`Finished batching for ${startBlock} -> ${endBlock + batchSize}`);
         }
     }
-
-    console.log('✅ Finished migration for args property for extrinsic table');
 };
 
 const migrateSignerProperty = async (db, ss58Format) => {
