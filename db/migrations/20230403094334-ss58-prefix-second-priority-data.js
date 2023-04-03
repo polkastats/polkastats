@@ -49,6 +49,7 @@ const changeAccountInJSON = (args, ss58Format) => {
 
     return result;
 };
+
 const migrateDataForEvent = async (db, ss58Format) => {
     console.log('Start migration for data property for event table');
 
@@ -59,6 +60,7 @@ const migrateDataForEvent = async (db, ss58Format) => {
 
     console.log('✅ Finished migration for data property for event table');
 };
+
 const migrateArgsForExtrinsic = async (db, ss58Format) => {
     console.log('Start migration for args property for extrinsic table');
 
@@ -133,6 +135,7 @@ const migrateBlockTable = async (db, ss58Format) => {
 
     console.log('✅ Finished migration for Block table');
 };
+
 const migrateBlockAuthor = async (db, ss58Format, block_author) => {
     console.log(`Start migration for ${block_author}`);
 
