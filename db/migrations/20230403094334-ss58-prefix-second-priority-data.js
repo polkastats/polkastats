@@ -118,22 +118,29 @@ const migrateSignerProperty = async (db, ss58Format) => {
 const migrateBlockTable = async (db, ss58Format) => {
     console.log('Start migration for Block table');
 
-    const result = await executeDbRunSqlAsPromise(db, `SELECT DISTINCT block_author  FROM block WHERE block_author LIKE '5%'`);
+    const result = await executeDbRunSqlAsPromise(db, `SELECT DISTINCT block_author FROM block WHERE block_author LIKE '5%'`);
 
     console.log(`Selected ${result.rowCount} accounts from block table`);
 
-    for (const row of result.rows) {
-        const {block_author} = row;
-        const nextAddress = decode(block_author, ss58Format);
-
-        console.log(`Start migration for ${block_author}`);
-
-        await executeDbRunSqlAsPromise(db, `UPDATE block SET block_author='${nextAddress}' WHERE block_author='${block_author}'`);
-
-        console.log(`Finished migration for ${block_author}`);
-    }
+    await Promise.all(result.rows.map(async (row) => {
+        const { block_author } = row;
+        await migrateBlockAuthor(db, ss58Format, block_author);
+    }));
 
     console.log('✅ Finished migration for Block table');
+};
+const migrateBlockAuthor = async (db, ss58Format, block_author) => {
+    console.log(`Start migration for ${block_author}`);
+
+    const nextAddress = decode(block_author, ss58Format);
+    if (nextAddress === block_author) {
+        console.log(`Skipped migration for ${block_author}`);
+        return;
+    }
+
+    await executeDbRunSqlAsPromise(db, `UPDATE block SET block_author='${nextAddress}' WHERE block_author='${block_author}'`);
+
+    console.log(`Finished migration for ${block_author}`);
 };
 
 const convertTables = async (db, ss58Format) => {
