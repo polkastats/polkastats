@@ -127,10 +127,10 @@ const migrateBlockTable = async (db, ss58Format) => {
 
     console.log(`Selected ${result.rowCount} accounts from block table`);
 
-    await Promise.all(result.rows.map(async (row) => {
+    for (const row of result.rows) {
         const { block_author } = row;
         await migrateBlockAuthor(db, ss58Format, block_author);
-    }));
+    }
 
     console.log('✅ Finished migration for Block table');
 };
