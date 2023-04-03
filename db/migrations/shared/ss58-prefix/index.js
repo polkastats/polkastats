@@ -4,7 +4,7 @@ const SS58_PREFIX_NEW = 54;
 const SS58_PREFIX_OLD = 42;
 
 const executeDbRunSqlAsPromise = (db, sqlQuery) => {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         db.runSql(sqlQuery, (error, result) => {
             if (error) {
                 console.log('Error', error);
@@ -25,14 +25,14 @@ class Logger {
         console.log(`Migrating ${this.tableName}`);
     }
 
-    setTotalRows = (totalRows) => {
+    setTotalRows(totalRows) {
         this.totalRows = totalRows;
-        console.log(`Total Rows are ${this.tableName}`);
+        console.log(`Total rows: ${totalRows} for table ${this.tableName}`);
     }
 
-    log = () => {
+    log() {
         this.currentRow++;
-        const {currentRow, totalRows, tableName} = this;
+        const { currentRow, totalRows, tableName } = this;
 
         if (currentRow === totalRows) {
             console.log(`✅ Done for ${tableName} table`);
@@ -47,7 +47,7 @@ class Logger {
     }
 }
 
-const decode = (address, ss58) => {
+const decodeAddress = (address, ss58) => {
     if (address.startsWith('0x')) {
         console.log('Address starts with 0x', address);
         return address;
@@ -63,5 +63,5 @@ module.exports = {
     SS58_PREFIX_OLD,
     executeDbRunSqlAsPromise,
     Logger,
-    decode,
-}
+    decodeAddress,
+};

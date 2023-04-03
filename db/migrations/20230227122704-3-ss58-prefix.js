@@ -8,7 +8,7 @@ const {
     SS58_PREFIX_NEW,
     executeDbRunSqlAsPromise,
     Logger,
-    decode,
+    decodeAddress,
 } = require('./shared/ss58-prefix/index.js');
 var Promise;
 
@@ -81,7 +81,7 @@ const convertEraTables = async (db, ss58Format) => {
         for (let j = 0; j < rows.length; j++) {
             const {stash_address} = rows[j];
 
-            const nextAddress = decode(stash_address, ss58Format)
+            const nextAddress = decodeAddress(stash_address, ss58Format)
 
             const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${stash_address}';`
 
@@ -102,16 +102,16 @@ const convertRankingTable = async (db, ss58Format) => {
     for (let i = 0; i < rows.length; i++) {
         const {identity, stash_address, controller_address, rank} = rows[i];
 
-        const nextStashAddress = decode(stash_address, ss58Format);
+        const nextStashAddress = decodeAddress(stash_address, ss58Format);
 
-        const nextControllerAddress = decode(controller_address, ss58Format);
+        const nextControllerAddress = decodeAddress(controller_address, ss58Format);
 
         let queryString = `UPDATE ranking SET stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}'`
 
         if (identity?.includes("parent")) {
             const currentParent = JSON.parse(identity).parent;
 
-            const nextParent = decode(currentParent, ss58Format);
+            const nextParent = decodeAddress(currentParent, ss58Format);
 
             const nextIdentity = identity.replace(currentParent, nextParent);
 
@@ -136,9 +136,9 @@ const convertFaucetTable = async (db, ss58Format) => {
     for (let i = 0; i < rows.length; i++) {
         const {id, sender, destination} = rows[i];
 
-        const nextSender = decode(sender, ss58Format);
+        const nextSender = decodeAddress(sender, ss58Format);
 
-        const nextDestination = decode(destination, ss58Format);
+        const nextDestination = decodeAddress(destination, ss58Format);
 
         const queryString = `UPDATE faucet SET sender='${nextSender}', destination='${nextDestination}' WHERE id='${id}';`
 
@@ -159,7 +159,7 @@ const convertTransfers = async (db, ss58Format) => {
     for (let i = 0; i < rows.length; i++) {
         const {block_number, signer, args, method} = rows[i];
 
-        const nextSigner = decode(signer, ss58Format);
+        const nextSigner = decodeAddress(signer, ss58Format);
 
         let queryString = `UPDATE extrinsic SET signer='${nextSigner}'`
 
@@ -167,7 +167,7 @@ const convertTransfers = async (db, ss58Format) => {
             const [account] = JSON.parse(args);
             const accountId = typeof account === 'string' ? account : account.id ? account.id : account.address20;
 
-            const nextAccountId = decode(accountId, ss58Format);
+            const nextAccountId = decodeAddress(accountId, ss58Format);
 
             const nextArgs = args.replace(accountId, nextAccountId);
             queryString += `, args='${nextArgs}'`;

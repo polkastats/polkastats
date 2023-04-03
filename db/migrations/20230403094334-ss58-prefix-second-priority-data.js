@@ -8,8 +8,7 @@ const {
     SS58_PREFIX_OLD,
     SS58_PREFIX_NEW,
     executeDbRunSqlAsPromise,
-    Logger,
-    decode,
+    decodeAddress,
 } = require('./shared/ss58-prefix/index.js');
 var Promise;
 
@@ -39,7 +38,7 @@ const changeAccountInJSON = (args, ss58Format) => {
 
         if (Array.isArray(accounts)) {
             for (const account of accounts) {
-                const decodedAccount = decode(account.slice(1, -1), ss58Format);
+                const decodedAccount = decodeAddress(account.slice(1, -1), ss58Format);
                 result = result.replaceAll(account, `"${decodedAccount}"`);
             }
         }
@@ -109,7 +108,7 @@ const migrateSignerProperty = async (db, ss58Format) => {
 
     for (const row of result.rows) {
         const {signer} = row;
-        const nextAddress = decode(signer, ss58Format);
+        const nextAddress = decodeAddress(signer, ss58Format);
 
         console.log(`Start migration for ${signer}`);
 
@@ -139,7 +138,7 @@ const migrateBlockTable = async (db, ss58Format) => {
 const migrateBlockAuthor = async (db, ss58Format, block_author) => {
     console.log(`Start migration for ${block_author}`);
 
-    const nextAddress = decode(block_author, ss58Format);
+    const nextAddress = decodeAddress(block_author, ss58Format);
     if (nextAddress === block_author) {
         console.log(`Skipped migration for ${block_author}`);
         return;
