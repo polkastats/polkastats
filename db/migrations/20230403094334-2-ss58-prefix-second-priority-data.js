@@ -39,7 +39,7 @@ const changeAccountInJSON = (args, ss58Format) => {
         if (Array.isArray(accounts)) {
             for (const account of accounts) {
                 const decodedAccount = decodeAddress(account.slice(1, -1), ss58Format);
-                result = result.replaceAll(account, `"${decodedAccount}"`);
+                result = result.replace(account, `"${decodedAccount}"`);
             }
         }
     } catch (error) {
