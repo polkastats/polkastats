@@ -3,7 +3,13 @@
 var dbm;
 var type;
 var seed;
-var keyring = require('@polkadot/keyring');
+const {
+    SS58_PREFIX_OLD,
+    SS58_PREFIX_NEW,
+    executeDbRunSqlAsPromise,
+    Logger,
+    decodeAddress,
+} = require('./shared/ss58-prefix/index.js');
 var Promise;
 
 /**
@@ -28,7 +34,7 @@ const convertAccountTable = async (db, ss58Format) => {
     for (let i = 0; i < rows.length; i++) {
         const {account_id, balances, identity} = rows[i];
 
-        const nextAddress = decode(account_id, ss58Format);
+        const nextAddress = decodeAddress(account_id, ss58Format);
 
         const nextBalances = balances.replace(account_id, nextAddress);
 
@@ -37,7 +43,7 @@ const convertAccountTable = async (db, ss58Format) => {
         if (identity?.includes("parent")) {
             const currentParent = JSON.parse(identity).parent;
 
-            const nextParent = decode(currentParent, ss58Format);
+            const nextParent = decodeAddress(currentParent, ss58Format);
 
             const nextIdentity = identity.replace(currentParent, nextParent);
 
@@ -75,7 +81,7 @@ const convertEraTables = async (db, ss58Format) => {
         for (let j = 0; j < rows.length; j++) {
             const {stash_address} = rows[j];
 
-            const nextAddress = decode(stash_address, ss58Format)
+            const nextAddress = decodeAddress(stash_address, ss58Format)
 
             const queryString = `UPDATE ${table} SET stash_address='${nextAddress}' WHERE stash_address='${stash_address}';`
 
@@ -96,16 +102,16 @@ const convertRankingTable = async (db, ss58Format) => {
     for (let i = 0; i < rows.length; i++) {
         const {identity, stash_address, controller_address, rank} = rows[i];
 
-        const nextStashAddress = decode(stash_address, ss58Format);
+        const nextStashAddress = decodeAddress(stash_address, ss58Format);
 
-        const nextControllerAddress = decode(controller_address, ss58Format);
+        const nextControllerAddress = decodeAddress(controller_address, ss58Format);
 
         let queryString = `UPDATE ranking SET stash_address='${nextStashAddress}', controller_address='${nextControllerAddress}'`
 
         if (identity?.includes("parent")) {
             const currentParent = JSON.parse(identity).parent;
 
-            const nextParent = decode(currentParent, ss58Format);
+            const nextParent = decodeAddress(currentParent, ss58Format);
 
             const nextIdentity = identity.replace(currentParent, nextParent);
 
@@ -130,9 +136,9 @@ const convertFaucetTable = async (db, ss58Format) => {
     for (let i = 0; i < rows.length; i++) {
         const {id, sender, destination} = rows[i];
 
-        const nextSender = decode(sender, ss58Format);
+        const nextSender = decodeAddress(sender, ss58Format);
 
-        const nextDestination = decode(destination, ss58Format);
+        const nextDestination = decodeAddress(destination, ss58Format);
 
         const queryString = `UPDATE faucet SET sender='${nextSender}', destination='${nextDestination}' WHERE id='${id}';`
 
@@ -153,7 +159,7 @@ const convertTransfers = async (db, ss58Format) => {
     for (let i = 0; i < rows.length; i++) {
         const {block_number, signer, args, method} = rows[i];
 
-        const nextSigner = decode(signer, ss58Format);
+        const nextSigner = decodeAddress(signer, ss58Format);
 
         let queryString = `UPDATE extrinsic SET signer='${nextSigner}'`
 
@@ -161,7 +167,7 @@ const convertTransfers = async (db, ss58Format) => {
             const [account] = JSON.parse(args);
             const accountId = typeof account === 'string' ? account : account.id ? account.id : account.address20;
 
-            const nextAccountId = decode(accountId, ss58Format);
+            const nextAccountId = decodeAddress(accountId, ss58Format);
 
             const nextArgs = args.replace(accountId, nextAccountId);
             queryString += `, args='${nextArgs}'`;
@@ -183,69 +189,12 @@ const convertTables = async (db, prefix) => {
     await convertTransfers(db, prefix);
 }
 
-class Logger {
-    constructor(tableName) {
-        this.tableName = tableName;
-        this.totalRows = 0;
-        this.currentRow = 0;
-        this.migratedPercent = 0;
-        console.log(`Migrating ${this.tableName}`);
-    }
-
-    setTotalRows = (totalRows) => {
-        this.totalRows = totalRows;
-        console.log(`Total Rows are ${this.tableName}`);
-    }
-
-    log = () => {
-        this.currentRow++;
-        const {currentRow, totalRows, tableName} = this;
-
-        if (currentRow === totalRows) {
-            console.log(`✅ Done for ${tableName} table`);
-        } else {
-            const migratedPercent = Math.trunc(100 * currentRow / totalRows);
-
-            if (migratedPercent % 20 === 0 && migratedPercent > this.migratedPercent) {
-                this.migratedPercent = migratedPercent;
-                console.log(`⏳ Migrated ${migratedPercent}% for ${tableName} table`);
-            }
-        }
-    }
-}
-
-const decode = (address, ss58) => {
-    if (address.startsWith('0x')) {
-        console.log('Address starts with 0x', address);
-        return address;
-    } else {
-        return keyring.encodeAddress(
-            keyring.decodeAddress(address),
-            ss58);
-    }
-};
-
-const executeDbRunSqlAsPromise = (db, sqlQuery) => {
-    return new Promise(function (resolve, reject) {
-        db.runSql(sqlQuery, (error, result) => {
-            if (error) {
-                console.log('Error', error);
-                console.log('sqlQuery', sqlQuery);
-                reject(error);
-            }
-            resolve(result);
-        })
-    });
-}
-
 exports.up = async function (db) {
-    const newSs58Prefix = 54;
-    return convertTables(db, newSs58Prefix);
+    return convertTables(db, SS58_PREFIX_NEW);
 };
 
 exports.down = async function (db) {
-    const oldSs58Prefix = 42;
-    return convertTables(db, oldSs58Prefix);
+    return convertTables(db, SS58_PREFIX_OLD);
 };
 
 exports._meta = {
