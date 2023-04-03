@@ -49,7 +49,7 @@ const changeAccountInJSON = (args, ss58Format) => {
     return result;
 };
 
-const migrateDataForEvent = async (db, ss58Format) => {
+const migrateEventTable = async (db, ss58Format) => {
     console.log('Start migration for data property for event table');
 
     const result = await executeDbRunSqlAsPromise(db, `SELECT MIN(block_number), MAX(block_number) FROM event WHERE method NOT LIKE 'ExtrinsicSuccess' AND data LIKE '%"5%'`);
@@ -60,7 +60,7 @@ const migrateDataForEvent = async (db, ss58Format) => {
     console.log('✅ Finished migration for data property for event table');
 };
 
-const migrateArgsForExtrinsic = async (db, ss58Format) => {
+const migrateExtrinsicTableArgs = async (db, ss58Format) => {
     console.log('Start migration for args property for extrinsic table');
 
     const result = await executeDbRunSqlAsPromise(db, `SELECT MIN(block_number), MAX(block_number) FROM extrinsic WHERE is_signed = TRUE;`);
@@ -99,7 +99,7 @@ const migrateTableData = async (db, ss58Format, min, max, table, property) => {
     }
 };
 
-const migrateSignerProperty = async (db, ss58Format) => {
+const migrateExtrinsicTableSigners = async (db, ss58Format) => {
     console.log('Start migration for signer property for extrinsic table');
 
     const result = await executeDbRunSqlAsPromise(db, `SELECT DISTINCT signer FROM extrinsic WHERE signer LIKE '5%'`);
@@ -149,19 +149,19 @@ const migrateBlockAuthor = async (db, ss58Format, block_author) => {
     console.log(`Finished migration for ${block_author}`);
 };
 
-const convertTables = async (db, ss58Format) => {
+const migrateTables = async (db, ss58Format) => {
     await migrateBlockTable(db, ss58Format);
-    await migrateSignerProperty(db, ss58Format);
-    await migrateArgsForExtrinsic(db, ss58Format);
-    await migrateDataForEvent(db, ss58Format);
+    await migrateExtrinsicTableSigners(db, ss58Format);
+    await migrateExtrinsicTableArgs(db, ss58Format);
+    await migrateEventTable(db, ss58Format);
 };
 
 exports.up = function (db) {
-    return convertTables(db, SS58_PREFIX_NEW);
+    return migrateTables(db, SS58_PREFIX_NEW);
 };
 
 exports.down = function (db) {
-    return convertTables(db, SS58_PREFIX_OLD);
+    return migrateTables(db, SS58_PREFIX_OLD);
 };
 
 exports._meta = {
