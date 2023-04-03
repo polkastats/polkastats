@@ -73,13 +73,5 @@ module.exports = {
           parseInt(process.env.DDC_POLLING_TIME_MS, 10)
           || 2 * 60 * 1000, // 2 minutes
     },
-    {
-      name: 'ss58PrefixMigration',
-      enabled: !process.env.SS58_PREFIX_MIGRATION_DISABLED,
-      crawler: './crawlers/ss58PrefixMigration.js',
-      ss58Prefix: 54,
-      // Batch size for Event and Extrinsic tables
-      batchSize: 50000,
-    },
   ],
 };
