@@ -34,7 +34,7 @@ const convertAccountTable = async (db, ss58Format) => {
     for (let i = 0; i < rows.length; i++) {
         const {account_id, balances, identity} = rows[i];
 
-        const nextAddress = decode(account_id, ss58Format);
+        const nextAddress = decodeAddress(account_id, ss58Format);
 
         const nextBalances = balances.replace(account_id, nextAddress);
 
@@ -43,7 +43,7 @@ const convertAccountTable = async (db, ss58Format) => {
         if (identity?.includes("parent")) {
             const currentParent = JSON.parse(identity).parent;
 
-            const nextParent = decode(currentParent, ss58Format);
+            const nextParent = decodeAddress(currentParent, ss58Format);
 
             const nextIdentity = identity.replace(currentParent, nextParent);
 
