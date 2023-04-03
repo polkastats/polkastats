@@ -25,25 +25,30 @@ exports.setup = function (options, seedLink) {
 };
 
 const changeAccountInJSON = (args, ss58Format) => {
+    const ACCOUNT_REGEX = /"5[a-zA-Z0-9]{47}"/gm;
+
     if (typeof args !== 'string') {
-        console.log('args are not a sting');
+        console.log('args are not a string');
         return args;
     }
-    // Extract list of accounts
-    const accounts = args.match(/"5[a-zA-Z0-9]{47}"/gm);
+
     let result = args;
 
-    if (Array.isArray(accounts)) {
-        accounts.forEach((account) => {
-            // Slice is needed to remove ""
-            const slicedAccount = account.slice(1, -1);
-            result = result.replace(slicedAccount, decode(slicedAccount, ss58Format));
-        });
+    try {
+        const accounts = args.match(ACCOUNT_REGEX);
+
+        if (Array.isArray(accounts)) {
+            for (const account of accounts) {
+                const decodedAccount = decode(account.slice(1, -1), ss58Format);
+                result = result.replaceAll(account, `"${decodedAccount}"`);
+            }
+        }
+    } catch (error) {
+        console.log(`Error decoding account: ${error.message}`);
     }
 
     return result;
 };
-
 const migrateDataForEvent = async (db, ss58Format) => {
     console.log('Start migration for data property for event table');
 
@@ -54,7 +59,6 @@ const migrateDataForEvent = async (db, ss58Format) => {
 
     console.log('✅ Finished migration for data property for event table');
 };
-
 const migrateArgsForExtrinsic = async (db, ss58Format) => {
     console.log('Start migration for args property for extrinsic table');
 
