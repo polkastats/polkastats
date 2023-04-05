@@ -150,7 +150,7 @@ const migrateBlockAuthor = async (db, ss58Format, block_author) => {
 };
 
 const migrateTables = async (db, ss58Format) => {
-    await migrateBlockTable(db, ss58Format);
+    // await migrateBlockTable(db, ss58Format);
     await migrateExtrinsicTableSigners(db, ss58Format);
     await migrateExtrinsicTableArgs(db, ss58Format);
     await migrateEventTable(db, ss58Format);
