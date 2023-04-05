@@ -74,7 +74,7 @@ const migrateExtrinsicTableArgs = async (db, ss58Format) => {
 const migrateTableData = async (db, ss58Format, min, max, table, property) => {
     let startBlock = +min;
     const endBlock = +max;
-    const batchSize = 5000;
+    const batchSize = 100;
 
     while (startBlock < endBlock) {
         const sql = `SELECT block_number, ${table}_index, ${property} FROM ${table} WHERE ${property} LIKE '%"%5%"%' AND block_number BETWEEN ${startBlock} AND ${startBlock + batchSize};`;
