@@ -1,6 +1,9 @@
 # Cere Stats
 
 ## vNext
+...
+
+## v0.28.0
 - [BE] Add ss58 prefix migration for block table
 
 ## v0.27.0
