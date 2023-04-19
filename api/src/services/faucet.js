@@ -5,6 +5,8 @@ const { decimals } = require("../config/blockchains");
 require("dotenv").config();
 const getClient = require("../../db/db");
 const {
+  SUPERUSER_API_TOKEN,
+  SUPERUSER_NUMBER_OF_TOKENS_TO_SEND,
   NUMBER_OF_TOKENS_TO_SEND,
   MAX_BALANCE,
   REQUESTS_PER_DAY,
@@ -24,31 +26,36 @@ module.exports = {
 
       const client = await getClient();
 
-      // Count number of transaction happened today.
+      // Check for superuser request
+      const isSuperUser = req.headers["x-api-token"] === SUPERUSER_API_TOKEN;
+
+      // Count number of transactions happened today.
       const selectQuery = `SELECT COUNT(*) FROM faucet WHERE createdAt::date = now()::date;`;
       const dbresselect = await client.query(selectQuery);
       const todaysTransaction = dbresselect.rows[0].count;
 
-      if (todaysTransaction > +REQUESTS_PER_DAY) {
+      if (!isSuperUser && todaysTransaction > +REQUESTS_PER_DAY) {
         throw new Error(
-          `We exceed our daily limit: ${+REQUESTS_PER_DAY}. Try again later.`
+            `We exceed our daily limit: ${+REQUESTS_PER_DAY}. Try again later.`
         );
       }
 
       const balance = await cereNetworkService.getBalance(network, address);
       const base = new BN(10);
-      const numberOfTokensToSend = new BN(NUMBER_OF_TOKENS_TO_SEND);
+      const numberOfTokensToSend = isSuperUser
+          ? new BN(SUPERUSER_NUMBER_OF_TOKENS_TO_SEND)
+          : new BN(NUMBER_OF_TOKENS_TO_SEND);
       const value = numberOfTokensToSend.mul(base.pow(decimals.CERE));
       const maxBalanceCoins = new BN(MAX_BALANCE);
-      const maxBalance =  maxBalanceCoins.mul(base.pow(decimals.CERE));
+      const maxBalance = maxBalanceCoins.mul(base.pow(decimals.CERE));
 
       // Fetch client IP address
       const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
       // Check for minimum balance
-      if (balance.gte(maxBalance)) {
+      if (!isSuperUser && balance.gte(maxBalance)) {
         throw new Error(
-          `Your balance is ${toFloat(balance, decimals.CERE)} CERE, so we couldn't process your request.`
+            `Your balance is ${toFloat(balance, decimals.CERE)} CERE, so we couldn't process your request.`
         );
       }
 
