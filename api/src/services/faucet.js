@@ -26,8 +26,20 @@ module.exports = {
 
       const client = await getClient();
 
+      // Check if SUPERUSER_API_TOKEN is not defined or not a string
+      if (typeof SUPERUSER_API_TOKEN !== 'string') {
+        console.log('Warning: SUPERUSER_API_TOKEN env is not defined or has incorrect format');
+      }
+
       // Check for superuser request
       const isSuperUser = req.headers["x-api-token"] === SUPERUSER_API_TOKEN;
+
+      // Handle invalid SUPER_USER_TOKEN
+      if (req.headers["x-api-token"] && !isSuperUser) {
+        return res.status(401).json({
+          msg: "Invalid SUPERUSER_API_TOKEN.",
+        });
+      };
 
       // Count number of transactions happened today.
       const selectQuery = `SELECT COUNT(*) FROM faucet WHERE createdAt::date = now()::date;`;
