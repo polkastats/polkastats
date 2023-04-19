@@ -28,7 +28,7 @@ module.exports = {
 
       // Check if SUPERUSER_API_TOKEN is not defined or not a string
       if (typeof SUPERUSER_API_TOKEN !== 'string') {
-        console.log('Warning: SUPERUSER_API_TOKEN env is not defined or not a string');
+        console.log('Warning: SUPERUSER_API_TOKEN env is not defined or has incorrect format');
       }
 
       // Check for superuser request
