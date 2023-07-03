@@ -61,6 +61,8 @@ export default {
     ['cookie-universal-nuxt', { alias: 'cookies' }],
     // https://github.com/nuxt-community/redirect-module
     '@nuxtjs/redirect-module',
+    // https://github.com/nuxt-community/gtm-module
+    '@nuxtjs/gtm',
   ],
 
   // Module configurations
@@ -97,7 +99,7 @@ export default {
       brands: true,
     },
   },
-  googleAnalytics: {
+  gtm: {
     id: network.googleAnalytics,
   },
   redirect: [{ from: '^/intention/(.*)$', to: '/validator/$1' }],
