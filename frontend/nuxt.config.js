@@ -39,8 +39,6 @@ export default {
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/stylelint
     '@nuxtjs/stylelint-module',
-    // https://google-analytics.nuxtjs.org/setup
-    '@nuxtjs/google-analytics',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -61,6 +59,8 @@ export default {
     ['cookie-universal-nuxt', { alias: 'cookies' }],
     // https://github.com/nuxt-community/redirect-module
     '@nuxtjs/redirect-module',
+    // https://github.com/nuxt-community/gtm-module
+    '@nuxtjs/gtm',
   ],
 
   // Module configurations
@@ -97,7 +97,7 @@ export default {
       brands: true,
     },
   },
-  googleAnalytics: {
+  gtm: {
     id: network.googleAnalytics,
   },
   redirect: [{ from: '^/intention/(.*)$', to: '/validator/$1' }],
