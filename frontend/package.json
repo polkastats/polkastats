@@ -59,7 +59,6 @@
     "@commitlint/config-conventional": "^11.0.0",
     "@nuxtjs/eslint-config": "^5.0.0",
     "@nuxtjs/eslint-module": "^3.0.2",
-    "@nuxtjs/google-analytics": "^2.4.0",
     "@nuxtjs/stylelint-module": "^4.0.0",
     "@open-wc/webpack-import-meta-loader": "^0.4.7",
     "@vue/test-utils": "^1.1.2",
