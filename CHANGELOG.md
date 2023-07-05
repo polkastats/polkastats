@@ -1,6 +1,9 @@
 # Cere Stats
 
 ## vNext
+...
+
+## v0.31.0
 - [FE] Replace `extrinsic` with `event` as a data source on the `SentTransfers` page
 
 ## v0.30.0
