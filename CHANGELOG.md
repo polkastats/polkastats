@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-...
+- [FE] Replace `extrinsic` with `event` as a data source on the `SentTransfers` page
 
 ## v0.30.0
 - [FE] Set up GTAG GA4 Analytics, replace the `@nuxtjs/google-analytics` package with `@nuxtjs/gtm`.
