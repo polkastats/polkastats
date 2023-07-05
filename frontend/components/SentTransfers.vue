@@ -55,17 +55,6 @@
               </nuxt-link>
             </p>
           </template>
-          <template #cell(hash)="data">
-            <p class="mb-0">
-              <nuxt-link
-                v-b-tooltip.hover
-                :to="`/block?blockNumber=${data.item.block_number}`"
-                title="Check block information"
-              >
-                {{ shortHash(data.item.hash) }}
-              </nuxt-link>
-            </p>
-          </template>
           <template #cell(from)="data">
             <p class="mb-0">
               <nuxt-link
@@ -168,12 +157,6 @@ export default {
           sortable: true,
         },
         {
-          key: 'hash',
-          label: 'Hash',
-          class: 'd-none d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
-          sortable: true,
-        },
-        {
           key: 'from',
           label: 'From',
           sortable: true,
@@ -214,43 +197,39 @@ export default {
     $subscribe: {
       extrinsic: {
         query: gql`
-          subscription extrinsic($signer: String!) {
-            extrinsic(
+          subscription event($accountId: String!) {
+            event(
               order_by: { block_number: desc }
               where: {
                 section: { _eq: "balances" }
-                method: { _like: "transfer%" }
-                signer: { _eq: $signer }
+                method: { _eq: "Transfer" }
+                data: { _like: $accountId }
               }
             ) {
               block_number
-              section
-              hash
-              args
-              success
+              data
               timestamp
             }
           }
         `,
         variables() {
           return {
-            signer: this.accountId,
+            accountId: `["${this.accountId}",%`,
           }
         },
         skip() {
           return !this.accountId
         },
         result({ data }) {
-          this.transfers = data.extrinsic.map((transfer) => {
+          this.transfers = data.event.map((transfer) => {
             return {
               block_number: transfer.block_number,
-              hash: transfer.hash,
               from: this.accountId,
-              to: JSON.parse(transfer.args)[0].id
-                ? JSON.parse(transfer.args)[0].id
-                : JSON.parse(transfer.args)[0],
-              amount: JSON.parse(transfer.args)[1],
-              success: transfer.success,
+              to: JSON.parse(transfer.data)[1].id
+                ? JSON.parse(transfer.data)[1].id
+                : JSON.parse(transfer.data)[1],
+              amount: JSON.parse(transfer.data)[2],
+              success: true,
               timestamp: transfer.timestamp,
             }
           })
