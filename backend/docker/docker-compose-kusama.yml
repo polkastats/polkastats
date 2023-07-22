@@ -17,7 +17,7 @@ services:
       - '30333:30333'
       - '9933:9933'
       - '9944:9944'
-    command: -d /data --rpc-max-response-size 256 --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning archive --name 'PolkaStats Block Explorer' --chain kusama --trie-cache-size 8192000000 --max-runtime-instances 256 --db-cache 8192
+    command: -d /data --unsafe-rpc-external --rpc-cors all --pruning archive --name 'PolkaStats Block Explorer' --chain kusama
     restart: always
   #
   # SQL data base
