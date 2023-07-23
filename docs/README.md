@@ -162,3 +162,9 @@ Generate a static build under `frontend/dist` directory:
 ```
 yarn workspace frontend generate
 ```
+
+### Filter outside connections to RPC
+
+```
+/sbin/iptables -A INPUT -p tcp -i <put_your_internet_interface_here> --dport 9944 -j DROP
+```
