@@ -17,7 +17,7 @@ services:
       - '30333:30333'
       - '9933:9933'
       - '9944:9944'
-    command: -d /data --unsafe-rpc-external --rpc-cors all --pruning archive --name 'PolkaStats Block Explorer' --chain polkadot
+    command: -d /data --rpc-max-connections 1024 --rpc-max-response-size 256 --unsafe-rpc-external --rpc-cors all --pruning archive --name 'PolkaStats Block Explorer' --chain polkadot --max-runtime-instances 256 --db-cache 8192
     restart: always
   #
   # SQL data base
@@ -163,21 +163,6 @@ services:
     environment:
       - NODE_ENV=production
       - NODE_PORT=8000
-
-  #
-  # Substrate API Sidecar
-  #
-  sidecar:
-    image: parity/substrate-api-sidecar
-    ports:
-      - '9090:9090'
-    depends_on:
-      - 'substrate-node'
-    restart: always
-    environment:
-      - SAS_SUBSTRATE_WS_URL=ws://substrate-node:9944
-      - SAS_EXPRESS_BIND_HOST=sidecar
-      - SAS_EXPRESS_PORT=9090  
 
 #
 # Persistent volumes
