@@ -165,21 +165,6 @@ services:
       - NODE_ENV=production
       - NODE_PORT=8000
 
-  #
-  # Substrate API Sidecar
-  #
-  sidecar:
-    image: parity/substrate-api-sidecar
-    ports:
-      - '9090:9090'
-    depends_on:
-      - 'substrate-node'
-    restart: always
-    environment:
-      - SAS_SUBSTRATE_WS_URL=ws://substrate-node:9944
-      # - SAS_EXPRESS_BIND_HOST=sidecar
-      - SAS_EXPRESS_PORT=9090
-
 #
 # Persistent volumes
 #

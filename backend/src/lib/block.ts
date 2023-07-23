@@ -112,6 +112,7 @@ export const healthCheck = async (
 
 export const storeMetadata = async (
   client: Client,
+  api: ApiPromise,
   blockNumber: number,
   blockHash: string,
   specName: string,
@@ -121,10 +122,7 @@ export const storeMetadata = async (
 ): Promise<void> => {
   let metadata;
   try {
-    const response = await axios.get(
-      `${backendConfig.substrateApiSidecar}/runtime/metadata?at=${blockHash}`,
-    );
-    metadata = response.data;
+    metadata = await api.rpc.state.getMetadata(blockHash);
     logger.debug(loggerOptions, `Got runtime metadata at ${blockHash}!`);
   } catch (error) {
     logger.error(
@@ -137,13 +135,14 @@ export const storeMetadata = async (
     scope.setTag('blockNumber', blockNumber);
     Sentry.captureException(error, scope);
   }
+
   const data = [
     blockNumber,
     specName,
     specVersion,
-    Object.keys(metadata.metadata)[0],
+    Object.keys(metadata.toJSON().metadata)[0],
     metadata.magicNumber,
-    metadata.metadata,
+    metadata.toJSON().metadata,
     timestamp,
   ];
   const query = `
@@ -318,6 +317,7 @@ export const harvestBlock = async (
 
       await storeMetadata(
         client,
+        api,
         blockNumber,
         blockHash.toString(),
         specName.toString(),
