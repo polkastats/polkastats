@@ -17,7 +17,7 @@ services:
       - '30333:30333'
       - '9933:9933'
       - '9944:9944'
-    command: -d /data --listen-addr 172.18.0.2 --rpc-cors all --pruning archive --name 'PolkaStats Block Explorer' --chain kusama
+    command: -d /data --unsafe-rpc-external --rpc-cors all --pruning archive --name 'PolkaStats Block Explorer' --chain kusama
     restart: always
   #
   # SQL data base
