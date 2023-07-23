@@ -26,5 +26,11 @@
     "api"
   ],
   "scripts": {},
-  "dependencies": {}
+  "dependencies": {},
+  "resolutions": {
+    "@polkadot/wasm-bridge": "^7.2.1",
+    "@polkadot/wasm-crypto": "^7.2.1",
+    "@polkadot/util": "^12.3.2",
+    "@polkadot/util-crypto": "^12.3.2"
+  }
 }

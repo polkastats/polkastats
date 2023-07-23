@@ -37,7 +37,7 @@
     "@polkadot/extension-dapp": "^0.46.5",
     "@polkadot/keyring": "^12.3.2",
     "@polkadot/util": "^12.3.2",
-    "@polkadot/vue-identicon": "^3.5.1",
+    "@polkadot/vue-identicon": "^2.9.9",
     "@vue/composition-api": "^1.4.9",
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
@@ -80,5 +80,11 @@
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-standard": "^20.0.0",
     "vue-jest": "^3.0.4"
+  },
+  "resolutions": {
+    "@polkadot/wasm-bridge": "^7.2.1",
+    "@polkadot/wasm-crypto": "^7.2.1",
+    "@polkadot/util": "^12.3.2",
+    "@polkadot/util-crypto": "^12.3.2"
   }
 }
