@@ -5,7 +5,7 @@ import {
   BlockHash,
   EventRecord,
   FeeDetails,
-  RuntimeDispatchInfo,
+  RuntimeDispatchInfoV1,
 } from '@polkadot/types/interfaces';
 import { AnyTuple } from '@polkadot/types/types';
 import { GenericExtrinsic, Vec } from '@polkadot/types';
@@ -30,7 +30,7 @@ export const getExtrinsicFeeInfo = async (
   hexExtrinsic: string,
   blockHash: BlockHash,
   loggerOptions: LoggerOptions,
-): Promise<RuntimeDispatchInfo> | null => {
+): Promise<RuntimeDispatchInfoV1> | null => {
   try {
     const feeInfo = await api.rpc.payment.queryInfo(hexExtrinsic, blockHash);
     return feeInfo;
@@ -129,7 +129,7 @@ export const processTransfer = async (
   args: string,
   hash: string,
   signer: string,
-  feeInfo: RuntimeDispatchInfo | null,
+  feeInfo: RuntimeDispatchInfoV1 | null,
   success: boolean,
   errorMessage: string,
   timestamp: number,
