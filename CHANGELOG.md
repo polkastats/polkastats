@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-...
+- [BE] Add Resilient Network Initialization to Cere Stats API for Robust Handling of Network Failures
 
 ## v0.31.0
 - [FE] Replace `extrinsic` with `event` as a data source on the `SentTransfers` page

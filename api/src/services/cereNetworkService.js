@@ -8,24 +8,28 @@ const networkParams = new Map();
 let initialized = false;
 
 async function init() {
-  const promises = [];
   const cereConfig = blockchains.find(blockchain => blockchain.name === blockchainNames.CERE);
-  cereConfig.networks.forEach(network => {
-    const promise = async() => ({
-      name: network.name,
-      rpc: await initNetwork(network.rpcUrl, network.faucetMnemonic)
-    });
-    promises.push(promise());
-  });
-  const res = await Promise.all(promises);
-  res.forEach(network => {
-    networkParams.set(network.name, network.rpc);
-  });
+
+  await Promise.all(cereConfig.networks.map(async network => {
+    try {
+      const rpc = await initNetwork(network.rpcUrl, network.faucetMnemonic);
+      networkParams.set(network.name, rpc);
+    } catch (error) {
+      console.error(`Failed to initialize network ${network.name}:`, error);
+    }
+  }));
+
   initialized = true;
 }
 
 async function initNetwork(url, faucetMnemonic) {
-  const api = await initProvider(url);
+  const timeout = process.env.NETWORK_INIT_TIMEOUT_MS || 5000;
+
+  const api = await Promise.race([
+    initProvider(url),
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`Timed out connecting to ${url}`)), timeout))
+  ]);
+
   if (faucetMnemonic) {
     const faucet = await initFaucet(faucetMnemonic);
     return {api, faucet};
