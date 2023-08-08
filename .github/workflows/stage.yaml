@@ -16,7 +16,7 @@ jobs:
     with:
       runs-on: '["self-hosted", "cere-network-large-workers"]'
       environment: stg
-      aws_account_id: ${{ vars.STG_NETWORK_AWS_ACCOUNT_ID }}
+      aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
       repository: stats-api
       file: ./api/Dockerfile
     secrets: inherit
@@ -26,7 +26,7 @@ jobs:
     with:
       runs-on: '["self-hosted", "cere-network-large-workers"]'
       environment: stg
-      aws_account_id: ${{ vars.STG_NETWORK_AWS_ACCOUNT_ID }}
+      aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
       repository: stats-crawler
       file: ./backend/docker/crawler/Dockerfile
     secrets: inherit
