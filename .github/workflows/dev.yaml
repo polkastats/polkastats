@@ -11,9 +11,8 @@ permissions:
   
 jobs:
   build_and_deploy_backend_cerestats_api:
-    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@1.3.0
+    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@master
     with:
-      runs-on: '["self-hosted", "cere-network-large-workers"]'
       environment: dev
       aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
       repository: stats-api
@@ -21,9 +20,8 @@ jobs:
     secrets: inherit
     
   build_and_deploy_backend_cerestats_crawler:
-    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@1.3.0
+    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@master
     with:
-      runs-on: '["self-hosted", "cere-network-large-workers"]'
       environment: dev
       aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
       repository: stats-crawler

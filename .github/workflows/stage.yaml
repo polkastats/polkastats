@@ -4,52 +4,31 @@ on:
     branches:
       - 'release/**'
       - 'hotfix/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  build_backend_cerestats_api:
-    uses: Cerebellum-Network/reusable-workflows/.github/workflows/build-and-push-docker.yaml@1.0.0
+  build_and_deploy_backend_cerestats_api:
+    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@1.3.0
     with:
       runs-on: '["self-hosted", "cere-network-large-workers"]'
-      org: cerebellumnetwork
-      environment: stage
-      image: crb-cerestats-api
-      repository: crb-cerestats-api
+      environment: stg
+      aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
+      repository: stats-api
       file: ./api/Dockerfile
     secrets: inherit
-
-  build_backend_cerestats_crawler:
-    uses: Cerebellum-Network/reusable-workflows/.github/workflows/build-and-push-docker.yaml@1.0.0
+    
+  build_and_deploy_backend_cerestats_crawler:
+    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@1.3.0
     with:
       runs-on: '["self-hosted", "cere-network-large-workers"]'
-      org: cerebellumnetwork
-      environment: stage
-      image: crb-cerestats-crawler
-      repository: crb-cerestats-crawler
+      environment: stg
+      aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
+      repository: stats-crawler
       file: ./backend/docker/crawler/Dockerfile
-    secrets: inherit
-
-  deploy_backend_cerestats_api:
-    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-with-helm.yaml@1.0.0
-    needs: build_backend_cerestats_api
-    with:
-      runs-on: '["self-hosted", "cere-network-stg-deployer"]'
-      helm-repo-path: cerestats/cerestats-api
-      helm-release: cerestats-api
-      namespace: cerestats
-      tag: ${{ needs.build_backend_cerestats_api.outputs.version }}
-      environment: stage
-    secrets: inherit
-
-  deploy_backend_cerestats_crawler:
-    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-with-helm.yaml@1.0.0
-    needs: build_backend_cerestats_crawler
-    with:
-      runs-on: '["self-hosted", "cere-network-stg-deployer"]'
-      helm-repo-path: cerestats/cerestats-crawler
-      helm-release: cerestats-crawler
-      namespace: cerestats
-      tag: ${{ needs.build_backend_cerestats_crawler.outputs.version }}
-      environment: stage
     secrets: inherit
 
   build_and_deploy_frontend:
@@ -58,7 +37,7 @@ jobs:
       runs-on: '["self-hosted", "cere-network-large-workers"]'
       build_container: 'node:14-buster-slim'
       deploy_container: 'ubuntu:20.04'
-      install_packages_command: 'cp -rf frontend/frontend.config-cere-stg.js frontend/frontend.config.js; yarn install'
+      install_packages_command: 'cp -rf frontend/frontend.config-cere-dev.js frontend/frontend.config.js; yarn install'
       build_command: 'yarn workspace frontend generate'
       path_to_static_files_to_upload: 'frontend/dist'
     secrets:
