@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build_and_deploy_backend_cerestats_api:
-    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@1.3.0
+    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@master
     with:
       runs-on: '["self-hosted", "cere-network-large-workers"]'
       environment: stg
@@ -22,7 +22,7 @@ jobs:
     secrets: inherit
     
   build_and_deploy_backend_cerestats_crawler:
-    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@1.3.0
+    uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@master
     with:
       runs-on: '["self-hosted", "cere-network-large-workers"]'
       environment: stg
@@ -32,7 +32,7 @@ jobs:
     secrets: inherit
 
   build_and_deploy_frontend:
-    uses: Cerebellum-Network/reusable-workflows/.github/workflows/build-and-upload-static.yaml@1.0.0
+    uses: Cerebellum-Network/reusable-workflows/.github/workflows/build-and-upload-static.yaml@master
     with:
       runs-on: '["self-hosted", "cere-network-large-workers"]'
       build_container: 'node:14-buster-slim'
