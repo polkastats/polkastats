@@ -1,6 +1,9 @@
 # Cere Stats
 
 ## vNext
+...
+
+## v0.32.0
 - [BE] Add Resilient Network Initialization to Cere Stats API for Robust Handling of Network Failures
 
 ## v0.31.0
