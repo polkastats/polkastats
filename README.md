@@ -15,7 +15,7 @@ In Ubuntu 20.04 server you can do:
 
 ```
 apt update && apt upgrade -y && apt auto-remove
-apt install git build-essential apt-transport-https ca-certificates curl software-properties-common libpq-dev
+apt install git build-essential apt-transport-https ca-certificates curl software-properties-common libpq-dev gnupg
 
 # docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
@@ -28,9 +28,12 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-
 chmod +x /usr/local/bin/docker-compose
 
 # node v16
-curl -fsSL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
-bash nodesource_setup.sh
-apt install nodejs
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+NODE_MAJOR=16
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+apt-get update
+apt-get install nodejs -y
 
 # yarn
 npm install --global yarn
