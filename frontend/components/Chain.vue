@@ -112,6 +112,7 @@
             </h4>
             <h6 class="d-inline-block">
               {{ formatAmount(totalIssuance) }}
+              <FIATConversion :units="totalIssuance.toString()" :short="true" />
             </h6>
           </div>
         </div>
@@ -126,7 +127,9 @@
               {{ $t('components.network.total_staked') }}
             </h4>
             <h6 class="d-inline-block">
-              {{ formatAmount(totalStaked) }}
+              {{ formatAmount(totalStaked, 0, true) }}
+              <FIATConversion :units="totalStaked.toString()" :short="true" />
+              ({{ formatNumber(totalStakedPercentage) }}%)
             </h6>
           </div>
         </div>
@@ -176,8 +179,10 @@ import { gql } from 'graphql-tag'
 import BN from 'bn.js'
 import commonMixin from '../mixins/commonMixin.js'
 import { network } from '../frontend.config.js'
+import FIATConversion from '@/components/FIATConversion'
 
 export default {
+  components: [FIATConversion],
   mixins: [commonMixin],
   data() {
     return {
