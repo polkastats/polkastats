@@ -1,7 +1,10 @@
 # Cere Stats
 
 ## vNext
-...
+- [FE] Token Metrics Enhancements:
+    - Express both the "Total Supply" and "Total Staked" values in USD.
+    - Present the proportion of the "Total Staked" as a percentage of the "Total Supply."
+- [FE] Search Bar Redesign
 
 ## v0.32.0
 - [BE] Add Resilient Network Initialization to Cere Stats API for Robust Handling of Network Failures
