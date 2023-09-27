@@ -19,12 +19,17 @@
           <!-- Filter -->
           <b-row>
             <b-col lg="12" class="mb-3">
-              <b-form-input
-                id="filterInput"
-                v-model="filter"
-                type="search"
-                :placeholder="$t('pages.accounts.search_placeholder')"
-              />
+              <b-input-group size="xl" class="mb-2">
+                <b-input-group-prepend is-text>
+                  <font-awesome-icon icon="search" />
+                </b-input-group-prepend>
+                <b-form-input
+                  id="filterInput"
+                  v-model="filter"
+                  type="search"
+                  :placeholder="$t('pages.accounts.search_placeholder')"
+                />
+              </b-input-group>
             </b-col>
           </b-row>
           <!-- Mobile sorting -->

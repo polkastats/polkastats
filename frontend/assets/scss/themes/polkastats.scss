@@ -635,3 +635,55 @@ section .section-title {
     background-position: 10% 20%;
   }
 }
+
+// FIAT conversion component
+
+.fiat-conversion {
+  font-size: 0.8rem;
+  margin-left: 0.4rem;
+  padding: 0.2rem 0.4rem;
+  background-color: rgb(192, 229, 243);
+  border-radius: 0.2rem;
+  cursor: pointer;
+  animation-duration: 0.6s;
+  color: rgb(11, 129, 168);
+}
+.fiat-conversion:hover {
+  background-color: rgb(11, 129, 168);
+  color: white;
+  animation-name: onHoverAnimation;
+}
+
+@keyframes onHoverAnimation {
+  0% {
+    background-color: rgb(192, 229, 243);
+  }
+  100% {
+    background-color: rgb(11, 129, 168);
+  }
+}
+
+.fiat-conversion-short {
+  cursor: pointer;
+}
+.fiat-conversion-short .fa-circle {
+  color: rgb(192, 229, 243) !important;
+}
+.fiat-conversion-short .fa-dollar-sign {
+  color: rgb(11, 129, 168);
+}
+.fiat-conversion-short:hover .fa-circle {
+  color: rgb(11, 129, 168) !important;
+}
+.fiat-conversion-short:hover .fa-dollar-sign {
+  color: white;
+}
+
+.dropdown-item {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 0.9rem;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+  color: rgba(0, 0, 0, 0.9);
+}

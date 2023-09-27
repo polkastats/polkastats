@@ -62,14 +62,18 @@
       <!-- Filter -->
       <b-row>
         <b-col cols="12">
-          <b-form-input
-            id="filterInput"
-            v-model="filter"
-            type="search"
-            placeholder="Search validator by address or name"
-            debounce="500"
-            class="mb-3"
-          />
+          <b-input-group class="mt-3 mb-4">
+            <b-input-group-prepend is-text>
+              <font-awesome-icon icon="search" />
+            </b-input-group-prepend>
+            <b-form-input
+              id="filterInput"
+              v-model="filter"
+              type="search"
+              placeholder="Search validator by address or name"
+              debounce="500"
+            />
+          </b-input-group>
         </b-col>
       </b-row>
       <!-- Search results -->
