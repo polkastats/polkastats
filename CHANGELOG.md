@@ -1,6 +1,9 @@
 # Cere Stats
 
 ## vNext
+...
+
+## v0.33.0
 - [FE] Token Metrics Enhancements:
     - Express both the "Total Supply" and "Total Staked" values in USD.
     - Present the proportion of the "Total Staked" as a percentage of the "Total Supply."
