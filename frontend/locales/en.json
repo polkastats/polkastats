@@ -56,6 +56,9 @@
     },
     "loading": {
       "loading_data": "Loading data, please be patient..."
+    },
+    "search": {
+      "caption": "Search by block number, block hash, extrinsic hash or account address"
     }
   },
   "layout": {

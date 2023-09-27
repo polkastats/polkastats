@@ -2,6 +2,7 @@
   <div>
     <section>
       <b-container class="main py-5 dashboard">
+        <Search />
         <Chain />
         <Search />
         <div class="row">
