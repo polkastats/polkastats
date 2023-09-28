@@ -29,9 +29,9 @@
             <hr />
             <ul class="list-unstyled social text-center">
               <li data-testid="footer-twitter">
-                <a target="_blank" href="https://twitter.com/cerenetwork">
+                <a target="_blank" href="https://twitter.com/cereofficial">
                   <font-awesome-icon :icon="['fab', 'twitter']" />
-                  @cerenetwork
+                  @cereofficial
                 </a>
               </li>
               <li data-testid="footer-twitter">
