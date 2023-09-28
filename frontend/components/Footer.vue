@@ -35,7 +35,7 @@
                 </a>
               </li>
               <li data-testid="footer-twitter">
-                <a target="_blank" href="https://t.me/cerenetwork_official">
+                <a target="_blank" href="https://t.me/thisiscere">
                   <font-awesome-icon :icon="['fab', 'telegram']" />
                   Cere Network
                 </a>
