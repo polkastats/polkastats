@@ -29,13 +29,13 @@
             <hr />
             <ul class="list-unstyled social text-center">
               <li data-testid="footer-twitter">
-                <a target="_blank" href="https://twitter.com/cerenetwork">
+                <a target="_blank" href="https://twitter.com/cereofficial">
                   <font-awesome-icon :icon="['fab', 'twitter']" />
-                  @cerenetwork
+                  @cereofficial
                 </a>
               </li>
               <li data-testid="footer-twitter">
-                <a target="_blank" href="https://t.me/cerenetwork_official">
+                <a target="_blank" href="https://t.me/thisiscere">
                   <font-awesome-icon :icon="['fab', 'telegram']" />
                   Cere Network
                 </a>

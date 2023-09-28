@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-...
+- [FE] Update Twitter and Telegram links
 
 ## v0.33.0
 - [FE] Token Metrics Enhancements:
