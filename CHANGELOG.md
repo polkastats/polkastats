@@ -1,7 +1,7 @@
 # Cere Stats
 
 ## vNext
-...
+- [API] Add error handling for CereNetworkService initialization.
 
 ## v0.34.0
 - [FE] Update Twitter and Telegram links

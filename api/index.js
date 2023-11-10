@@ -333,6 +333,14 @@ app.use((err, req, res, next) => {
 app.listen(port, async () => {
   console.log(`PolkaStats API is listening on port ${port}.`);
   await ethNetworkService.init();
-  await cereNetworkService.init();  
+
+  // Initialize the Cere network service with error handling
+  try {
+    await cereNetworkService.init();
+    console.log('Cere network service initialized successfully.');
+  } catch (error) {
+    console.error('Failed to initialize Cere network service:', error);
+  }
+
   await cacheService.init();
 });
