@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master-cere
+  workflow_dispatch:
 
 permissions:
   id-token: write
