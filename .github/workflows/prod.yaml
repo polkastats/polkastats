@@ -14,7 +14,7 @@ jobs:
     uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@master
     with:
       environment: prd
-      aws_account_id: ${{ vars.PRD_NETWORK_AWS_ACCOUNT_ID }}
+      aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
       repository: stats-api
       file: ./api/Dockerfile
     secrets: inherit
@@ -23,7 +23,7 @@ jobs:
     uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@master
     with:
       environment: prd
-      aws_account_id: ${{ vars.PRD_NETWORK_AWS_ACCOUNT_ID }}
+      aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
       repository: stats-crawler
       file: ./backend/docker/crawler/Dockerfile
     secrets: inherit
