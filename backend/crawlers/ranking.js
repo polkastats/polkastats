@@ -646,6 +646,15 @@ const crawler = async (delayedStart) => {
       api.derive.democracy.referendums(),
     ]);
 
+    const validatorsCount = parseInt(
+      (await api.query.staking.counterForValidators()).toString(),
+      10,
+    );
+    const nominatorsCount = parseInt(
+      (await api.query.staking.counterForNominators()).toString(),
+      10,
+    );
+
     logger.debug(loggerOptions, 'Step #3');
     // eslint-disable-next-line no-underscore-dangle
     const erasPoints = await api.derive.staking._erasPoints(eraIndexes, withActive);
@@ -714,7 +723,7 @@ const crawler = async (delayedStart) => {
     //
     logger.debug(loggerOptions, 'Processing data ...');
     const blockHeight = parseInt(block.header.number.toString(), 10);
-    const numActiveValidators = validatorAddresses.length;
+    const numActiveValidators = validatorsCount;
     const eraPointsHistoryTotals = [];
     erasPoints.forEach(({ eraPoints }) => {
       eraPointsHistoryTotals.push(parseInt(eraPoints.toString(), 10));
@@ -726,9 +735,9 @@ const crawler = async (delayedStart) => {
     const eraPointsAverage = eraPointsHistoryTotalsSum / numActiveValidators;
 
     // dashboard metrics
-    const activeValidatorCount = validatorAddresses.length;
+    const activeValidatorCount = validatorsCount;
     const waitingValidatorCount = waitingInfo.info.length;
-    const nominatorCount = nominators.length;
+    const nominatorCount = nominatorsCount;
     const currentEra = chainCurrentEra.toString();
     const activeEra = JSON.parse(JSON.stringify(chainActiveEra)).index;
 
