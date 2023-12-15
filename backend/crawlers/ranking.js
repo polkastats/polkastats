@@ -649,14 +649,19 @@ const crawler = async (delayedStart) => {
     const currentEraU32 = parseInt((await api.query.staking.currentEra()).toString(), 10);
     const eraStakers = await api.query.staking.erasStakers.keys(currentEraU32);
     const validatorsCount = eraStakers.length;
-    let nominatorsCount = 0;
+    const nominatorsSet = new Set();
 
     for (const i in eraStakers) {
       const stakerInfoEra = await api.query.staking.erasStakers(
         currentEraU32, eraStakers[i].toHuman()[1],
       );
-      nominatorsCount += stakerInfoEra.others.length;
+      for (const j in stakerInfoEra.others) {
+        if (stakerInfoEra.others[j].who) {
+          nominators.add(stakerInfoEra.others[j].who.toString());
+        }
+      }
     }
+    const nominatorsCount = nominatorsSet.size;
 
     logger.debug(loggerOptions, 'Step #3');
     // eslint-disable-next-line no-underscore-dangle
