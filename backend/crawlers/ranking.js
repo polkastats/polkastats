@@ -646,14 +646,17 @@ const crawler = async (delayedStart) => {
       api.derive.democracy.referendums(),
     ]);
 
-    const validatorsCount = parseInt(
-      (await api.query.staking.counterForValidators()).toString(),
-      10,
-    );
-    const nominatorsCount = parseInt(
-      (await api.query.staking.counterForNominators()).toString(),
-      10,
-    );
+    const currentEraU32 = parseInt((await api.query.staking.currentEra()).toString(), 10);
+    const eraStakers = await api.query.staking.erasStakers.keys(currentEraU32);
+    const validatorsCount = eraStakers.length;
+    let nominatorsCount = 0;
+
+    for (const i in eraStakers) {
+      const stakerInfoEra = await api.query.staking.erasStakers(
+        currentEraU32, eraStakers[i].toHuman()[1],
+      );
+      nominatorsCount += stakerInfoEra.others.length;
+    }
 
     logger.debug(loggerOptions, 'Step #3');
     // eslint-disable-next-line no-underscore-dangle
