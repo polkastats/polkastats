@@ -657,7 +657,7 @@ const crawler = async (delayedStart) => {
       );
       for (const j in stakerInfoEra.others) {
         if (stakerInfoEra.others[j].who) {
-          nominators.add(stakerInfoEra.others[j].who.toString());
+          nominatorsSet.add(stakerInfoEra.others[j].who.toString());
         }
       }
     }
