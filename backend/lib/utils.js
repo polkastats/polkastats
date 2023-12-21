@@ -194,7 +194,7 @@ module.exports = {
     const feeDetails = '';
     if (isSigned) {
       feeInfo = await
-      api.rpc.payment.queryInfo(extrinsic.toHex(), blockHash)
+      api.call.transactionPaymentApi.queryInfo(extrinsic.toHex(), blockHash)
         .then((result) => JSON.stringify(result.toJSON()))
         .catch((error) => logger.debug(loggerOptions, `API Error: ${error}`)) || '';
     }
