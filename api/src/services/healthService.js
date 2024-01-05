@@ -164,8 +164,8 @@ async function checkBlockchainBlocksFinalization(req, res, next) {
 
     res.status(200).json(
       healthErrors.length 
-      ? { msg: 'Health check failed', errors: healthErrors }  
-      : { msg: `${networks.join(',')} best block finalization difference number is ok`}
+        ? { msg: 'Health check failed', errors: healthErrors }  
+        : { msg: `${networks.join(',')} best block finalization difference number is ok`}
     );
   } catch (err) {
     next(err);
@@ -289,3 +289,12 @@ module.exports = {
   checkBlockchainBlocksFinalization,
   checkBlockchainBlocksProducing,
 };
+
+"pallet-chainbridge/try-runtime",
+"pallet-ddc-clusters/try-runtime",
+"pallet-ddc-customers/try-runtime",
+"pallet-ddc-nodes/try-runtime",
+"pallet-ddc-payouts/try-runtime",
+"pallet-ddc-staking/try-runtime",
+"pallet-erc20/try-runtime",
+"pallet-erc721/try-runtime",
