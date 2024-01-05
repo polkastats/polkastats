@@ -146,20 +146,25 @@ async function checkBlockchainBlocksFinalization(req, res, next) {
     let healthErrors = [];
     await Promise.all(
       networks.map(async network => {      
-        const [best, finalized] = await Promise.all([
-          cereNetworkService.getFinalizedBlock(network),
-          cereNetworkService.getBestBlock(network)
-        ]);      
-        const bestBlockNumberDiff = best - finalized;
-        if (bestBlockNumberDiff > cereConfig.bestBlockNumberDiff) {
-          healthErrors.push(`${network} network best block finalization difference number ${bestBlockNumberDiff} below the ${cereConfig.bestBlockNumberDiff} threshold`);
+        try {
+          const [best, finalized] = await Promise.all([
+            cereNetworkService.getFinalizedBlock(network),
+            cereNetworkService.getBestBlock(network)
+          ]);
+          const bestBlockNumberDiff = best - finalized;
+          if (bestBlockNumberDiff > cereConfig.bestBlockNumberDiff) {
+            healthErrors.push(`${network} network best block finalization difference number ${bestBlockNumberDiff} below the ${cereConfig.bestBlockNumberDiff} threshold`);
+          }
+        } catch (error) {
+          console.error(error);
+          healthErrors.push(`Unable to connect to ${network} network`);
         }
       })
     );
 
     res.status(200).json(
       healthErrors.length 
-        ? { msg: 'Health check failed', errors: healthErrors }
+        ? { msg: 'Health check failed', errors: healthErrors }  
         : { msg: `${networks.join(',')} best block finalization difference number is ok`}
     );
   } catch (err) {
@@ -184,14 +189,19 @@ async function checkBlockchainBlocksProducing(req, res, next) {
     let healthErrors = [];
     await Promise.all(
       networks.map(async network => {
-        const { block } = await cereNetworkService.getLatestBlock(network);
-        const [previousTime, lastTime] = await Promise.all([
-          cereNetworkService.getBlockTime(network, block.header.number - 1),
-          cereNetworkService.getBlockTime(network, block.header.number),
-        ]);
-        const timeDiff = lastTime - previousTime;
-        if (timeDiff > cereConfig.blockTimeDiffMs) {
-          healthErrors.push(`${network} network block production time difference ${timeDiff}ms below the ${cereConfig.blockTimeDiffMs}ms threshold`);
+        try {
+          const { block } = await cereNetworkService.getLatestBlock(network);
+          const [previousTime, lastTime] = await Promise.all([
+            cereNetworkService.getBlockTime(network, block.header.number - 1),
+            cereNetworkService.getBlockTime(network, block.header.number),
+          ]);
+          const timeDiff = lastTime - previousTime;
+          if (timeDiff > cereConfig.blockTimeDiffMs) {
+            healthErrors.push(`${network} network block production time difference ${timeDiff}ms below the ${cereConfig.blockTimeDiffMs}ms threshold`);
+          }
+        } catch (error) {
+          console.error(error);
+          healthErrors.push(`Unable to connect to ${network} network`);
         }
       })
     );
@@ -279,3 +289,12 @@ module.exports = {
   checkBlockchainBlocksFinalization,
   checkBlockchainBlocksProducing,
 };
+
+"pallet-chainbridge/try-runtime",
+"pallet-ddc-clusters/try-runtime",
+"pallet-ddc-customers/try-runtime",
+"pallet-ddc-nodes/try-runtime",
+"pallet-ddc-payouts/try-runtime",
+"pallet-ddc-staking/try-runtime",
+"pallet-erc20/try-runtime",
+"pallet-erc721/try-runtime",
