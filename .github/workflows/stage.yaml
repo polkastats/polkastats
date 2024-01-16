@@ -14,7 +14,7 @@ jobs:
   build_and_deploy_backend_cerestats_api:
     uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@master
     with:
-      runs-on: '["self-hosted", "cere-network-large-workers"]'
+      runs-on: '["self-hosted", "cere-network-large"]'
       environment: stg
       aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
       repository: stats-api
@@ -24,7 +24,7 @@ jobs:
   build_and_deploy_backend_cerestats_crawler:
     uses: Cerebellum-Network/reusable-workflows/.github/workflows/deploy-to-ecr.yaml@master
     with:
-      runs-on: '["self-hosted", "cere-network-large-workers"]'
+      runs-on: '["self-hosted", "cere-network-large"]'
       environment: stg
       aws_account_id: ${{ vars.DEV_NETWORK_AWS_ACCOUNT_ID }}
       repository: stats-crawler
@@ -34,7 +34,7 @@ jobs:
   build_and_deploy_frontend:
     uses: Cerebellum-Network/reusable-workflows/.github/workflows/build-and-upload-static.yaml@master
     with:
-      runs-on: '["self-hosted", "cere-network-large-workers"]'
+      runs-on: '["self-hosted", "cere-network-large"]'
       build_container: 'node:14-buster-slim'
       deploy_container: 'ubuntu:20.04'
       install_packages_command: 'cp -rf frontend/frontend.config-cere-stg.js frontend/frontend.config.js; yarn install'
